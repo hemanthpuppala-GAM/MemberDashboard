@@ -1,0 +1,43 @@
+/*
+  Golden Age Wisdom — design tokens.
+  Dark cosmic + gold theme, matching Replicated-Design/Design.md §4.1 and
+  the site's reference mockup (deep indigo-black backdrop, gold "house"
+  accent, chakra hues scoped to their own node/section only).
+*/
+
+@theme {
+  /* ---- Base surfaces ---- */
+  --color-bg: #0d0a1c;
+  --color-bg-soft: #14112a;
+  --color-surface: #1a1730;
+  --color-surface-glass: #1a173066;
+
+  /* ---- Gold "house" accent (headlines, CTAs, mandala centre) ---- */
+  --color-gold-light: #e6d3a8;
+  --color-gold: #d5b77c;
+  --color-gold-deep: #b89758;
+  --color-gold-live: #7ecb8f;
+  --color-on-gold: #2b2213;
+
+  /* ---- Text ---- */
+  --color-ink: #f7f1e3;
+  --color-ink-soft: #f2e9d8;
+  --color-muted: #cfc8ba;
+  --color-muted-soft: #9a92a8;
+
+  /* ---- Chakra accent colors (Design.md §2 — scoped to their own node only) ---- */
+  --color-chakra-crown: #c9a6f0;
+  --color-chakra-thirdeye: #9d8fe0;
+  --color-chakra-throat: #7fb0e0;
+  --color-chakra-heart: #e6d3a8;
+  --color-chakra-solar: #e6c96a;
+  --color-chakra-sacral: #eda06a;
+  --color-chakra-root: #e08a8a;
+
+  /* ---- Type ---- */
+  --font-display: "Marcellus", "Georgia", serif;
+  --font-body: "Outfit", "Segoe UI", sans-serif;
+
+  /* ---- Motion ---- */
+  --ease-breathe: cubic-bezier(0.45, 0, 0.55, 1);
+}

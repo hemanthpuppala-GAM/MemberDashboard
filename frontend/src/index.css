@@ -1,0 +1,109 @@
+@import "tailwindcss";
+@import "./theme/theme.css";
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    margin: 0;
+    background: var(--color-bg);
+    color: var(--color-ink);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    color: var(--color-ink);
+  }
+}
+
+@layer utilities {
+  /* Centre orb: slow "breathing" scale, ties to the meditation theme */
+  @keyframes breathe {
+    0%,
+    100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.045);
+    }
+  }
+  .animate-breathe {
+    animation: breathe 6s var(--ease-breathe) infinite;
+  }
+
+  /* Ripple rings: expand + fade outward from the centre orb */
+  @keyframes ripple {
+    0% {
+      transform: scale(0.8);
+      opacity: 0.45;
+    }
+    100% {
+      transform: scale(2.15);
+      opacity: 0;
+    }
+  }
+  .animate-ripple {
+    animation: ripple 6s ease-out infinite;
+  }
+
+  /* Decorative outer rings: slow pulse, one direction reversed for a
+     counter-rotating "living mandala" feel */
+  @keyframes ring-pulse {
+    0%,
+    100% {
+      opacity: 0.35;
+      transform: scale(1) rotate(0deg);
+    }
+    50% {
+      opacity: 0.6;
+      transform: scale(1.02) rotate(1.5deg);
+    }
+  }
+  .animate-ring-pulse {
+    animation: ring-pulse 7s ease-in-out infinite;
+  }
+  .animate-ring-pulse-reverse {
+    animation: ring-pulse 9s ease-in-out infinite reverse;
+  }
+
+  /* Each orbiting node: gentle non-synchronized bob */
+  @keyframes node-float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-6px);
+    }
+  }
+  .animate-node-float {
+    animation: node-float 5s ease-in-out infinite;
+  }
+
+  /* Background starfield: a small fraction of stars twinkle */
+  @keyframes twinkle {
+    0%,
+    100% {
+      opacity: 0.15;
+    }
+    50% {
+      opacity: 0.9;
+    }
+  }
+  .animate-twinkle {
+    animation: twinkle 3.5s ease-in-out infinite;
+  }
+}
