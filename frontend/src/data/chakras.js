@@ -1,14 +1,13 @@
 /**
- * Nav ↔ chakra mapping (Replicated-Design/Design.md §2). Single source of
- * truth for the mandala nodes, the anchor nav, and each section's chakra
- * identity strip — every place that needs "which chakra is this section"
- * reads from here instead of repeating the mapping.
+ * Nav ↔ chakra mapping (Replicated-Design/Design.md §2 + live site labels).
+ * Single source of truth for mandala nodes and section anchors.
  */
 
 import { colors } from "../theme/colors";
 
 export const heartChakra = {
   id: "meditate-now",
+  view: "practice",
   label: "Mass Meditation",
   sanskrit: "Anahata",
   common: "Heart",
@@ -21,8 +20,9 @@ export const heartChakra = {
 export const chakras = [
   {
     id: "about",
+    view: "about",
     angle: 0,
-    label: "About",
+    label: "About Me",
     tagline: "Guru",
     sanskrit: "Sahasrara",
     common: "Crown",
@@ -32,6 +32,7 @@ export const chakras = [
   },
   {
     id: "wisdom",
+    view: "wisdom",
     angle: 60,
     label: "Wisdom",
     tagline: "Teachings",
@@ -43,6 +44,7 @@ export const chakras = [
   },
   {
     id: "wellness",
+    view: "wellness",
     angle: 120,
     label: "Wellness",
     tagline: "Practice for the body",
@@ -54,8 +56,9 @@ export const chakras = [
   },
   {
     id: "meditate",
+    view: "practice",
     angle: 180,
-    label: "Meditate",
+    label: "Meditation",
     tagline: "Sit with us",
     sanskrit: "Muladhara",
     common: "Root",
@@ -65,6 +68,7 @@ export const chakras = [
   },
   {
     id: "events",
+    view: "events",
     angle: 240,
     label: "Events",
     tagline: "Gatherings",
@@ -76,8 +80,9 @@ export const chakras = [
   },
   {
     id: "mission",
+    view: "mission",
     angle: 300,
-    label: "Mission",
+    label: "Our Mission",
     tagline: "Why we exist",
     sanskrit: "Manipura",
     common: "Solar Plexus",

@@ -8,7 +8,7 @@ export default function MeditateSection() {
     <ChakraContentSection
       chakraId="meditate"
       chakra={chakra}
-      eyebrow="Meditate · Root"
+      eyebrow="Meditation"
       title="Sit alone, or sit with the world"
       description="Start with a solo timed sit whenever you like, or join the daily
         mass meditation — the same moment, held by practitioners around the

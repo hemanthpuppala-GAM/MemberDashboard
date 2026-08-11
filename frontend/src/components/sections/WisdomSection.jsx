@@ -8,7 +8,7 @@ export default function WisdomSection() {
     <ChakraContentSection
       chakraId="wisdom"
       chakra={chakra}
-      eyebrow="Wisdom · Third Eye"
+      eyebrow="Wisdom"
       title="Teachings for a quiet mind"
       description="Short talks, recorded sits, and written reflections on the practice —
         the same material shared in our in-person circles, kept open for

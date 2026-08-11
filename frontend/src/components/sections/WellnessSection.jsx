@@ -8,7 +8,7 @@ export default function WellnessSection() {
     <ChakraContentSection
       chakraId="wellness"
       chakra={chakra}
-      eyebrow="Wellness · Sacral"
+      eyebrow="Wellness"
       title="Practice for the body, not just the mind"
       description="Gentle movement, breathwork, and rest practices that prepare the
         body to sit still — meditation supported by the rest of daily life,

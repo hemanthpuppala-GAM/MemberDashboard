@@ -1,24 +1,24 @@
 /**
- * Two atmosphere-only rings tracing the mandala at 1.52x and 2.24x the
- * node orbit radius (Design.md §3) — no interactive content, pure aura.
+ * Two atmosphere rings at 1.52× / 2.24× orbit radius (live site diameters).
  */
 export default function DecorativeRings() {
   return (
-    <div className="pointer-events-none absolute inset-0 flex items-center justify-center" aria-hidden="true">
+    <div
+      className="pointer-events-none absolute inset-0 flex items-center justify-center"
+      aria-hidden="true"
+    >
       <span
-        className="animate-ring-pulse absolute rounded-full border"
+        className="m-ring2 animate-ring-pulse absolute rounded-full border border-[rgba(213,183,124,0.14)]"
         style={{
-          width: "calc(var(--orbit-r) * 3.04)",
-          height: "calc(var(--orbit-r) * 3.04)",
-          borderColor: "var(--color-gold-light)",
+          width: "calc(var(--orbit-r) * 2.24)",
+          height: "calc(var(--orbit-r) * 2.24)",
         }}
       />
       <span
-        className="animate-ring-pulse-reverse absolute rounded-full border"
+        className="m-ring1 animate-ring-pulse-reverse absolute rounded-full border border-dashed border-[rgba(213,183,124,0.26)]"
         style={{
-          width: "calc(var(--orbit-r) * 4.48)",
-          height: "calc(var(--orbit-r) * 4.48)",
-          borderColor: "var(--color-gold-light)",
+          width: "calc(var(--orbit-r) * 1.52)",
+          height: "calc(var(--orbit-r) * 1.52)",
         }}
       />
     </div>

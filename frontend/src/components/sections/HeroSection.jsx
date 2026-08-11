@@ -1,56 +1,43 @@
 import ChakraMandala from "../mandala/ChakraMandala";
-import Starfield from "../layout/Starfield";
 import LiveSessionBanner from "./LiveSessionBanner";
-import QrJoinCard from "./QrJoinCard";
 
 /**
- * Hero = the mandala itself. "Heart at the centre" is the site's thesis
- * (Design.md §1, §6): the primary CTA is the daily meditation, everything
- * else orbits it.
+ * Hub viewport: compact copy + mandala so the face stays visible below.
  */
-export default function HeroSection() {
+export default function HeroSection({ onNavigate, onWatchIntro, layout }) {
   return (
-    <section
-      id="top"
-      className="relative flex flex-col items-center gap-8 overflow-hidden px-6 pb-20 text-center"
+    <div
+      data-screen-label="Mandala hub"
+      className="m-hub-wrap flex min-h-0 w-full flex-1 flex-col items-center justify-start gap-[clamp(4px,1.2vh,12px)]"
     >
-      <div
-        className="pointer-events-none absolute inset-0 -z-10"
-        style={{
-          background:
-            "radial-gradient(60% 45% at 50% 22%, var(--color-bg-soft) 0%, var(--color-bg) 70%)",
-        }}
-        aria-hidden="true"
-      />
-      <Starfield />
+      <div className="m-vp pointer-events-none relative z-[8] mx-auto flex w-[min(680px,100%)] flex-col items-center gap-1.5 text-center">
+        <LiveSessionBanner onNavigate={onNavigate} />
 
-      <LiveSessionBanner />
-
-      <div className="flex max-w-2xl flex-col items-center gap-5 pt-6">
-        <h1 className="text-3xl leading-tight text-[var(--color-ink)] sm:text-5xl">
-          Peace begins within — together we radiate it across the world
-        </h1>
-
-        <a
-          href="#wisdom"
-          className="inline-flex items-center gap-2 rounded-full border border-[var(--color-gold)]/35 bg-[var(--color-surface)]/60 px-5 py-2.5 text-sm font-medium text-[var(--color-ink-soft)] backdrop-blur-md transition-colors hover:border-[var(--color-gold)]/70 hover:text-[var(--color-gold-light)]"
+        <h2
+          className="m-vp-line text-[clamp(20px,2.4vw,30px)] leading-[1.18] tracking-[0.005em] text-[var(--color-ink)] [text-shadow:0_2px_22px_rgba(8,6,20,0.85)]"
+          style={{
+            fontFamily: "'Cormorant Garamond', var(--font-display)",
+            fontWeight: 600,
+          }}
         >
-          <span className="flex h-5 w-5 items-center justify-center rounded-full bg-[var(--color-gold)]/25">
-            <svg viewBox="0 0 24 24" className="h-2.5 w-2.5 fill-[var(--color-gold-light)]">
-              <path d="M6 4.5v15l13-7.5z" />
-            </svg>
-          </span>
-          Watch the intro
-        </a>
+          Peace begins within — together we radiate it across the world
+        </h2>
+
+        <div className="m-action pointer-events-auto relative z-[8] flex w-full shrink-0 flex-col items-center gap-1.5 text-center">
+          <button
+            type="button"
+            onClick={onWatchIntro}
+            className="inline-flex cursor-pointer items-center gap-1.5 rounded-full border border-white/20 bg-white/5 px-3.5 py-1.5 font-body text-[13px] whitespace-nowrap text-[var(--color-ink-soft)] backdrop-blur-[8px] transition-colors hover:border-[var(--color-gold-light)]/90"
+          >
+            <span className="text-[9px]">▶</span>
+            Watch the intro
+          </button>
+        </div>
       </div>
 
-      <ChakraMandala />
-
-      <p className="text-xs tracking-[0.25em] text-[var(--color-muted-soft)] uppercase">
-        Choose a path · the centre breathes with you
-      </p>
-
-      <QrJoinCard />
-    </section>
+      <div className="relative flex min-h-0 w-full flex-1 items-center justify-center">
+        <ChakraMandala onNavigate={onNavigate} layout={layout} />
+      </div>
+    </div>
   );
 }

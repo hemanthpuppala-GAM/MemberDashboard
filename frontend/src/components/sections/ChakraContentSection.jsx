@@ -22,7 +22,7 @@ export default function ChakraContentSection({
   return (
     <section
       id={chakraId}
-      className="mx-auto flex max-w-5xl scroll-mt-24 flex-col items-center gap-12 px-6 py-20 sm:px-10 md:flex-row md:items-center md:gap-16"
+      className="mx-auto flex max-w-5xl flex-col items-center gap-10 px-2 py-6 sm:px-4 md:flex-row md:items-center md:gap-12"
     >
       <div
         className={`flex w-full flex-1 flex-col gap-6 ${reverse ? "md:order-2" : ""}`}

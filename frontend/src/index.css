@@ -18,6 +18,7 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+    overflow: hidden;
   }
 
   h1,
@@ -27,83 +28,156 @@
     font-weight: 400;
     color: var(--color-ink);
   }
+
+  a {
+    color: var(--color-gold);
+    text-decoration: none;
+  }
+
+  a:hover {
+    color: var(--color-gold-light);
+  }
 }
 
 @layer utilities {
-  /* Centre orb: slow "breathing" scale, ties to the meditation theme */
   @keyframes breathe {
     0%,
     100% {
       transform: scale(1);
+      opacity: 0.9;
     }
     50% {
-      transform: scale(1.045);
+      transform: scale(1.07);
+      opacity: 1;
     }
   }
   .animate-breathe {
-    animation: breathe 6s var(--ease-breathe) infinite;
+    animation: breathe 6s ease-in-out infinite;
   }
 
-  /* Ripple rings: expand + fade outward from the centre orb */
   @keyframes ripple {
     0% {
-      transform: scale(0.8);
-      opacity: 0.45;
+      transform: translate(-50%, -50%) scale(0.5);
+      opacity: 0;
+    }
+    12% {
+      opacity: 0.55;
     }
     100% {
-      transform: scale(2.15);
+      transform: translate(-50%, -50%) scale(2.6);
       opacity: 0;
     }
   }
   .animate-ripple {
-    animation: ripple 6s ease-out infinite;
+    animation: ripple 6s cubic-bezier(0.2, 0.6, 0.4, 1) infinite;
   }
 
-  /* Decorative outer rings: slow pulse, one direction reversed for a
-     counter-rotating "living mandala" feel */
   @keyframes ring-pulse {
     0%,
     100% {
+      transform: scale(1);
       opacity: 0.35;
-      transform: scale(1) rotate(0deg);
     }
     50% {
+      transform: scale(1.04);
       opacity: 0.6;
-      transform: scale(1.02) rotate(1.5deg);
     }
   }
   .animate-ring-pulse {
-    animation: ring-pulse 7s ease-in-out infinite;
+    animation: ring-pulse 9s ease-in-out infinite;
   }
   .animate-ring-pulse-reverse {
-    animation: ring-pulse 9s ease-in-out infinite reverse;
+    animation: ring-pulse 7s ease-in-out infinite reverse;
   }
 
-  /* Each orbiting node: gentle non-synchronized bob */
   @keyframes node-float {
     0%,
     100% {
       transform: translateY(0);
     }
     50% {
-      transform: translateY(-6px);
+      transform: translateY(-8px);
     }
   }
   .animate-node-float {
     animation: node-float 5s ease-in-out infinite;
   }
 
-  /* Background starfield: a small fraction of stars twinkle */
-  @keyframes twinkle {
+  @keyframes star-dim {
     0%,
     100% {
-      opacity: 0.15;
+      opacity: 0.16;
+      transform: scale(1);
     }
-    50% {
-      opacity: 0.9;
+    40% {
+      opacity: 0.4;
+      transform: scale(1.15);
     }
   }
-  .animate-twinkle {
-    animation: twinkle 3.5s ease-in-out infinite;
+  .animate-star-dim {
+    animation: star-dim 10s ease-in-out infinite;
+  }
+
+  @keyframes star-lit {
+    0%,
+    100% {
+      opacity: 0.5;
+      transform: scale(1);
+    }
+    40% {
+      opacity: 1;
+      transform: scale(1.32);
+    }
+  }
+  .animate-star-lit {
+    animation: star-lit 10s ease-in-out infinite;
+  }
+
+  @keyframes viewIn {
+    from {
+      opacity: 0;
+      transform: scale(0.96);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @media (max-aspect-ratio: 16/10) {
+    .m-bg {
+      transform: scale(0.96) translateY(3%) !important;
+    }
+  }
+  @media (max-aspect-ratio: 4/3) {
+    .m-bg {
+      transform: scale(0.92) translateY(2%) !important;
+    }
+    .m-scrim {
+      background:
+        radial-gradient(ellipse 52% 64% at 50% 52%, rgba(13,10,28,0.35) 0%, rgba(13,10,28,0.2) 50%, rgba(13,10,28,0) 78%),
+        radial-gradient(ellipse 46% 78% at 50% 44%, rgba(38,34,96,0.4) 0%, rgba(14,12,42,0.62) 55%, rgba(10,8,30,0.88) 80%, rgba(8,6,24,0.98) 100%),
+        linear-gradient(180deg, rgba(11,8,24,0.82) 0%, rgba(11,8,24,0.5) 14%, rgba(11,8,24,0.18) 28%, rgba(13,10,28,0) 42%) !important;
+    }
+  }
+  @media (max-aspect-ratio: 1/1) {
+    .m-bg {
+      transform: scale(0.9) translateY(0%) !important;
+    }
+  }
+
+  @media (max-height: 700px) {
+    .m-caption {
+      display: none !important;
+    }
+    .m-vp-line {
+      font-size: clamp(18px, 2.2vw, 24px) !important;
+    }
+  }
+
+  @media (max-height: 940px) {
+    .m-vp-line {
+      font-size: clamp(18px, 2.2vw, 26px) !important;
+    }
   }
 }

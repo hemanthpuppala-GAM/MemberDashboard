@@ -8,7 +8,7 @@ export default function EventsSection() {
     <ChakraContentSection
       chakraId="events"
       chakra={chakra}
-      eyebrow="Events · Throat"
+      eyebrow="Events"
       title="Gather, in person and online"
       description="From weekly online circles to seasonal in-person retreats — ways
         to practice alongside others, at whatever distance feels right."

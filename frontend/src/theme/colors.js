@@ -14,6 +14,7 @@ export const colors = {
   gold: "#d5b77c",
   goldDeep: "#b89758",
   goldLive: "#7ecb8f",
+  onGold: "#241b06",
 
   ink: "#f7f1e3",
   muted: "#cfc8ba",

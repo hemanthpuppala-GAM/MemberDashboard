@@ -8,7 +8,7 @@ export default function AboutSection() {
     <ChakraContentSection
       chakraId="about"
       chakra={chakra}
-      eyebrow="About · Crown"
+      eyebrow="About Me"
       title="A teaching, not a brand"
       description="Golden Age Wisdom carries a living lineage of meditation practice —
         offered freely, held by a community of everyday practitioners rather

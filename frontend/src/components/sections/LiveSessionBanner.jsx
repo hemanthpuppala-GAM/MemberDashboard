@@ -1,25 +1,37 @@
+import { useMemo } from "react";
 import { heartChakra } from "../../data/chakras";
+import { getPeaceLocalLabel } from "../../utils/peaceTime";
 
-/**
- * Pill strip announcing the recurring live sit. Static schedule copy for
- * now — no backend session data exists yet to drive real "live" state.
- */
-export default function LiveSessionBanner() {
+/** Compact live-sit announcement pill. */
+export default function LiveSessionBanner({ onNavigate }) {
+  const peaceLocal = useMemo(() => getPeaceLocalLabel(), []);
+
+  const handleClick = (e) => {
+    if (onNavigate) {
+      e.preventDefault();
+      onNavigate(heartChakra.view);
+    }
+  };
+
   return (
-    <div className="relative z-10 mx-auto mt-10 flex w-fit max-w-[92vw] flex-wrap items-center justify-center gap-x-3 gap-y-1 rounded-full border border-[var(--color-gold)]/30 bg-[var(--color-surface)]/70 px-5 py-2.5 text-xs text-[var(--color-muted)] backdrop-blur-md sm:mt-14 sm:text-sm">
-      <span className="flex items-center gap-2 font-medium tracking-wide text-[var(--color-gold-light)] uppercase">
-        <span className="h-1.5 w-1.5 rounded-full bg-[var(--color-gold-live)]" />
+    <a
+      href={heartChakra.href}
+      onClick={handleClick}
+      className="pointer-events-auto inline-flex max-w-full flex-wrap items-center justify-center gap-1.5 rounded-full border border-[rgba(213,183,124,0.55)] px-3.5 py-1.5 text-center text-[12.5px] leading-normal text-[#f7ecd0] backdrop-blur-[8px] transition-colors hover:border-[rgba(230,211,168,0.95)]"
+      style={{
+        background:
+          "linear-gradient(135deg, rgba(230,211,168,0.22), rgba(184,151,88,0.12))",
+      }}
+    >
+      <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--color-gold)]" />
+      <span className="text-[10.5px] tracking-[0.12em] text-[var(--color-gold-light)] uppercase">
         Free mass meditation
       </span>
-      <span className="hidden text-[var(--color-muted-soft)] sm:inline">·</span>
-      <span>Mon–Sat, 8:30 PM your time</span>
-      <span className="text-[var(--color-muted-soft)]">|</span>
-      <a
-        href={heartChakra.href}
-        className="font-medium text-[var(--color-gold-light)] transition-colors hover:text-[var(--color-ink)]"
-      >
-        Join the sit →
-      </a>
-    </div>
+      <span className="opacity-45">·</span>
+      <span>Mon–Sat, {peaceLocal}</span>
+      <span className="ml-0.5 inline-flex items-center gap-1 border-l border-[rgba(230,211,168,0.3)] pl-2.5 font-medium text-[var(--color-gold-light)]">
+        Join the sit <span className="text-[10px]">→</span>
+      </span>
+    </a>
   );
 }

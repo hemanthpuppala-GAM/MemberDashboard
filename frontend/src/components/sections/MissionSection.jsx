@@ -8,7 +8,7 @@ export default function MissionSection() {
     <ChakraContentSection
       chakraId="mission"
       chakra={chakra}
-      eyebrow="Mission · Solar Plexus"
+      eyebrow="Our Mission"
       title="Why we exist"
       description="We believe a calmer inner life adds up to a calmer world. Every
         sit — solo or shared — is one small, verifiable act toward that,
