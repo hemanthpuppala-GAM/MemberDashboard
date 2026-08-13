@@ -29,7 +29,7 @@ export default function QrJoinCard({ show = true }) {
     <a
       href={JOIN_URL}
       title="Join Golden Age Wisdom"
-      className="absolute right-[clamp(12px,2vw,24px)] bottom-[58px] z-[60] hidden items-center gap-3 rounded-3xl border border-[var(--color-gold)]/25 bg-[rgba(20,15,40,0.55)] py-2 pr-4 pl-2 shadow-[0_8px_26px_rgba(0,0,0,0.45)] backdrop-blur-[14px] transition-all hover:border-[var(--color-gold-light)]/85 hover:shadow-[0_8px_30px_rgba(0,0,0,0.5),0_0_30px_rgba(213,183,124,0.3)] sm:flex"
+      className="absolute right-[clamp(12px,2vw,24px)] bottom-[58px] z-[60] hidden items-center gap-3 rounded-3xl border border-[rgba(110,198,234,0.30)] bg-[rgba(14,42,58,0.72)] py-2 pr-4 pl-2 shadow-[0_8px_26px_rgba(0,0,0,0.50)] backdrop-blur-[14px] transition-all hover:border-[var(--color-gold-light)]/80 hover:shadow-[0_8px_30px_rgba(0,0,0,0.55),0_0_30px_rgba(110,198,234,0.25)] sm:flex"
     >
       <div
         className="h-[62px] w-[62px] shrink-0 overflow-hidden rounded-xl border border-[var(--color-gold)]/50 [&_svg]:h-full [&_svg]:w-full"

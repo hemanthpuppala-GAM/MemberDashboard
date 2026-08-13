@@ -6,25 +6,29 @@
  */
 
 export const colors = {
-  bg: "#0d0a1c",
-  bgSoft: "#14112a",
-  surface: "#1a1730",
+  bg: "#FAFAFE",
+  bgSoft: "#F0EFF9",
+  surface: "#E8E6F5",
 
-  goldLight: "#e6d3a8",
-  gold: "#d5b77c",
-  goldDeep: "#b89758",
-  goldLive: "#7ecb8f",
-  onGold: "#241b06",
+  blue: "#6EC6EA",
+  blueSoft: "#B3E5FA",
+  blueDark: "#2F9FD1",
 
-  ink: "#f7f1e3",
-  muted: "#cfc8ba",
-  mutedSoft: "#9a92a8",
+  goldLight: "#F9ECCB",
+  gold: "#F3D89A",
+  goldDeep: "#DCB96A",
+  goldLive: "#5DB875",
+  onGold: "#3C2B10",
+
+  ink: "#28246A",
+  muted: "#8886C0",
+  mutedSoft: "#A8A6D4",
 
   chakra: {
     crown: "#c9a6f0",
     thirdEye: "#9d8fe0",
     throat: "#7fb0e0",
-    heart: "#e6d3a8",
+    heart: "#F3D89A",
     solar: "#e6c96a",
     sacral: "#eda06a",
     root: "#e08a8a",

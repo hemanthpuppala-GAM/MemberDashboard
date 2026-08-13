@@ -6,30 +6,36 @@
 */
 
 @theme {
-  /* ---- Base surfaces ---- */
-  --color-bg: #0d0a1c;
-  --color-bg-soft: #14112a;
-  --color-surface: #1a1730;
-  --color-surface-glass: #1a173066;
+  /* ---- Base surfaces (light lavender-white) ---- */
+  --color-bg: #FAFAFE;
+  --color-bg-soft: #F0EFF9;
+  --color-surface: #E8E6F5;
+  --color-surface-glass: rgba(110, 198, 234, 0.35);
 
-  /* ---- Gold "house" accent (headlines, CTAs, mandala centre) ---- */
-  --color-gold-light: #e6d3a8;
-  --color-gold: #d5b77c;
-  --color-gold-deep: #b89758;
-  --color-gold-live: #7ecb8f;
-  --color-on-gold: #2b2213;
+  /* ---- Sky-blue accent ---- */
+  --color-blue: #6EC6EA;
+  --color-blue-soft: #B3E5FA;
+  --color-blue-dark: #2F9FD1;
+  --color-blue-glow: rgba(110, 198, 234, 0.45);
 
-  /* ---- Text ---- */
-  --color-ink: #f7f1e3;
-  --color-ink-soft: #f2e9d8;
-  --color-muted: #cfc8ba;
-  --color-muted-soft: #9a92a8;
+  /* ---- Gold accent ---- */
+  --color-gold-light: #F9ECCB;
+  --color-gold: #F3D89A;
+  --color-gold-deep: #DCB96A;
+  --color-gold-live: #5DB875;
+  --color-on-gold: #3C2B10;
 
-  /* ---- Chakra accent colors (Design.md §2 — scoped to their own node only) ---- */
+  /* ---- Text (deep purple on light surfaces) ---- */
+  --color-ink: #28246A;
+  --color-ink-soft: #5854A0;
+  --color-muted: #8886C0;
+  --color-muted-soft: #A8A6D4;
+
+  /* ---- Chakra accent colors (scoped to their own node/section only) ---- */
   --color-chakra-crown: #c9a6f0;
   --color-chakra-thirdeye: #9d8fe0;
   --color-chakra-throat: #7fb0e0;
-  --color-chakra-heart: #e6d3a8;
+  --color-chakra-heart: #F3D89A;
   --color-chakra-solar: #e6c96a;
   --color-chakra-sacral: #eda06a;
   --color-chakra-root: #e08a8a;

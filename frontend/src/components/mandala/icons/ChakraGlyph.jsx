@@ -16,7 +16,7 @@ export default function ChakraGlyph({
   // Values run higher than on a light background — on dark glass the
   // petals need real color to read as a glowing lotus, not a faint tint.
   const petalOpacity =
-    petals <= 4 ? 0.55 : petals <= 8 ? 0.42 : petals <= 16 ? 0.28 : 0.16;
+    petals <= 4 ? 0.75 : petals <= 8 ? 0.6 : petals <= 16 ? 0.45 : 0.32;
 
   return (
     <svg

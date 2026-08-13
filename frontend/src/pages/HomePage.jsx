@@ -10,7 +10,7 @@ import WellnessSection from "../components/sections/WellnessSection";
 import MeditateSection from "../components/sections/MeditateSection";
 import EventsSection from "../components/sections/EventsSection";
 import MissionSection from "../components/sections/MissionSection";
-import { useHubLayout } from "../hooks/useHubLayoutState";
+import ContactSection from "../components/sections/ContactSection";
 
 const SECTION_VIEWS = {
   about: AboutSection,
@@ -19,12 +19,12 @@ const SECTION_VIEWS = {
   practice: MeditateSection,
   events: EventsSection,
   mission: MissionSection,
+  contact: ContactSection,
 };
 
 export default function HomePage() {
   const [view, setView] = useState("hub");
   const isHub = view === "hub";
-  const layout = useHubLayout(isHub);
 
   useEffect(() => {
     const onKey = (e) => {
@@ -38,7 +38,7 @@ export default function HomePage() {
 
   return (
     <div className="relative flex h-dvh flex-col overflow-hidden bg-[var(--color-bg)]">
-      <PageAtmosphere showFigure={isHub} bgLift={isHub ? layout.bgLift : 0} />
+      <PageAtmosphere showFigure={isHub} />
 
       <a
         href="#main"
@@ -52,15 +52,14 @@ export default function HomePage() {
         taught by Dr Hari Krishna, MD
       </h1>
 
-      <Header onLogoClick={() => setView("hub")} />
+      <Header onLogoClick={() => setView("hub")} onNavigate={setView} activeView={view} />
 
       <main
         id="main"
-        className="relative z-10 flex min-h-0 flex-1 items-stretch justify-center px-[clamp(12px,3vw,24px)] pt-2 pb-2"
+        className={`relative z-10 flex min-h-0 flex-1 overflow-hidden ${isHub ? "" : "items-stretch justify-center px-[clamp(12px,3vw,24px)] pt-2 pb-2"}`}
       >
         {isHub && (
           <HeroSection
-            layout={layout}
             onNavigate={setView}
             onWatchIntro={() =>
               window.open(

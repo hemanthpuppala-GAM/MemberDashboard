@@ -23,6 +23,7 @@ export default function ChakraContentSection({
     <section
       id={chakraId}
       className="mx-auto flex max-w-5xl flex-col items-center gap-10 px-2 py-6 sm:px-4 md:flex-row md:items-center md:gap-12"
+      style={{ borderTop: `1px solid rgba(110,198,234,0.35)` }}
     >
       <div
         className={`flex w-full flex-1 flex-col gap-6 ${reverse ? "md:order-2" : ""}`}
@@ -42,8 +43,8 @@ export default function ChakraContentSection({
                 className="flex items-start gap-3 text-sm text-[var(--color-muted)]"
               >
                 <span
-                  className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full"
-                  style={{ background: chakra.color }}
+                  className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full ring-1"
+                  style={{ background: chakra.color, boxShadow: `0 0 6px ${chakra.color}80` }}
                 />
                 {point}
               </li>
@@ -62,7 +63,7 @@ export default function ChakraContentSection({
         className={`flex w-full flex-1 items-center justify-center ${reverse ? "md:order-1" : ""}`}
       >
         <div
-          className="relative flex aspect-square w-full max-w-[280px] items-center justify-center rounded-full border bg-[var(--color-surface)]/60 shadow-[0_20px_60px_-20px_rgba(0,0,0,0.6)] backdrop-blur-sm"
+          className="relative flex aspect-square w-full max-w-[280px] items-center justify-center rounded-full border bg-[var(--color-surface)]/70 shadow-[0_20px_60px_-20px_rgba(0,0,0,0.7),0_0_40px_rgba(110,198,234,0.15)] backdrop-blur-sm"
           style={{ borderColor: `${chakra.color}55` }}
         >
           <span

@@ -42,11 +42,11 @@ export default function CenterOrb({ onNavigate }) {
       onClick={handleClick}
       title="Mass meditation for global peace"
       aria-label={`${heartChakra.label} — join the daily group meditation`}
-      className="m-orb animate-breathe relative z-[5] -top-1 flex aspect-square w-[clamp(64px,calc(var(--orbit-r)*0.72),112px)] flex-col items-center justify-center gap-1 rounded-full border border-[rgba(213,183,124,0.55)] no-underline outline-none backdrop-blur-[10px]"
+      className="m-orb animate-breathe relative z-[5] -top-1 flex aspect-square w-[clamp(64px,calc(var(--orbit-r)*0.72),112px)] flex-col items-center justify-center gap-1 rounded-full border border-[rgba(243,216,154,0.65)] no-underline outline-none backdrop-blur-[10px]"
       style={{
         background:
-          "radial-gradient(circle at 38% 34%, rgba(230,211,168,0.45), rgba(184,151,88,0.15) 60%, rgba(20,15,40,0.4))",
-        boxShadow: "0 0 60px rgba(213,183,124,0.32)",
+          "radial-gradient(circle at 38% 34%, rgba(243,216,154,0.55), rgba(220,185,106,0.22) 60%, rgba(110,198,234,0.40))",
+        boxShadow: "0 0 50px rgba(243,216,154,0.40), 0 0 70px rgba(110,198,234,0.30), inset 0 0 20px rgba(255,255,255,0.25)",
       }}
     >
       <svg

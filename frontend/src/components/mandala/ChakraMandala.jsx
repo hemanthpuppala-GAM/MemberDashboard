@@ -22,21 +22,23 @@ export default function ChakraMandala({ onNavigate, layout }) {
         transform: `translate(${hubTx}px, ${hubTy}px)`,
       }}
     >
-      <DecorativeRings />
-      <RippleRings />
+      <div className="mandala-spin-once absolute inset-0">
+        <DecorativeRings />
+        <RippleRings />
 
-      <div className="absolute inset-0 flex items-center justify-center">
-        <CenterOrb onNavigate={onNavigate} />
+        <div className="absolute inset-0 flex items-center justify-center">
+          <CenterOrb onNavigate={onNavigate} />
+        </div>
+
+        {chakras.map((chakra, index) => (
+          <ChakraNode
+            key={chakra.id}
+            chakra={chakra}
+            index={index}
+            onNavigate={onNavigate}
+          />
+        ))}
       </div>
-
-      {chakras.map((chakra, index) => (
-        <ChakraNode
-          key={chakra.id}
-          chakra={chakra}
-          index={index}
-          onNavigate={onNavigate}
-        />
-      ))}
     </div>
   );
 }
