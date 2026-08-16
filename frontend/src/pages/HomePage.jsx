@@ -37,7 +37,11 @@ export default function HomePage() {
   const Section = SECTION_VIEWS[view];
 
   return (
-    <div className="relative flex h-dvh flex-col overflow-hidden bg-[var(--color-bg)]">
+    <div
+      className={`relative flex h-dvh flex-col overflow-hidden ${
+        isHub ? "bg-transparent" : "bg-[var(--color-bg)]"
+      }`}
+    >
       <PageAtmosphere showFigure={isHub} />
 
       <a

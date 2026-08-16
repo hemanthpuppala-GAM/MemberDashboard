@@ -5,7 +5,13 @@ export default function Footer({ view = "hub", onBack }) {
   const inSection = view !== "hub" && view !== "film";
 
   return (
-    <footer className="relative z-10 flex shrink-0 flex-col items-center gap-[7px] px-6 pt-2 pb-3 text-xs font-light text-[#8886C0] [text-shadow:0_1px_6px_rgba(110,198,234,0.40)]">
+    <footer
+      className={`relative z-10 flex shrink-0 flex-col items-center gap-[7px] px-6 pt-2 pb-3 text-xs font-light ${
+        view === "hub"
+          ? "text-white/75 [text-shadow:0_1px_10px_rgba(0,0,0,0.45)]"
+          : "text-[#8886C0] [text-shadow:0_1px_6px_rgba(110,198,234,0.40)]"
+      }`}
+    >
       {inSection && (
         <button
           type="button"
@@ -39,20 +45,20 @@ export default function Footer({ view = "hub", onBack }) {
 
       {view === "hub" && (
         <>
-          <div className="m-caption text-[12.5px] tracking-[0.1em] text-[#8886C0] max-[700px]:hidden">
+          <div className="m-caption text-[12.5px] tracking-[0.1em] text-white/80 max-[700px]:hidden">
             Choose a path · the center breathes with you
           </div>
           <div className="flex flex-wrap items-center justify-center gap-[18px]">
             <a
               href="https://goldenagewisdom.org/volunteer"
-              className="text-[#8886C0] transition-colors hover:text-[var(--color-gold-deep)]"
+              className="text-white/75 transition-colors hover:text-[var(--color-gold)]"
             >
               Volunteer
             </a>
             <span>A registered non-profit · © {new Date().getFullYear()}</span>
             <a
               href="https://goldenagewisdom.org/privacy"
-              className="text-[#A8A6D4] transition-colors hover:text-[var(--color-gold-deep)]"
+              className="text-white/65 transition-colors hover:text-[var(--color-gold)]"
             >
               Privacy
             </a>

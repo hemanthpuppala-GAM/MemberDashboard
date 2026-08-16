@@ -16,7 +16,7 @@ export default function ChakraMandala({ onNavigate, layout }) {
 
   return (
     <div
-      className="m-hub relative mx-auto flex aspect-square w-full max-w-[min(90vw,440px)] items-center justify-center transition-transform duration-[350ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
+      className="m-hub relative mx-auto flex aspect-square w-full max-w-[min(92vw,560px)] items-center justify-center transition-transform duration-[350ms] ease-[cubic-bezier(0.4,0,0.2,1)]"
       style={{
         "--orbit-r": orbitR,
         transform: `translate(${hubTx}px, ${hubTy}px)`,

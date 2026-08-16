@@ -42,11 +42,12 @@ export default function CenterOrb({ onNavigate }) {
       onClick={handleClick}
       title="Mass meditation for global peace"
       aria-label={`${heartChakra.label} — join the daily group meditation`}
-      className="m-orb animate-breathe relative z-[5] -top-1 flex aspect-square w-[clamp(64px,calc(var(--orbit-r)*0.72),112px)] flex-col items-center justify-center gap-1 rounded-full border border-[rgba(243,216,154,0.65)] no-underline outline-none backdrop-blur-[10px]"
+      className="m-orb animate-breathe relative z-[5] -top-1 flex aspect-square w-[clamp(88px,calc(var(--orbit-r)*0.78),128px)] flex-col items-center justify-center gap-1 rounded-full border border-[rgba(243,216,154,0.75)] no-underline outline-none backdrop-blur-[12px]"
       style={{
         background:
-          "radial-gradient(circle at 38% 34%, rgba(243,216,154,0.55), rgba(220,185,106,0.22) 60%, rgba(110,198,234,0.40))",
-        boxShadow: "0 0 50px rgba(243,216,154,0.40), 0 0 70px rgba(110,198,234,0.30), inset 0 0 20px rgba(255,255,255,0.25)",
+          "radial-gradient(circle at 38% 34%, rgba(243,216,154,0.42), rgba(40,24,64,0.55) 55%, rgba(20,12,40,0.72))",
+        boxShadow:
+          "0 0 50px rgba(243,216,154,0.35), 0 0 70px rgba(110,198,234,0.22), inset 0 0 22px rgba(255,255,255,0.12)",
       }}
     >
       <svg
