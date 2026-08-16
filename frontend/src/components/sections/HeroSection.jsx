@@ -94,7 +94,7 @@ export default function HeroSection({ onNavigate, onWatchIntro }) {
           style={{
             position: "absolute",
             left: "64%",
-            top: "48%",
+            top: "62%",
             transform: "translate(-50%, -50%)",
             width: "min(56vw, 560px)",
           }}
