@@ -7,8 +7,15 @@ import { publicApi } from "../../lib/api";
 const inputClass =
   "w-full rounded-xl border border-[rgba(110,198,234,0.40)] bg-white/70 px-4 py-3 font-body text-[14px] text-[var(--color-ink)] placeholder:text-[var(--color-muted-soft)] outline-none transition-colors focus:border-[var(--color-gold-deep)] focus:bg-white";
 
+const CATEGORY_OPTIONS = [
+  { value: "meditation", label: "Meditation doubts" },
+  { value: "kundalini", label: "Kundalini activation" },
+  { value: "health", label: "Health" },
+  { value: "general", label: "Other problem" },
+];
+
 export default function ContactSection() {
-  const [form, setForm] = useState({ name: "", email: "", message: "" });
+  const [form, setForm] = useState({ name: "", email: "", phone: "", category: "meditation", message: "" });
   const [status, setStatus] = useState("idle"); // idle | sending | sent | error
 
   const set = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }));
@@ -18,7 +25,7 @@ export default function ContactSection() {
     setStatus("sending");
     try {
       await publicApi.submitContact(form);
-      setForm({ name: "", email: "", message: "" });
+      setForm({ name: "", email: "", phone: "", category: "meditation", message: "" });
       setStatus("sent");
     } catch {
       setStatus("error");
@@ -60,10 +67,28 @@ export default function ContactSection() {
             onChange={set("email")}
             className={inputClass}
           />
+          <input
+            type="tel"
+            required
+            placeholder="Your phone / WhatsApp number"
+            value={form.phone}
+            onChange={set("phone")}
+            className={inputClass}
+          />
+          <select
+            required
+            value={form.category}
+            onChange={set("category")}
+            className={`${inputClass} appearance-none`}
+          >
+            {CATEGORY_OPTIONS.map((opt) => (
+              <option key={opt.value} value={opt.value}>{opt.label}</option>
+            ))}
+          </select>
           <textarea
             required
             rows={5}
-            placeholder="How can we help?"
+            placeholder="Tell us more — your notes help us guide you better"
             value={form.message}
             onChange={set("message")}
             className={`${inputClass} resize-y`}

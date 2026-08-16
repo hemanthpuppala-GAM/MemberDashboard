@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "../useAuth";
-import { TextInput } from "../components/ui/Field";
-import Button from "../../components/ui/Button";
+import Field, { TextInput } from "../ui/Field";
+import Button from "../ui/Button";
+import ScaledShell from "../theme/ScaledShell";
 import logoMark from "../../assets/logo-128.webp";
 
 export default function LoginPage() {
@@ -30,51 +31,35 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex h-dvh items-center justify-center bg-[var(--color-bg)] px-4">
-      <form
-        onSubmit={handleSubmit}
-        className="flex w-full max-w-sm flex-col gap-5 rounded-2xl border border-[rgba(110,198,234,0.35)] bg-white/75 p-8 shadow-[0_20px_60px_-20px_rgba(88,84,160,0.45)] backdrop-blur-sm"
-      >
-        <div className="flex flex-col items-center gap-2 text-center">
-          <img src={logoMark} alt="" width={44} height={44} className="h-11 w-11 rounded-full border border-[var(--color-gold)]/60 object-cover" />
-          <h1 className="font-display text-[22px] text-[var(--color-ink)]">Admin sign in</h1>
-          <p className="text-[13px] text-[var(--color-muted)]">Golden Age Wisdom control panel</p>
+    <ScaledShell className="relative flex items-center justify-center overflow-hidden px-4">
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(48% 40% at 22% 20%, var(--a-accent-muted) 0%, transparent 70%), radial-gradient(42% 36% at 82% 78%, var(--a-focus-muted) 0%, transparent 70%)",
+        }}
+      />
+      <form onSubmit={handleSubmit} className="relative flex w-full max-w-sm flex-col gap-5 rounded-2xl border border-[var(--a-border)] bg-[var(--a-bg-surface)] p-8 shadow-[var(--a-shadow)]">
+        <div className="flex flex-col items-center gap-2.5 text-center">
+          <img src={logoMark} alt="" width={44} height={44} className="h-11 w-11 rounded-full border border-[var(--a-accent)]/60 object-cover" />
+          <h1 className="text-[19px] font-bold text-[var(--a-text-primary)]">Admin sign in</h1>
+          <p className="text-[13px] text-[var(--a-text-muted)]">Golden Age Wisdom control panel</p>
         </div>
 
-        <div className="flex flex-col gap-1.5">
-          <label htmlFor="email" className="font-body text-[13px] font-semibold text-[var(--color-ink)]">
-            Email
-          </label>
-          <TextInput
-            id="email"
-            type="email"
-            autoComplete="username"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </div>
+        <Field label="Email" htmlFor="email">
+          <TextInput id="email" type="email" autoComplete="username" required value={email} onChange={(e) => setEmail(e.target.value)} />
+        </Field>
 
-        <div className="flex flex-col gap-1.5">
-          <label htmlFor="password" className="font-body text-[13px] font-semibold text-[var(--color-ink)]">
-            Password
-          </label>
-          <TextInput
-            id="password"
-            type="password"
-            autoComplete="current-password"
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </div>
+        <Field label="Password" htmlFor="password">
+          <TextInput id="password" type="password" autoComplete="current-password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+        </Field>
 
-        {error && <p className="text-[13px] font-medium text-[#c0554a]">{error}</p>}
+        {error && <p className="text-[13px] font-medium text-[var(--a-danger)]">{error}</p>}
 
-        <Button as="button" type="submit" variant="primary" className="w-full" disabled={submitting}>
+        <Button as="button" type="submit" className="w-full" disabled={submitting}>
           {submitting ? "Signing in…" : "Sign in"}
         </Button>
       </form>
-    </div>
+    </ScaledShell>
   );
 }

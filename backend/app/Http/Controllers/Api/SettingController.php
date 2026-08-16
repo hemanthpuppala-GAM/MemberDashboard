@@ -9,18 +9,26 @@ use App\Models\Setting;
 class SettingController extends Controller
 {
     private const PUBLIC_KEYS = [
-        'contact_email',
-        'social_youtube',
-        'social_instagram',
-        'social_facebook',
-        'banner_text',
+        'general.site_name',
+        'general.tagline',
+        'social.youtube',
+        'social.instagram',
+        'social.facebook',
+        'social.whatsapp',
+        'social.phone',
+        'social.address',
+        'banner.enabled',
+        'banner.text',
+        'banner.cta_label',
+        'banner.cta_url',
+        'maintenance.enabled',
+        'maintenance.message',
     ];
 
     public function index()
     {
-        $settings = Setting::whereIn('key', self::PUBLIC_KEYS)
-            ->pluck('value', 'key');
+        $flat = array_merge(Setting::DEFAULTS, Setting::pluck('value', 'key')->toArray());
 
-        return response()->json($settings);
+        return response()->json(collect($flat)->only(self::PUBLIC_KEYS));
     }
 }

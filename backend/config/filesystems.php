@@ -17,6 +17,20 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Uploads Disk
+    |--------------------------------------------------------------------------
+    |
+    | Where admin-panel uploads (media, music, covers, photos, QR images)
+    | are written. Separate from the app's default disk so switching to S3
+    | in production doesn't require touching every upload controller —
+    | see BACKEND_DB_API_PLAN.md §8.
+    |
+    */
+
+    'uploads_disk' => env('UPLOADS_DISK', 'public'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Filesystem Disks
     |--------------------------------------------------------------------------
     |

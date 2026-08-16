@@ -1,0 +1,135 @@
+/*
+  Golden Age Wisdom — Admin Control Panel design tokens.
+  Scoped to .admin-shell so the public site's own theme (theme/theme.css) is untouched,
+  but the PALETTE itself is deliberately the same "house" language as the public site
+  and Replicated-Design/Design.md §4.1/§10: warm gold as the primary accent, sky-blue
+  as the secondary/focus accent, cream-white surfaces. Dark mode reuses Design.md's
+  "dark cosmic + gold" treatment (§9/§10) instead of a generic gray dark theme.
+
+  Two accent families, used deliberately:
+    --a-accent  (gold)  — brand, primary actions, selected/active state, primary chart series
+    --a-focus   (blue)  — interactive focus, links, informational badges, secondary chart series
+
+  --a-accent* / --a-focus* / --a-border / --a-font-body are NOT set here — they come from
+  ScaledShell as inline styles (color preset + custom accent + font choice from Settings >
+  Appearance, theme/displayPresets.js). The blocks below are the fallback/base tokens for
+  everything a preset doesn't touch (surfaces, status colors, shadows) plus a safety-net
+  default for the preset-driven vars in case a page renders .admin-shell outside ScaledShell.
+*/
+
+.admin-shell {
+  --a-bg-base: #fdfbf5;
+  --a-bg-surface: #ffffff;
+  --a-bg-surface-2: #f4f1fa;
+
+  --a-accent: #b8923f;
+  --a-accent-hover: #9c7a2e;
+  --a-accent-muted: #faf1da;
+  --a-accent-from: #f3d89a;
+  --a-accent-to: #dcb96a;
+  --a-accent-ink: #3c2b10;
+  --a-focus: #2f9fd1;
+  --a-focus-hover: #2688b5;
+  --a-focus-muted: rgba(110, 198, 234, 0.18);
+  --a-border: #e6e1f5;
+
+  --a-text-primary: #28246a;
+  --a-text-muted: #6f6ba0;
+  --a-text-faint: #9c99c4;
+
+  --a-danger: #c0554a;
+  --a-danger-muted: rgba(224, 138, 138, 0.16);
+  --a-success: #4a9d63;
+  --a-success-muted: rgba(93, 184, 117, 0.16);
+  --a-warning: #c07a2e;
+  --a-warning-muted: rgba(226, 154, 60, 0.16);
+  --a-info: #2f9fd1;
+  --a-info-muted: rgba(110, 198, 234, 0.16);
+
+  --a-shadow: 0 16px 40px -18px rgba(40, 36, 106, 0.22);
+  --a-shadow-sm: 0 3px 12px -4px rgba(40, 36, 106, 0.14);
+
+  --a-font-display: "Marcellus", Georgia, serif;
+
+  font-family: var(--a-font-body, "Outfit", "Segoe UI", sans-serif);
+  background: var(--a-bg-base);
+  color: var(--a-text-primary);
+  color-scheme: light;
+}
+
+.admin-shell[data-theme="dark"] {
+  --a-bg-base: #0d0a1c;
+  --a-bg-surface: #17132e;
+  --a-bg-surface-2: #201a3d;
+
+  --a-accent: #e6d3a8;
+  --a-accent-hover: #f2e9d8;
+  --a-accent-muted: rgba(213, 183, 124, 0.16);
+  --a-accent-from: #e6d3a8;
+  --a-accent-to: #b89758;
+  --a-accent-ink: #2a1f08;
+  --a-focus: #6ec6ea;
+  --a-focus-hover: #8ed4ef;
+  --a-focus-muted: rgba(110, 198, 234, 0.22);
+  --a-border: rgba(213, 183, 124, 0.22);
+
+  --a-text-primary: #f7f1e3;
+  --a-text-muted: #cfc8ba;
+  --a-text-faint: #948d7d;
+
+  --a-danger: #e08a8a;
+  --a-danger-muted: rgba(224, 138, 138, 0.18);
+  --a-success: #7ecb8f;
+  --a-success-muted: rgba(126, 203, 143, 0.18);
+  --a-warning: #eda06a;
+  --a-warning-muted: rgba(237, 160, 106, 0.18);
+  --a-info: #7fb0e0;
+  --a-info-muted: rgba(127, 176, 224, 0.18);
+
+  --a-shadow: 0 20px 48px -18px rgba(0, 0, 0, 0.65);
+  --a-shadow-sm: 0 4px 16px -4px rgba(0, 0, 0, 0.5);
+  color-scheme: dark;
+}
+
+.admin-shell {
+  scrollbar-color: var(--a-border) transparent;
+}
+
+.admin-shell ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.admin-shell ::-webkit-scrollbar-thumb {
+  background: var(--a-border);
+  border-radius: 999px;
+}
+
+.admin-shell h1,
+.admin-shell h2 {
+  font-family: var(--a-font-display);
+  font-weight: 400;
+  letter-spacing: 0.005em;
+}
+
+/* Tiptap editor caret/placeholder colors need a real selector (not Tailwind arbitrary) */
+.admin-shell .a-prose {
+  color: var(--a-text-primary);
+}
+
+.admin-shell .a-prose p.is-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+  color: var(--a-text-faint);
+}
+
+.admin-shell .a-prose:focus {
+  outline: none;
+}
+
+.admin-shell .rdp-root {
+  --rdp-accent-color: var(--a-focus);
+  --rdp-today-color: var(--a-focus);
+}

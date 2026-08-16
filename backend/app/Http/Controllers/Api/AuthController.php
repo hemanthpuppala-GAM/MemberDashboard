@@ -16,17 +16,19 @@ class AuthController extends Controller
         $data = $request->validated();
         $user = User::where('email', $data['email'])->first();
 
-        if (! $user || ! Hash::check($data['password'], $user->password) || ! $user->isAdmin()) {
+        if (! $user || ! Hash::check($data['password'], $user->password) || $user->status !== 'active' || $user->roles()->doesntExist()) {
             throw ValidationException::withMessages([
                 'email' => ['Invalid credentials.'],
             ]);
         }
 
+        $user->forceFill(['last_login_at' => now()])->save();
+
         $token = $user->createToken('admin-panel')->plainTextToken;
 
         return response()->json([
             'token' => $token,
-            'user' => $user->only('id', 'name', 'email', 'role'),
+            'user' => $this->present($user),
         ]);
     }
 
@@ -40,7 +42,19 @@ class AuthController extends Controller
     public function me(Request $request)
     {
         return response()->json([
-            'user' => $request->user()->only('id', 'name', 'email', 'role'),
+            'user' => $this->present($request->user()),
         ]);
+    }
+
+    private function present(User $user): array
+    {
+        $user->load('primaryRole', 'roles');
+
+        return [
+            ...$user->only('id', 'name', 'email', 'specialty', 'bio', 'max_capacity', 'status'),
+            'role' => $user->primaryRole?->name,
+            'roles' => $user->roles->pluck('name'),
+            'permissions' => $user->permissionNames(),
+        ];
     }
 }
