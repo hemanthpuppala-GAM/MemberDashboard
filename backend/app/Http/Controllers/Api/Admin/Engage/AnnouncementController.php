@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\Api\Admin;
+namespace App\Http\Controllers\Api\Admin\Engage;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\AnnouncementRequest;
-use App\Models\Announcement;
+use App\Http\Requests\Admin\Engage\AnnouncementRequest;
+use App\Models\Engage\Announcement;
 
 class AnnouncementController extends Controller
 {

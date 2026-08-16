@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\PageContent;
+use App\Models\Cms\PageContent;
 use Illuminate\Database\Seeder;
 
 /**

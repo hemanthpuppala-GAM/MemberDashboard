@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Content;
 
 use App\Models\Concerns\LogsActivity;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\Auth\User;
 
 #[Fillable(['title', 'artist', 'category', 'description', 'cover_path', 'file_path', 'duration_seconds', 'status', 'sort_order', 'created_by'])]
 class MusicTrack extends Model

@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\Public\People;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\ContactStoreRequest;
-use App\Models\ContactSubmission;
+use App\Http\Requests\Public\People\ContactStoreRequest;
+use App\Models\People\ContactSubmission;
 
 class ContactController extends Controller
 {

@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\Public\Cms;
 
 use App\Http\Controllers\Controller;
-use App\Models\Language;
-use App\Models\Page;
+use App\Models\Languages\Language;
+use App\Models\Cms\Page;
 use Illuminate\Http\Request;
 
 class PageController extends Controller

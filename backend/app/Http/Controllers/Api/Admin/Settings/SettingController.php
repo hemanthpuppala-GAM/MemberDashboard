@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\Api\Admin;
+namespace App\Http\Controllers\Api\Admin\Settings;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\SettingUpdateRequest;
-use App\Models\Setting;
+use App\Http\Requests\Admin\Settings\SettingUpdateRequest;
+use App\Models\Settings\Setting;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Mail;
 

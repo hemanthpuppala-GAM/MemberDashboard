@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\Api\Admin;
+namespace App\Http\Controllers\Api\Admin\Cms;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\MediaUpdateRequest;
-use App\Http\Requests\Admin\MediaUploadRequest;
-use App\Models\Media;
+use App\Http\Requests\Admin\Cms\MediaUpdateRequest;
+use App\Http\Requests\Admin\Cms\MediaUploadRequest;
+use App\Models\Cms\Media;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 

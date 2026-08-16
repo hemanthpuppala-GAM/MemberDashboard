@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Http\Requests\Admin;
+namespace App\Http\Requests\Admin\Engage;
 
-use App\Models\Broadcast;
+use App\Models\Engage\Broadcast;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 

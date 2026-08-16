@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Http\Requests\Admin;
+namespace App\Http\Requests\Admin\People;
 
-use App\Models\MemberJourney;
+use App\Models\People\MemberJourney;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 

@@ -17,6 +17,11 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin' => \App\Http\Middleware\EnsureUserIsAdmin::class,
             'permission' => \App\Http\Middleware\CheckPermission::class,
         ]);
+
+        // API-only app — there is no 'login' route to redirect guests to, so
+        // always throw AuthenticationException (-> clean 401 JSON) instead
+        // of Laravel's default "redirect to login" behavior.
+        $middleware->redirectGuestsTo(fn () => null);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

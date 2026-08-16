@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\Api\Admin;
+namespace App\Http\Controllers\Api\Admin\People;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\MemberJourneyRequest;
-use App\Models\Member;
+use App\Http\Requests\Admin\People\MemberJourneyRequest;
+use App\Models\People\Member;
 use Illuminate\Http\Request;
 
 class MemberJourneyController extends Controller

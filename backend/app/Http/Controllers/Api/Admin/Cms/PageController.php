@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\Api\Admin;
+namespace App\Http\Controllers\Api\Admin\Cms;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\PageRequest;
-use App\Models\Page;
+use App\Http\Requests\Admin\Cms\PageRequest;
+use App\Models\Cms\Page;
 use Illuminate\Http\Request;
 
 class PageController extends Controller

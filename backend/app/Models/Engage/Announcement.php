@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Engage;
 
 use App\Models\Concerns\LogsActivity;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\Auth\User;
 
 #[Fillable(['title', 'body', 'type', 'target_type', 'target_ids', 'priority', 'scheduled_at', 'sent_at', 'created_by'])]
 class Announcement extends Model

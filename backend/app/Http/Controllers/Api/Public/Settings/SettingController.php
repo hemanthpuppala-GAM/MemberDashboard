@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\Public\Settings;
 
 use App\Http\Controllers\Controller;
-use App\Models\Setting;
+use App\Models\Settings\Setting;
 
 /** Public, read-only view of settings safe to expose (contact info, socials, banner copy). */
 class SettingController extends Controller

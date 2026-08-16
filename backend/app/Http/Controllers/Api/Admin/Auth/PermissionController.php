@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\Api\Admin;
+namespace App\Http\Controllers\Api\Admin\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\Permission;
+use App\Models\Auth\Permission;
 
 class PermissionController extends Controller
 {

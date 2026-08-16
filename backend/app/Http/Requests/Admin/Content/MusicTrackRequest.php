@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Http\Requests\Admin;
+namespace App\Http\Requests\Admin\Content;
 
-use App\Models\MusicTrack;
+use App\Models\Content\MusicTrack;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 

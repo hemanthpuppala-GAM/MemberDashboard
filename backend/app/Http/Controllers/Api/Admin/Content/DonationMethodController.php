@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\Api\Admin;
+namespace App\Http\Controllers\Api\Admin\Content;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\DonationMethodRequest;
-use App\Models\DonationMethod;
+use App\Http\Requests\Admin\Content\DonationMethodRequest;
+use App\Models\Content\DonationMethod;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 

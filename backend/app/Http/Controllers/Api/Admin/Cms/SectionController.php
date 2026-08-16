@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\Api\Admin;
+namespace App\Http\Controllers\Api\Admin\Cms;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\SectionRequest;
-use App\Models\Page;
-use App\Models\PageSection;
+use App\Http\Requests\Admin\Cms\SectionRequest;
+use App\Models\Cms\Page;
+use App\Models\Cms\PageSection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 

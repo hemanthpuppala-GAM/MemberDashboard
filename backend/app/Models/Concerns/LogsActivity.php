@@ -2,7 +2,7 @@
 
 namespace App\Models\Concerns;
 
-use App\Models\ActivityLog;
+use App\Models\Reports\ActivityLog;
 use Illuminate\Support\Str;
 
 /**

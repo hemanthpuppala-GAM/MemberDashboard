@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\Public\Cms;
 
 use App\Http\Controllers\Controller;
-use App\Models\PageContent;
+use App\Models\Cms\PageContent;
 
 class ContentController extends Controller
 {

@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\Api\Admin;
+namespace App\Http\Controllers\Api\Admin\Engage;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\BroadcastRequest;
-use App\Models\Broadcast;
+use App\Http\Requests\Admin\Engage\BroadcastRequest;
+use App\Models\Engage\Broadcast;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 

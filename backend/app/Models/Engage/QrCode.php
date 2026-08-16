@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Engage;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\Auth\User;
 
 #[Fillable(['title', 'type', 'input_data', 'options', 'file_path', 'download_count', 'created_by'])]
 class QrCode extends Model

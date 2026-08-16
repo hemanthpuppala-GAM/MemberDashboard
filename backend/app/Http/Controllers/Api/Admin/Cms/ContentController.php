@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\Api\Admin;
+namespace App\Http\Controllers\Api\Admin\Cms;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\PageContentUpdateRequest;
-use App\Models\PageContent;
+use App\Http\Requests\Admin\Cms\PageContentUpdateRequest;
+use App\Models\Cms\PageContent;
 use Illuminate\Http\Request;
 
 class ContentController extends Controller

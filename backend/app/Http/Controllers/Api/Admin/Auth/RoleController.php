@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\Api\Admin;
+namespace App\Http\Controllers\Api\Admin\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\RoleRequest;
-use App\Models\Role;
+use App\Http\Requests\Admin\Auth\RoleRequest;
+use App\Models\Auth\Role;
 
 class RoleController extends Controller
 {

@@ -1,15 +1,16 @@
 <?php
 
-namespace App\Http\Controllers\Api\Admin;
+namespace App\Http\Controllers\Api\Admin\Reports;
 
 use App\Http\Controllers\Controller;
-use App\Models\ActivityLog;
-use App\Models\ContactSubmission;
-use App\Models\Member;
-use App\Models\Role;
-use App\Models\User;
+use App\Models\Reports\ActivityLog;
+use App\Models\People\ContactSubmission;
+use App\Models\People\Member;
+use App\Models\Auth\Role;
+use App\Models\Auth\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
+use App\Http\Controllers\Api\Admin\People\MemberController;
 
 class ReportController extends Controller
 {

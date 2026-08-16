@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\Api\Admin;
+namespace App\Http\Controllers\Api\Admin\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\UserRequest;
-use App\Models\User;
+use App\Http\Requests\Admin\Auth\UserRequest;
+use App\Models\Auth\User;
 use Illuminate\Support\Str;
 
 class UserController extends Controller

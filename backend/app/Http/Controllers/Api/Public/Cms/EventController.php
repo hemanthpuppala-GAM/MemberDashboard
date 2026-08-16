@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\Public\Cms;
 
 use App\Http\Controllers\Controller;
-use App\Models\Event;
+use App\Models\Cms\Event;
 
 class EventController extends Controller
 {

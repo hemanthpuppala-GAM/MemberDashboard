@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\People;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\Auth\User;
 
 #[Fillable(['name', 'email', 'phone', 'category', 'message', 'status', 'assigned_to', 'converted_to_member_id'])]
 class ContactSubmission extends Model

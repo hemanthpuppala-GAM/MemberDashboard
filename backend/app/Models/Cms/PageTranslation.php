@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Cms;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\Languages\Language;
 
 #[Fillable(['page_id', 'language_id', 'title', 'meta_description'])]
 class PageTranslation extends Model

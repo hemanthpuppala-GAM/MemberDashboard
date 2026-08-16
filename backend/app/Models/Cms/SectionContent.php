@@ -1,14 +1,17 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Cms;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\Languages\Language;
 
 #[Fillable(['section_id', 'language_id', 'field_key', 'field_value', 'field_type'])]
 class SectionContent extends Model
 {
+    protected $table = 'section_content';
+
     public const FIELD_TYPES = ['text', 'json', 'image_path'];
 
     public function section(): BelongsTo

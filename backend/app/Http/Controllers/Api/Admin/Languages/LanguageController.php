@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\Api\Admin;
+namespace App\Http\Controllers\Api\Admin\Languages;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\LanguageRequest;
-use App\Models\Language;
+use App\Http\Requests\Admin\Languages\LanguageRequest;
+use App\Models\Languages\Language;
 use Illuminate\Support\Facades\DB;
 
 class LanguageController extends Controller

@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Engage;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\Auth\User;
 
 #[Fillable(['announcement_id', 'user_id', 'read_at'])]
 class AnnouncementRead extends Model

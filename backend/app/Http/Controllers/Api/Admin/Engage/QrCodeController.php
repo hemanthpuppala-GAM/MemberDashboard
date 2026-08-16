@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\Api\Admin;
+namespace App\Http\Controllers\Api\Admin\Engage;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\QrCodeGenerateRequest;
-use App\Models\QrCode as QrCodeModel;
-use App\Services\QrPayloadBuilder;
+use App\Http\Requests\Admin\Engage\QrCodeGenerateRequest;
+use App\Models\Engage\QrCode as QrCodeModel;
+use App\Services\Engage\QrPayloadBuilder;
 use Endroid\QrCode\Color\Color;
 use Endroid\QrCode\ErrorCorrectionLevel;
 use Endroid\QrCode\QrCode;
@@ -33,11 +33,13 @@ class QrCodeController extends Controller
         $options = $request->validated('options', []);
         $payload = QrPayloadBuilder::build($request->validated('type'), $request->validated('input_data'));
 
-        $qrCode = QrCode::create($payload)
-            ->setSize($options['size'] ?? 300)
-            ->setForegroundColor($this->hexToColor($options['fg'] ?? '#111827'))
-            ->setBackgroundColor($this->hexToColor($options['bg'] ?? '#FFFFFF'))
-            ->setErrorCorrectionLevel(self::ERROR_LEVELS[$options['errorCorrection'] ?? 'M']);
+        $qrCode = new QrCode(
+            data: $payload,
+            errorCorrectionLevel: self::ERROR_LEVELS[$options['errorCorrection'] ?? 'M'],
+            size: $options['size'] ?? 300,
+            foregroundColor: $this->hexToColor($options['fg'] ?? '#111827'),
+            backgroundColor: $this->hexToColor($options['bg'] ?? '#FFFFFF'),
+        );
 
         $result = (new PngWriter)->write($qrCode);
 

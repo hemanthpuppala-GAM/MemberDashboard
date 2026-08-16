@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\Api\Admin;
+namespace App\Http\Controllers\Api\Admin\Cms;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\EventStoreRequest;
-use App\Models\Event;
+use App\Http\Requests\Admin\Cms\EventStoreRequest;
+use App\Models\Cms\Event;
 use Illuminate\Http\Request;
 
 class EventController extends Controller

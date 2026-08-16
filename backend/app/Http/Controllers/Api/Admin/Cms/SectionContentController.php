@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\Api\Admin;
+namespace App\Http\Controllers\Api\Admin\Cms;
 
 use App\Http\Controllers\Controller;
-use App\Models\Language;
-use App\Models\PageSection;
-use App\Models\SectionContent;
+use App\Models\Languages\Language;
+use App\Models\Cms\PageSection;
+use App\Models\Cms\SectionContent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 

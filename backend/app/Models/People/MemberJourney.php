@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\People;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\Auth\User;
 
 #[Fillable(['member_id', 'added_by', 'entry_type', 'content', 'question', 'answer', 'meta'])]
 class MemberJourney extends Model

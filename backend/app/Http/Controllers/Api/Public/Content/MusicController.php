@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\Public\Content;
 
 use App\Http\Controllers\Controller;
-use App\Models\MusicTrack;
+use App\Models\Content\MusicTrack;
 
 class MusicController extends Controller
 {

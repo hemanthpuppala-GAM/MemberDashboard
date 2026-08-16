@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Controllers\Api\Admin;
+namespace App\Http\Controllers\Api\Admin\People;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\ContactSubmissionUpdateRequest;
-use App\Models\ContactSubmission;
-use App\Models\Member;
-use App\Models\MemberJourney;
+use App\Http\Requests\Admin\People\ContactSubmissionUpdateRequest;
+use App\Models\People\ContactSubmission;
+use App\Models\People\Member;
+use App\Models\People\MemberJourney;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 

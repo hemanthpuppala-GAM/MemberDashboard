@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\Api\Admin;
+namespace App\Http\Controllers\Api\Admin\Content;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\ContactChannelRequest;
-use App\Models\ContactChannel;
+use App\Http\Requests\Admin\Content\ContactChannelRequest;
+use App\Models\Content\ContactChannel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 

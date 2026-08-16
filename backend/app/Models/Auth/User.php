@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Auth;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Models\Concerns\LogsActivity;
@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use App\Models\People\Member;
 
 #[Fillable(['name', 'email', 'password', 'avatar_path', 'specialty', 'bio', 'max_capacity', 'status', 'primary_role_id', 'last_login_at'])]
 #[Hidden(['password', 'remember_token'])]

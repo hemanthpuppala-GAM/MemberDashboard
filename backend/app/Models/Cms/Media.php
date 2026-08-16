@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Cms;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\Auth\User;
 
 #[Fillable(['filename', 'original_name', 'disk', 'path', 'url', 'mime_type', 'size_bytes', 'alt_text', 'folder', 'uploaded_by'])]
 class Media extends Model

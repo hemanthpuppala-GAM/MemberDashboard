@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Engage;
 
 use App\Models\Concerns\LogsActivity;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\Auth\User;
 
 #[Fillable([
     'title', 'type', 'content_text', 'content_image_path', 'content_video_url', 'cta_label', 'cta_url',

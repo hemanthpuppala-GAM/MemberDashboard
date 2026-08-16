@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Api\Practitioner;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\MemberJourneyRequest;
-use App\Models\Announcement;
-use App\Models\AnnouncementRead;
-use App\Models\Member;
+use App\Http\Requests\Admin\People\MemberJourneyRequest;
+use App\Models\Engage\Announcement;
+use App\Models\Engage\AnnouncementRead;
+use App\Models\People\Member;
 use Illuminate\Http\Request;
 
 class PractitionerController extends Controller

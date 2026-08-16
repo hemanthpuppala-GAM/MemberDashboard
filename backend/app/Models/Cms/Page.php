@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Cms;
 
 use App\Models\Concerns\LogsActivity;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\Auth\User;
 
 #[Fillable(['slug', 'title', 'is_builtin', 'status', 'sort_order', 'created_by'])]
 class Page extends Model

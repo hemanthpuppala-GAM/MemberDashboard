@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\Public\Content;
 
 use App\Http\Controllers\Controller;
-use App\Models\Testimonial;
+use App\Models\Content\Testimonial;
 
 class TestimonialController extends Controller
 {
