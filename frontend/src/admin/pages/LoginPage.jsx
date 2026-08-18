@@ -5,6 +5,7 @@ import Field, { TextInput } from "../ui/Field";
 import Button from "../ui/Button";
 import ScaledShell from "../theme/ScaledShell";
 import logoMark from "../../assets/logo-128.webp";
+import logoFull from "../../assets/goldenage_logo_optimized.jpg";
 
 export default function LoginPage() {
   const { user, login } = useAuth();
@@ -38,6 +39,12 @@ export default function LoginPage() {
           background:
             "radial-gradient(48% 40% at 22% 20%, var(--a-accent-muted) 0%, transparent 70%), radial-gradient(42% 36% at 82% 78%, var(--a-focus-muted) 0%, transparent 70%)",
         }}
+      />
+      <img
+        src={logoFull}
+        alt=""
+        aria-hidden="true"
+        className="pointer-events-none absolute top-1/2 left-1/2 w-[min(1100px,140vw)] -translate-x-1/2 -translate-y-1/2 opacity-[0.07] mix-blend-luminosity select-none"
       />
       <form onSubmit={handleSubmit} className="relative flex w-full max-w-sm flex-col gap-5 rounded-2xl border border-[var(--a-border)] bg-[var(--a-bg-surface)] p-8 shadow-[var(--a-shadow)]">
         <div className="flex flex-col items-center gap-2.5 text-center">

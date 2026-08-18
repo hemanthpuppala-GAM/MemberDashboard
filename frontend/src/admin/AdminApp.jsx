@@ -35,6 +35,9 @@ import AnnouncementsPage from "./pages/engage/AnnouncementsPage";
 import BroadcastsPage from "./pages/engage/BroadcastsPage";
 import QrCodesPage from "./pages/engage/QrCodesPage";
 
+import VolunteerApplicationsPage from "./pages/volunteers/VolunteerApplicationsPage";
+import VolunteerCategoriesPage from "./pages/volunteers/VolunteerCategoriesPage";
+
 import PractitionerDashboardPage from "./pages/practitioner/PractitionerDashboardPage";
 import MyMembersPage from "./pages/practitioner/MyMembersPage";
 import MyAnnouncementsPage from "./pages/practitioner/MyAnnouncementsPage";
@@ -73,6 +76,9 @@ export default function AdminApp() {
                   <Route path="announcements" element={<AnnouncementsPage />} />
                   <Route path="broadcasts" element={<BroadcastsPage />} />
                   <Route path="qr-codes" element={<QrCodesPage />} />
+
+                  <Route path="volunteers" element={<VolunteerApplicationsPage />} />
+                  <Route path="volunteers/categories" element={<VolunteerCategoriesPage />} />
 
                   <Route path="reports" element={<ReportsPage />} />
                   <Route path="languages" element={<LanguagesPage />} />

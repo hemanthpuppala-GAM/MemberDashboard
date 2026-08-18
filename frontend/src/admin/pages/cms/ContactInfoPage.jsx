@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { Plus, Pencil, Trash2, ChevronUp, ChevronDown, Phone, MessageCircle, Mail, MapPin, Globe, Share2, Contact } from "lucide-react";
 import Card from "../../ui/Card";
@@ -9,33 +9,83 @@ import ConfirmModal from "../../ui/ConfirmModal";
 import Field, { TextInput, Select } from "../../ui/Field";
 import Toggle from "../../ui/Toggle";
 import EmptyState from "../../ui/EmptyState";
-import { useAdminData } from "../../store/useAdminData";
+import { api } from "../../../lib/api";
 import { CONTACT_CHANNEL_TYPES } from "../../mock/mockData";
 
 const TYPE_ICON = { phone: Phone, whatsapp: MessageCircle, email: Mail, address: MapPin, website: Globe, social: Share2 };
-const EMPTY = { type: "phone", label: "", value: "", visible: true };
+const EMPTY = { type: "phone", label: "", value: "", is_visible: true };
 
 export default function ContactInfoPage() {
-  const { contactChannels, addContactChannel, updateContactChannel, deleteContactChannel, reorderContactChannel } = useAdminData();
+  const [channels, setChannels] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(null); // null = closed, {} = new, {...} = edit
   const [toDelete, setToDelete] = useState(null);
   const [form, setForm] = useState(EMPTY);
 
-  const sorted = useMemo(() => [...contactChannels].sort((a, b) => a.order - b.order), [contactChannels]);
+  const loadChannels = () => api.contactChannels().then(setChannels);
+
+  useEffect(() => {
+    loadChannels()
+      .catch((err) => toast.error(err.message ?? "Failed to load contact info"))
+      .finally(() => setLoading(false));
+  }, []);
+
+  const sorted = useMemo(() => [...channels].sort((a, b) => a.sort_order - b.sort_order), [channels]);
 
   const openNew = () => { setForm(EMPTY); setEditing({}); };
-  const openEdit = (c) => { setForm(c); setEditing(c); };
+  const openEdit = (c) => { setForm({ type: c.type, label: c.label, value: c.value, is_visible: c.is_visible }); setEditing(c); };
 
-  const save = () => {
+  const save = async () => {
     if (!form.label.trim() || !form.value.trim()) return;
-    if (editing?.id) {
-      updateContactChannel(editing.id, form);
-      toast.success("Contact option updated");
-    } else {
-      addContactChannel(form);
-      toast.success("Contact option added");
+    try {
+      if (editing?.id) {
+        await api.updateContactChannel(editing.id, form);
+        toast.success("Contact option updated");
+      } else {
+        await api.createContactChannel(form);
+        toast.success("Contact option added");
+      }
+      setEditing(null);
+      await loadChannels();
+    } catch (err) {
+      toast.error(err.errors ? Object.values(err.errors).flat()[0] : (err.message ?? "Save failed"));
     }
-    setEditing(null);
+  };
+
+  const toggleVisible = async (c, v) => {
+    setChannels((prev) => prev.map((x) => (x.id === c.id ? { ...x, is_visible: v } : x)));
+    try {
+      await api.updateContactChannel(c.id, { type: c.type, label: c.label, value: c.value, is_visible: v });
+    } catch (err) {
+      toast.error(err.message ?? "Update failed");
+      await loadChannels();
+    }
+  };
+
+  const move = async (id, direction) => {
+    const idx = sorted.findIndex((c) => c.id === id);
+    const swapWith = direction === "up" ? idx - 1 : idx + 1;
+    if (idx === -1 || swapWith < 0 || swapWith >= sorted.length) return;
+    const ids = sorted.map((c) => c.id);
+    [ids[idx], ids[swapWith]] = [ids[swapWith], ids[idx]];
+    try {
+      const updated = await api.reorderContactChannels(ids);
+      setChannels(updated);
+    } catch (err) {
+      toast.error(err.message ?? "Reorder failed");
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      await api.deleteContactChannel(toDelete.id);
+      toast.success("Contact option deleted");
+      await loadChannels();
+    } catch (err) {
+      toast.error(err.message ?? "Delete failed");
+    } finally {
+      setToDelete(null);
+    }
   };
 
   return (
@@ -47,11 +97,11 @@ export default function ContactInfoPage() {
             Every phone number, email, address, and social link shown on the public Contact page. Toggle visibility without deleting, reorder how they appear.
           </p>
         </div>
-        <Button as="button" icon={Plus} onClick={openNew}>Add contact option</Button>
+        <Button as="button" icon={Plus} onClick={openNew} disabled={loading}>Add contact option</Button>
       </div>
 
       <Card padded={false}>
-        {sorted.length === 0 ? (
+        {!loading && sorted.length === 0 ? (
           <EmptyState icon={Contact} title="No contact options yet" description="Add a phone number, email, or address for visitors to reach you." />
         ) : (
           <div className="flex flex-col divide-y divide-[var(--a-border)]">
@@ -72,9 +122,9 @@ export default function ContactInfoPage() {
                     <p className="truncate text-[12.5px] text-[var(--a-text-muted)]">{c.value}</p>
                   </div>
                   <div className="flex shrink-0 items-center gap-1">
-                    <IconButton icon={ChevronUp} label="Move up" onClick={() => reorderContactChannel(c.id, "up")} disabled={i === 0} />
-                    <IconButton icon={ChevronDown} label="Move down" onClick={() => reorderContactChannel(c.id, "down")} disabled={i === sorted.length - 1} />
-                    <Toggle checked={c.visible} onChange={(v) => updateContactChannel(c.id, { visible: v })} />
+                    <IconButton icon={ChevronUp} label="Move up" onClick={() => move(c.id, "up")} disabled={i === 0} />
+                    <IconButton icon={ChevronDown} label="Move down" onClick={() => move(c.id, "down")} disabled={i === sorted.length - 1} />
+                    <Toggle checked={c.is_visible} onChange={(v) => toggleVisible(c, v)} />
                     <IconButton icon={Pencil} label="Edit" variant="accent" onClick={() => openEdit(c)} />
                     <IconButton icon={Trash2} label="Delete" variant="danger" onClick={() => setToDelete(c)} />
                   </div>
@@ -103,7 +153,7 @@ export default function ContactInfoPage() {
           <Field label="Value" required hint="The number, email, address, or URL itself">
             <TextInput value={form.value} onChange={(e) => setForm((f) => ({ ...f, value: e.target.value }))} />
           </Field>
-          <Toggle checked={form.visible} onChange={(v) => setForm((f) => ({ ...f, visible: v }))} label="Visible on public site" description="Turn off to hide without losing the entry" />
+          <Toggle checked={form.is_visible} onChange={(v) => setForm((f) => ({ ...f, is_visible: v }))} label="Visible on public site" description="Turn off to hide without losing the entry" />
         </div>
       </Modal>
 
@@ -111,7 +161,7 @@ export default function ContactInfoPage() {
         open={!!toDelete}
         onClose={() => setToDelete(null)}
         title={`Delete "${toDelete?.label}"?`}
-        onConfirm={() => { deleteContactChannel(toDelete.id); toast.success("Contact option deleted"); }}
+        onConfirm={handleDelete}
       />
     </div>
   );

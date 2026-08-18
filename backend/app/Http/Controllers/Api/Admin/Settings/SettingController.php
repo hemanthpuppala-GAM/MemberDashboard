@@ -56,6 +56,9 @@ class SettingController extends Controller
     {
         $grouped = [];
         foreach ($flat as $key => $value) {
+            if (! str_contains($key, '.')) {
+                continue;
+            }
             [$group, $field] = explode('.', $key, 2);
             $grouped[$group][$this->camel($field)] = $value;
         }

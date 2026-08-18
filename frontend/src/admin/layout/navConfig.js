@@ -1,7 +1,7 @@
 import {
   LayoutDashboard, FileText, Image, Inbox, UsersRound, UserCog, ShieldCheck,
   Megaphone, Radio, QrCode, BarChart3, Globe, Settings, Files, Phone, Landmark,
-  Music2, MessageSquareQuote,
+  Music2, MessageSquareQuote, HeartHandshake, ListChecks,
 } from "lucide-react";
 
 export const NAV = [
@@ -34,6 +34,13 @@ export const NAV = [
       { to: "/admin/qr-codes", label: "QR Codes", icon: QrCode },
     ],
   },
+  {
+    type: "group", key: "volunteers", label: "Volunteers", icon: HeartHandshake,
+    items: [
+      { to: "/admin/volunteers", label: "Applications", icon: Inbox },
+      { to: "/admin/volunteers/categories", label: "Categories", icon: ListChecks },
+    ],
+  },
   { type: "link", to: "/admin/reports", icon: BarChart3, label: "Reports" },
   { type: "link", to: "/admin/languages", icon: Globe, label: "Languages" },
   { type: "link", to: "/admin/settings", icon: Settings, label: "Settings" },
@@ -59,6 +66,8 @@ export const BREADCRUMB_RULES = [
   { pattern: /^\/admin\/announcements\/?$/, crumbs: () => ["Engage", "Announcements"] },
   { pattern: /^\/admin\/broadcasts\/?$/, crumbs: () => ["Engage", "Broadcasts"] },
   { pattern: /^\/admin\/qr-codes\/?$/, crumbs: () => ["Engage", "QR Codes"] },
+  { pattern: /^\/admin\/volunteers\/categories\/?$/, crumbs: () => ["Volunteers", "Categories"] },
+  { pattern: /^\/admin\/volunteers\/?$/, crumbs: () => ["Volunteers", "Applications"] },
   { pattern: /^\/admin\/reports\/?$/, crumbs: () => ["Reports"] },
   { pattern: /^\/admin\/languages\/?$/, crumbs: () => ["Languages"] },
   { pattern: /^\/admin\/settings\/?$/, crumbs: () => ["Settings"] },

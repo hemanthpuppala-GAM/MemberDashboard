@@ -1,13 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { Send, Trash2, HardDrive, Check } from "lucide-react";
+import { Send, Trash2, Check } from "lucide-react";
 import Card from "../ui/Card";
 import Button from "../ui/Button";
 import Field, { TextInput, TextArea } from "../ui/Field";
 import Toggle from "../ui/Toggle";
 import ColorField from "../ui/ColorField";
 import { PillTabs } from "../ui/Tabs";
-import { useAdminData } from "../store/useAdminData";
+import { api } from "../../lib/api";
 import { useAdminTheme } from "../theme/useAdminTheme";
 import { COLOR_PRESETS, FONT_OPTIONS, TEXT_SIZES, getPresetTokens } from "../theme/displayPresets";
 
@@ -20,6 +20,18 @@ const TABS = [
   { key: "email", label: "Email" },
   { key: "advanced", label: "Advanced" },
 ];
+
+const BOOLEAN_FIELDS = { banner: ["enabled"], maintenance: ["enabled"], email: ["notifyOnSubmission"] };
+
+function decodeBooleans(settings) {
+  const next = structuredClone(settings);
+  for (const [group, fields] of Object.entries(BOOLEAN_FIELDS)) {
+    for (const field of fields) {
+      if (next[group]) next[group][field] = next[group][field] === true || next[group][field] === "true";
+    }
+  }
+  return next;
+}
 
 function GroupForm({ group, fields, values, onChange, areas = [] }) {
   return (
@@ -38,7 +50,9 @@ function GroupForm({ group, fields, values, onChange, areas = [] }) {
 }
 
 export default function SettingsPage() {
-  const { settings, updateSettingsGroup } = useAdminData();
+  const [settings, setSettings] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const {
     theme, setTheme, resolvedTheme,
     textSize, setTextSize,
@@ -48,9 +62,51 @@ export default function SettingsPage() {
   } = useAdminTheme();
   const [tab, setTab] = useState("general");
 
-  const resolvedAccent = customAccent || getPresetTokens(colorPreset, resolvedTheme).accent;
+  useEffect(() => {
+    api.settings()
+      .then((res) => setSettings(decodeBooleans(res)))
+      .catch((err) => toast.error(err.message ?? "Failed to load settings"))
+      .finally(() => setLoading(false));
+  }, []);
 
-  const save = (label) => toast.success(`${label} saved`);
+  const updateGroup = (group, patch) => setSettings((prev) => ({ ...prev, [group]: { ...prev[group], ...patch } }));
+
+  const save = async (group, label) => {
+    setSaving(true);
+    try {
+      const updated = await api.updateSettings({ [group]: settings[group] });
+      setSettings((prev) => ({ ...prev, ...decodeBooleans(updated) }));
+      toast.success(`${label} saved`);
+    } catch (err) {
+      toast.error(err.errors ? Object.values(err.errors).flat()[0] : (err.message ?? "Save failed"));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const sendTestEmail = async () => {
+    try {
+      const res = await api.testEmail();
+      toast.success(res.message ?? "Test email sent");
+    } catch (err) {
+      toast.error(err.message ?? "Could not send test email");
+    }
+  };
+
+  const clearCache = async () => {
+    try {
+      const res = await api.clearCache();
+      toast.success(res.message ?? "Cache cleared");
+    } catch (err) {
+      toast.error(err.message ?? "Could not clear cache");
+    }
+  };
+
+  if (loading || !settings) {
+    return <p className="py-20 text-center text-[13.5px] text-[var(--a-text-muted)]">Loading settings…</p>;
+  }
+
+  const resolvedAccent = customAccent || getPresetTokens(colorPreset, resolvedTheme).accent;
 
   return (
     <div className="flex flex-col gap-6">
@@ -68,10 +124,10 @@ export default function SettingsPage() {
           <GroupForm
             group="general"
             values={settings.general}
-            onChange={updateSettingsGroup}
+            onChange={updateGroup}
             fields={[["siteName", "Site name"], ["tagline", "Tagline"], ["adminEmail", "Admin email"], ["timezone", "Timezone"]]}
           />
-          <Button as="button" size="sm" className="mt-5" onClick={() => save("General settings")}>Save</Button>
+          <Button as="button" size="sm" className="mt-5" onClick={() => save("general", "General settings")} disabled={saving}>Save</Button>
         </Card>
       )}
 
@@ -80,36 +136,36 @@ export default function SettingsPage() {
           <GroupForm
             group="social"
             values={settings.social}
-            onChange={updateSettingsGroup}
+            onChange={updateGroup}
             areas={["address"]}
             fields={[["youtube", "YouTube"], ["instagram", "Instagram"], ["facebook", "Facebook"], ["whatsapp", "WhatsApp"], ["phone", "Phone"], ["address", "Address"]]}
           />
-          <Button as="button" size="sm" className="mt-5" onClick={() => save("Social & contact settings")}>Save</Button>
+          <Button as="button" size="sm" className="mt-5" onClick={() => save("social", "Social & contact settings")} disabled={saving}>Save</Button>
         </Card>
       )}
 
       {tab === "banner" && (
         <Card title="Live session banner">
           <div className="flex flex-col gap-5">
-            <Toggle checked={settings.banner.enabled} onChange={(v) => updateSettingsGroup("banner", { enabled: v })} label="Show banner" description="Displays across the public site when a live session is on" />
-            <Field label="Banner text"><TextInput value={settings.banner.text} onChange={(e) => updateSettingsGroup("banner", { text: e.target.value })} /></Field>
+            <Toggle checked={settings.banner.enabled} onChange={(v) => updateGroup("banner", { enabled: v })} label="Show banner" description="Displays across the public site when a live session is on" />
+            <Field label="Banner text"><TextInput value={settings.banner.text} onChange={(e) => updateGroup("banner", { text: e.target.value })} /></Field>
             <div className="grid gap-5 sm:grid-cols-2">
-              <Field label="CTA label"><TextInput value={settings.banner.ctaLabel} onChange={(e) => updateSettingsGroup("banner", { ctaLabel: e.target.value })} /></Field>
-              <Field label="CTA URL"><TextInput value={settings.banner.ctaUrl} onChange={(e) => updateSettingsGroup("banner", { ctaUrl: e.target.value })} /></Field>
+              <Field label="CTA label"><TextInput value={settings.banner.ctaLabel} onChange={(e) => updateGroup("banner", { ctaLabel: e.target.value })} /></Field>
+              <Field label="CTA URL"><TextInput value={settings.banner.ctaUrl} onChange={(e) => updateGroup("banner", { ctaUrl: e.target.value })} /></Field>
             </div>
           </div>
-          <Button as="button" size="sm" className="mt-5" onClick={() => save("Banner settings")}>Save</Button>
+          <Button as="button" size="sm" className="mt-5" onClick={() => save("banner", "Banner settings")} disabled={saving}>Save</Button>
         </Card>
       )}
 
       {tab === "maintenance" && (
         <Card title="Maintenance mode">
           <div className="flex flex-col gap-5">
-            <Toggle checked={settings.maintenance.enabled} onChange={(v) => updateSettingsGroup("maintenance", { enabled: v })} label="Enable maintenance mode" description="Visitors see the maintenance message instead of the site" />
-            <Field label="Maintenance message"><TextArea rows={2} value={settings.maintenance.message} onChange={(e) => updateSettingsGroup("maintenance", { message: e.target.value })} /></Field>
-            <Field label="Allowed IPs" hint="Comma-separated — these IPs bypass maintenance mode"><TextInput value={settings.maintenance.allowedIps} onChange={(e) => updateSettingsGroup("maintenance", { allowedIps: e.target.value })} /></Field>
+            <Toggle checked={settings.maintenance.enabled} onChange={(v) => updateGroup("maintenance", { enabled: v })} label="Enable maintenance mode" description="Visitors see the maintenance message instead of the site" />
+            <Field label="Maintenance message"><TextArea rows={2} value={settings.maintenance.message} onChange={(e) => updateGroup("maintenance", { message: e.target.value })} /></Field>
+            <Field label="Allowed IPs" hint="Comma-separated — these IPs bypass maintenance mode"><TextInput value={settings.maintenance.allowedIps} onChange={(e) => updateGroup("maintenance", { allowedIps: e.target.value })} /></Field>
           </div>
-          <Button as="button" size="sm" className="mt-5" onClick={() => save("Maintenance settings")}>Save</Button>
+          <Button as="button" size="sm" className="mt-5" onClick={() => save("maintenance", "Maintenance settings")} disabled={saving}>Save</Button>
         </Card>
       )}
 
@@ -222,7 +278,14 @@ export default function SettingsPage() {
           </Card>
 
           <Card title="Branding">
-            <p className="text-[12px] text-[var(--a-text-muted)]">Logo and favicon upload will be available once media storage is wired to the backend.</p>
+            <GroupForm
+              group="appearance"
+              values={settings.appearance}
+              onChange={updateGroup}
+              fields={[["logoUrl", "Logo URL"], ["faviconUrl", "Favicon URL"]]}
+            />
+            <p className="mt-2 text-[12px] text-[var(--a-text-muted)]">Paste a Media Library URL — direct file upload for branding assets isn't wired up yet.</p>
+            <Button as="button" size="sm" className="mt-5" onClick={() => save("appearance", "Branding settings")} disabled={saving}>Save</Button>
           </Card>
         </>
       )}
@@ -231,34 +294,24 @@ export default function SettingsPage() {
         <Card title="Email & notifications">
           <div className="flex flex-col gap-5">
             <div className="grid gap-5 sm:grid-cols-2">
-              <Field label="SMTP host"><TextInput value={settings.email.smtpHost} onChange={(e) => updateSettingsGroup("email", { smtpHost: e.target.value })} /></Field>
-              <Field label="SMTP port"><TextInput type="number" value={settings.email.smtpPort} onChange={(e) => updateSettingsGroup("email", { smtpPort: Number(e.target.value) })} /></Field>
-              <Field label="SMTP user"><TextInput value={settings.email.smtpUser} onChange={(e) => updateSettingsGroup("email", { smtpUser: e.target.value })} /></Field>
+              <Field label="SMTP host"><TextInput value={settings.email.smtpHost} onChange={(e) => updateGroup("email", { smtpHost: e.target.value })} /></Field>
+              <Field label="SMTP port"><TextInput type="number" value={settings.email.smtpPort} onChange={(e) => updateGroup("email", { smtpPort: e.target.value })} /></Field>
+              <Field label="SMTP user"><TextInput value={settings.email.smtpUser} onChange={(e) => updateGroup("email", { smtpUser: e.target.value })} /></Field>
+              <Field label="SMTP password" hint="Write-only — leave blank to keep the current password">
+                <TextInput type="password" value={settings.email.smtpPassword ?? ""} onChange={(e) => updateGroup("email", { smtpPassword: e.target.value })} placeholder="••••••••" />
+              </Field>
             </div>
-            <Toggle checked={settings.email.notifyOnSubmission} onChange={(v) => updateSettingsGroup("email", { notifyOnSubmission: v })} label="Notify admin on new submission" />
-            <Button as="button" size="sm" variant="secondary" icon={Send} onClick={() => toast.success("Test email sent (demo)")} className="w-fit">Send test email</Button>
+            <Toggle checked={settings.email.notifyOnSubmission} onChange={(v) => updateGroup("email", { notifyOnSubmission: v })} label="Notify admin on new submission" />
+            <Button as="button" size="sm" variant="secondary" icon={Send} onClick={sendTestEmail} className="w-fit">Send test email</Button>
           </div>
-          <Button as="button" size="sm" className="mt-5" onClick={() => save("Email settings")}>Save</Button>
+          <Button as="button" size="sm" className="mt-5" onClick={() => save("email", "Email settings")} disabled={saving}>Save</Button>
         </Card>
       )}
 
       {tab === "advanced" && (
         <Card title="Advanced">
           <div className="flex flex-col gap-5">
-            <div>
-              <div className="mb-1.5 flex items-center justify-between text-[13px]">
-                <span className="flex items-center gap-1.5 font-medium text-[var(--a-text-primary)]"><HardDrive size={14} /> Storage used</span>
-                <span className="text-[var(--a-text-muted)]">{(settings.advanced.storageUsedMb / 1024).toFixed(2)} GB / {(settings.advanced.storageLimitMb / 1024).toFixed(0)} GB</span>
-              </div>
-              <div className="h-2 overflow-hidden rounded-full bg-[var(--a-bg-surface-2)]">
-                <div className="h-full rounded-full bg-[var(--a-accent)]" style={{ width: `${(settings.advanced.storageUsedMb / settings.advanced.storageLimitMb) * 100}%` }} />
-              </div>
-            </div>
-            <div className="flex items-center justify-between rounded-lg border border-[var(--a-border)] px-4 py-3">
-              <span className="text-[13.5px] text-[var(--a-text-primary)]">App version</span>
-              <span className="text-[13px] text-[var(--a-text-muted)]">{settings.advanced.appVersion}</span>
-            </div>
-            <Button as="button" size="sm" variant="secondary" icon={Trash2} onClick={() => toast.success("Cache cleared (demo)")} className="w-fit">Clear cache</Button>
+            <Button as="button" size="sm" variant="secondary" icon={Trash2} onClick={clearCache} className="w-fit">Clear cache</Button>
           </div>
         </Card>
       )}

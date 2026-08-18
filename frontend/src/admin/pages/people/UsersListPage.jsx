@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { Plus, Pencil, Trash2, UserCog, Dices } from "lucide-react";
 import Card from "../../ui/Card";
@@ -11,32 +11,89 @@ import Field, { TextInput, TextArea, Select } from "../../ui/Field";
 import Toggle from "../../ui/Toggle";
 import { StatusBadge } from "../../ui/Badge";
 import Avatar from "../../ui/Avatar";
-import { useAdminData } from "../../store/useAdminData";
+import { api } from "../../../lib/api";
 
-const EMPTY = { name: "", email: "", password: "", role: "practitioner", status: "active", specialty: "", bio: "", capacity: 15 };
+const EMPTY = { name: "", email: "", password: "", primary_role_id: "", status: "active", specialty: "", bio: "", max_capacity: 15 };
 
 function generatePassword() {
   return Math.random().toString(36).slice(-10);
 }
 
 export default function UsersListPage() {
-  const { users, roles, addUser, updateUser, deleteUser } = useAdminData();
+  const [users, setUsers] = useState([]);
+  const [roles, setRoles] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [modalUser, setModalUser] = useState(null);
   const [form, setForm] = useState(EMPTY);
   const [toDelete, setToDelete] = useState(null);
 
-  const openCreate = () => { setForm(EMPTY); setModalUser("new"); };
-  const openEdit = (u) => { setForm({ ...EMPTY, ...u, password: "" }); setModalUser(u); };
+  const loadData = () =>
+    Promise.all([api.users(), api.roles()]).then(([usersRes, rolesRes]) => {
+      setUsers(usersRes);
+      setRoles(rolesRes);
+    });
 
-  const handleSave = () => {
-    if (modalUser === "new") {
-      addUser({ ...form });
-      toast.success(`${form.name} added`);
-    } else {
-      updateUser(modalUser.id, form);
-      toast.success("User updated");
+  useEffect(() => {
+    loadData()
+      .catch((err) => toast.error(err.message ?? "Failed to load users"))
+      .finally(() => setLoading(false));
+  }, []);
+
+  const openCreate = () => { setForm({ ...EMPTY, primary_role_id: roles[0]?.id ?? "" }); setModalUser("new"); };
+  const openEdit = (u) => {
+    setForm({
+      name: u.name, email: u.email, password: "",
+      primary_role_id: u.primary_role_id ?? "",
+      status: u.status, specialty: u.specialty ?? "", bio: u.bio ?? "",
+      max_capacity: u.max_capacity ?? 15,
+    });
+    setModalUser(u);
+  };
+
+  const selectedRole = roles.find((r) => r.id === Number(form.primary_role_id));
+
+  const handleSave = async () => {
+    const payload = {
+      name: form.name,
+      email: form.email,
+      status: form.status,
+      primary_role_id: Number(form.primary_role_id),
+      roles: [Number(form.primary_role_id)],
+      specialty: form.specialty || null,
+      bio: form.bio || null,
+      max_capacity: form.max_capacity === "" ? null : Number(form.max_capacity),
+    };
+    if (form.password) payload.password = form.password;
+
+    setSaving(true);
+    try {
+      if (modalUser === "new") {
+        const created = await api.createUser(payload);
+        toast.success(created.generated_password ? `${form.name} added — password: ${created.generated_password}` : `${form.name} added`);
+      } else {
+        await api.updateUser(modalUser.id, payload);
+        toast.success("User updated");
+      }
+      await loadData();
+      setModalUser(null);
+    } catch (err) {
+      toast.error(err.errors ? Object.values(err.errors).flat()[0] : (err.message ?? "Save failed"));
+    } finally {
+      setSaving(false);
     }
-    setModalUser(null);
+  };
+
+  const handleDelete = async () => {
+    try {
+      await api.deleteUser(toDelete.id);
+      toast.success("User deleted");
+      await loadData();
+    } catch (err) {
+      toast.error(err.message ?? "Delete failed");
+    } finally {
+      setToDelete(null);
+    }
   };
 
   const columns = useMemo(
@@ -51,10 +108,10 @@ export default function UsersListPage() {
         ),
       },
       { accessorKey: "email", header: "Email" },
-      { id: "role", header: "Role", accessorFn: (u) => roles.find((r) => r.name === u.role)?.displayName ?? u.role, cell: ({ getValue }) => getValue() },
+      { id: "role", header: "Role", accessorFn: (u) => u.primary_role?.display_name ?? "—", cell: ({ getValue }) => getValue() },
       { accessorKey: "status", header: "Status", cell: ({ getValue }) => <StatusBadge status={getValue()} /> },
-      { accessorKey: "membersAssigned", header: "Members" },
-      { accessorKey: "lastLogin", header: "Last login", cell: ({ getValue }) => (getValue() ? new Date(getValue()).toLocaleDateString() : "Never") },
+      { accessorKey: "members_assigned", header: "Members" },
+      { accessorKey: "last_login_at", header: "Last login", cell: ({ getValue }) => (getValue() ? new Date(getValue()).toLocaleDateString() : "Never") },
       {
         id: "actions", header: "", enableSorting: false,
         cell: ({ row }) => (
@@ -65,7 +122,7 @@ export default function UsersListPage() {
         ),
       },
     ],
-    [roles]
+    []
   );
 
   return (
@@ -75,12 +132,12 @@ export default function UsersListPage() {
           <h1 className="text-[24px] font-bold text-[var(--a-text-primary)]">Users & practitioners</h1>
           <p className="mt-1 text-[13.5px] text-[var(--a-text-muted)]">Admins, content managers, and practitioners with panel access.</p>
         </div>
-        <Button as="button" icon={Plus} onClick={openCreate}>New user</Button>
+        <Button as="button" icon={Plus} onClick={openCreate} disabled={loading}>New user</Button>
       </div>
 
       <Card padded={false}>
         <div className="p-5 sm:p-6">
-          <DataTable columns={columns} data={users} searchPlaceholder="Search users..." emptyIcon={UserCog} emptyTitle="No users yet" />
+          <DataTable columns={columns} data={users} searchPlaceholder="Search users..." emptyIcon={UserCog} emptyTitle={loading ? "Loading users…" : "No users yet"} />
         </div>
       </Card>
 
@@ -89,7 +146,7 @@ export default function UsersListPage() {
         onClose={() => setModalUser(null)}
         title={modalUser === "new" ? "New user" : "Edit user"}
         size="lg"
-        footer={<Button as="button" onClick={handleSave} disabled={!form.name || !form.email}>{modalUser === "new" ? "Create user" : "Save changes"}</Button>}
+        footer={<Button as="button" onClick={handleSave} disabled={!form.name || !form.email || !form.primary_role_id || saving}>{modalUser === "new" ? "Create user" : "Save changes"}</Button>}
       >
         <div className="flex flex-col gap-4">
           <div className="grid gap-4 sm:grid-cols-2">
@@ -104,8 +161,8 @@ export default function UsersListPage() {
           </Field>
           <div className="grid gap-4 sm:grid-cols-2">
             <Field label="Role">
-              <Select value={form.role} onChange={(e) => setForm((f) => ({ ...f, role: e.target.value }))}>
-                {roles.map((r) => <option key={r.id} value={r.name}>{r.displayName}</option>)}
+              <Select value={form.primary_role_id} onChange={(e) => setForm((f) => ({ ...f, primary_role_id: e.target.value }))}>
+                {roles.map((r) => <option key={r.id} value={r.id}>{r.display_name}</option>)}
               </Select>
             </Field>
             <div className="flex items-end pb-2.5">
@@ -113,12 +170,12 @@ export default function UsersListPage() {
             </div>
           </div>
 
-          {form.role === "practitioner" && (
+          {selectedRole?.name === "practitioner" && (
             <div className="flex flex-col gap-4 rounded-lg border border-[var(--a-border)] p-4">
               <p className="text-[11.5px] font-semibold tracking-wide text-[var(--a-text-faint)] uppercase">Practitioner details</p>
               <Field label="Specialty"><TextInput value={form.specialty ?? ""} onChange={(e) => setForm((f) => ({ ...f, specialty: e.target.value }))} /></Field>
               <Field label="Bio"><TextArea rows={2} value={form.bio ?? ""} onChange={(e) => setForm((f) => ({ ...f, bio: e.target.value }))} /></Field>
-              <Field label="Max member capacity"><TextInput type="number" value={form.capacity ?? 15} onChange={(e) => setForm((f) => ({ ...f, capacity: Number(e.target.value) }))} /></Field>
+              <Field label="Max member capacity"><TextInput type="number" value={form.max_capacity ?? 15} onChange={(e) => setForm((f) => ({ ...f, max_capacity: e.target.value }))} /></Field>
             </div>
           )}
         </div>
@@ -128,7 +185,7 @@ export default function UsersListPage() {
         open={!!toDelete}
         onClose={() => setToDelete(null)}
         title={`Delete "${toDelete?.name}"?`}
-        onConfirm={() => { deleteUser(toDelete.id); toast.success("User deleted"); }}
+        onConfirm={handleDelete}
       />
     </div>
   );

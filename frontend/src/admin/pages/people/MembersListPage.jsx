@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { Plus, Download, UsersRound, Trash2 } from "lucide-react";
@@ -10,43 +10,39 @@ import Modal from "../../ui/Modal";
 import ConfirmModal from "../../ui/ConfirmModal";
 import Field, { TextInput, Select } from "../../ui/Field";
 import { StatusBadge } from "../../ui/Badge";
-import { useAdminData } from "../../store/useAdminData";
+import { api, downloadAuthed } from "../../../lib/api";
 import { CATEGORIES, CATEGORY_LABELS } from "../../mock/mockData";
 
-const EMPTY = { name: "", email: "", phone: "", category: "general", assignedPractitioner: "" };
-
-function exportCsv(members, users) {
-  const header = ["Name", "Email", "Phone", "Practitioner", "Category", "Join date", "Status"];
-  const rows = members.map((m) => [
-    m.name, m.email, m.phone, users.find((u) => u.id === m.assignedPractitioner)?.name ?? "", m.category, m.joinDate, m.status,
-  ]);
-  const csv = [header, ...rows].map((r) => r.map((v) => `"${String(v ?? "").replace(/"/g, '""')}"`).join(",")).join("\n");
-  const blob = new Blob([csv], { type: "text/csv" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "members.csv";
-  a.click();
-  URL.revokeObjectURL(url);
-}
+const EMPTY = { name: "", email: "", phone: "", category: "general", status: "new", assigned_practitioner_id: "" };
 
 export default function MembersListPage() {
-  const { members, users, addMember, deleteMember } = useAdminData();
+  const [members, setMembers] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-  const practitioners = users.filter((u) => u.role === "practitioner");
+  const practitioners = users.filter((u) => u.primary_role?.name === "practitioner");
 
   const [createOpen, setCreateOpen] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [form, setForm] = useState(EMPTY);
   const [toDelete, setToDelete] = useState(null);
+
+  const loadMembers = () => api.members().then((res) => setMembers(res.data));
+
+  useEffect(() => {
+    Promise.all([loadMembers(), api.users().then(setUsers)])
+      .catch((err) => toast.error(err.message ?? "Failed to load members"))
+      .finally(() => setLoading(false));
+  }, []);
 
   const columns = useMemo(
     () => [
       { accessorKey: "name", header: "Name", cell: ({ getValue }) => <span className="font-semibold text-[var(--a-text-primary)]">{getValue()}</span> },
       { accessorKey: "email", header: "Email" },
       { accessorKey: "phone", header: "Phone", cell: ({ getValue }) => getValue() || "—" },
-      { id: "practitioner", header: "Practitioner", accessorFn: (m) => users.find((u) => u.id === m.assignedPractitioner)?.name ?? "Unassigned", cell: ({ getValue }) => getValue() },
+      { id: "practitioner", header: "Practitioner", accessorFn: (m) => m.practitioner?.name ?? "Unassigned", cell: ({ getValue }) => getValue() },
       { accessorKey: "category", header: "Category", cell: ({ getValue }) => CATEGORY_LABELS[getValue()] ?? getValue() },
-      { accessorKey: "joinDate", header: "Joined", cell: ({ getValue }) => new Date(getValue()).toLocaleDateString() },
+      { accessorKey: "join_date", header: "Joined", cell: ({ getValue }) => (getValue() ? new Date(getValue()).toLocaleDateString() : "—") },
       { accessorKey: "status", header: "Status", cell: ({ getValue }) => <StatusBadge status={getValue()} /> },
       {
         id: "actions", header: "", enableSorting: false,
@@ -57,15 +53,38 @@ export default function MembersListPage() {
         ),
       },
     ],
-    [users, setToDelete]
+    [setToDelete]
   );
 
-  const handleCreate = () => {
+  const handleCreate = async () => {
     if (!form.name || !form.email) return;
-    addMember({ ...form, assignedPractitioner: form.assignedPractitioner ? Number(form.assignedPractitioner) : null });
-    toast.success(`${form.name} added`);
-    setForm(EMPTY);
-    setCreateOpen(false);
+    setSaving(true);
+    try {
+      await api.createMember({
+        ...form,
+        assigned_practitioner_id: form.assigned_practitioner_id ? Number(form.assigned_practitioner_id) : null,
+      });
+      toast.success(`${form.name} added`);
+      setForm(EMPTY);
+      setCreateOpen(false);
+      await loadMembers();
+    } catch (err) {
+      toast.error(err.errors ? Object.values(err.errors).flat()[0] : (err.message ?? "Save failed"));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      await api.deleteMember(toDelete.id);
+      toast.success("Member removed");
+      await loadMembers();
+    } catch (err) {
+      toast.error(err.message ?? "Remove failed");
+    } finally {
+      setToDelete(null);
+    }
   };
 
   return (
@@ -76,8 +95,10 @@ export default function MembersListPage() {
           <p className="mt-1 text-[13.5px] text-[var(--a-text-muted)]">People converted from queries and actively guided by a practitioner.</p>
         </div>
         <div className="flex items-center gap-2">
-          <Button as="button" variant="secondary" icon={Download} onClick={() => exportCsv(members, users)}>Export CSV</Button>
-          <Button as="button" icon={Plus} onClick={() => setCreateOpen(true)}>New member</Button>
+          <Button as="button" variant="secondary" icon={Download} onClick={() => downloadAuthed("/admin/members/export", "members.csv").catch((err) => toast.error(err.message ?? "Export failed"))}>
+            Export CSV
+          </Button>
+          <Button as="button" icon={Plus} onClick={() => setCreateOpen(true)} disabled={loading}>New member</Button>
         </div>
       </div>
 
@@ -89,7 +110,7 @@ export default function MembersListPage() {
             searchPlaceholder="Search members..."
             onRowClick={(m) => navigate(`/admin/members/${m.id}`)}
             emptyIcon={UsersRound}
-            emptyTitle="No members yet"
+            emptyTitle={loading ? "Loading members…" : "No members yet"}
           />
         </div>
       </Card>
@@ -98,7 +119,7 @@ export default function MembersListPage() {
         open={createOpen}
         onClose={() => setCreateOpen(false)}
         title="New member"
-        footer={<Button as="button" onClick={handleCreate} disabled={!form.name || !form.email}>Add member</Button>}
+        footer={<Button as="button" onClick={handleCreate} disabled={!form.name || !form.email || saving}>Add member</Button>}
       >
         <div className="flex flex-col gap-4">
           <Field label="Name" required><TextInput value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} /></Field>
@@ -111,7 +132,7 @@ export default function MembersListPage() {
               </Select>
             </Field>
             <Field label="Practitioner">
-              <Select value={form.assignedPractitioner} onChange={(e) => setForm((f) => ({ ...f, assignedPractitioner: e.target.value }))}>
+              <Select value={form.assigned_practitioner_id} onChange={(e) => setForm((f) => ({ ...f, assigned_practitioner_id: e.target.value }))}>
                 <option value="">Unassigned</option>
                 {practitioners.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
               </Select>
@@ -125,7 +146,7 @@ export default function MembersListPage() {
         onClose={() => setToDelete(null)}
         title={`Remove "${toDelete?.name}"?`}
         description="This soft-deletes the member — their history is preserved."
-        onConfirm={() => { deleteMember(toDelete.id); toast.success("Member removed"); }}
+        onConfirm={handleDelete}
       />
     </div>
   );

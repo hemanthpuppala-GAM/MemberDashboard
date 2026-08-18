@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import { ArrowLeft, Image as ImageIcon, Plus, X } from "lucide-react";
@@ -9,8 +9,9 @@ import Toggle from "../../ui/Toggle";
 import PointsEditor from "../../ui/PointsEditor";
 import LangTabs from "../../ui/LangTabs";
 import RichTextEditor from "../../ui/RichTextEditor";
-import { useAdminData } from "../../store/useAdminData";
-import { LANGUAGES, SECTION_TYPES } from "../../mock/mockData";
+import { api } from "../../../lib/api";
+import { SECTION_TYPES } from "../../mock/mockData";
+import { contentArrayToByLang, FLAG_BY_CODE } from "./sectionContentUtil";
 
 const QUERY_CATEGORIES = ["meditation", "kundalini", "health", "general"];
 
@@ -24,28 +25,55 @@ const REQUIRED_FIELDS = {
   custom_html: ["heading"],
 };
 
-function isMissing(section, code) {
-  const required = REQUIRED_FIELDS[section.type] || [];
-  const content = section.content[code] || {};
+function isMissing(sectionType, contentByLang, code) {
+  const required = REQUIRED_FIELDS[sectionType] || [];
+  const content = contentByLang[code] || {};
   return required.some((f) => !content[f]);
 }
 
 export default function SectionEditorPage() {
   const { slug, id } = useParams();
   const navigate = useNavigate();
-  const { pages, updateSectionContent, updateSection } = useAdminData();
-  const page = pages.find((p) => p.slug === slug);
-  const section = page?.sections.find((s) => String(s.id) === String(id));
-  const enabledLanguages = LANGUAGES.filter((l) => l.enabled);
+  const [page, setPage] = useState(null);
+  const [section, setSection] = useState(null);
+  const [contentByLang, setContentByLang] = useState({});
+  const [languages, setLanguages] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
 
   const [activeLang, setActiveLang] = useState("en");
   const [savedAt, setSavedAt] = useState(null);
 
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- resets the spinner when navigating between sections via route params
+    setLoading(true);
+    Promise.all([api.page(slug), api.languages()])
+      .then(([p, langs]) => {
+        const sec = p.sections.find((s) => String(s.id) === String(id));
+        setPage(p);
+        setSection(sec ?? null);
+        setContentByLang(sec ? contentArrayToByLang(sec.content) : {});
+        const enabled = langs.filter((l) => l.is_enabled);
+        setLanguages(enabled);
+        setActiveLang(enabled.find((l) => l.is_default)?.code ?? enabled[0]?.code ?? "en");
+      })
+      .catch((err) => toast.error(err.message ?? "Failed to load section"))
+      .finally(() => setLoading(false));
+  }, [slug, id]);
+
+  const enabledLanguages = useMemo(
+    () => languages.map((l) => ({ code: l.code, name: l.name, flag: FLAG_BY_CODE[l.code] ?? "🌐" })),
+    [languages]
+  );
+
   const incomplete = useMemo(() => {
     if (!section) return new Set();
-    return new Set(enabledLanguages.filter((l) => isMissing(section, l.code)).map((l) => l.code));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [section]);
+    return new Set(enabledLanguages.filter((l) => isMissing(section.type, contentByLang, l.code)).map((l) => l.code));
+  }, [section, contentByLang, enabledLanguages]);
+
+  if (loading) {
+    return <p className="py-20 text-center text-[13.5px] text-[var(--a-text-muted)]">Loading…</p>;
+  }
 
   if (!page || !section) {
     return (
@@ -57,13 +85,25 @@ export default function SectionEditorPage() {
   }
 
   const meta = SECTION_TYPES.find((t) => t.type === section.type);
-  const content = section.content[activeLang] || {};
-  const set = (key) => (value) => updateSectionContent(page.id, section.id, activeLang, { [key]: value });
+  const content = contentByLang[activeLang] || {};
+  const set = (key) => (value) =>
+    setContentByLang((prev) => ({ ...prev, [activeLang]: { ...prev[activeLang], [key]: value } }));
 
-  const handleSave = (publish) => {
-    updateSection(page.id, section.id, { status: publish ? "active" : section.status });
-    setSavedAt(new Date());
-    toast.success(publish ? "Section published" : "Draft saved");
+  const handleSave = async (publish) => {
+    setSaving(true);
+    try {
+      await api.updateSectionContent(section.id, contentByLang);
+      if (publish && section.status !== "active") {
+        await api.updateSection(slug, section.id, { type: section.type, status: "active" });
+        setSection((s) => ({ ...s, status: "active" }));
+      }
+      setSavedAt(new Date());
+      toast.success(publish ? "Section published" : "Draft saved");
+    } catch (err) {
+      toast.error(err.errors ? Object.values(err.errors).flat()[0] : (err.message ?? "Save failed"));
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -90,8 +130,8 @@ export default function SectionEditorPage() {
       </Card>
 
       <div className="flex items-center gap-4">
-        <Button as="button" variant="secondary" onClick={() => handleSave(false)}>Save draft</Button>
-        <Button as="button" onClick={() => handleSave(true)}>Publish</Button>
+        <Button as="button" variant="secondary" onClick={() => handleSave(false)} disabled={saving}>Save draft</Button>
+        <Button as="button" onClick={() => handleSave(true)} disabled={saving}>Publish</Button>
         {savedAt && <span className="text-[12.5px] font-medium text-[var(--a-success)]">Saved at {savedAt.toLocaleTimeString()}</span>}
       </div>
     </div>

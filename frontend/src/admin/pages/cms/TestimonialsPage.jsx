@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { Plus, Pencil, Trash2, Star, Quote, MessageSquareQuote } from "lucide-react";
 import Card from "../../ui/Card";
@@ -12,9 +12,9 @@ import { StatusBadge } from "../../ui/Badge";
 import EmptyState from "../../ui/EmptyState";
 import Avatar from "../../ui/Avatar";
 import ImageUploader from "../../ui/ImageUploader";
-import { useAdminData } from "../../store/useAdminData";
+import { api } from "../../../lib/api";
 
-const EMPTY = { name: "", role: "", photoUrl: "", quote: "", rating: 5, status: "draft", featured: false };
+const EMPTY = { name: "", role: "", quote: "", rating: 5, status: "draft", is_featured: false };
 
 function StarRating({ value, onChange, readOnly = false }) {
   return (
@@ -34,29 +34,79 @@ function StarRating({ value, onChange, readOnly = false }) {
   );
 }
 
+function toFormData(form, photoFile) {
+  const fd = new FormData();
+  fd.append("name", form.name);
+  if (form.role) fd.append("role", form.role);
+  fd.append("quote", form.quote);
+  fd.append("rating", form.rating);
+  fd.append("status", form.status);
+  fd.append("is_featured", form.is_featured ? "1" : "0");
+  if (photoFile) fd.append("photo", photoFile);
+  return fd;
+}
+
 export default function TestimonialsPage() {
-  const { testimonials, addTestimonial, updateTestimonial, deleteTestimonial } = useAdminData();
+  const [testimonials, setTestimonials] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(null);
   const [toDelete, setToDelete] = useState(null);
   const [form, setForm] = useState(EMPTY);
+  const [photoPreview, setPhotoPreview] = useState("");
+  const [photoFile, setPhotoFile] = useState(null);
+  const [saving, setSaving] = useState(false);
+
+  const loadTestimonials = () => api.testimonials().then(setTestimonials);
+
+  useEffect(() => {
+    loadTestimonials()
+      .catch((err) => toast.error(err.message ?? "Failed to load testimonials"))
+      .finally(() => setLoading(false));
+  }, []);
 
   const set = (patch) => setForm((f) => ({ ...f, ...patch }));
-  const openNew = () => { setForm(EMPTY); setEditing({}); };
-  const openEdit = (t) => { setForm({ ...EMPTY, ...t }); setEditing(t); };
-
-  const save = () => {
-    if (!form.name.trim() || !form.quote.trim()) return;
-    if (editing?.id) {
-      updateTestimonial(editing.id, form);
-      toast.success("Testimonial updated");
-    } else {
-      addTestimonial(form);
-      toast.success("Testimonial added");
-    }
-    setEditing(null);
+  const openNew = () => { setForm(EMPTY); setPhotoPreview(""); setPhotoFile(null); setEditing({}); };
+  const openEdit = (t) => {
+    setForm({ name: t.name, role: t.role ?? "", quote: t.quote, rating: t.rating, status: t.status, is_featured: t.is_featured });
+    setPhotoPreview(t.photo_path ?? "");
+    setPhotoFile(null);
+    setEditing(t);
   };
 
-  const sorted = [...testimonials].sort((a, b) => a.order - b.order);
+  const save = async () => {
+    if (!form.name.trim() || !form.quote.trim()) return;
+    setSaving(true);
+    try {
+      const formData = toFormData(form, photoFile);
+      if (editing?.id) {
+        await api.updateTestimonial(editing.id, formData);
+        toast.success("Testimonial updated");
+      } else {
+        await api.createTestimonial(formData);
+        toast.success("Testimonial added");
+      }
+      setEditing(null);
+      await loadTestimonials();
+    } catch (err) {
+      toast.error(err.errors ? Object.values(err.errors).flat()[0] : (err.message ?? "Save failed"));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      await api.deleteTestimonial(toDelete.id);
+      toast.success("Testimonial deleted");
+      await loadTestimonials();
+    } catch (err) {
+      toast.error(err.message ?? "Delete failed");
+    } finally {
+      setToDelete(null);
+    }
+  };
+
+  const sorted = [...testimonials].sort((a, b) => a.sort_order - b.sort_order);
 
   return (
     <div className="flex flex-col gap-6">
@@ -67,10 +117,10 @@ export default function TestimonialsPage() {
             Stories from members and practitioners shown on the public site. Feature the strongest ones to highlight them on the homepage.
           </p>
         </div>
-        <Button as="button" icon={Plus} onClick={openNew}>Add testimonial</Button>
+        <Button as="button" icon={Plus} onClick={openNew} disabled={loading}>Add testimonial</Button>
       </div>
 
-      {sorted.length === 0 ? (
+      {!loading && sorted.length === 0 ? (
         <Card><EmptyState icon={MessageSquareQuote} title="No testimonials yet" description="Add a quote from a member or practitioner to build social proof." /></Card>
       ) : (
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -78,8 +128,8 @@ export default function TestimonialsPage() {
             <Card key={t.id} className="flex flex-col gap-3">
               <div className="flex items-start justify-between gap-2">
                 <div className="flex items-center gap-2.5">
-                  {t.photoUrl ? (
-                    <img src={t.photoUrl} alt={t.name} className="h-10 w-10 shrink-0 rounded-full object-cover" />
+                  {t.photo_path ? (
+                    <img src={t.photo_path} alt={t.name} className="h-10 w-10 shrink-0 rounded-full object-cover" />
                   ) : (
                     <Avatar name={t.name} size={40} />
                   )}
@@ -103,7 +153,7 @@ export default function TestimonialsPage() {
 
               <div className="mt-auto flex items-center gap-2 pt-1">
                 <StatusBadge status={t.status} />
-                {t.featured && <span className="rounded-full bg-[var(--a-accent-muted)] px-2 py-0.5 text-[10.5px] font-semibold tracking-wide text-[var(--a-accent)] uppercase">Featured</span>}
+                {t.is_featured && <span className="rounded-full bg-[var(--a-accent-muted)] px-2 py-0.5 text-[10.5px] font-semibold tracking-wide text-[var(--a-accent)] uppercase">Featured</span>}
               </div>
             </Card>
           ))}
@@ -115,7 +165,7 @@ export default function TestimonialsPage() {
         onClose={() => setEditing(null)}
         title={editing?.id ? "Edit testimonial" : "Add testimonial"}
         size="lg"
-        footer={<Button as="button" onClick={save} disabled={!form.name.trim() || !form.quote.trim()}>{editing?.id ? "Save" : "Add"}</Button>}
+        footer={<Button as="button" onClick={save} disabled={!form.name.trim() || !form.quote.trim() || saving}>{editing?.id ? "Save" : "Add"}</Button>}
       >
         <div className="flex flex-col gap-5">
           <div className="grid gap-4 sm:grid-cols-2">
@@ -130,7 +180,7 @@ export default function TestimonialsPage() {
           </Field>
 
           <Field label="Photo" hint="Optional — falls back to initials">
-            <ImageUploader url={form.photoUrl} onChange={(url) => set({ photoUrl: url })} label="photo" size={96} />
+            <ImageUploader url={photoPreview} onChange={setPhotoPreview} onFileSelect={setPhotoFile} label="photo" size={96} />
           </Field>
 
           <div className="grid gap-4 sm:grid-cols-2">
@@ -145,7 +195,7 @@ export default function TestimonialsPage() {
             </Field>
           </div>
 
-          <Toggle checked={form.featured} onChange={(v) => set({ featured: v })} label="Featured" description="Highlighted on the homepage instead of just the testimonials page" />
+          <Toggle checked={form.is_featured} onChange={(v) => set({ is_featured: v })} label="Featured" description="Highlighted on the homepage instead of just the testimonials page" />
         </div>
       </Modal>
 
@@ -153,7 +203,7 @@ export default function TestimonialsPage() {
         open={!!toDelete}
         onClose={() => setToDelete(null)}
         title={`Delete testimonial from "${toDelete?.name}"?`}
-        onConfirm={() => { deleteTestimonial(toDelete.id); toast.success("Testimonial deleted"); }}
+        onConfirm={handleDelete}
       />
     </div>
   );

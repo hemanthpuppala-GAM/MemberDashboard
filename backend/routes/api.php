@@ -3,7 +3,9 @@
 use App\Http\Controllers\Api\Admin\Engage\AnnouncementController;
 use App\Http\Controllers\Api\Admin\Engage\BroadcastController as AdminBroadcastController;
 use App\Http\Controllers\Api\Admin\Content\ContactChannelController as AdminContactChannelController;
+use App\Http\Controllers\Api\Admin\Content\VolunteerCategoryController as AdminVolunteerCategoryController;
 use App\Http\Controllers\Api\Admin\People\ContactSubmissionController;
+use App\Http\Controllers\Api\Admin\People\VolunteerApplicationController as AdminVolunteerApplicationController;
 use App\Http\Controllers\Api\Admin\Cms\ContentController as AdminContentController;
 use App\Http\Controllers\Api\Admin\DashboardController;
 use App\Http\Controllers\Api\Admin\Content\DonationMethodController as AdminDonationMethodController;
@@ -26,7 +28,9 @@ use App\Http\Controllers\Api\Admin\Auth\UserController;
 use App\Http\Controllers\Api\Public\Auth\AuthController;
 use App\Http\Controllers\Api\Public\Engage\BroadcastController;
 use App\Http\Controllers\Api\Public\Content\ContactChannelController;
+use App\Http\Controllers\Api\Public\Content\VolunteerCategoryController;
 use App\Http\Controllers\Api\Public\People\ContactController;
+use App\Http\Controllers\Api\Public\People\VolunteerApplicationController;
 use App\Http\Controllers\Api\Public\Cms\ContentController;
 use App\Http\Controllers\Api\Public\Content\DonationMethodController;
 use App\Http\Controllers\Api\Public\Cms\EventController;
@@ -57,8 +61,10 @@ Route::prefix('v1')->group(function () {
     Route::get('/contact-channels', [ContactChannelController::class, 'index']);
     Route::get('/donation-methods', [DonationMethodController::class, 'index']);
     Route::get('/broadcasts/active', [BroadcastController::class, 'active']);
+    Route::get('/volunteer-categories', [VolunteerCategoryController::class, 'index']);
 
     Route::post('/contact', [ContactController::class, 'store'])->middleware('throttle:5,1');
+    Route::post('/volunteer-applications', [VolunteerApplicationController::class, 'store'])->middleware('throttle:5,1');
 
     // ---- Admin auth ----
     Route::post('/admin/login', [AuthController::class, 'login'])->middleware('throttle:10,1');
@@ -125,6 +131,23 @@ Route::prefix('v1')->group(function () {
             Route::put('/contact-channels/reorder', [AdminContactChannelController::class, 'reorder']);
         });
         Route::middleware('permission:contact_channels.delete')->delete('/contact-channels/{contactChannel}', [AdminContactChannelController::class, 'destroy']);
+
+        // ---- Volunteer categories ----
+        Route::middleware('permission:volunteers.view')->get('/volunteer-categories', [AdminVolunteerCategoryController::class, 'index']);
+        Route::middleware('permission:volunteers.create')->post('/volunteer-categories', [AdminVolunteerCategoryController::class, 'store']);
+        Route::middleware('permission:volunteers.edit')->group(function () {
+            Route::put('/volunteer-categories/{volunteerCategory}', [AdminVolunteerCategoryController::class, 'update']);
+            Route::put('/volunteer-categories/reorder', [AdminVolunteerCategoryController::class, 'reorder']);
+        });
+        Route::middleware('permission:volunteers.delete')->delete('/volunteer-categories/{volunteerCategory}', [AdminVolunteerCategoryController::class, 'destroy']);
+
+        // ---- Volunteer applications ----
+        Route::middleware('permission:volunteers.view')->group(function () {
+            Route::get('/volunteer-applications', [AdminVolunteerApplicationController::class, 'index']);
+            Route::get('/volunteer-applications/{volunteerApplication}', [AdminVolunteerApplicationController::class, 'show']);
+        });
+        Route::middleware('permission:volunteers.edit')->patch('/volunteer-applications/{volunteerApplication}/status', [AdminVolunteerApplicationController::class, 'update']);
+        Route::middleware('permission:volunteers.delete')->delete('/volunteer-applications/{volunteerApplication}', [AdminVolunteerApplicationController::class, 'destroy']);
 
         // ---- Donation methods ----
         Route::middleware('permission:donations.view')->get('/donation-methods', [AdminDonationMethodController::class, 'index']);

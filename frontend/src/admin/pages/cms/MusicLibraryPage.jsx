@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { Plus, Pencil, Trash2, Music2, ChevronUp, ChevronDown, FileAudio } from "lucide-react";
 import Card from "../../ui/Card";
@@ -10,10 +10,10 @@ import Field, { TextInput, TextArea, Select } from "../../ui/Field";
 import { StatusBadge } from "../../ui/Badge";
 import EmptyState from "../../ui/EmptyState";
 import ImageUploader from "../../ui/ImageUploader";
-import { useAdminData } from "../../store/useAdminData";
+import { api } from "../../../lib/api";
 import { MUSIC_CATEGORIES } from "../../mock/mockData";
 
-const EMPTY = { title: "", artist: "", category: "meditation", description: "", coverUrl: "", fileUrl: "", fileName: "", durationSec: 0, status: "draft" };
+const EMPTY = { title: "", artist: "", category: "meditation", description: "", status: "draft" };
 
 function formatDuration(sec) {
   if (!sec) return "--:--";
@@ -29,7 +29,7 @@ function AudioUploader({ fileUrl, fileName, onChange }) {
   const ingest = (files) => {
     const file = files?.[0];
     if (!file) return;
-    onChange({ fileUrl: URL.createObjectURL(file), fileName: file.name, durationSec: 0 });
+    onChange({ file, fileUrl: URL.createObjectURL(file), fileName: file.name, durationSec: 0 });
   };
 
   return (
@@ -67,28 +67,92 @@ function AudioUploader({ fileUrl, fileName, onChange }) {
   );
 }
 
+function toFormData(form) {
+  const fd = new FormData();
+  fd.append("title", form.title);
+  if (form.artist) fd.append("artist", form.artist);
+  fd.append("category", form.category);
+  if (form.description) fd.append("description", form.description);
+  fd.append("status", form.status);
+  if (form.file) fd.append("file", form.file);
+  if (form.cover) fd.append("cover", form.cover);
+  if (form.durationSec) fd.append("duration_seconds", form.durationSec);
+  return fd;
+}
+
 export default function MusicLibraryPage() {
-  const { musicTracks, addMusicTrack, updateMusicTrack, deleteMusicTrack, reorderMusicTrack } = useAdminData();
+  const [musicTracks, setMusicTracks] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(null);
   const [toDelete, setToDelete] = useState(null);
   const [form, setForm] = useState(EMPTY);
+  const [saving, setSaving] = useState(false);
 
-  const sorted = [...musicTracks].sort((a, b) => a.order - b.order);
+  const loadTracks = () => api.music().then(setMusicTracks);
+
+  useEffect(() => {
+    loadTracks()
+      .catch((err) => toast.error(err.message ?? "Failed to load music tracks"))
+      .finally(() => setLoading(false));
+  }, []);
+
+  const sorted = [...musicTracks].sort((a, b) => a.sort_order - b.sort_order);
   const set = (patch) => setForm((f) => ({ ...f, ...patch }));
 
   const openNew = () => { setForm(EMPTY); setEditing({}); };
-  const openEdit = (t) => { setForm({ ...EMPTY, ...t }); setEditing(t); };
+  const openEdit = (t) => {
+    setForm({
+      title: t.title, artist: t.artist ?? "", category: t.category, description: t.description ?? "", status: t.status,
+      fileUrl: t.file_path, fileName: t.title, durationSec: t.duration_seconds, coverUrl: t.cover_path,
+    });
+    setEditing(t);
+  };
 
-  const save = () => {
-    if (!form.title.trim() || !form.fileUrl) return;
-    if (editing?.id) {
-      updateMusicTrack(editing.id, form);
-      toast.success("Track updated");
-    } else {
-      addMusicTrack(form);
-      toast.success("Track uploaded");
+  const save = async () => {
+    if (!form.title.trim() || (!editing?.id && !form.file)) return;
+    setSaving(true);
+    try {
+      const formData = toFormData(form);
+      if (editing?.id) {
+        await api.updateMusic(editing.id, formData);
+        toast.success("Track updated");
+      } else {
+        await api.createMusic(formData);
+        toast.success("Track uploaded");
+      }
+      setEditing(null);
+      await loadTracks();
+    } catch (err) {
+      toast.error(err.errors ? Object.values(err.errors).flat()[0] : (err.message ?? "Save failed"));
+    } finally {
+      setSaving(false);
     }
-    setEditing(null);
+  };
+
+  const move = async (id, direction) => {
+    const idx = sorted.findIndex((t) => t.id === id);
+    const swapWith = direction === "up" ? idx - 1 : idx + 1;
+    if (idx === -1 || swapWith < 0 || swapWith >= sorted.length) return;
+    const ids = sorted.map((t) => t.id);
+    [ids[idx], ids[swapWith]] = [ids[swapWith], ids[idx]];
+    try {
+      const updated = await api.reorderMusic(ids);
+      setMusicTracks(updated);
+    } catch (err) {
+      toast.error(err.message ?? "Reorder failed");
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      await api.deleteMusic(toDelete.id);
+      toast.success("Track deleted");
+      await loadTracks();
+    } catch (err) {
+      toast.error(err.message ?? "Delete failed");
+    } finally {
+      setToDelete(null);
+    }
   };
 
   return (
@@ -100,18 +164,18 @@ export default function MusicLibraryPage() {
             Meditation and chanting tracks played on the public site. Draft tracks stay hidden until published.
           </p>
         </div>
-        <Button as="button" icon={Plus} onClick={openNew}>Upload track</Button>
+        <Button as="button" icon={Plus} onClick={openNew} disabled={loading}>Upload track</Button>
       </div>
 
       <Card padded={false}>
-        {sorted.length === 0 ? (
+        {!loading && sorted.length === 0 ? (
           <EmptyState icon={Music2} title="No tracks yet" description="Upload an audio file to build the meditation music library." />
         ) : (
           <div className="flex flex-col divide-y divide-[var(--a-border)]">
             {sorted.map((t, i) => (
               <div key={t.id} className="flex flex-wrap items-center gap-3 px-5 py-3.5 sm:px-6">
-                {t.coverUrl ? (
-                  <img src={t.coverUrl} alt="" className="h-11 w-11 shrink-0 rounded-lg object-cover" />
+                {t.cover_path ? (
+                  <img src={t.cover_path} alt="" className="h-11 w-11 shrink-0 rounded-lg object-cover" />
                 ) : (
                   <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-[var(--a-accent-muted)] text-[var(--a-accent)]">
                     <Music2 size={18} />
@@ -124,14 +188,14 @@ export default function MusicLibraryPage() {
                     <span className="shrink-0 rounded-full bg-[var(--a-bg-surface-2)] px-2 py-0.5 text-[10.5px] font-medium tracking-wide text-[var(--a-text-muted)] uppercase">{t.category}</span>
                     <StatusBadge status={t.status} />
                   </div>
-                  <p className="truncate text-[12.5px] text-[var(--a-text-muted)]">{t.artist || "Golden Age Wisdom"} · {formatDuration(t.durationSec)}</p>
+                  <p className="truncate text-[12.5px] text-[var(--a-text-muted)]">{t.artist || "Golden Age Wisdom"} · {formatDuration(t.duration_seconds)}</p>
                 </div>
 
-                {t.fileUrl && <audio controls src={t.fileUrl} className="h-8 w-full max-w-[220px]" />}
+                {t.file_path && <audio controls src={t.file_path} className="h-8 w-full max-w-[220px]" />}
 
                 <div className="flex shrink-0 items-center gap-1">
-                  <IconButton icon={ChevronUp} label="Move up" onClick={() => reorderMusicTrack(t.id, "up")} disabled={i === 0} />
-                  <IconButton icon={ChevronDown} label="Move down" onClick={() => reorderMusicTrack(t.id, "down")} disabled={i === sorted.length - 1} />
+                  <IconButton icon={ChevronUp} label="Move up" onClick={() => move(t.id, "up")} disabled={i === 0} />
+                  <IconButton icon={ChevronDown} label="Move down" onClick={() => move(t.id, "down")} disabled={i === sorted.length - 1} />
                   <IconButton icon={Pencil} label="Edit" variant="accent" onClick={() => openEdit(t)} />
                   <IconButton icon={Trash2} label="Delete" variant="danger" onClick={() => setToDelete(t)} />
                 </div>
@@ -146,7 +210,7 @@ export default function MusicLibraryPage() {
         onClose={() => setEditing(null)}
         title={editing?.id ? "Edit track" : "Upload track"}
         size="lg"
-        footer={<Button as="button" onClick={save} disabled={!form.title.trim() || !form.fileUrl}>{editing?.id ? "Save" : "Upload"}</Button>}
+        footer={<Button as="button" onClick={save} disabled={!form.title.trim() || (!editing?.id && !form.file) || saving}>{editing?.id ? "Save" : "Upload"}</Button>}
       >
         <div className="flex flex-col gap-5">
           <Field label="Audio file" required>
@@ -174,7 +238,7 @@ export default function MusicLibraryPage() {
           </Field>
 
           <Field label="Cover art" hint="Optional — falls back to a default music icon">
-            <ImageUploader url={form.coverUrl} onChange={(url) => set({ coverUrl: url })} label="cover" size={112} />
+            <ImageUploader url={form.coverUrl} onChange={(url) => set({ coverUrl: url })} onFileSelect={(file) => set({ cover: file })} label="cover" size={112} />
           </Field>
         </div>
       </Modal>
@@ -183,7 +247,7 @@ export default function MusicLibraryPage() {
         open={!!toDelete}
         onClose={() => setToDelete(null)}
         title={`Delete "${toDelete?.title}"?`}
-        onConfirm={() => { deleteMusicTrack(toDelete.id); toast.success("Track deleted"); }}
+        onConfirm={handleDelete}
       />
     </div>
   );

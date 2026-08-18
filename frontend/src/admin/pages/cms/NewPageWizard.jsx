@@ -7,7 +7,7 @@ import Button from "../../ui/Button";
 import Stepper from "../../ui/Stepper";
 import Field, { TextInput, TextArea, Select } from "../../ui/Field";
 import { StatusBadge } from "../../ui/Badge";
-import { useAdminData } from "../../store/useAdminData";
+import { api } from "../../../lib/api";
 import { SECTION_TYPES } from "../../mock/mockData";
 
 const STEPS = [
@@ -22,11 +22,11 @@ function slugify(text) {
 }
 
 export default function NewPageWizard() {
-  const { addPage, addSection, updateSectionContent } = useAdminData();
   const navigate = useNavigate();
   const [step, setStep] = useState(0);
+  const [creating, setCreating] = useState(false);
 
-  const [basics, setBasics] = useState({ title: "", slug: "", metaDescription: "", status: "draft" });
+  const [basics, setBasics] = useState({ title: "", slug: "", status: "draft" });
   const [chosenSections, setChosenSections] = useState([]);
   const [draftContent, setDraftContent] = useState({});
 
@@ -37,15 +37,23 @@ export default function NewPageWizard() {
     setChosenSections((prev) => (prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]));
   };
 
-  const handleCreate = () => {
-    const page = addPage({ title: basics.title, slug: basics.slug || slugify(basics.title), status: basics.status, langCoverage: { en: 100 } });
-    chosenSections.forEach((type, i) => {
-      const section = addSection(page.id, { type, order: i + 1 });
-      const draft = draftContent[type];
-      if (draft) updateSectionContent(page.id, section.id, "en", draft);
-    });
-    toast.success(`"${basics.title}" created`);
-    navigate(`/admin/cms/pages/${page.slug || slugify(basics.title)}`);
+  const handleCreate = async () => {
+    const slug = basics.slug || slugify(basics.title);
+    setCreating(true);
+    try {
+      const page = await api.createPage({ title: basics.title, slug, status: basics.status });
+      for (const [i, type] of chosenSections.entries()) {
+        const section = await api.createSection(page.slug, { type, status: "active", sort_order: i + 1 });
+        const draft = draftContent[type];
+        if (draft) await api.updateSectionContent(section.id, { en: draft });
+      }
+      toast.success(`"${basics.title}" created`);
+      navigate(`/admin/cms/pages/${page.slug}`);
+    } catch (err) {
+      toast.error(err.errors ? Object.values(err.errors).flat()[0] : (err.message ?? "Failed to create page"));
+    } finally {
+      setCreating(false);
+    }
   };
 
   return (
@@ -75,9 +83,6 @@ export default function NewPageWizard() {
             </Field>
             <Field label="Slug" hint="Used in the page URL" required>
               <TextInput value={basics.slug} onChange={(e) => setBasics((b) => ({ ...b, slug: slugify(e.target.value) }))} placeholder="seven-chakras-guide" />
-            </Field>
-            <Field label="Meta description" hint="Optional — shown in search results">
-              <TextArea rows={2} value={basics.metaDescription} onChange={(e) => setBasics((b) => ({ ...b, metaDescription: e.target.value }))} />
             </Field>
             <Field label="Initial status">
               <Select value={basics.status} onChange={(e) => setBasics((b) => ({ ...b, status: e.target.value }))}>
@@ -151,7 +156,6 @@ export default function NewPageWizard() {
                 <StatusBadge status={basics.status} />
               </div>
               <p className="text-[13px] text-[var(--a-text-muted)]">/{basics.slug || slugify(basics.title)}</p>
-              {basics.metaDescription && <p className="mt-2 text-[13px] text-[var(--a-text-muted)]">{basics.metaDescription}</p>}
             </div>
             <div>
               <p className="mb-2 text-[12px] font-semibold tracking-wide text-[var(--a-text-faint)] uppercase">Sections ({chosenSections.length})</p>
@@ -178,7 +182,7 @@ export default function NewPageWizard() {
         {step < STEPS.length - 1 ? (
           <Button as="button" icon={ArrowRight} onClick={next} disabled={step === 0 && !basics.title}>Continue</Button>
         ) : (
-          <Button as="button" icon={Plus} onClick={handleCreate} disabled={!basics.title}>Create page</Button>
+          <Button as="button" icon={Plus} onClick={handleCreate} disabled={!basics.title || creating}>{creating ? "Creating…" : "Create page"}</Button>
         )}
       </div>
     </div>

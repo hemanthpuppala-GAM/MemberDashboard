@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import { ArrowLeft, NotebookText } from "lucide-react";
@@ -6,7 +7,7 @@ import Button from "../../ui/Button";
 import Field, { TextInput, Select } from "../../ui/Field";
 import { StatusBadge } from "../../ui/Badge";
 import Avatar from "../../ui/Avatar";
-import { useAdminData } from "../../store/useAdminData";
+import { api } from "../../../lib/api";
 import { CATEGORY_LABELS } from "../../mock/mockData";
 
 const STATUSES = ["new", "active", "in_progress", "resolved", "archived"];
@@ -15,8 +16,27 @@ const ENTRY_LABEL = { note: "Note", status_change: "Status change", session_comp
 export default function MemberProfilePage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { members, users, journeys, updateMember } = useAdminData();
-  const member = members.find((m) => String(m.id) === id);
+  const [member, setMember] = useState(null);
+  const [users, setUsers] = useState([]);
+  const [entries, setEntries] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [form, setForm] = useState(null);
+
+  useEffect(() => {
+    Promise.all([api.member(id), api.users(), api.memberJourney(id)])
+      .then(([m, u, j]) => {
+        setMember(m);
+        setForm({ name: m.name, email: m.email ?? "", phone: m.phone ?? "", category: m.category, status: m.status, summary: m.summary ?? "", assigned_practitioner_id: m.assigned_practitioner_id ?? "" });
+        setUsers(u);
+        setEntries(j);
+      })
+      .catch((err) => toast.error(err.message ?? "Failed to load member"))
+      .finally(() => setLoading(false));
+  }, [id]);
+
+  if (loading) {
+    return <p className="py-20 text-center text-[13.5px] text-[var(--a-text-muted)]">Loading…</p>;
+  }
 
   if (!member) {
     return (
@@ -27,9 +47,35 @@ export default function MemberProfilePage() {
     );
   }
 
-  const practitioners = users.filter((u) => u.role === "practitioner");
-  const entries = journeys[member.id] || [];
-  const lastEntry = [...entries].sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+  const practitioners = users.filter((u) => u.primary_role?.name === "practitioner");
+  const lastEntry = entries[0];
+
+  const saveField = async (patch) => {
+    const next = { ...form, ...patch };
+    setForm(next);
+    try {
+      const updated = await api.updateMember(member.id, {
+        name: next.name, email: next.email || null, phone: next.phone || null,
+        category: next.category, status: next.status, summary: next.summary || null,
+        assigned_practitioner_id: next.assigned_practitioner_id || null,
+      });
+      setMember((m) => ({ ...m, ...updated }));
+    } catch (err) {
+      toast.error(err.errors ? Object.values(err.errors).flat()[0] : (err.message ?? "Save failed"));
+    }
+  };
+
+  const reassign = async (value) => {
+    const practitionerId = value ? Number(value) : null;
+    setForm((f) => ({ ...f, assigned_practitioner_id: value }));
+    try {
+      const updated = await api.assignMember(member.id, practitionerId);
+      setMember((m) => ({ ...m, ...updated }));
+      toast.success("Reassigned");
+    } catch (err) {
+      toast.error(err.message ?? "Reassign failed");
+    }
+  };
 
   return (
     <div className="flex flex-col gap-6">
@@ -58,18 +104,18 @@ export default function MemberProfilePage() {
         </p>
         <p className="mt-2 text-[12px] text-[var(--a-text-faint)]">
           {entries.length} journal {entries.length === 1 ? "entry" : "entries"}
-          {lastEntry && <> · last update: {ENTRY_LABEL[lastEntry.type] ?? lastEntry.type} on {new Date(lastEntry.date).toLocaleDateString()}</>}
+          {lastEntry && <> · last update: {ENTRY_LABEL[lastEntry.entry_type] ?? lastEntry.entry_type} on {new Date(lastEntry.created_at).toLocaleDateString()}</>}
         </p>
       </Card>
 
       <div className="grid gap-5 lg:grid-cols-3">
         <Card title="Personal info" className="lg:col-span-2">
           <div className="grid gap-4 sm:grid-cols-2">
-            <Field label="Name"><TextInput value={member.name} onChange={(e) => updateMember(member.id, { name: e.target.value })} /></Field>
-            <Field label="Email"><TextInput value={member.email} onChange={(e) => updateMember(member.id, { email: e.target.value })} /></Field>
-            <Field label="Phone"><TextInput value={member.phone} onChange={(e) => updateMember(member.id, { phone: e.target.value })} /></Field>
+            <Field label="Name"><TextInput value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} onBlur={(e) => saveField({ name: e.target.value })} /></Field>
+            <Field label="Email"><TextInput value={form.email} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))} onBlur={(e) => saveField({ email: e.target.value })} /></Field>
+            <Field label="Phone"><TextInput value={form.phone} onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))} onBlur={(e) => saveField({ phone: e.target.value })} /></Field>
             <Field label="Status">
-              <Select value={member.status} onChange={(e) => updateMember(member.id, { status: e.target.value })}>
+              <Select value={form.status} onChange={(e) => saveField({ status: e.target.value })}>
                 {STATUSES.map((s) => <option key={s} value={s}>{s.replace("_", " ")}</option>)}
               </Select>
             </Field>
@@ -79,10 +125,7 @@ export default function MemberProfilePage() {
         <Card title="Assignment">
           <div className="flex flex-col gap-4">
             <Field label="Assigned practitioner">
-              <Select
-                value={member.assignedPractitioner ?? ""}
-                onChange={(e) => { updateMember(member.id, { assignedPractitioner: e.target.value ? Number(e.target.value) : null }); toast.success("Reassigned"); }}
-              >
+              <Select value={form.assigned_practitioner_id ?? ""} onChange={(e) => reassign(e.target.value)}>
                 <option value="">Unassigned</option>
                 {practitioners.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
               </Select>
@@ -92,8 +135,8 @@ export default function MemberProfilePage() {
               <span className="inline-flex rounded-full bg-[var(--a-accent-muted)] px-3 py-1 text-[12.5px] font-medium text-[var(--a-accent)]">{CATEGORY_LABELS[member.category] ?? member.category}</span>
             </div>
             <div className="text-[12.5px] text-[var(--a-text-muted)]">
-              Joined {new Date(member.joinDate).toLocaleDateString()} · Last contact {new Date(member.lastContact).toLocaleDateString()}
-              {member.sourceQueryId && <> · from query #{member.sourceQueryId}</>}
+              Joined {member.join_date ? new Date(member.join_date).toLocaleDateString() : "—"} · Last contact {member.last_contact_date ? new Date(member.last_contact_date).toLocaleDateString() : "—"}
+              {member.source_submission_id && <> · from query #{member.source_submission_id}</>}
             </div>
           </div>
         </Card>

@@ -9,6 +9,7 @@ use App\Models\People\Member;
 use App\Models\People\MemberJourney;
 use App\Models\Content\MusicTrack;
 use App\Models\Content\Testimonial;
+use App\Models\Content\VolunteerCategory;
 use App\Models\Auth\User;
 use Illuminate\Database\Seeder;
 
@@ -25,6 +26,7 @@ class DemoContentSeeder extends Seeder
         $this->donationMethods();
         $this->musicTracks();
         $this->testimonials();
+        $this->volunteerCategories();
         $this->queriesAndMembers();
     }
 
@@ -101,6 +103,18 @@ class DemoContentSeeder extends Seeder
                     'role' => $t['role'], 'quote' => $t['quote'], 'rating' => $t['rating'],
                     'status' => 'published', 'is_featured' => $t['featured'], 'sort_order' => $i + 1,
                 ],
+            );
+        }
+    }
+
+    private function volunteerCategories(): void
+    {
+        $categories = ['Event Support', 'Teaching & Content', 'Community Outreach', 'Technical & IT'];
+
+        foreach ($categories as $i => $name) {
+            VolunteerCategory::updateOrCreate(
+                ['name' => $name],
+                ['is_active' => true, 'sort_order' => $i + 1],
             );
         }
     }

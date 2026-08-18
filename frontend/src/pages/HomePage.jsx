@@ -11,6 +11,7 @@ import MeditateSection from "../components/sections/MeditateSection";
 import EventsSection from "../components/sections/EventsSection";
 import MissionSection from "../components/sections/MissionSection";
 import ContactSection from "../components/sections/ContactSection";
+import VolunteerSection from "../components/sections/VolunteerSection";
 
 const SECTION_VIEWS = {
   about: AboutSection,
@@ -20,6 +21,7 @@ const SECTION_VIEWS = {
   events: EventsSection,
   mission: MissionSection,
   contact: ContactSection,
+  volunteer: VolunteerSection,
 };
 
 export default function HomePage() {

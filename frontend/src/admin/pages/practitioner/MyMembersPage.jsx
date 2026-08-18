@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import { ArrowLeft, UsersRound } from "lucide-react";
@@ -7,8 +8,8 @@ import { StatusBadge } from "../../ui/Badge";
 import Avatar from "../../ui/Avatar";
 import JourneyPanel from "../../ui/JourneyPanel";
 import MemberSummaryCard from "../../ui/MemberSummaryCard";
-import { useAdminData } from "../../store/useAdminData";
-import { CURRENT_PRACTITIONER_ID, CATEGORY_LABELS } from "../../mock/mockData";
+import { practitionerApi } from "../../../lib/api";
+import { CATEGORY_LABELS } from "../../mock/mockData";
 
 export default function MyMembersPage() {
   const { id } = useParams();
@@ -16,9 +17,16 @@ export default function MyMembersPage() {
 }
 
 function MembersList() {
-  const { members } = useAdminData();
+  const [myMembers, setMyMembers] = useState([]);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-  const myMembers = members.filter((m) => m.assignedPractitioner === CURRENT_PRACTITIONER_ID);
+
+  useEffect(() => {
+    practitionerApi.members()
+      .then(setMyMembers)
+      .catch((err) => toast.error(err.message ?? "Failed to load members"))
+      .finally(() => setLoading(false));
+  }, []);
 
   const columns = [
     {
@@ -33,7 +41,7 @@ function MembersList() {
     { accessorKey: "phone", header: "Mobile", cell: ({ getValue }) => getValue() || "—" },
     { accessorKey: "category", header: "Category", cell: ({ getValue }) => CATEGORY_LABELS[getValue()] ?? getValue() },
     { accessorKey: "status", header: "Status", cell: ({ getValue }) => <StatusBadge status={getValue()} /> },
-    { accessorKey: "lastContact", header: "Last activity", cell: ({ getValue }) => new Date(getValue()).toLocaleDateString() },
+    { accessorKey: "last_contact_date", header: "Last activity", cell: ({ getValue }) => (getValue() ? new Date(getValue()).toLocaleDateString() : "—") },
   ];
 
   return (
@@ -44,20 +52,62 @@ function MembersList() {
       </div>
       <Card padded={false}>
         <div className="p-5 sm:p-6">
-          <DataTable columns={columns} data={myMembers} searchPlaceholder="Search my members..." onRowClick={(m) => navigate(`/admin/my-dashboard/members/${m.id}`)} emptyIcon={UsersRound} emptyTitle="No members assigned yet" />
+          <DataTable columns={columns} data={myMembers} searchPlaceholder="Search my members..." onRowClick={(m) => navigate(`/admin/my-dashboard/members/${m.id}`)} emptyIcon={UsersRound} emptyTitle={loading ? "Loading…" : "No members assigned yet"} />
         </div>
       </Card>
     </div>
   );
 }
 
-function MemberJourney({ id }) {
-  const { members, journeys, updateMember, addJourneyEntry } = useAdminData();
-  const member = members.find((m) => String(m.id) === id);
+function decorateEntries(entries) {
+  return entries.map((e) => ({ ...e, date: e.created_at, type: e.entry_type, addedBy: e.author?.name }));
+}
 
+function MemberJourney({ id }) {
+  const [member, setMember] = useState(null);
+  const [entries, setEntries] = useState([]);
+  const [summary, setSummary] = useState("");
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    Promise.all([practitionerApi.member(id), practitionerApi.journey(id)])
+      .then(([m, j]) => { setMember(m); setSummary(m.summary ?? ""); setEntries(decorateEntries(j)); })
+      .catch((err) => toast.error(err.message ?? "Failed to load member"))
+      .finally(() => setLoading(false));
+  }, [id]);
+
+  if (loading) return <p className="py-20 text-center text-[13.5px] text-[var(--a-text-muted)]">Loading…</p>;
   if (!member) return <p className="text-[13.5px] text-[var(--a-text-muted)]">Member not found.</p>;
 
-  const entries = journeys[member.id] || [];
+  const saveSummary = async (value) => {
+    try {
+      const updated = await practitionerApi.updateSummary(member.id, value);
+      setMember((m) => ({ ...m, ...updated }));
+      toast.success("Summary saved");
+    } catch (err) {
+      toast.error(err.message ?? "Save failed");
+    }
+  };
+
+  const addNote = async (text) => {
+    try {
+      const entry = await practitionerApi.addJourneyEntry(member.id, { entry_type: "note", content: text });
+      setEntries((prev) => [{ ...entry, date: entry.created_at, type: entry.entry_type, addedBy: entry.author?.name }, ...prev]);
+      toast.success("Note added");
+    } catch (err) {
+      toast.error(err.message ?? "Failed to add note");
+    }
+  };
+
+  const addQa = async (question, answer) => {
+    try {
+      const entry = await practitionerApi.addJourneyEntry(member.id, { entry_type: "qa", question, answer });
+      setEntries((prev) => [{ ...entry, date: entry.created_at, type: entry.entry_type, addedBy: entry.author?.name }, ...prev]);
+      toast.success("Q&A saved");
+    } catch (err) {
+      toast.error(err.message ?? "Failed to save Q&A");
+    }
+  };
 
   return (
     <div className="flex flex-col gap-6">
@@ -76,14 +126,10 @@ function MemberJourney({ id }) {
         </div>
       </div>
 
-      <MemberSummaryCard value={member.summary} onChange={(v) => updateMember(member.id, { summary: v })} />
+      <MemberSummaryCard value={summary} onChange={setSummary} onBlur={saveSummary} />
 
       <Card title="Journey timeline">
-        <JourneyPanel
-          entries={entries}
-          onAddNote={(text) => { addJourneyEntry(member.id, { type: "note", content: text, addedBy: "You" }); toast.success("Note added"); }}
-          onAddQa={(question, answer) => { addJourneyEntry(member.id, { type: "qa", question, answer, addedBy: "You" }); toast.success("Q&A saved"); }}
-        />
+        <JourneyPanel entries={entries} onAddNote={addNote} onAddQa={addQa} />
       </Card>
     </div>
   );

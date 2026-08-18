@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { Inbox, ArchiveIcon, UserCheck } from "lucide-react";
 import Card from "../../ui/Card";
@@ -7,19 +7,29 @@ import Modal from "../../ui/Modal";
 import Button from "../../ui/Button";
 import Field, { Select } from "../../ui/Field";
 import { StatusBadge } from "../../ui/Badge";
-import { useAdminData } from "../../store/useAdminData";
+import { api } from "../../../lib/api";
 import { CATEGORIES, CATEGORY_LABELS } from "../../mock/mockData";
 
 const STATUSES = ["new", "assigned", "in_progress", "resolved", "archived"];
 
 export default function QueryInboxPage() {
-  const { queries, users, updateQuery, convertToMember } = useAdminData();
-  const practitioners = users.filter((u) => u.role === "practitioner");
+  const [queries, setQueries] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const practitioners = users.filter((u) => u.primary_role?.name === "practitioner");
 
   const [categoryFilter, setCategoryFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [assignedFilter, setAssignedFilter] = useState("");
   const [active, setActive] = useState(null);
+
+  const loadQueries = () => api.queries().then((res) => setQueries(res.data));
+
+  useEffect(() => {
+    Promise.all([loadQueries(), api.users().then(setUsers)])
+      .catch((err) => toast.error(err.message ?? "Failed to load queries"))
+      .finally(() => setLoading(false));
+  }, []);
 
   const filtered = useMemo(
     () =>
@@ -27,7 +37,7 @@ export default function QueryInboxPage() {
         (q) =>
           (!categoryFilter || q.category === categoryFilter) &&
           (!statusFilter || q.status === statusFilter) &&
-          (!assignedFilter || String(q.assignedTo) === assignedFilter)
+          (!assignedFilter || String(q.assigned_to) === assignedFilter)
       ),
     [queries, categoryFilter, statusFilter, assignedFilter]
   );
@@ -41,9 +51,9 @@ export default function QueryInboxPage() {
       { accessorKey: "phone", header: "Mobile", cell: ({ getValue }) => getValue() || "—" },
       { accessorKey: "category", header: "Category", cell: ({ getValue }) => CATEGORY_LABELS[getValue()] ?? getValue() },
       { accessorKey: "message", header: "Message", enableSorting: false, cell: ({ getValue }) => <span className="line-clamp-1 max-w-[220px] text-[var(--a-text-muted)]">{getValue()}</span> },
-      { accessorKey: "submittedAt", header: "Submitted", cell: ({ getValue }) => new Date(getValue()).toLocaleDateString() },
+      { accessorKey: "created_at", header: "Submitted", cell: ({ getValue }) => new Date(getValue()).toLocaleDateString() },
       { accessorKey: "status", header: "Status", cell: ({ getValue }) => <StatusBadge status={getValue()} /> },
-      { id: "assigned", header: "Assigned to", accessorFn: (q) => practitionerName(q.assignedTo) || "—", cell: ({ getValue }) => getValue() },
+      { id: "assigned", header: "Assigned to", accessorFn: (q) => practitionerName(q.assigned_to) || "—", cell: ({ getValue }) => getValue() },
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [practitioners]
@@ -66,6 +76,50 @@ export default function QueryInboxPage() {
     </>
   );
 
+  const assign = async (value) => {
+    const practitionerId = value ? Number(value) : null;
+    try {
+      const updated = await api.assignQuery(active.id, practitionerId);
+      setActive(updated);
+      setQueries((prev) => prev.map((q) => (q.id === updated.id ? updated : q)));
+      toast.success(practitionerId ? "Assigned" : "Unassigned");
+    } catch (err) {
+      toast.error(err.message ?? "Assign failed");
+    }
+  };
+
+  const setStatus = async (status) => {
+    try {
+      const updated = await api.updateQueryStatus(active.id, status);
+      setActive(updated);
+      setQueries((prev) => prev.map((q) => (q.id === updated.id ? updated : q)));
+    } catch (err) {
+      toast.error(err.message ?? "Update failed");
+    }
+  };
+
+  const convertToMember = async () => {
+    try {
+      await api.convertQueryToMember(active.id);
+      toast.success(`${active.name} converted to a member`);
+      setActive(null);
+      await loadQueries();
+    } catch (err) {
+      toast.error(err.message ?? "Conversion failed");
+    }
+  };
+
+  const archive = async () => {
+    try {
+      const updated = await api.updateQueryStatus(active.id, "archived");
+      setQueries((prev) => prev.map((q) => (q.id === updated.id ? updated : q)));
+      toast.success("Archived");
+      setActive(null);
+    } catch (err) {
+      toast.error(err.message ?? "Archive failed");
+    }
+  };
+
   return (
     <div className="flex flex-col gap-6">
       <div>
@@ -82,7 +136,7 @@ export default function QueryInboxPage() {
             toolbar={toolbar}
             onRowClick={setActive}
             emptyIcon={Inbox}
-            emptyTitle="Inbox is empty"
+            emptyTitle={loading ? "Loading…" : "Inbox is empty"}
           />
         </div>
       </Card>
@@ -93,59 +147,30 @@ export default function QueryInboxPage() {
             <div className="flex flex-wrap items-center gap-2">
               <StatusBadge status={active.status} />
               <span className="text-[12px] text-[var(--a-text-muted)]">{CATEGORY_LABELS[active.category] ?? active.category}</span>
-              <span className="text-[12px] text-[var(--a-text-faint)]">· {new Date(active.submittedAt).toLocaleString()}</span>
+              <span className="text-[12px] text-[var(--a-text-faint)]">· {new Date(active.created_at).toLocaleString()}</span>
             </div>
 
             <p className="rounded-lg bg-[var(--a-bg-surface-2)] p-3.5 text-[13.5px] leading-relaxed text-[var(--a-text-primary)]">{active.message}</p>
 
             <div className="grid gap-4 sm:grid-cols-2">
               <Field label="Assign to">
-                <Select
-                  value={active.assignedTo ?? ""}
-                  onChange={(e) => {
-                    const val = e.target.value ? Number(e.target.value) : null;
-                    updateQuery(active.id, { assignedTo: val, status: val ? "assigned" : "new" });
-                    setActive((a) => ({ ...a, assignedTo: val, status: val ? "assigned" : "new" }));
-                    toast.success(val ? "Assigned" : "Unassigned");
-                  }}
-                >
+                <Select value={active.assigned_to ?? ""} onChange={(e) => assign(e.target.value)}>
                   <option value="">Unassigned</option>
                   {practitioners.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
                 </Select>
               </Field>
               <Field label="Status">
-                <Select
-                  value={active.status}
-                  onChange={(e) => {
-                    updateQuery(active.id, { status: e.target.value });
-                    setActive((a) => ({ ...a, status: e.target.value }));
-                  }}
-                >
+                <Select value={active.status} onChange={(e) => setStatus(e.target.value)}>
                   {STATUSES.map((s) => <option key={s} value={s}>{s.replace("_", " ")}</option>)}
                 </Select>
               </Field>
             </div>
 
             <div className="flex flex-wrap items-center gap-2 border-t border-[var(--a-border)] pt-4">
-              <Button
-                as="button"
-                size="sm"
-                icon={UserCheck}
-                onClick={() => {
-                  convertToMember(active.id);
-                  toast.success(`${active.name} converted to a member`);
-                  setActive(null);
-                }}
-              >
-                Convert to member
+              <Button as="button" size="sm" icon={UserCheck} disabled={!!active.converted_to_member_id} onClick={convertToMember}>
+                {active.converted_to_member_id ? "Already converted" : "Convert to member"}
               </Button>
-              <Button
-                as="button"
-                size="sm"
-                variant="secondary"
-                icon={ArchiveIcon}
-                onClick={() => { updateQuery(active.id, { status: "archived" }); toast.success("Archived"); setActive(null); }}
-              >
+              <Button as="button" size="sm" variant="secondary" icon={ArchiveIcon} onClick={archive}>
                 Archive
               </Button>
             </div>

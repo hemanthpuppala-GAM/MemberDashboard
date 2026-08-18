@@ -1,12 +1,12 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import toast from "react-hot-toast";
 import { Files, Image, Inbox, UsersRound, UserCog, CalendarDays, ArrowRight } from "lucide-react";
 import { BarChart, Bar, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 import Card from "../ui/Card";
 import StatCard from "../ui/StatCard";
 import { useAuth } from "../useAuth";
-import {
-  PAGES, MEDIA, QUERIES, MEMBERS, USERS, ACTIVITY_LOG, REPORTS, DASHBOARD_TRENDS,
-} from "../mock/mockData";
+import { api } from "../../lib/api";
 
 const QUICK_LINKS = [
   { to: "/admin/cms/pages/new", label: "New page", icon: Files },
@@ -16,7 +16,7 @@ const QUICK_LINKS = [
 ];
 
 function timeAgo(iso) {
-  const diffMs = Date.parse("2026-08-14T09:00:00Z") - Date.parse(iso);
+  const diffMs = Date.now() - Date.parse(iso);
   const hrs = Math.round(diffMs / 3.6e6);
   if (hrs < 1) return "just now";
   if (hrs < 24) return `${hrs}h ago`;
@@ -25,8 +25,39 @@ function timeAgo(iso) {
 
 export default function DashboardPage() {
   const { user } = useAuth();
-  const newQueries = QUERIES.filter((q) => q.status === "new").length;
-  const practitioners = USERS.filter((u) => u.role === "practitioner").length;
+  const [stats, setStats] = useState(null);
+  const [submissionsMonthly, setSubmissionsMonthly] = useState([]);
+  const [activity, setActivity] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    Promise.all([
+      api.dashboard(),
+      api.pages(),
+      api.media(),
+      api.members(),
+      api.users(),
+      api.reportsOverview(),
+      api.reportsActivityLog({ per_page: 6 }),
+    ])
+      .then(([dash, pages, media, membersRes, users, overview, log]) => {
+        setStats({
+          pages: pages.length,
+          media: media.length,
+          newQueries: dash.contact_new,
+          activeMembers: membersRes.data.filter((m) => m.status !== "archived").length,
+          practitioners: users.filter((u) => u.primary_role?.name === "practitioner").length,
+        });
+        setSubmissionsMonthly(overview.submissions_monthly);
+        setActivity(log.data);
+      })
+      .catch((err) => toast.error(err.message ?? "Failed to load dashboard"))
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading || !stats) {
+    return <p className="py-20 text-center text-[13.5px] text-[var(--a-text-muted)]">Loading…</p>;
+  }
 
   return (
     <div className="flex flex-col gap-6">
@@ -38,18 +69,18 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-5">
-        <StatCard icon={Files} label="Website pages" value={PAGES.length} trend={8} spark={DASHBOARD_TRENDS.pages} />
-        <StatCard icon={Image} label="Media items" value={MEDIA.length} trend={3} spark={DASHBOARD_TRENDS.media} />
-        <StatCard icon={Inbox} label="New queries" value={newQueries} trend={-12} spark={DASHBOARD_TRENDS.queries} />
-        <StatCard icon={UsersRound} label="Active members" value={MEMBERS.filter((m) => m.status !== "archived").length} trend={15} spark={DASHBOARD_TRENDS.members} />
-        <StatCard icon={UserCog} label="Practitioners" value={practitioners} trend={0} />
+        <StatCard icon={Files} label="Website pages" value={stats.pages} />
+        <StatCard icon={Image} label="Media items" value={stats.media} />
+        <StatCard icon={Inbox} label="New queries" value={stats.newQueries} />
+        <StatCard icon={UsersRound} label="Active members" value={stats.activeMembers} />
+        <StatCard icon={UserCog} label="Practitioners" value={stats.practitioners} />
       </div>
 
       <div className="grid gap-5 lg:grid-cols-3">
         <Card title="Contact submissions" description="Last 6 months" className="lg:col-span-2">
           <div className="h-56">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={REPORTS.submissionsMonthly}>
+              <BarChart data={submissionsMonthly}>
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--a-border)" vertical={false} />
                 <XAxis dataKey="month" tick={{ fill: "var(--a-text-muted)", fontSize: 12 }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fill: "var(--a-text-muted)", fontSize: 12 }} axisLine={false} tickLine={false} width={28} />
@@ -88,17 +119,21 @@ export default function DashboardPage() {
       </div>
 
       <Card title="Recent activity" description="Latest changes across the admin panel" actions={<Link to="/admin/reports" className="text-[12.5px] font-semibold text-[var(--a-accent)] hover:underline">View log</Link>}>
-        <div className="flex flex-col divide-y divide-[var(--a-border)]">
-          {ACTIVITY_LOG.slice(0, 6).map((log) => (
-            <div key={log.id} className="flex items-center justify-between gap-3 py-3 first:pt-0 last:pb-0">
-              <div className="text-[13.5px] text-[var(--a-text-primary)]">
-                <span className="font-semibold">{log.user}</span>{" "}
-                <span className="text-[var(--a-text-muted)]">{log.action}</span> {log.target}
+        {activity.length === 0 ? (
+          <p className="py-4 text-[13.5px] text-[var(--a-text-muted)]">No activity recorded yet.</p>
+        ) : (
+          <div className="flex flex-col divide-y divide-[var(--a-border)]">
+            {activity.map((log) => (
+              <div key={log.id} className="flex items-center justify-between gap-3 py-3 first:pt-0 last:pb-0">
+                <div className="text-[13.5px] text-[var(--a-text-primary)]">
+                  <span className="font-semibold">{log.user?.name ?? "System"}</span>{" "}
+                  <span className="text-[var(--a-text-muted)]">{log.action}</span> {log.target_type}
+                </div>
+                <span className="shrink-0 text-[12px] text-[var(--a-text-faint)]">{timeAgo(log.created_at)}</span>
               </div>
-              <span className="shrink-0 text-[12px] text-[var(--a-text-faint)]">{timeAgo(log.timestamp)}</span>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </Card>
     </div>
   );

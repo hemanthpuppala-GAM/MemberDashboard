@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { Plus, Pencil, Trash2, FileText, Eye, EyeOff, Lock } from "lucide-react";
@@ -8,18 +8,43 @@ import IconButton from "../../ui/IconButton";
 import DataTable from "../../ui/DataTable";
 import { StatusBadge } from "../../ui/Badge";
 import ConfirmModal from "../../ui/ConfirmModal";
-import { useAdminData } from "../../store/useAdminData";
-import { LANGUAGES } from "../../mock/mockData";
+import { api } from "../../../lib/api";
 
 export default function PagesListPage() {
-  const { pages, updatePage, deletePage } = useAdminData();
+  const [pages, setPages] = useState([]);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const [toDelete, setToDelete] = useState(null);
 
-  const togglePublish = (page) => {
+  const loadPages = () => api.pages().then(setPages);
+
+  useEffect(() => {
+    loadPages()
+      .catch((err) => toast.error(err.message ?? "Failed to load pages"))
+      .finally(() => setLoading(false));
+  }, []);
+
+  const togglePublish = async (page) => {
     const next = page.status === "published" ? "draft" : "published";
-    updatePage(page.id, { status: next });
-    toast.success(`"${page.title}" ${next === "published" ? "published" : "unpublished"}`);
+    try {
+      const updated = await api.updatePageStatus(page.slug, next);
+      setPages((prev) => prev.map((p) => (p.id === page.id ? { ...p, status: updated.status } : p)));
+      toast.success(`"${page.title}" ${next === "published" ? "published" : "unpublished"}`);
+    } catch (err) {
+      toast.error(err.message ?? "Update failed");
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      await api.deletePage(toDelete.slug);
+      toast.success("Page deleted");
+      await loadPages();
+    } catch (err) {
+      toast.error(err.message ?? "Delete failed");
+    } finally {
+      setToDelete(null);
+    }
   };
 
   const columns = useMemo(
@@ -30,40 +55,17 @@ export default function PagesListPage() {
         cell: ({ row }) => (
           <div className="flex items-center gap-2">
             <span className="font-semibold text-[var(--a-text-primary)]">{row.original.title}</span>
-            {row.original.isBuiltin && <Lock size={12} className="text-[var(--a-text-faint)]" />}
+            {row.original.is_builtin && <Lock size={12} className="text-[var(--a-text-faint)]" />}
           </div>
         ),
       },
       { accessorKey: "slug", header: "Slug", cell: ({ getValue }) => <span className="text-[var(--a-text-muted)]">/{getValue()}</span> },
       { accessorKey: "status", header: "Status", cell: ({ getValue }) => <StatusBadge status={getValue()} /> },
-      { id: "sections", header: "Sections", accessorFn: (p) => p.sections.length, cell: ({ getValue }) => getValue() },
+      { accessorKey: "sections_count", header: "Sections" },
       {
-        accessorKey: "lastEdited",
+        accessorKey: "updated_at",
         header: "Last edited",
-        cell: ({ getValue }) => new Date(getValue()).toLocaleDateString(undefined, { month: "short", day: "numeric" }),
-      },
-      {
-        id: "languages",
-        header: "Languages",
-        enableSorting: false,
-        cell: ({ row }) => (
-          <div className="flex gap-1">
-            {LANGUAGES.filter((l) => l.enabled).map((l) => {
-              const pct = row.original.langCoverage[l.code] ?? 0;
-              return (
-                <span
-                  key={l.code}
-                  title={`${l.name}: ${pct}%`}
-                  className={`flex h-5 w-5 items-center justify-center rounded text-[11px] ${
-                    pct === 0 ? "opacity-30" : pct < 100 ? "opacity-70" : ""
-                  }`}
-                >
-                  {l.flag}
-                </span>
-              );
-            })}
-          </div>
-        ),
+        cell: ({ getValue }) => (getValue() ? new Date(getValue()).toLocaleDateString(undefined, { month: "short", day: "numeric" }) : "—"),
       },
       {
         id: "actions",
@@ -83,9 +85,9 @@ export default function PagesListPage() {
                 icon={Trash2}
                 label="Delete"
                 variant="danger"
-                disabled={page.isBuiltin}
-                onClick={() => !page.isBuiltin && setToDelete(page)}
-                className={page.isBuiltin ? "cursor-not-allowed opacity-30" : ""}
+                disabled={page.is_builtin}
+                onClick={() => !page.is_builtin && setToDelete(page)}
+                className={page.is_builtin ? "cursor-not-allowed opacity-30" : ""}
               />
             </div>
           );
@@ -114,8 +116,8 @@ export default function PagesListPage() {
             searchPlaceholder="Search pages..."
             onRowClick={(page) => navigate(`/admin/cms/pages/${page.slug}`)}
             emptyIcon={FileText}
-            emptyTitle="No pages yet"
-            emptyDescription="Create your first page to get started."
+            emptyTitle={loading ? "Loading pages…" : "No pages yet"}
+            emptyDescription={loading ? undefined : "Create your first page to get started."}
           />
         </div>
       </Card>
@@ -125,10 +127,7 @@ export default function PagesListPage() {
         onClose={() => setToDelete(null)}
         title={`Delete "${toDelete?.title}"?`}
         description="The page and all of its sections will be removed."
-        onConfirm={() => {
-          deletePage(toDelete.id);
-          toast.success("Page deleted");
-        }}
+        onConfirm={handleDelete}
       />
     </div>
   );

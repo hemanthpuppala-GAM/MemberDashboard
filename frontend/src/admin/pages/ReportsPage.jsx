@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import {
   ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell, AreaChart, Area,
@@ -9,34 +9,48 @@ import Card from "../ui/Card";
 import Button from "../ui/Button";
 import Tabs from "../ui/Tabs";
 import DataTable from "../ui/DataTable";
-import { REPORTS, ACTIVITY_LOG } from "../mock/mockData";
+import { api, downloadAuthed } from "../../lib/api";
 
 const PIE_COLORS = ["var(--a-accent)", "var(--a-focus)", "var(--a-success)", "var(--a-warning)"];
 const TOOLTIP_STYLE = { background: "var(--a-bg-surface)", border: "1px solid var(--a-border)", borderRadius: 8, fontSize: 12.5 };
-
 const axisProps = { tick: { fill: "var(--a-text-muted)", fontSize: 12 }, axisLine: false, tickLine: false };
 
-function exportCsv(rows, headers, filename) {
-  const csv = [headers, ...rows].map((r) => r.map((v) => `"${String(v ?? "").replace(/"/g, '""')}"`).join(",")).join("\n");
-  const blob = new Blob([csv], { type: "text/csv" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  a.click();
-  URL.revokeObjectURL(url);
-}
+const toEntries = (obj, keyName, valueName = "count") => Object.entries(obj ?? {}).map(([k, v]) => ({ [keyName]: k, [valueName]: v }));
 
 export default function ReportsPage() {
   const [tab, setTab] = useState("overview");
+  const [overview, setOverview] = useState(null);
+  const [membersReport, setMembersReport] = useState(null);
+  const [activityLog, setActivityLog] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    Promise.all([api.reportsOverview(), api.reportsMembers(), api.reportsPractitioners(), api.reportsActivityLog({ per_page: 100 })])
+      .then(([ov, mem, prac, log]) => {
+        setOverview(ov);
+        setMembersReport({ ...mem, practitionerWorkload: prac });
+        setActivityLog(log.data);
+      })
+      .catch((err) => toast.error(err.message ?? "Failed to load reports"))
+      .finally(() => setLoading(false));
+  }, []);
 
   const activityColumns = [
-    { accessorKey: "user", header: "User", cell: ({ getValue }) => <span className="font-semibold text-[var(--a-text-primary)]">{getValue()}</span> },
+    { id: "user", header: "User", accessorFn: (l) => l.user?.name ?? "System", cell: ({ getValue }) => <span className="font-semibold text-[var(--a-text-primary)]">{getValue()}</span> },
     { accessorKey: "action", header: "Action" },
-    { accessorKey: "target", header: "Target" },
-    { accessorKey: "ip", header: "IP address" },
-    { accessorKey: "timestamp", header: "When", cell: ({ getValue }) => new Date(getValue()).toLocaleString() },
+    { accessorKey: "target_type", header: "Target" },
+    { accessorKey: "ip_address", header: "IP address" },
+    { accessorKey: "created_at", header: "When", cell: ({ getValue }) => new Date(getValue()).toLocaleString() },
   ];
+
+  const exportActivityCsv = () => downloadAuthed("/admin/reports/export?type=activity-log&format=csv", "activity-log.csv").catch((err) => toast.error(err.message ?? "Export failed"));
+
+  if (loading) {
+    return <p className="py-20 text-center text-[13.5px] text-[var(--a-text-muted)]">Loading reports…</p>;
+  }
+
+  const submissionsByCategory = toEntries(overview.by_category, "category");
+  const statusBreakdown = toEntries(membersReport.status_breakdown, "status");
 
   return (
     <div className="flex flex-col gap-6">
@@ -46,12 +60,8 @@ export default function ReportsPage() {
           <p className="mt-1 text-[13.5px] text-[var(--a-text-muted)]">Website submissions, member/practitioner health, and audit trail.</p>
         </div>
         <div className="flex gap-2">
-          <Button as="button" variant="secondary" size="sm" icon={Download} onClick={() => exportCsv(ACTIVITY_LOG.map((l) => [l.user, l.action, l.target, l.ip, l.timestamp]), ["User", "Action", "Target", "IP", "When"], "activity-log.csv")}>
-            Export CSV
-          </Button>
-          <Button as="button" variant="secondary" size="sm" icon={FileText} onClick={() => toast("PDF export will be available once the backend is wired up.")}>
-            Export PDF
-          </Button>
+          <Button as="button" variant="secondary" size="sm" icon={Download} onClick={exportActivityCsv}>Export CSV</Button>
+          <Button as="button" variant="secondary" size="sm" icon={FileText} onClick={() => toast("PDF export isn't wired up on the backend yet — use CSV.")}>Export PDF</Button>
         </div>
       </div>
 
@@ -66,7 +76,7 @@ export default function ReportsPage() {
           <Card title="Submissions per month" className="lg:col-span-2">
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={REPORTS.submissionsMonthly}>
+                <BarChart data={overview.submissions_monthly}>
                   <CartesianGrid strokeDasharray="3 3" stroke="var(--a-border)" vertical={false} />
                   <XAxis dataKey="month" {...axisProps} />
                   <YAxis {...axisProps} width={28} />
@@ -77,30 +87,16 @@ export default function ReportsPage() {
             </div>
           </Card>
 
-          <Card title="Submissions by category">
+          <Card title="Submissions by category" className="lg:col-span-2">
             <div className="h-72">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
-                  <Pie data={REPORTS.byCategory} dataKey="count" nameKey="category" innerRadius={48} outerRadius={72} paddingAngle={3}>
-                    {REPORTS.byCategory.map((_, i) => <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />)}
+                  <Pie data={submissionsByCategory} dataKey="count" nameKey="category" innerRadius={48} outerRadius={72} paddingAngle={3}>
+                    {submissionsByCategory.map((_, i) => <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />)}
                   </Pie>
                   <Tooltip contentStyle={TOOLTIP_STYLE} />
                   <Legend wrapperStyle={{ fontSize: 12.5 }} />
                 </PieChart>
-              </ResponsiveContainer>
-            </div>
-          </Card>
-
-          <Card title="Peak submission hours" description="Placeholder distribution">
-            <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={[{ h: "6am", c: 4 }, { h: "9am", c: 12 }, { h: "12pm", c: 18 }, { h: "3pm", c: 9 }, { h: "6pm", c: 22 }, { h: "9pm", c: 15 }]}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="var(--a-border)" vertical={false} />
-                  <XAxis dataKey="h" {...axisProps} />
-                  <YAxis {...axisProps} width={28} />
-                  <Tooltip cursor={{ fill: "var(--a-bg-surface-2)" }} contentStyle={TOOLTIP_STYLE} />
-                  <Bar dataKey="c" fill="var(--a-focus)" radius={[6, 6, 0, 0]} />
-                </BarChart>
               </ResponsiveContainer>
             </div>
           </Card>
@@ -112,7 +108,7 @@ export default function ReportsPage() {
           <Card title="Members per practitioner">
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={REPORTS.membersByPractitioner} layout="vertical">
+                <BarChart data={membersReport.members_by_practitioner} layout="vertical">
                   <CartesianGrid strokeDasharray="3 3" stroke="var(--a-border)" horizontal={false} />
                   <XAxis type="number" {...axisProps} />
                   <YAxis type="category" dataKey="name" {...axisProps} width={90} />
@@ -127,8 +123,8 @@ export default function ReportsPage() {
             <div className="h-72">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
-                  <Pie data={REPORTS.statusBreakdown} dataKey="count" nameKey="status" innerRadius={48} outerRadius={72} paddingAngle={3}>
-                    {REPORTS.statusBreakdown.map((_, i) => <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />)}
+                  <Pie data={statusBreakdown} dataKey="count" nameKey="status" innerRadius={48} outerRadius={72} paddingAngle={3}>
+                    {statusBreakdown.map((_, i) => <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />)}
                   </Pie>
                   <Tooltip contentStyle={TOOLTIP_STYLE} />
                   <Legend wrapperStyle={{ fontSize: 12.5 }} />
@@ -140,7 +136,7 @@ export default function ReportsPage() {
           <Card title="New vs resolved" className="lg:col-span-2">
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={REPORTS.newVsResolvedMonthly}>
+                <AreaChart data={membersReport.new_vs_resolved_monthly}>
                   <CartesianGrid strokeDasharray="3 3" stroke="var(--a-border)" vertical={false} />
                   <XAxis dataKey="month" {...axisProps} />
                   <YAxis {...axisProps} width={28} />
@@ -164,19 +160,19 @@ export default function ReportsPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {REPORTS.practitionerWorkload.map((row) => (
+                  {membersReport.practitionerWorkload.map((row) => (
                     <tr key={row.name} className="border-t border-[var(--a-border)]">
                       <td className="px-4 py-3 text-[13.5px] font-medium text-[var(--a-text-primary)]">{row.name}</td>
                       <td className="px-4 py-3 text-[13.5px]">{row.members}</td>
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2">
                           <div className="h-1.5 w-24 overflow-hidden rounded-full bg-[var(--a-bg-surface-2)]">
-                            <div className="h-full rounded-full bg-[var(--a-accent)]" style={{ width: `${Math.min(100, (row.members / row.capacity) * 100)}%` }} />
+                            <div className="h-full rounded-full bg-[var(--a-accent)]" style={{ width: `${row.capacity ? Math.min(100, (row.members / row.capacity) * 100) : 0}%` }} />
                           </div>
-                          <span className="text-[12px] text-[var(--a-text-muted)]">{row.members}/{row.capacity}</span>
+                          <span className="text-[12px] text-[var(--a-text-muted)]">{row.members}/{row.capacity ?? "—"}</span>
                         </div>
                       </td>
-                      <td className="px-4 py-3 text-[13.5px]">{row.resolvedThisMonth}</td>
+                      <td className="px-4 py-3 text-[13.5px]">{row.resolved_this_month}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -189,7 +185,7 @@ export default function ReportsPage() {
       {tab === "activity" && (
         <Card padded={false}>
           <div className="p-5 sm:p-6">
-            <DataTable columns={activityColumns} data={ACTIVITY_LOG} searchPlaceholder="Search activity..." />
+            <DataTable columns={activityColumns} data={activityLog} searchPlaceholder="Search activity..." />
           </div>
         </Card>
       )}

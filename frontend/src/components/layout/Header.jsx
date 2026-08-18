@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import logoMark from "../../assets/logo-128.webp";
 import Button from "../ui/Button";
 
@@ -7,6 +8,7 @@ const NAV_LINKS = [
   { label: "Meditation", view: "practice" },
   { label: "Events", view: "events" },
   { label: "Mission", view: "mission" },
+  { label: "Volunteer", view: "volunteer" },
   { label: "Contact", view: "contact" },
 ];
 
@@ -65,7 +67,8 @@ export default function Header({ onLogoClick, onNavigate, activeView = "hub" }) 
 
       <div className="flex min-w-0 shrink-0 items-center justify-end">
         <Button
-          href="https://goldenagewisdom.org/join"
+          as={Link}
+          to="/dashboard"
           className="px-4 py-1.5 text-[13.5px] shadow-[0_0_20px_rgba(213,183,124,0.25)]"
         >
           Join free

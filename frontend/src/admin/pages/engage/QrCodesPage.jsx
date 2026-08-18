@@ -1,7 +1,7 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
-import { QRCodeCanvas, QRCodeSVG } from "qrcode.react";
-import { Plus, QrCode as QrIcon, Trash2, Download, Copy, UploadCloud } from "lucide-react";
+import { QRCodeSVG } from "qrcode.react";
+import { Plus, QrCode as QrIcon, Trash2, Download, Copy } from "lucide-react";
 import Card from "../../ui/Card";
 import Button from "../../ui/Button";
 import IconButton from "../../ui/IconButton";
@@ -10,7 +10,7 @@ import Modal from "../../ui/Modal";
 import ConfirmModal from "../../ui/ConfirmModal";
 import Field, { TextInput, Select } from "../../ui/Field";
 import ColorField from "../../ui/ColorField";
-import { useAdminData } from "../../store/useAdminData";
+import { api, downloadAuthed, storageUrl } from "../../../lib/api";
 
 const TYPES = [
   { value: "url", label: "URL", fields: [["url", "URL"]] },
@@ -23,7 +23,7 @@ const TYPES = [
   { value: "location", label: "Location", fields: [["lat", "Latitude"], ["lng", "Longitude"]] },
 ];
 
-function buildValue(type, d = {}) {
+function buildPreviewValue(type, d = {}) {
   switch (type) {
     case "url": return d.url || "https://";
     case "text": return d.text || "";
@@ -37,74 +37,93 @@ function buildValue(type, d = {}) {
   }
 }
 
-const EMPTY = { title: "", type: "url", inputData: {}, fg: "#111827", bg: "#FFFFFF", size: 220, ecLevel: "M", logo: "" };
+const EMPTY = { title: "", type: "url", inputData: {}, fg: "#111827", bg: "#FFFFFF", size: 300, ecLevel: "M" };
 
 export default function QrCodesPage() {
-  const { qrCodes, addQrCode, deleteQrCode, bumpQrDownload } = useAdminData();
+  const [qrCodes, setQrCodes] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [form, setForm] = useState(EMPTY);
+  const [saving, setSaving] = useState(false);
   const [toDelete, setToDelete] = useState(null);
-  const canvasRef = useRef(null);
-  const logoInput = useRef(null);
+
+  const loadQrCodes = () => api.qrCodes().then(setQrCodes);
+
+  useEffect(() => {
+    loadQrCodes()
+      .catch((err) => toast.error(err.message ?? "Failed to load QR codes"))
+      .finally(() => setLoading(false));
+  }, []);
 
   const typeDef = TYPES.find((t) => t.value === form.type);
-  const value = useMemo(() => buildValue(form.type, form.inputData), [form.type, form.inputData]);
+  const previewValue = useMemo(() => buildPreviewValue(form.type, form.inputData), [form.type, form.inputData]);
 
   const setField = (key) => (v) => setForm((f) => ({ ...f, inputData: { ...f.inputData, [key]: v } }));
 
-  const handleSave = () => {
-    addQrCode({ title: form.title, type: form.type, inputData: form.inputData, fg: form.fg, bg: form.bg });
-    toast.success("QR code saved");
-    setModalOpen(false);
-    setForm(EMPTY);
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      await api.generateQrCode({
+        title: form.title, type: form.type, input_data: form.inputData,
+        options: { size: form.size, fg: form.fg, bg: form.bg, errorCorrection: form.ecLevel },
+      });
+      toast.success("QR code generated");
+      setModalOpen(false);
+      setForm(EMPTY);
+      await loadQrCodes();
+    } catch (err) {
+      toast.error(err.errors ? Object.values(err.errors).flat()[0] : (err.message ?? "Generation failed"));
+    } finally {
+      setSaving(false);
+    }
   };
 
-  const downloadPng = () => {
-    const canvas = canvasRef.current?.querySelector("canvas");
-    if (!canvas) return;
-    const a = document.createElement("a");
-    a.href = canvas.toDataURL("image/png");
-    a.download = `${form.title || "qr-code"}.png`;
-    a.click();
+  const handleDownload = async (qr) => {
+    try {
+      await downloadAuthed(api.qrCodeDownloadPath(qr.id), `${qr.title || "qr-code"}.png`);
+      setQrCodes((prev) => prev.map((q) => (q.id === qr.id ? { ...q, download_count: q.download_count + 1 } : q)));
+    } catch (err) {
+      toast.error(err.message ?? "Download failed");
+    }
   };
 
-  const downloadSvg = () => {
-    const svg = canvasRef.current?.querySelector("svg");
-    if (!svg) return;
-    const blob = new Blob([new XMLSerializer().serializeToString(svg)], { type: "image/svg+xml" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `${form.title || "qr-code"}.svg`;
-    a.click();
-    URL.revokeObjectURL(url);
+  const copyValue = async (qr) => {
+    try { await navigator.clipboard.writeText(buildPreviewValue(qr.type, qr.input_data)); toast.success("Value copied"); } catch { toast.error("Couldn't copy"); }
   };
 
-  const copyValue = async () => {
-    try { await navigator.clipboard.writeText(value); toast.success("Value copied"); } catch { toast.error("Couldn't copy"); }
+  const handleDelete = async () => {
+    try {
+      await api.deleteQrCode(toDelete.id);
+      toast.success("QR code deleted");
+      await loadQrCodes();
+    } catch (err) {
+      toast.error(err.message ?? "Delete failed");
+    } finally {
+      setToDelete(null);
+    }
   };
 
   const columns = useMemo(
     () => [
       {
         id: "preview", header: "", enableSorting: false,
-        cell: ({ row }) => <QRCodeCanvas value={buildValue(row.original.type, row.original.inputData)} size={36} fgColor={row.original.fg} bgColor={row.original.bg} />,
+        cell: ({ row }) => <img src={storageUrl(row.original.file_path)} alt="" className="h-9 w-9 rounded border border-[var(--a-border)] object-contain" />,
       },
       { accessorKey: "title", header: "Title", cell: ({ getValue }) => <span className="font-semibold text-[var(--a-text-primary)]">{getValue()}</span> },
       { id: "type", header: "Type", accessorFn: (q) => TYPES.find((t) => t.value === q.type)?.label ?? q.type },
-      { accessorKey: "createdAt", header: "Created", cell: ({ getValue }) => new Date(getValue()).toLocaleDateString() },
-      { accessorKey: "downloads", header: "Downloads" },
+      { accessorKey: "created_at", header: "Created", cell: ({ getValue }) => new Date(getValue()).toLocaleDateString() },
+      { accessorKey: "download_count", header: "Downloads" },
       {
         id: "actions", header: "", enableSorting: false,
         cell: ({ row }) => (
           <div className="flex justify-end gap-1">
-            <IconButton icon={Download} label="Download" onClick={() => { bumpQrDownload(row.original.id); toast.success("Download counted (demo)"); }} />
+            <IconButton icon={Copy} label="Copy value" onClick={() => copyValue(row.original)} />
+            <IconButton icon={Download} label="Download" onClick={() => handleDownload(row.original)} />
             <IconButton icon={Trash2} label="Delete" variant="danger" onClick={() => setToDelete(row.original)} />
           </div>
         ),
       },
     ],
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
 
@@ -115,12 +134,12 @@ export default function QrCodesPage() {
           <h1 className="text-[24px] font-bold text-[var(--a-text-primary)]">QR codes</h1>
           <p className="mt-1 text-[13.5px] text-[var(--a-text-muted)]">Generate, customize, and download QR codes for print or digital use.</p>
         </div>
-        <Button as="button" icon={Plus} onClick={() => { setForm(EMPTY); setModalOpen(true); }}>New QR code</Button>
+        <Button as="button" icon={Plus} onClick={() => { setForm(EMPTY); setModalOpen(true); }} disabled={loading}>New QR code</Button>
       </div>
 
       <Card padded={false}>
         <div className="p-5 sm:p-6">
-          <DataTable columns={columns} data={qrCodes} searchPlaceholder="Search QR codes..." emptyIcon={QrIcon} emptyTitle="No QR codes yet" />
+          <DataTable columns={columns} data={qrCodes} searchPlaceholder="Search QR codes..." emptyIcon={QrIcon} emptyTitle={loading ? "Loading…" : "No QR codes yet"} />
         </div>
       </Card>
 
@@ -129,7 +148,7 @@ export default function QrCodesPage() {
         onClose={() => setModalOpen(false)}
         title="New QR code"
         size="xl"
-        footer={<Button as="button" onClick={handleSave} disabled={!form.title}>Save QR code</Button>}
+        footer={<Button as="button" onClick={handleSave} disabled={!form.title || saving}>{saving ? "Generating…" : "Generate QR code"}</Button>}
       >
         <div className="grid gap-6 lg:grid-cols-2">
           <div className="flex flex-col gap-4">
@@ -156,27 +175,13 @@ export default function QrCodesPage() {
                 </Select>
               </Field>
             </div>
-            <Field label="Center logo" hint="Optional">
-              <div className="flex items-center gap-2">
-                <Button as="button" type="button" variant="secondary" size="sm" icon={UploadCloud} onClick={() => logoInput.current?.click()}>Upload logo</Button>
-                {form.logo && <span className="text-[12px] text-[var(--a-text-muted)]">Logo attached</span>}
-                <input ref={logoInput} type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files[0] && setForm((f) => ({ ...f, logo: URL.createObjectURL(e.target.files[0]) }))} />
-              </div>
-            </Field>
           </div>
 
           <div className="flex flex-col items-center gap-4">
             <p className="self-start text-[11px] font-semibold tracking-wide text-[var(--a-text-faint)] uppercase">Live preview</p>
-            <div ref={canvasRef} className="flex items-center justify-center rounded-xl border border-[var(--a-border)] bg-[var(--a-bg-surface)] p-6">
-              <div className="relative">
-                <QRCodeCanvas value={value} size={form.size} fgColor={form.fg} bgColor={form.bg} level={form.ecLevel} className="hidden" />
-                <QRCodeSVG value={value} size={form.size} fgColor={form.fg} bgColor={form.bg} level={form.ecLevel} imageSettings={form.logo ? { src: form.logo, height: form.size * 0.2, width: form.size * 0.2, excavate: true } : undefined} />
-              </div>
-            </div>
-            <div className="flex flex-wrap justify-center gap-2">
-              <Button as="button" type="button" variant="secondary" size="sm" icon={Download} onClick={downloadPng}>PNG</Button>
-              <Button as="button" type="button" variant="secondary" size="sm" icon={Download} onClick={downloadSvg}>SVG</Button>
-              <Button as="button" type="button" variant="secondary" size="sm" icon={Copy} onClick={copyValue}>Copy value</Button>
+            <p className="self-start text-[11.5px] text-[var(--a-text-muted)]">Rendered client-side for preview — the real file is generated server-side on save.</p>
+            <div className="flex items-center justify-center rounded-xl border border-[var(--a-border)] bg-[var(--a-bg-surface)] p-6">
+              <QRCodeSVG value={previewValue} size={Math.min(form.size, 260)} fgColor={form.fg} bgColor={form.bg} level={form.ecLevel} />
             </div>
           </div>
         </div>
@@ -186,7 +191,7 @@ export default function QrCodesPage() {
         open={!!toDelete}
         onClose={() => setToDelete(null)}
         title={`Delete "${toDelete?.title}"?`}
-        onConfirm={() => { deleteQrCode(toDelete.id); toast.success("QR code deleted"); }}
+        onConfirm={handleDelete}
       />
     </div>
   );
