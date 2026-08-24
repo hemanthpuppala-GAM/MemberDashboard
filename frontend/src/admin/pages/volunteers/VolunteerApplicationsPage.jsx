@@ -9,38 +9,65 @@ import ConfirmModal from "../../ui/ConfirmModal";
 import Field, { Select } from "../../ui/Field";
 import { StatusBadge } from "../../ui/Badge";
 import { api } from "../../../lib/api";
+import { usePermissions } from "../../usePermissions";
 
 const STATUSES = ["new", "reviewing", "contacted", "approved", "archived"];
 
 export default function VolunteerApplicationsPage() {
+  const { can } = usePermissions();
+  const canEdit = can("volunteers.edit");
+  const canDelete = can("volunteers.delete");
+
   const [applications, setApplications] = useState([]);
+  const [lastPage, setLastPage] = useState(1);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const [categoryFilter, setCategoryFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
+  const [search, setSearch] = useState("");
+  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 20 });
   const [active, setActive] = useState(null);
   const [toDelete, setToDelete] = useState(null);
 
-  const loadApplications = () => api.volunteerApplications().then((res) => setApplications(res.data));
+  const loadApplications = () =>
+    api
+      .volunteerApplications({
+        page: pagination.pageIndex + 1,
+        per_page: pagination.pageSize,
+        ...(search ? { search } : {}),
+        ...(categoryFilter ? { category_id: categoryFilter } : {}),
+        ...(statusFilter ? { status: statusFilter } : {}),
+      })
+      .then((res) => {
+        setApplications(res.data);
+        setLastPage(res.last_page ?? 1);
+      });
+
+  const handleSearchChange = (value) => {
+    setSearch(value);
+    setPagination((p) => ({ ...p, pageIndex: 0 }));
+  };
+
+  const handleFilterChange = (setter) => (value) => {
+    setter(value);
+    setPagination((p) => ({ ...p, pageIndex: 0 }));
+  };
 
   useEffect(() => {
-    Promise.all([loadApplications(), api.volunteerCategories().then(setCategories)])
-      .catch((err) => toast.error(err.message ?? "Failed to load volunteer applications"))
-      .finally(() => setLoading(false));
+    api.volunteerCategories().then(setCategories).catch((err) => toast.error(err.message ?? "Failed to load categories"));
   }, []);
 
-  const categoryName = (id) => categories.find((c) => c.id === id)?.name;
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- resets the spinner when page/search/filters change
+    setLoading(true);
+    loadApplications()
+      .catch((err) => toast.error(err.message ?? "Failed to load volunteer applications"))
+      .finally(() => setLoading(false));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pagination.pageIndex, pagination.pageSize, search, categoryFilter, statusFilter]);
 
-  const filtered = useMemo(
-    () =>
-      applications.filter(
-        (a) =>
-          (!categoryFilter || String(a.category_id) === categoryFilter) &&
-          (!statusFilter || a.status === statusFilter)
-      ),
-    [applications, categoryFilter, statusFilter]
-  );
+  const categoryName = (id) => categories.find((c) => c.id === id)?.name;
 
   const columns = useMemo(
     () => [
@@ -58,11 +85,11 @@ export default function VolunteerApplicationsPage() {
 
   const toolbar = (
     <>
-      <Select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)} className="w-auto!">
+      <Select value={categoryFilter} onChange={(e) => handleFilterChange(setCategoryFilter)(e.target.value)} className="w-auto!">
         <option value="">All categories</option>
         {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
       </Select>
-      <Select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="w-auto!">
+      <Select value={statusFilter} onChange={(e) => handleFilterChange(setStatusFilter)(e.target.value)} className="w-auto!">
         <option value="">All statuses</option>
         {STATUSES.map((s) => <option key={s} value={s}>{s.replace("_", " ")}</option>)}
       </Select>
@@ -103,12 +130,19 @@ export default function VolunteerApplicationsPage() {
         <div className="p-5 sm:p-6">
           <DataTable
             columns={columns}
-            data={filtered}
+            data={applications}
             searchPlaceholder="Search applications..."
             toolbar={toolbar}
             onRowClick={setActive}
             emptyIcon={HeartHandshake}
             emptyTitle={loading ? "Loading…" : "No applications yet"}
+            manual
+            enableSorting={false}
+            pageCount={lastPage}
+            pagination={pagination}
+            onPaginationChange={setPagination}
+            globalFilter={search}
+            onGlobalFilterChange={handleSearchChange}
           />
         </div>
       </Card>
@@ -127,13 +161,21 @@ export default function VolunteerApplicationsPage() {
             </p>
 
             <Field label="Status">
-              <Select value={active.status} onChange={(e) => setStatus(e.target.value)}>
+              <Select value={active.status} onChange={(e) => setStatus(e.target.value)} disabled={!canEdit}>
                 {STATUSES.map((s) => <option key={s} value={s}>{s.replace("_", " ")}</option>)}
               </Select>
             </Field>
 
             <div className="flex flex-wrap items-center gap-2 border-t border-[var(--a-border)] pt-4">
-              <Button as="button" size="sm" variant="danger-ghost" icon={Trash2} onClick={() => setToDelete(active)}>
+              <Button
+                as="button"
+                size="sm"
+                variant="danger-ghost"
+                icon={Trash2}
+                disabled={!canDelete}
+                title={canDelete ? undefined : "You don't have permission to delete applications"}
+                onClick={() => setToDelete(active)}
+              >
                 Delete
               </Button>
             </div>

@@ -9,10 +9,16 @@ import ConfirmModal from "../ui/ConfirmModal";
 import Field, { TextInput, Select } from "../ui/Field";
 import Toggle from "../ui/Toggle";
 import { api } from "../../lib/api";
+import { usePermissions } from "../usePermissions";
 
 const EMPTY = { code: "", name: "", native_name: "", direction: "ltr", is_enabled: true, is_default: false };
 
 export default function LanguagesPage() {
+  const { can } = usePermissions();
+  const canCreate = can("languages.create");
+  const canEdit = can("languages.edit");
+  const canDelete = can("languages.delete");
+
   const [languages, setLanguages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [modal, setModal] = useState(null);
@@ -84,7 +90,7 @@ export default function LanguagesPage() {
           <h1 className="text-[24px] font-bold text-[var(--a-text-primary)]">Languages</h1>
           <p className="mt-1 text-[13.5px] text-[var(--a-text-muted)]">Enable languages to add tabs across every content editor.</p>
         </div>
-        <Button as="button" icon={Plus} onClick={openCreate} disabled={loading}>Add language</Button>
+        <Button as="button" icon={Plus} onClick={openCreate} disabled={loading || !canCreate} title={canCreate ? undefined : "You don't have permission to add languages"}>Add language</Button>
       </div>
 
       <Card padded={false}>
@@ -107,21 +113,32 @@ export default function LanguagesPage() {
                   <td className="px-4 py-3 text-[13px] text-[var(--a-text-muted)] uppercase">{lang.code}</td>
                   <td className="px-4 py-3 text-[13px] text-[var(--a-text-muted)] uppercase">{lang.direction}</td>
                   <td className="px-4 py-3">
-                    <Toggle checked={lang.is_enabled} onChange={(v) => toggleEnabled(lang, v)} />
+                    <Toggle checked={lang.is_enabled} onChange={(v) => toggleEnabled(lang, v)} disabled={!canEdit} />
                   </td>
                   <td className="px-4 py-3">
                     {lang.is_default ? (
                       <Star size={15} className="fill-[var(--a-warning)] text-[var(--a-warning)]" />
                     ) : (
-                      <button onClick={() => setDefault(lang)} className="text-[12px] text-[var(--a-text-faint)] hover:text-[var(--a-accent)]">
+                      <button
+                        onClick={() => setDefault(lang)}
+                        disabled={!canEdit}
+                        title={canEdit ? undefined : "You don't have permission to change the default language"}
+                        className="text-[12px] text-[var(--a-text-faint)] hover:text-[var(--a-accent)] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:text-[var(--a-text-faint)]"
+                      >
                         Set default
                       </button>
                     )}
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex justify-end gap-1">
-                      <IconButton icon={Pencil} label="Edit" onClick={() => openEdit(lang)} />
-                      <IconButton icon={Trash2} label="Delete" variant="danger" disabled={lang.is_default} onClick={() => !lang.is_default && setToDelete(lang)} />
+                      <IconButton icon={Pencil} label={canEdit ? "Edit" : "You don't have permission to edit languages"} disabled={!canEdit} onClick={() => openEdit(lang)} />
+                      <IconButton
+                        icon={Trash2}
+                        label={!canDelete ? "You don't have permission to delete languages" : lang.is_default ? "The default language can't be deleted" : "Delete"}
+                        variant="danger"
+                        disabled={!canDelete || lang.is_default}
+                        onClick={() => setToDelete(lang)}
+                      />
                     </div>
                   </td>
                 </tr>

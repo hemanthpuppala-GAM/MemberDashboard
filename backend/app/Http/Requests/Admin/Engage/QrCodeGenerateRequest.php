@@ -24,6 +24,7 @@ class QrCodeGenerateRequest extends FormRequest
             'options.fg' => ['nullable', 'string', 'max:9'],
             'options.bg' => ['nullable', 'string', 'max:9'],
             'options.errorCorrection' => ['nullable', 'in:L,M,Q,H'],
+            'options.logo' => ['nullable', 'string', 'max:500'],
         ];
     }
 }

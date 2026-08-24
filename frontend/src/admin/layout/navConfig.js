@@ -4,46 +4,54 @@ import {
   Music2, MessageSquareQuote, HeartHandshake, ListChecks,
 } from "lucide-react";
 
+/**
+ * `permission` on a leaf item gates that link — see Sidebar.jsx, which hides
+ * any item the logged-in admin's role doesn't grant, and hides a whole group
+ * once every one of its items is hidden. Must match a real `group.action`
+ * permission name (see RolesAndPermissionsSeeder::GROUPS on the backend) so
+ * this mirrors what the API route middleware actually enforces — this list
+ * only controls what's shown, not what's allowed.
+ */
 export const NAV = [
   { type: "link", to: "/admin", end: true, icon: LayoutDashboard, label: "Dashboard" },
   {
     type: "group", key: "cms", label: "CMS", icon: FileText,
     items: [
-      { to: "/admin/cms/pages", label: "Pages", icon: Files },
-      { to: "/admin/cms/media", label: "Media", icon: Image },
-      { to: "/admin/cms/music", label: "Music", icon: Music2 },
-      { to: "/admin/cms/testimonials", label: "Testimonials", icon: MessageSquareQuote },
-      { to: "/admin/cms/contact", label: "Contact Info", icon: Phone },
-      { to: "/admin/cms/donations", label: "Donations", icon: Landmark },
+      { to: "/admin/cms/pages", label: "Pages", icon: Files, permission: "cms.view" },
+      { to: "/admin/cms/media", label: "Media", icon: Image, permission: "cms.view" },
+      { to: "/admin/cms/music", label: "Music", icon: Music2, permission: "music.view" },
+      { to: "/admin/cms/testimonials", label: "Testimonials", icon: MessageSquareQuote, permission: "testimonials.view" },
+      { to: "/admin/cms/contact", label: "Contact Info", icon: Phone, permission: "contact_channels.view" },
+      { to: "/admin/cms/donations", label: "Donations", icon: Landmark, permission: "donations.view" },
     ],
   },
   {
     type: "group", key: "people", label: "People", icon: UsersRound,
     items: [
-      { to: "/admin/queries", label: "Queries", icon: Inbox },
-      { to: "/admin/members", label: "Members", icon: UsersRound },
-      { to: "/admin/users", label: "Users", icon: UserCog },
-      { to: "/admin/roles", label: "Roles", icon: ShieldCheck },
+      { to: "/admin/queries", label: "Queries", icon: Inbox, permission: "members.view" },
+      { to: "/admin/members", label: "Members", icon: UsersRound, permission: "members.view" },
+      { to: "/admin/users", label: "Users", icon: UserCog, permission: "users.view" },
+      { to: "/admin/roles", label: "Roles", icon: ShieldCheck, permission: "roles.view" },
     ],
   },
   {
     type: "group", key: "engage", label: "Engage", icon: Megaphone,
     items: [
-      { to: "/admin/announcements", label: "Announcements", icon: Megaphone },
-      { to: "/admin/broadcasts", label: "Broadcasts", icon: Radio },
-      { to: "/admin/qr-codes", label: "QR Codes", icon: QrCode },
+      { to: "/admin/announcements", label: "Announcements", icon: Megaphone, permission: "announcements.view" },
+      { to: "/admin/broadcasts", label: "Broadcasts", icon: Radio, permission: "broadcast.view" },
+      { to: "/admin/qr-codes", label: "QR Codes", icon: QrCode, permission: "qrcode.view" },
     ],
   },
   {
     type: "group", key: "volunteers", label: "Volunteers", icon: HeartHandshake,
     items: [
-      { to: "/admin/volunteers", label: "Applications", icon: Inbox },
-      { to: "/admin/volunteers/categories", label: "Categories", icon: ListChecks },
+      { to: "/admin/volunteers", label: "Applications", icon: Inbox, permission: "volunteers.view" },
+      { to: "/admin/volunteers/categories", label: "Categories", icon: ListChecks, permission: "volunteers.view" },
     ],
   },
-  { type: "link", to: "/admin/reports", icon: BarChart3, label: "Reports" },
-  { type: "link", to: "/admin/languages", icon: Globe, label: "Languages" },
-  { type: "link", to: "/admin/settings", icon: Settings, label: "Settings" },
+  { type: "link", to: "/admin/reports", icon: BarChart3, label: "Reports", permission: "reports.view" },
+  { type: "link", to: "/admin/languages", icon: Globe, label: "Languages", permission: "languages.view" },
+  { type: "link", to: "/admin/settings", icon: Settings, label: "Settings", permission: "settings.view" },
 ];
 
 export const BREADCRUMB_RULES = [

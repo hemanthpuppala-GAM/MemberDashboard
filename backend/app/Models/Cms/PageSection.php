@@ -10,7 +10,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 #[Fillable(['page_id', 'type', 'sort_order', 'status'])]
 class PageSection extends Model
 {
-    public const TYPES = ['hero', 'content_block', 'card_grid', 'event_list', 'contact_form', 'media_embed', 'custom_html'];
+    public const TYPES = [
+        'hero', 'content_block', 'card_grid', 'event_list', 'contact_form', 'media_embed', 'custom_html',
+        'quick_answers', 'science_panel', 'deep_cards', 'mission_cosmology',
+    ];
 
     public const STATUSES = ['active', 'hidden'];
 

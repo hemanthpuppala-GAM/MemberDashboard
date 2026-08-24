@@ -9,6 +9,7 @@ const NAV_LINKS = [
   { label: "Events", view: "events" },
   { label: "Mission", view: "mission" },
   { label: "Volunteer", view: "volunteer" },
+  { label: "Support", view: "donate" },
   { label: "Contact", view: "contact" },
 ];
 

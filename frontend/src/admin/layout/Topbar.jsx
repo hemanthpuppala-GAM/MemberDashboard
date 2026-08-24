@@ -1,17 +1,15 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Bell, Search, Sun, Moon, Monitor, LogOut, ChevronDown, Check, Menu } from "lucide-react";
+import { Bell, Search, Sun, Moon, Monitor, LogOut, ChevronDown, Menu } from "lucide-react";
 import { useAuth } from "../useAuth";
 import { MOCK_AUTH } from "../authFlags";
 import { useAdminTheme } from "../theme/useAdminTheme";
-import { useRolePreview } from "../roles/useRolePreview";
-import { PREVIEW_ROLES } from "../roles/rolePreviewConstants";
+import { usePermissions } from "../usePermissions";
 import Avatar from "../ui/Avatar";
 import Drawer from "../ui/Drawer";
 import { StatusBadge } from "../ui/Badge";
-import { ANNOUNCEMENTS, ACTIVITY_LOG } from "../mock/mockData";
+import { api, practitionerApi } from "../../lib/api";
 
-const ROLE_LABELS = { super_admin: "Super Admin", admin: "Admin", content_manager: "Content Manager", practitioner: "Practitioner" };
 const THEME_OPTIONS = [
   { key: "light", label: "Light", icon: Sun },
   { key: "dark", label: "Dark", icon: Moon },
@@ -31,25 +29,44 @@ function useOutsideClose(open, setOpen) {
 
 export default function Topbar({ crumbs, onMenuClick }) {
   const { user, logout } = useAuth();
+  const { can } = usePermissions();
   const { theme, setTheme } = useAdminTheme();
-  const { previewRole, setPreviewRole } = useRolePreview();
   const navigate = useNavigate();
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
+  const [announcements, setAnnouncements] = useState([]);
+  const [activity, setActivity] = useState([]);
   const menuRef = useOutsideClose(menuOpen, setMenuOpen);
 
-  const unread = ANNOUNCEMENTS.length;
+  const canViewActivity = can("reports.view");
+
+  // Announcements targeted at the current user — same endpoint the practitioner
+  // "My Announcements" page uses; ownership is checked per-row on the backend,
+  // so it works for any logged-in panel user, not just practitioners.
+  useEffect(() => {
+    practitionerApi.announcements().then(setAnnouncements).catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    if (!canViewActivity) return;
+    api.reportsActivityLog({ per_page: 5 }).then((res) => setActivity(res.data ?? [])).catch(() => {});
+  }, [canViewActivity]);
+
+  const unread = announcements.filter((a) => !a.read).length;
+  const roleLabel = user?.roles?.[0]?.replace(/_/g, " ");
+
+  const openNotifications = () => {
+    setNotifOpen(true);
+    const unreadOnes = announcements.filter((a) => !a.read);
+    if (unreadOnes.length === 0) return;
+    unreadOnes.forEach((a) => practitionerApi.markAnnouncementRead(a.id).catch(() => {}));
+    setAnnouncements((prev) => prev.map((a) => ({ ...a, read: true })));
+  };
 
   const handleLogout = async () => {
     await logout();
     navigate("/admin/login", { replace: true });
-  };
-
-  const handleRoleChange = (role) => {
-    setPreviewRole(role);
-    setMenuOpen(false);
-    navigate(role === "practitioner" ? "/admin/my-dashboard" : "/admin", { replace: true });
   };
 
   return (
@@ -83,7 +100,7 @@ export default function Topbar({ crumbs, onMenuClick }) {
 
       <button
         type="button"
-        onClick={() => setNotifOpen(true)}
+        onClick={openNotifications}
         className="relative ml-auto shrink-0 rounded-lg p-2 text-[var(--a-text-muted)] hover:bg-[var(--a-bg-surface-2)] hover:text-[var(--a-text-primary)] sm:ml-0"
         aria-label="Notifications"
       >
@@ -106,21 +123,11 @@ export default function Topbar({ crumbs, onMenuClick }) {
             <div className="border-b border-[var(--a-border)] px-4 py-3">
               <div className="truncate text-[13.5px] font-semibold text-[var(--a-text-primary)]">{user?.name || "Admin"}</div>
               <div className="truncate text-[12px] text-[var(--a-text-muted)]">{user?.email}</div>
-            </div>
-
-            <div className="border-b border-[var(--a-border)] p-2">
-              <div className="px-2 py-1 text-[10.5px] font-semibold tracking-wide text-[var(--a-text-faint)] uppercase">Viewing as</div>
-              {PREVIEW_ROLES.map((role) => (
-                <button
-                  key={role}
-                  type="button"
-                  onClick={() => handleRoleChange(role)}
-                  className="flex w-full items-center justify-between rounded-lg px-2 py-1.5 text-[13px] text-[var(--a-text-primary)] hover:bg-[var(--a-bg-surface-2)]"
-                >
-                  {ROLE_LABELS[role]}
-                  {previewRole === role && <Check size={14} className="text-[var(--a-accent)]" />}
-                </button>
-              ))}
+              {roleLabel && (
+                <span className="mt-1.5 inline-block rounded-full bg-[var(--a-accent-muted)] px-2 py-0.5 text-[10.5px] font-semibold tracking-wide text-[var(--a-accent)] capitalize">
+                  {roleLabel}
+                </span>
+              )}
             </div>
 
             <div className="border-b border-[var(--a-border)] p-2">
@@ -151,32 +158,44 @@ export default function Topbar({ crumbs, onMenuClick }) {
     </header>
 
       <Drawer open={notifOpen} onClose={() => setNotifOpen(false)} title="Notifications">
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-5">
           <div>
             <div className="mb-2 text-[11px] font-semibold tracking-wide text-[var(--a-text-faint)] uppercase">Announcements</div>
-            <div className="flex flex-col gap-2">
-              {ANNOUNCEMENTS.map((a) => (
-                <div key={a.id} className="rounded-lg border border-[var(--a-border)] p-3">
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="text-[13px] font-semibold text-[var(--a-text-primary)]">{a.title}</span>
-                    <StatusBadge status={a.type} />
+            {announcements.length === 0 ? (
+              <p className="text-[12.5px] text-[var(--a-text-muted)]">No announcements — you're all caught up.</p>
+            ) : (
+              <div className="flex flex-col gap-2">
+                {announcements.map((a) => (
+                  <div key={a.id} className="rounded-lg border border-[var(--a-border)] p-3">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-[13px] font-semibold text-[var(--a-text-primary)]">{a.title}</span>
+                      <StatusBadge status={a.type} />
+                    </div>
+                    <p className="mt-1 text-[12px] text-[var(--a-text-muted)]" dangerouslySetInnerHTML={{ __html: a.body }} />
+                    {a.sent_at && <p className="mt-1.5 text-[11px] text-[var(--a-text-faint)]">{new Date(a.sent_at).toLocaleString()}</p>}
                   </div>
-                  <p className="mt-1 text-[12px] text-[var(--a-text-muted)]" dangerouslySetInnerHTML={{ __html: a.body }} />
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
-          <div>
-            <div className="mb-2 text-[11px] font-semibold tracking-wide text-[var(--a-text-faint)] uppercase">Recent activity</div>
-            <div className="flex flex-col gap-2.5">
-              {ACTIVITY_LOG.slice(0, 5).map((log) => (
-                <div key={log.id} className="text-[12.5px] text-[var(--a-text-muted)]">
-                  <span className="font-medium text-[var(--a-text-primary)]">{log.user}</span> {log.action}{" "}
-                  <span className="text-[var(--a-text-primary)]">{log.target}</span>
+
+          {canViewActivity && (
+            <div>
+              <div className="mb-2 text-[11px] font-semibold tracking-wide text-[var(--a-text-faint)] uppercase">Recent activity</div>
+              {activity.length === 0 ? (
+                <p className="text-[12.5px] text-[var(--a-text-muted)]">No recent activity.</p>
+              ) : (
+                <div className="flex flex-col gap-2.5">
+                  {activity.map((entry) => (
+                    <div key={entry.id} className="text-[12.5px] text-[var(--a-text-muted)]">
+                      <span className="font-medium text-[var(--a-text-primary)]">{entry.user?.name ?? "System"}</span> {entry.action}
+                      {entry.meta?.label && <> <span className="text-[var(--a-text-primary)]">{entry.meta.label}</span></>}
+                    </div>
+                  ))}
                 </div>
-              ))}
+              )}
             </div>
-          </div>
+          )}
         </div>
       </Drawer>
     </>

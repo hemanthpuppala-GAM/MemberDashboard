@@ -19,8 +19,10 @@ class DatabaseSeeder extends Seeder
             LanguagesSeeder::class,
             AdminUserSeeder::class,
             PageContentSeeder::class,
+            BuiltInPagesSeeder::class,
             SettingSeeder::class,
             EventSeeder::class,
+            TestimonialSeeder::class,
             DemoUsersSeeder::class,
             DemoContentSeeder::class,
         ]);

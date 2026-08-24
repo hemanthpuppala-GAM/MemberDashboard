@@ -11,12 +11,20 @@ import Field, { TextInput, Select } from "../../ui/Field";
 import RichTextEditor from "../../ui/RichTextEditor";
 import { StatusBadge } from "../../ui/Badge";
 import { api } from "../../../lib/api";
+import { usePermissions } from "../../usePermissions";
 
 const TYPES = ["info", "warning", "alert"];
 const PRIORITIES = ["normal", "urgent"];
 const EMPTY = { title: "", body: "", target_type: "all", target_ids: [], type: "info", priority: "normal" };
 
 export default function AnnouncementsPage() {
+  const { can } = usePermissions();
+  const canCreate = can("announcements.create");
+  const canEdit = can("announcements.edit");
+  const canDelete = can("announcements.delete");
+  const canViewRoles = can("roles.view");
+  const canViewUsers = can("users.view");
+
   const [announcements, setAnnouncements] = useState([]);
   const [roles, setRoles] = useState([]);
   const [users, setUsers] = useState([]);
@@ -29,10 +37,21 @@ export default function AnnouncementsPage() {
   const loadAnnouncements = () => api.announcements().then(setAnnouncements);
 
   useEffect(() => {
-    Promise.all([loadAnnouncements(), api.roles().then(setRoles), api.users().then(setUsers)])
-      .catch((err) => toast.error(err.message ?? "Failed to load announcements"))
+    // Role/user lists are only used to populate the "Target" dropdown when
+    // composing — not core to viewing the list, so a role missing roles.view
+    // or users.view still gets a working inbox instead of the whole page
+    // failing on one 403 (see DashboardPage.jsx for the same pattern).
+    const jobs = [
+      loadAnnouncements(),
+      canViewRoles ? api.roles().then(setRoles) : Promise.resolve(),
+      canViewUsers ? api.users().then(setUsers) : Promise.resolve(),
+    ];
+    Promise.allSettled(jobs)
+      .then((results) => {
+        if (results[0].status === "rejected") toast.error(results[0].reason?.message ?? "Failed to load announcements");
+      })
       .finally(() => setLoading(false));
-  }, []);
+  }, [canViewRoles, canViewUsers]);
 
   const openCreate = () => { setForm(EMPTY); setModal("new"); };
   const openEdit = (a) => {
@@ -97,13 +116,13 @@ export default function AnnouncementsPage() {
         id: "actions", header: "", enableSorting: false,
         cell: ({ row }) => (
           <div className="flex justify-end gap-1">
-            <IconButton icon={Pencil} label="Edit" onClick={() => openEdit(row.original)} />
-            <IconButton icon={Trash2} label="Delete" variant="danger" onClick={() => setToDelete(row.original)} />
+            <IconButton icon={Pencil} label={canEdit ? "Edit" : "You don't have permission to edit announcements"} disabled={!canEdit} onClick={() => openEdit(row.original)} />
+            <IconButton icon={Trash2} label={canDelete ? "Delete" : "You don't have permission to delete announcements"} variant="danger" disabled={!canDelete} onClick={() => setToDelete(row.original)} />
           </div>
         ),
       },
     ],
-    [roles, users]
+    [roles, users, canEdit, canDelete]
   );
 
   return (
@@ -113,7 +132,7 @@ export default function AnnouncementsPage() {
           <h1 className="text-[24px] font-bold text-[var(--a-text-primary)]">Announcements</h1>
           <p className="mt-1 text-[13.5px] text-[var(--a-text-muted)]">Internal one-way messages from admin to practitioners.</p>
         </div>
-        <Button as="button" icon={Plus} onClick={openCreate} disabled={loading}>New announcement</Button>
+        <Button as="button" icon={Plus} onClick={openCreate} disabled={loading || !canCreate} title={canCreate ? undefined : "You don't have permission to create announcements"}>New announcement</Button>
       </div>
 
       <Card padded={false}>

@@ -93,8 +93,8 @@ Route::prefix('v1')->group(function () {
         Route::middleware('permission:cms.edit')->group(function () {
             Route::put('/pages/{page:slug}', [AdminPageController::class, 'update']);
             Route::patch('/pages/{page:slug}/status', [AdminPageController::class, 'updateStatus']);
-            Route::put('/pages/{page:slug}/sections/{section}', [SectionController::class, 'update']);
             Route::put('/pages/{page:slug}/sections/reorder', [SectionController::class, 'reorder']);
+            Route::put('/pages/{page:slug}/sections/{section}', [SectionController::class, 'update']);
             Route::put('/sections/{section}/content', [SectionContentController::class, 'update']);
         });
         Route::middleware('permission:cms.delete')->group(function () {
@@ -112,8 +112,8 @@ Route::prefix('v1')->group(function () {
         Route::middleware('permission:music.view')->get('/music', [AdminMusicController::class, 'index']);
         Route::middleware('permission:music.create')->post('/music', [AdminMusicController::class, 'store']);
         Route::middleware('permission:music.edit')->group(function () {
-            Route::put('/music/{music}', [AdminMusicController::class, 'update']);
             Route::put('/music/reorder', [AdminMusicController::class, 'reorder']);
+            Route::put('/music/{music}', [AdminMusicController::class, 'update']);
         });
         Route::middleware('permission:music.delete')->delete('/music/{music}', [AdminMusicController::class, 'destroy']);
 
@@ -127,8 +127,8 @@ Route::prefix('v1')->group(function () {
         Route::middleware('permission:contact_channels.view')->get('/contact-channels', [AdminContactChannelController::class, 'index']);
         Route::middleware('permission:contact_channels.create')->post('/contact-channels', [AdminContactChannelController::class, 'store']);
         Route::middleware('permission:contact_channels.edit')->group(function () {
-            Route::put('/contact-channels/{contactChannel}', [AdminContactChannelController::class, 'update']);
             Route::put('/contact-channels/reorder', [AdminContactChannelController::class, 'reorder']);
+            Route::put('/contact-channels/{contactChannel}', [AdminContactChannelController::class, 'update']);
         });
         Route::middleware('permission:contact_channels.delete')->delete('/contact-channels/{contactChannel}', [AdminContactChannelController::class, 'destroy']);
 
@@ -136,8 +136,8 @@ Route::prefix('v1')->group(function () {
         Route::middleware('permission:volunteers.view')->get('/volunteer-categories', [AdminVolunteerCategoryController::class, 'index']);
         Route::middleware('permission:volunteers.create')->post('/volunteer-categories', [AdminVolunteerCategoryController::class, 'store']);
         Route::middleware('permission:volunteers.edit')->group(function () {
-            Route::put('/volunteer-categories/{volunteerCategory}', [AdminVolunteerCategoryController::class, 'update']);
             Route::put('/volunteer-categories/reorder', [AdminVolunteerCategoryController::class, 'reorder']);
+            Route::put('/volunteer-categories/{volunteerCategory}', [AdminVolunteerCategoryController::class, 'update']);
         });
         Route::middleware('permission:volunteers.delete')->delete('/volunteer-categories/{volunteerCategory}', [AdminVolunteerCategoryController::class, 'destroy']);
 
@@ -174,6 +174,7 @@ Route::prefix('v1')->group(function () {
         Route::middleware('permission:users.delete')->delete('/users/{user}', [UserController::class, 'destroy']);
 
         Route::middleware('permission:roles.view')->get('/roles', [RoleController::class, 'index']);
+        Route::middleware('permission:roles.view')->get('/roles/{role}', [RoleController::class, 'show']);
         Route::middleware('permission:roles.create')->post('/roles', [RoleController::class, 'store']);
         Route::middleware('permission:roles.edit')->put('/roles/{role}', [RoleController::class, 'update']);
         Route::middleware('permission:roles.delete')->delete('/roles/{role}', [RoleController::class, 'destroy']);

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Header from "../components/layout/Header";
 import Footer from "../components/layout/Footer";
 import PageAtmosphere from "../components/layout/PageAtmosphere";
+import BroadcastManager from "../components/layout/BroadcastManager";
 import HeroSection from "../components/sections/HeroSection";
 import QrJoinCard from "../components/sections/QrJoinCard";
 import AboutSection from "../components/sections/AboutSection";
@@ -12,6 +13,7 @@ import EventsSection from "../components/sections/EventsSection";
 import MissionSection from "../components/sections/MissionSection";
 import ContactSection from "../components/sections/ContactSection";
 import VolunteerSection from "../components/sections/VolunteerSection";
+import DonateSection from "../components/sections/DonateSection";
 
 const SECTION_VIEWS = {
   about: AboutSection,
@@ -22,11 +24,49 @@ const SECTION_VIEWS = {
   mission: MissionSection,
   contact: ContactSection,
   volunteer: VolunteerSection,
+  donate: DonateSection,
 };
 
+/**
+ * Reads `#<view>` or `#<view>:<sectionId>` from the URL — the format the
+ * admin panel's per-section "view" button links to (see PageDetailPage.jsx).
+ * Not a full router: this SPA has one route ("*" -> HomePage) and switches
+ * views via component state, so the hash is the only shareable/refreshable
+ * pointer into a specific view (and, best-effort, a specific CMS section).
+ */
+function parseHash() {
+  const raw = window.location.hash.slice(1);
+  if (!raw) return { view: "hub", sectionId: null };
+  const [view, sectionId] = raw.split(":");
+  if (view !== "hub" && !SECTION_VIEWS[view]) return { view: "hub", sectionId: null };
+  return { view, sectionId: sectionId ?? null };
+}
+
 export default function HomePage() {
-  const [view, setView] = useState("hub");
+  const [view, setViewState] = useState(() => parseHash().view);
   const isHub = view === "hub";
+
+  const setView = (nextView) => {
+    setViewState(nextView);
+    const hash = nextView === "hub" ? "" : `#${nextView}`;
+    window.history.replaceState(null, "", `${window.location.pathname}${window.location.search}${hash}`);
+  };
+
+  useEffect(() => {
+    const { sectionId } = parseHash();
+    if (!sectionId) return undefined;
+    // Best-effort: give the view's CMS data time to fetch + mount, then scroll to it.
+    const t = setTimeout(() => {
+      document.getElementById(`cms-section-${sectionId}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 700);
+    return () => clearTimeout(t);
+  }, []);
+
+  useEffect(() => {
+    const onHashChange = () => setViewState(parseHash().view);
+    window.addEventListener("hashchange", onHashChange);
+    return () => window.removeEventListener("hashchange", onHashChange);
+  }, []);
 
   useEffect(() => {
     const onKey = (e) => {
@@ -40,8 +80,8 @@ export default function HomePage() {
 
   return (
     <div
-      className={`relative flex h-dvh flex-col overflow-hidden ${
-        isHub ? "bg-transparent" : "bg-[var(--color-bg)]"
+      className={`relative flex flex-col ${
+        isHub ? "h-dvh overflow-hidden bg-transparent" : "min-h-dvh bg-[var(--color-bg)]"
       }`}
     >
       <PageAtmosphere showFigure={isHub} />
@@ -58,11 +98,19 @@ export default function HomePage() {
         taught by Dr Hari Krishna, MD
       </h1>
 
-      <Header onLogoClick={() => setView("hub")} onNavigate={setView} activeView={view} />
+      <BroadcastManager view={view} />
+
+      <div className="sticky top-0 z-50 shrink-0">
+        <Header onLogoClick={() => setView("hub")} onNavigate={setView} activeView={view} />
+      </div>
 
       <main
         id="main"
-        className={`relative z-10 flex min-h-0 flex-1 overflow-hidden ${isHub ? "" : "items-stretch justify-center px-[clamp(12px,3vw,24px)] pt-2 pb-2"}`}
+        className={
+          isHub
+            ? "relative z-10 flex min-h-0 flex-1 items-stretch justify-center overflow-hidden"
+            : "relative z-10 flex-1 px-[clamp(12px,3vw,24px)] pt-2 pb-20"
+        }
       >
         {isHub && (
           <HeroSection
@@ -78,14 +126,14 @@ export default function HomePage() {
         )}
 
         {Section && (
-          <div className="m-view mx-auto flex w-[min(1120px,100%)] animate-[viewIn_0.45s_ease] flex-col justify-start gap-4 overflow-y-auto overscroll-contain">
+          <div className="m-view mx-auto flex w-[min(1120px,100%)] animate-[viewIn_0.45s_ease] flex-col justify-start gap-4">
             <Section />
           </div>
         )}
       </main>
 
       <QrJoinCard show={isHub} />
-      <Footer view={view} onBack={() => setView("hub")} />
+      <Footer view={view} onBack={() => setView("hub")} onNavigate={setView} />
     </div>
   );
 }

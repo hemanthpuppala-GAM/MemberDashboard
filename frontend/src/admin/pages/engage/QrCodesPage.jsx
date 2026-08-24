@@ -10,7 +10,10 @@ import Modal from "../../ui/Modal";
 import ConfirmModal from "../../ui/ConfirmModal";
 import Field, { TextInput, Select } from "../../ui/Field";
 import ColorField from "../../ui/ColorField";
+import ImageField from "../../ui/ImageField";
+import MediaPickerModal from "../../ui/MediaPickerModal";
 import { api, downloadAuthed, storageUrl } from "../../../lib/api";
+import { usePermissions } from "../../usePermissions";
 
 const TYPES = [
   { value: "url", label: "URL", fields: [["url", "URL"]] },
@@ -37,15 +40,20 @@ function buildPreviewValue(type, d = {}) {
   }
 }
 
-const EMPTY = { title: "", type: "url", inputData: {}, fg: "#111827", bg: "#FFFFFF", size: 300, ecLevel: "M" };
+const EMPTY = { title: "", type: "url", inputData: {}, fg: "#111827", bg: "#FFFFFF", size: 300, ecLevel: "M", logoUrl: "" };
 
 export default function QrCodesPage() {
+  const { can } = usePermissions();
+  const canGenerate = can("qrcode.generate");
+  const canDelete = can("qrcode.delete");
+
   const [qrCodes, setQrCodes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [form, setForm] = useState(EMPTY);
   const [saving, setSaving] = useState(false);
   const [toDelete, setToDelete] = useState(null);
+  const [pickerOpen, setPickerOpen] = useState(false);
 
   const loadQrCodes = () => api.qrCodes().then(setQrCodes);
 
@@ -65,7 +73,7 @@ export default function QrCodesPage() {
     try {
       await api.generateQrCode({
         title: form.title, type: form.type, input_data: form.inputData,
-        options: { size: form.size, fg: form.fg, bg: form.bg, errorCorrection: form.ecLevel },
+        options: { size: form.size, fg: form.fg, bg: form.bg, errorCorrection: form.ecLevel, logo: form.logoUrl || null },
       });
       toast.success("QR code generated");
       setModalOpen(false);
@@ -119,12 +127,12 @@ export default function QrCodesPage() {
           <div className="flex justify-end gap-1">
             <IconButton icon={Copy} label="Copy value" onClick={() => copyValue(row.original)} />
             <IconButton icon={Download} label="Download" onClick={() => handleDownload(row.original)} />
-            <IconButton icon={Trash2} label="Delete" variant="danger" onClick={() => setToDelete(row.original)} />
+            <IconButton icon={Trash2} label={canDelete ? "Delete" : "You don't have permission to delete QR codes"} variant="danger" disabled={!canDelete} onClick={() => setToDelete(row.original)} />
           </div>
         ),
       },
     ],
-    []
+    [canDelete]
   );
 
   return (
@@ -134,7 +142,7 @@ export default function QrCodesPage() {
           <h1 className="text-[24px] font-bold text-[var(--a-text-primary)]">QR codes</h1>
           <p className="mt-1 text-[13.5px] text-[var(--a-text-muted)]">Generate, customize, and download QR codes for print or digital use.</p>
         </div>
-        <Button as="button" icon={Plus} onClick={() => { setForm(EMPTY); setModalOpen(true); }} disabled={loading}>New QR code</Button>
+        <Button as="button" icon={Plus} onClick={() => { setForm(EMPTY); setModalOpen(true); }} disabled={loading || !canGenerate} title={canGenerate ? undefined : "You don't have permission to generate QR codes"}>New QR code</Button>
       </div>
 
       <Card padded={false}>
@@ -169,19 +177,36 @@ export default function QrCodesPage() {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <Field label="Size (px)"><TextInput type="number" value={form.size} onChange={(e) => setForm((f) => ({ ...f, size: Number(e.target.value) }))} /></Field>
-              <Field label="Error correction">
+              <Field label="Error correction" hint={form.logoUrl ? "Q or H recommended with a center logo" : undefined}>
                 <Select value={form.ecLevel} onChange={(e) => setForm((f) => ({ ...f, ecLevel: e.target.value }))}>
                   {["L", "M", "Q", "H"].map((l) => <option key={l} value={l}>{l}</option>)}
                 </Select>
               </Field>
             </div>
+            <ImageField
+              label="Center logo (optional)"
+              value={form.logoUrl}
+              onChange={(v) => setForm((f) => ({ ...f, logoUrl: v }))}
+              onPick={() => setPickerOpen(true)}
+            />
           </div>
 
           <div className="flex flex-col items-center gap-4">
             <p className="self-start text-[11px] font-semibold tracking-wide text-[var(--a-text-faint)] uppercase">Live preview</p>
             <p className="self-start text-[11.5px] text-[var(--a-text-muted)]">Rendered client-side for preview — the real file is generated server-side on save.</p>
             <div className="flex items-center justify-center rounded-xl border border-[var(--a-border)] bg-[var(--a-bg-surface)] p-6">
-              <QRCodeSVG value={previewValue} size={Math.min(form.size, 260)} fgColor={form.fg} bgColor={form.bg} level={form.ecLevel} />
+              <QRCodeSVG
+                value={previewValue}
+                size={Math.min(form.size, 260)}
+                fgColor={form.fg}
+                bgColor={form.bg}
+                level={form.ecLevel}
+                imageSettings={
+                  form.logoUrl
+                    ? { src: form.logoUrl, height: Math.round(Math.min(form.size, 260) / 5), width: Math.round(Math.min(form.size, 260) / 5), excavate: true }
+                    : undefined
+                }
+              />
             </div>
           </div>
         </div>
@@ -192,6 +217,12 @@ export default function QrCodesPage() {
         onClose={() => setToDelete(null)}
         title={`Delete "${toDelete?.title}"?`}
         onConfirm={handleDelete}
+      />
+
+      <MediaPickerModal
+        open={pickerOpen}
+        onClose={() => setPickerOpen(false)}
+        onSelect={(url) => setForm((f) => ({ ...f, logoUrl: url }))}
       />
     </div>
   );

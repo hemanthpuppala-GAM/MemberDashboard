@@ -9,11 +9,18 @@ import Field, { Select } from "../../ui/Field";
 import { StatusBadge } from "../../ui/Badge";
 import { api } from "../../../lib/api";
 import { CATEGORIES, CATEGORY_LABELS } from "../../mock/mockData";
+import { usePermissions } from "../../usePermissions";
 
 const STATUSES = ["new", "assigned", "in_progress", "resolved", "archived"];
 
 export default function QueryInboxPage() {
+  const { can } = usePermissions();
+  const canEdit = can("members.edit");
+  const canAssign = can("members.assign");
+  const canViewUsers = can("users.view");
+
   const [queries, setQueries] = useState([]);
+  const [lastPage, setLastPage] = useState(1);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const practitioners = users.filter((u) => u.primary_role?.name === "practitioner");
@@ -21,26 +28,50 @@ export default function QueryInboxPage() {
   const [categoryFilter, setCategoryFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [assignedFilter, setAssignedFilter] = useState("");
+  const [search, setSearch] = useState("");
+  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 20 });
   const [active, setActive] = useState(null);
 
-  const loadQueries = () => api.queries().then((res) => setQueries(res.data));
+  const loadQueries = () =>
+    api
+      .queries({
+        page: pagination.pageIndex + 1,
+        per_page: pagination.pageSize,
+        ...(search ? { search } : {}),
+        ...(categoryFilter ? { category: categoryFilter } : {}),
+        ...(statusFilter ? { status: statusFilter } : {}),
+        ...(assignedFilter ? { assigned_to: assignedFilter } : {}),
+      })
+      .then((res) => {
+        setQueries(res.data);
+        setLastPage(res.last_page ?? 1);
+      });
+
+  const handleSearchChange = (value) => {
+    setSearch(value);
+    setPagination((p) => ({ ...p, pageIndex: 0 }));
+  };
+
+  const handleFilterChange = (setter) => (value) => {
+    setter(value);
+    setPagination((p) => ({ ...p, pageIndex: 0 }));
+  };
 
   useEffect(() => {
-    Promise.all([loadQueries(), api.users().then(setUsers)])
+    // Practitioner names/assignment options — not this page's core data, so a
+    // role without users.view still gets a working inbox instead of a toast.
+    if (!canViewUsers) return;
+    api.users().then(setUsers).catch(() => {});
+  }, [canViewUsers]);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- resets the spinner when page/search/filters change
+    setLoading(true);
+    loadQueries()
       .catch((err) => toast.error(err.message ?? "Failed to load queries"))
       .finally(() => setLoading(false));
-  }, []);
-
-  const filtered = useMemo(
-    () =>
-      queries.filter(
-        (q) =>
-          (!categoryFilter || q.category === categoryFilter) &&
-          (!statusFilter || q.status === statusFilter) &&
-          (!assignedFilter || String(q.assigned_to) === assignedFilter)
-      ),
-    [queries, categoryFilter, statusFilter, assignedFilter]
-  );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pagination.pageIndex, pagination.pageSize, search, categoryFilter, statusFilter, assignedFilter]);
 
   const practitionerName = (id) => practitioners.find((p) => p.id === id)?.name;
 
@@ -61,15 +92,15 @@ export default function QueryInboxPage() {
 
   const toolbar = (
     <>
-      <Select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)} className="w-auto!">
+      <Select value={categoryFilter} onChange={(e) => handleFilterChange(setCategoryFilter)(e.target.value)} className="w-auto!">
         <option value="">All categories</option>
         {CATEGORIES.map((c) => <option key={c} value={c}>{CATEGORY_LABELS[c]}</option>)}
       </Select>
-      <Select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="w-auto!">
+      <Select value={statusFilter} onChange={(e) => handleFilterChange(setStatusFilter)(e.target.value)} className="w-auto!">
         <option value="">All statuses</option>
         {STATUSES.map((s) => <option key={s} value={s}>{s.replace("_", " ")}</option>)}
       </Select>
-      <Select value={assignedFilter} onChange={(e) => setAssignedFilter(e.target.value)} className="w-auto!">
+      <Select value={assignedFilter} onChange={(e) => handleFilterChange(setAssignedFilter)(e.target.value)} className="w-auto!">
         <option value="">Any practitioner</option>
         {practitioners.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
       </Select>
@@ -131,12 +162,19 @@ export default function QueryInboxPage() {
         <div className="p-5 sm:p-6">
           <DataTable
             columns={columns}
-            data={filtered}
+            data={queries}
             searchPlaceholder="Search queries..."
             toolbar={toolbar}
             onRowClick={setActive}
             emptyIcon={Inbox}
             emptyTitle={loading ? "Loading…" : "Inbox is empty"}
+            manual
+            enableSorting={false}
+            pageCount={lastPage}
+            pagination={pagination}
+            onPaginationChange={setPagination}
+            globalFilter={search}
+            onGlobalFilterChange={handleSearchChange}
           />
         </div>
       </Card>
@@ -154,23 +192,38 @@ export default function QueryInboxPage() {
 
             <div className="grid gap-4 sm:grid-cols-2">
               <Field label="Assign to">
-                <Select value={active.assigned_to ?? ""} onChange={(e) => assign(e.target.value)}>
+                <Select value={active.assigned_to ?? ""} onChange={(e) => assign(e.target.value)} disabled={!canAssign}>
                   <option value="">Unassigned</option>
                   {practitioners.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
                 </Select>
               </Field>
               <Field label="Status">
-                <Select value={active.status} onChange={(e) => setStatus(e.target.value)}>
+                <Select value={active.status} onChange={(e) => setStatus(e.target.value)} disabled={!canEdit}>
                   {STATUSES.map((s) => <option key={s} value={s}>{s.replace("_", " ")}</option>)}
                 </Select>
               </Field>
             </div>
 
             <div className="flex flex-wrap items-center gap-2 border-t border-[var(--a-border)] pt-4">
-              <Button as="button" size="sm" icon={UserCheck} disabled={!!active.converted_to_member_id} onClick={convertToMember}>
+              <Button
+                as="button"
+                size="sm"
+                icon={UserCheck}
+                disabled={!canEdit || !!active.converted_to_member_id}
+                title={canEdit ? undefined : "You don't have permission to convert queries"}
+                onClick={convertToMember}
+              >
                 {active.converted_to_member_id ? "Already converted" : "Convert to member"}
               </Button>
-              <Button as="button" size="sm" variant="secondary" icon={ArchiveIcon} onClick={archive}>
+              <Button
+                as="button"
+                size="sm"
+                variant="secondary"
+                icon={ArchiveIcon}
+                disabled={!canEdit}
+                title={canEdit ? undefined : "You don't have permission to archive queries"}
+                onClick={archive}
+              >
                 Archive
               </Button>
             </div>

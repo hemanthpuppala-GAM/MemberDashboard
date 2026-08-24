@@ -10,6 +10,7 @@ import { PillTabs } from "../../ui/Tabs";
 import EmptyState from "../../ui/EmptyState";
 import { api } from "../../../lib/api";
 import { MEDIA_FOLDERS } from "../../mock/mockData";
+import { usePermissions } from "../../usePermissions";
 
 function formatSize(bytes) {
   if (!bytes) return "0 KB";
@@ -18,6 +19,11 @@ function formatSize(bytes) {
 }
 
 export default function MediaLibraryPage() {
+  const { can } = usePermissions();
+  const canCreate = can("cms.create");
+  const canEdit = can("cms.edit");
+  const canDelete = can("cms.delete");
+
   const [media, setMedia] = useState([]);
   const [loading, setLoading] = useState(true);
   const [folder, setFolder] = useState("All");
@@ -101,17 +107,26 @@ export default function MediaLibraryPage() {
       </div>
 
       <div
-        onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+        onDragOver={(e) => { if (canCreate) { e.preventDefault(); setDragOver(true); } }}
         onDragLeave={() => setDragOver(false)}
-        onDrop={(e) => { e.preventDefault(); setDragOver(false); if (e.dataTransfer.files.length) ingestFiles(e.dataTransfer.files); }}
+        onDrop={(e) => { e.preventDefault(); setDragOver(false); if (canCreate && e.dataTransfer.files.length) ingestFiles(e.dataTransfer.files); }}
         className={`flex flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed p-8 text-center transition-colors ${
-          dragOver ? "border-[var(--a-accent)] bg-[var(--a-accent-muted)]" : "border-[var(--a-border)] bg-[var(--a-bg-surface)]"
+          !canCreate ? "opacity-50" : dragOver ? "border-[var(--a-accent)] bg-[var(--a-accent-muted)]" : "border-[var(--a-border)] bg-[var(--a-bg-surface)]"
         }`}
       >
         <UploadCloud size={26} className="text-[var(--a-accent)]" />
         <p className="text-[13.5px] font-medium text-[var(--a-text-primary)]">{uploading ? "Uploading…" : "Drag & drop files here"}</p>
         <p className="text-[12.5px] text-[var(--a-text-muted)]">or</p>
-        <Button as="button" size="sm" variant="secondary" disabled={uploading} onClick={() => fileInput.current?.click()}>Browse files</Button>
+        <Button
+          as="button"
+          size="sm"
+          variant="secondary"
+          disabled={uploading || !canCreate}
+          title={canCreate ? undefined : "You don't have permission to upload media"}
+          onClick={() => fileInput.current?.click()}
+        >
+          Browse files
+        </Button>
         <input ref={fileInput} type="file" multiple accept="image/*,video/*" className="hidden" onChange={(e) => e.target.files.length && ingestFiles(e.target.files)} />
       </div>
 
@@ -136,8 +151,22 @@ export default function MediaLibraryPage() {
               </div>
               <div className="absolute top-2 right-2 flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
                 <button onClick={() => copyUrl(item.url)} title="Copy URL" className="rounded-lg bg-[var(--a-bg-surface)]/90 p-1.5 text-[var(--a-text-muted)] shadow-[var(--a-shadow-sm)] hover:text-[var(--a-accent)]"><Copy size={13} /></button>
-                <button onClick={() => openEdit(item)} title="Edit" className="rounded-lg bg-[var(--a-bg-surface)]/90 p-1.5 text-[var(--a-text-muted)] shadow-[var(--a-shadow-sm)] hover:text-[var(--a-accent)]"><Pencil size={13} /></button>
-                <button onClick={() => setToDelete(item)} title="Delete" className="rounded-lg bg-[var(--a-bg-surface)]/90 p-1.5 text-[var(--a-text-muted)] shadow-[var(--a-shadow-sm)] hover:text-[var(--a-danger)]"><Trash2 size={13} /></button>
+                <button
+                  onClick={() => openEdit(item)}
+                  disabled={!canEdit}
+                  title={canEdit ? "Edit" : "You don't have permission to edit media"}
+                  className="rounded-lg bg-[var(--a-bg-surface)]/90 p-1.5 text-[var(--a-text-muted)] shadow-[var(--a-shadow-sm)] hover:text-[var(--a-accent)] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:text-[var(--a-text-muted)]"
+                >
+                  <Pencil size={13} />
+                </button>
+                <button
+                  onClick={() => setToDelete(item)}
+                  disabled={!canDelete}
+                  title={canDelete ? "Delete" : "You don't have permission to delete media"}
+                  className="rounded-lg bg-[var(--a-bg-surface)]/90 p-1.5 text-[var(--a-text-muted)] shadow-[var(--a-shadow-sm)] hover:text-[var(--a-danger)] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:text-[var(--a-text-muted)]"
+                >
+                  <Trash2 size={13} />
+                </button>
               </div>
             </div>
           ))}

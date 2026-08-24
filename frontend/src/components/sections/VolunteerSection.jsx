@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import SectionHeading from "../ui/SectionHeading";
+import CmsPageHeading from "./CmsPageHeading";
 import Button from "../ui/Button";
 import { colors } from "../../theme/colors";
 import { publicApi } from "../../lib/api";
@@ -44,11 +44,12 @@ export default function VolunteerSection() {
       className="mx-auto flex max-w-2xl flex-col gap-8 px-2 py-6 sm:px-4"
       style={{ borderTop: "1px solid rgba(110,198,234,0.35)" }}
     >
-      <SectionHeading
-        eyebrow="Volunteer"
-        title="Become a volunteer"
-        description="Give your time and talent to the community — tell us a bit about yourself and where you'd like to help."
+      <CmsPageHeading
+        slug="volunteer"
         color={colors.gold}
+        fallbackEyebrow="Volunteer"
+        fallbackTitle="Become a volunteer"
+        fallbackDescription="Give your time and talent to the community — tell us a bit about yourself and where you'd like to help."
       />
 
       {status === "sent" ? (

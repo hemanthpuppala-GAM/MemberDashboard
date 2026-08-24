@@ -12,6 +12,7 @@ import EmptyState from "../../ui/EmptyState";
 import ImageUploader from "../../ui/ImageUploader";
 import { api } from "../../../lib/api";
 import { MUSIC_CATEGORIES } from "../../mock/mockData";
+import { usePermissions } from "../../usePermissions";
 
 const EMPTY = { title: "", artist: "", category: "meditation", description: "", status: "draft" };
 
@@ -81,6 +82,11 @@ function toFormData(form) {
 }
 
 export default function MusicLibraryPage() {
+  const { can } = usePermissions();
+  const canCreate = can("music.create");
+  const canEdit = can("music.edit");
+  const canDelete = can("music.delete");
+
   const [musicTracks, setMusicTracks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(null);
@@ -164,7 +170,7 @@ export default function MusicLibraryPage() {
             Meditation and chanting tracks played on the public site. Draft tracks stay hidden until published.
           </p>
         </div>
-        <Button as="button" icon={Plus} onClick={openNew} disabled={loading}>Upload track</Button>
+        <Button as="button" icon={Plus} onClick={openNew} disabled={loading || !canCreate} title={canCreate ? undefined : "You don't have permission to upload tracks"}>Upload track</Button>
       </div>
 
       <Card padded={false}>
@@ -194,10 +200,10 @@ export default function MusicLibraryPage() {
                 {t.file_path && <audio controls src={t.file_path} className="h-8 w-full max-w-[220px]" />}
 
                 <div className="flex shrink-0 items-center gap-1">
-                  <IconButton icon={ChevronUp} label="Move up" onClick={() => move(t.id, "up")} disabled={i === 0} />
-                  <IconButton icon={ChevronDown} label="Move down" onClick={() => move(t.id, "down")} disabled={i === sorted.length - 1} />
-                  <IconButton icon={Pencil} label="Edit" variant="accent" onClick={() => openEdit(t)} />
-                  <IconButton icon={Trash2} label="Delete" variant="danger" onClick={() => setToDelete(t)} />
+                  <IconButton icon={ChevronUp} label="Move up" onClick={() => move(t.id, "up")} disabled={!canEdit || i === 0} />
+                  <IconButton icon={ChevronDown} label="Move down" onClick={() => move(t.id, "down")} disabled={!canEdit || i === sorted.length - 1} />
+                  <IconButton icon={Pencil} label={canEdit ? "Edit" : "You don't have permission to edit tracks"} variant="accent" disabled={!canEdit} onClick={() => openEdit(t)} />
+                  <IconButton icon={Trash2} label={canDelete ? "Delete" : "You don't have permission to delete tracks"} variant="danger" disabled={!canDelete} onClick={() => setToDelete(t)} />
                 </div>
               </div>
             ))}

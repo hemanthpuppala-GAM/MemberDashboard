@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { Plus, Pencil, Trash2, ShieldCheck, Lock, Check } from "lucide-react";
+import { Plus, Eye, Pencil, Trash2, ShieldCheck, Lock, Check } from "lucide-react";
 import Card from "../../ui/Card";
 import Button from "../../ui/Button";
 import IconButton from "../../ui/IconButton";
@@ -9,24 +9,33 @@ import ConfirmModal from "../../ui/ConfirmModal";
 import Field, { TextInput, TextArea } from "../../ui/Field";
 import Badge from "../../ui/Badge";
 import { api } from "../../../lib/api";
+import { usePermissions } from "../../usePermissions";
 
 const GROUP_LABELS = {
   cms: "CMS", languages: "Languages", users: "Users", roles: "Roles", members: "Members",
   reports: "Reports", announcements: "Announcements", broadcast: "Broadcast", qrcode: "QR Codes",
   settings: "Settings", music: "Music", testimonials: "Testimonials",
-  contact_channels: "Contact channels", donations: "Donations",
+  contact_channels: "Contact channels", donations: "Donations", volunteers: "Volunteers",
 };
+
+const SUPER_ADMIN = "super_admin";
 
 function groupsGranted(role) {
   return [...new Set(role.permissions.map((p) => p.group))];
 }
 
 export default function RolesPage() {
+  const { can } = usePermissions();
+  const canCreate = can("roles.create");
+  const canEdit = can("roles.edit");
+  const canDelete = can("roles.delete");
+
   const [roles, setRoles] = useState([]);
   const [permissionGroups, setPermissionGroups] = useState({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [modalRole, setModalRole] = useState(null);
+  const [viewRole, setViewRole] = useState(null);
   const [form, setForm] = useState({ displayName: "", description: "", permissions: [] });
   const [toDelete, setToDelete] = useState(null);
 
@@ -94,7 +103,7 @@ export default function RolesPage() {
           <h1 className="text-[24px] font-bold text-[var(--a-text-primary)]">Roles & permissions</h1>
           <p className="mt-1 text-[13.5px] text-[var(--a-text-muted)]">Built-in roles are protected. Create custom roles from any permission combination.</p>
         </div>
-        <Button as="button" icon={Plus} onClick={openCreate} disabled={loading}>New role</Button>
+        <Button as="button" icon={Plus} onClick={openCreate} disabled={loading || !canCreate} title={canCreate ? undefined : "You don't have permission to create roles"}>New role</Button>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
@@ -114,12 +123,26 @@ export default function RolesPage() {
                   <p className="text-[11.5px] text-[var(--a-text-faint)]">{role.users_count} user{role.users_count === 1 ? "" : "s"}</p>
                 </div>
               </div>
-              {!role.is_system && (
-                <div className="flex shrink-0 gap-1">
-                  <IconButton icon={Pencil} label="Edit" onClick={() => openEdit(role)} />
-                  <IconButton icon={Trash2} label="Delete" variant="danger" onClick={() => setToDelete(role)} />
-                </div>
-              )}
+              <div className="flex shrink-0 gap-1">
+                <IconButton icon={Eye} label="View" onClick={() => setViewRole(role)} />
+                {role.name !== SUPER_ADMIN && (
+                  <IconButton
+                    icon={Pencil}
+                    label={canEdit ? "Edit" : "You don't have permission to edit roles"}
+                    disabled={!canEdit}
+                    onClick={() => openEdit(role)}
+                  />
+                )}
+                {!role.is_system && (
+                  <IconButton
+                    icon={Trash2}
+                    label={canDelete ? "Delete" : "You don't have permission to delete roles"}
+                    variant="danger"
+                    disabled={!canDelete}
+                    onClick={() => setToDelete(role)}
+                  />
+                )}
+              </div>
             </div>
             <div className="mt-3 flex flex-wrap gap-1.5">
               {groupsGranted(role).length === 0 ? (
@@ -140,10 +163,29 @@ export default function RolesPage() {
         footer={<Button as="button" onClick={handleSave} disabled={!form.displayName || saving}>{modalRole === "new" ? "Create role" : "Save changes"}</Button>}
       >
         <div className="flex flex-col gap-4">
+          {modalRole !== "new" && modalRole?.is_system && (
+            <p className="rounded-lg bg-[var(--a-accent-muted)] px-3.5 py-2.5 text-[12.5px] text-[var(--a-text-muted)]">
+              This is a built-in role — its name and description are fixed, but you can still change which permissions it grants.
+            </p>
+          )}
           <div className="grid gap-4 sm:grid-cols-2">
-            <Field label="Role name" required><TextInput value={form.displayName} onChange={(e) => setForm((f) => ({ ...f, displayName: e.target.value }))} placeholder="e.g. Editor" /></Field>
+            <Field label="Role name" required>
+              <TextInput
+                value={form.displayName}
+                onChange={(e) => setForm((f) => ({ ...f, displayName: e.target.value }))}
+                placeholder="e.g. Editor"
+                disabled={modalRole !== "new" && modalRole?.is_system}
+              />
+            </Field>
           </div>
-          <Field label="Description"><TextArea rows={2} value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} /></Field>
+          <Field label="Description">
+            <TextArea
+              rows={2}
+              value={form.description}
+              onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
+              disabled={modalRole !== "new" && modalRole?.is_system}
+            />
+          </Field>
 
           <div>
             <p className="mb-2 text-[13px] font-medium text-[var(--a-text-primary)]">Permissions</p>
@@ -175,6 +217,67 @@ export default function RolesPage() {
             </div>
           </div>
         </div>
+      </Modal>
+
+      <Modal
+        open={!!viewRole}
+        onClose={() => setViewRole(null)}
+        title={viewRole?.display_name}
+        description={viewRole?.description || undefined}
+        size="lg"
+        footer={
+          viewRole?.name !== SUPER_ADMIN && (
+            <Button
+              as="button"
+              icon={Pencil}
+              disabled={!canEdit}
+              title={canEdit ? undefined : "You don't have permission to edit roles"}
+              onClick={() => { const role = viewRole; setViewRole(null); openEdit(role); }}
+            >
+              Edit permissions
+            </Button>
+          )
+        }
+      >
+        {viewRole && (
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-wrap items-center gap-2">
+              {viewRole.is_system && <Badge tone="neutral">Built-in role</Badge>}
+              <Badge tone="accent">{viewRole.users_count} user{viewRole.users_count === 1 ? "" : "s"}</Badge>
+            </div>
+
+            <div>
+              <p className="mb-2 text-[13px] font-medium text-[var(--a-text-primary)]">Permissions</p>
+              {viewRole.permissions.length === 0 ? (
+                <p className="text-[13px] text-[var(--a-text-muted)]">No permissions assigned.</p>
+              ) : (
+                <div className="flex flex-col divide-y divide-[var(--a-border)] rounded-lg border border-[var(--a-border)]">
+                  {Object.entries(
+                    viewRole.permissions.reduce((byGroup, perm) => {
+                      (byGroup[perm.group] ??= []).push(perm);
+                      return byGroup;
+                    }, {})
+                  ).map(([group, perms]) => (
+                    <div key={group} className="flex flex-wrap items-center gap-2 px-3.5 py-2.5">
+                      <span className="w-28 shrink-0 text-[13px] font-medium text-[var(--a-text-primary)]">{GROUP_LABELS[group] ?? group}</span>
+                      <div className="flex flex-wrap gap-1.5">
+                        {perms.map((perm) => (
+                          <span
+                            key={perm.id}
+                            className="flex items-center gap-1 rounded-full bg-[var(--a-accent-muted)] px-2.5 py-1 text-[11.5px] font-medium text-[var(--a-accent)] capitalize"
+                          >
+                            <Check size={11} />
+                            {perm.name.split(".")[1] ?? perm.name}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </Modal>
 
       <ConfirmModal

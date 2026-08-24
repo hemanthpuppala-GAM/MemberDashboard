@@ -25,6 +25,10 @@ export const SECTION_TYPES = [
   { type: "contact_form", label: "Contact form", description: "Public query form with categories" },
   { type: "media_embed", label: "Media embed", description: "Image or embedded video" },
   { type: "custom_html", label: "Custom HTML", description: "Raw HTML block (super admin only)" },
+  { type: "quick_answers", label: "Quick answers", description: "Short label/title/body answer cards" },
+  { type: "science_panel", label: "Science panel", description: "Explainer text plus an optional techniques list" },
+  { type: "deep_cards", label: "Deep cards", description: "New/seasoned toggle with a grid of deeper cards" },
+  { type: "mission_cosmology", label: "Mission cosmology", description: "Yuga cycle timeline with a goal stat" },
 ];
 
 function sectionContent(overrides = {}) {
@@ -187,7 +191,7 @@ export const PAGES = [
   },
 ];
 
-export const MEDIA_FOLDERS = ["All", "About", "Events", "Meditation", "General"];
+export const MEDIA_FOLDERS = ["All", "General", "Home", "About", "Wisdom", "Wellness", "Meditate", "Events", "Mission", "Contact"];
 
 export const MEDIA = [
   { id: 1, filename: "hero-sunrise.jpg", url: "https://picsum.photos/seed/gaw1/480/320", altText: "Sunrise over mountains", sizeKb: 214, mime: "image/jpeg", folder: "General", uploadedBy: "Aanya Sharma", uploadedAt: "2026-08-10T08:00:00Z" },
@@ -274,12 +278,6 @@ export const JOURNEYS = {
   ],
 };
 
-export const ANNOUNCEMENTS = [
-  { id: 1, title: "New journey note template", body: "<p>Please use the updated journey note template for all new member entries starting this week.</p>", type: "info", target: "role:practitioner", sentOn: "2026-08-12T09:00:00Z", readCount: 3, totalRecipients: 3, priority: "normal" },
-  { id: 2, title: "Scheduled maintenance Aug 16", body: "<p>The admin panel will be briefly unavailable on Aug 16, 2–3am IST for maintenance.</p>", type: "warning", target: "all", sentOn: "2026-08-11T15:00:00Z", readCount: 4, totalRecipients: 5, priority: "urgent" },
-  { id: 3, title: "Welcome Karan Patel", body: "<p>Please welcome Karan Patel, our newest wellness practitioner.</p>", type: "info", target: "all", sentOn: "2026-08-05T10:00:00Z", readCount: 5, totalRecipients: 5, priority: "normal" },
-];
-
 export const BROADCASTS = [
   { id: 1, title: "October Retreat — Early Bird", type: "popup_card", content: "Save 20% on the October Himalayan retreat, ends this week.", cta: { label: "Reserve a spot", url: "/events" }, targetPages: ["home", "events"], audience: "all", scheduleFrom: "2026-08-10", scheduleUntil: "2026-08-20", showAfterSeconds: 4, frequency: "once_per_session", status: "active" },
   { id: 2, title: "New live session banner", type: "text_banner", content: "Daily meditation is live now — join the circle.", cta: { label: "Join now", url: "#meditate-now" }, targetPages: ["home", "meditate"], audience: "returning", scheduleFrom: "2026-08-01", scheduleUntil: "2026-09-01", showAfterSeconds: 0, frequency: "every_visit", status: "active" },
@@ -292,16 +290,6 @@ export const QR_CODES = [
   { id: 2, title: "WhatsApp support", type: "phone", inputData: { phone: "+1 555 0100" }, fg: "#6C63FF", bg: "#FFFFFF", createdAt: "2026-08-05T00:00:00Z", downloads: 12 },
   { id: 3, title: "Retreat flyer vCard", type: "vcard", inputData: { name: "Aanya Sharma", email: "aanya@goldenagewisdom.org", phone: "+1 555 0142", address: "", website: "goldenagewisdom.org" }, fg: "#10B981", bg: "#FFFFFF", createdAt: "2026-07-22T00:00:00Z", downloads: 8 },
   { id: 4, title: "Studio WiFi", type: "wifi", inputData: { ssid: "GAW-Studio", password: "om-shanti-108", encryption: "WPA" }, fg: "#F59E0B", bg: "#FFFFFF", createdAt: "2026-07-15T00:00:00Z", downloads: 5 },
-];
-
-export const ACTIVITY_LOG = [
-  { id: 1, user: "Aanya Sharma", action: "published page", target: "about", ip: "203.0.113.14", timestamp: "2026-08-14T08:15:00Z" },
-  { id: 2, user: "Ravi Kumar", action: "added journey note", target: "Daniel Osei", ip: "198.51.100.22", timestamp: "2026-08-14T08:00:00Z" },
-  { id: 3, user: "Devika Rao", action: "uploaded media", target: "chakra-diagram.png", ip: "203.0.113.9", timestamp: "2026-08-13T19:10:00Z" },
-  { id: 4, user: "Aanya Sharma", action: "assigned query", target: "Hana Kobayashi → Ravi Kumar", ip: "203.0.113.14", timestamp: "2026-08-13T09:32:00Z" },
-  { id: 5, user: "Meera Iyer", action: "completed session", target: "Priya Nair", ip: "192.0.2.44", timestamp: "2026-08-13T16:00:00Z" },
-  { id: 6, user: "Devika Rao", action: "created broadcast", target: "October Retreat — Early Bird", ip: "203.0.113.9", timestamp: "2026-08-10T11:12:00Z" },
-  { id: 7, user: "Aanya Sharma", action: "created role", target: "editor", ip: "203.0.113.14", timestamp: "2026-08-04T10:00:00Z" },
 ];
 
 export const REPORTS = {

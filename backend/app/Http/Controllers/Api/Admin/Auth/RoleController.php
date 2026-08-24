@@ -15,6 +15,11 @@ class RoleController extends Controller
         );
     }
 
+    public function show(Role $role)
+    {
+        return response()->json($role->load('permissions:id,name,group')->loadCount('users'));
+    }
+
     public function store(RoleRequest $request)
     {
         $role = Role::create([
@@ -29,9 +34,18 @@ class RoleController extends Controller
 
     public function update(RoleRequest $request, Role $role)
     {
-        abort_if($role->is_system, 422, 'Built-in roles cannot be renamed — edit their permissions instead.');
+        // Super Admin bypasses permission checks entirely (see User::hasPermission),
+        // so its permission list is cosmetic — editing it would look like it does
+        // something without actually restricting access. Block it outright.
+        abort_if($role->name === Role::SUPER_ADMIN, 422, 'Super Admin always has every permission — nothing to edit.');
 
-        $role->update($request->safe()->except('permissions'));
+        // Other built-in roles keep their name/display_name/description, but their
+        // permission set is still editable — that's how an admin narrows or
+        // widens what e.g. "Content Manager" can do without renaming it.
+        if (! $role->is_system) {
+            $role->update($request->safe()->except('permissions'));
+        }
+
         $role->permissions()->sync($request->validated('permissions', []));
 
         return response()->json($role->load('permissions'));

@@ -19,6 +19,7 @@ class BroadcastRequest extends FormRequest
             'title' => ['required', 'string', 'max:255'],
             'type' => ['required', Rule::in(Broadcast::TYPES)],
             'content_text' => ['nullable', 'string', 'max:2000'],
+            'content_image_path' => ['nullable', 'string', 'max:500'],
             'content_video_url' => ['nullable', 'url', 'max:500'],
             'cta_label' => ['nullable', 'string', 'max:100'],
             'cta_url' => ['nullable', 'string', 'max:500'],

@@ -12,6 +12,7 @@ import Toggle from "../../ui/Toggle";
 import { StatusBadge } from "../../ui/Badge";
 import Avatar from "../../ui/Avatar";
 import { api } from "../../../lib/api";
+import { usePermissions } from "../../usePermissions";
 
 const EMPTY = { name: "", email: "", password: "", primary_role_id: "", status: "active", specialty: "", bio: "", max_capacity: 15 };
 
@@ -20,6 +21,12 @@ function generatePassword() {
 }
 
 export default function UsersListPage() {
+  const { can } = usePermissions();
+  const canCreate = can("users.create");
+  const canEdit = can("users.edit");
+  const canDelete = can("users.delete");
+  const canViewRoles = can("roles.view");
+
   const [users, setUsers] = useState([]);
   const [roles, setRoles] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -28,17 +35,19 @@ export default function UsersListPage() {
   const [form, setForm] = useState(EMPTY);
   const [toDelete, setToDelete] = useState(null);
 
-  const loadData = () =>
-    Promise.all([api.users(), api.roles()]).then(([usersRes, rolesRes]) => {
-      setUsers(usersRes);
-      setRoles(rolesRes);
-    });
+  const loadUsers = () => api.users().then(setUsers);
 
   useEffect(() => {
-    loadData()
-      .catch((err) => toast.error(err.message ?? "Failed to load users"))
+    // The roles list only populates the "Role" picker in the create/edit
+    // modal — a role without roles.view still gets a working user list
+    // (each row's role name already comes from the user record itself).
+    const jobs = [loadUsers(), canViewRoles ? api.roles().then(setRoles) : Promise.resolve()];
+    Promise.allSettled(jobs)
+      .then((results) => {
+        if (results[0].status === "rejected") toast.error(results[0].reason?.message ?? "Failed to load users");
+      })
       .finally(() => setLoading(false));
-  }, []);
+  }, [canViewRoles]);
 
   const openCreate = () => { setForm({ ...EMPTY, primary_role_id: roles[0]?.id ?? "" }); setModalUser("new"); };
   const openEdit = (u) => {
@@ -75,7 +84,7 @@ export default function UsersListPage() {
         await api.updateUser(modalUser.id, payload);
         toast.success("User updated");
       }
-      await loadData();
+      await loadUsers();
       setModalUser(null);
     } catch (err) {
       toast.error(err.errors ? Object.values(err.errors).flat()[0] : (err.message ?? "Save failed"));
@@ -88,7 +97,7 @@ export default function UsersListPage() {
     try {
       await api.deleteUser(toDelete.id);
       toast.success("User deleted");
-      await loadData();
+      await loadUsers();
     } catch (err) {
       toast.error(err.message ?? "Delete failed");
     } finally {
@@ -116,13 +125,13 @@ export default function UsersListPage() {
         id: "actions", header: "", enableSorting: false,
         cell: ({ row }) => (
           <div className="flex justify-end gap-1">
-            <IconButton icon={Pencil} label="Edit" onClick={() => openEdit(row.original)} />
-            <IconButton icon={Trash2} label="Delete" variant="danger" onClick={() => setToDelete(row.original)} />
+            <IconButton icon={Pencil} label={canEdit ? "Edit" : "You don't have permission to edit users"} disabled={!canEdit} onClick={() => openEdit(row.original)} />
+            <IconButton icon={Trash2} label={canDelete ? "Delete" : "You don't have permission to delete users"} variant="danger" disabled={!canDelete} onClick={() => setToDelete(row.original)} />
           </div>
         ),
       },
     ],
-    []
+    [canEdit, canDelete]
   );
 
   return (
@@ -132,7 +141,7 @@ export default function UsersListPage() {
           <h1 className="text-[24px] font-bold text-[var(--a-text-primary)]">Users & practitioners</h1>
           <p className="mt-1 text-[13.5px] text-[var(--a-text-muted)]">Admins, content managers, and practitioners with panel access.</p>
         </div>
-        <Button as="button" icon={Plus} onClick={openCreate} disabled={loading}>New user</Button>
+        <Button as="button" icon={Plus} onClick={openCreate} disabled={loading || !canCreate} title={canCreate ? undefined : "You don't have permission to create users"}>New user</Button>
       </div>
 
       <Card padded={false}>

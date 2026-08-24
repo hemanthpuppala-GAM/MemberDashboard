@@ -12,11 +12,18 @@ import Field, { TextInput, Select } from "../../ui/Field";
 import { StatusBadge } from "../../ui/Badge";
 import { api, downloadAuthed } from "../../../lib/api";
 import { CATEGORIES, CATEGORY_LABELS } from "../../mock/mockData";
+import { usePermissions } from "../../usePermissions";
 
 const EMPTY = { name: "", email: "", phone: "", category: "general", status: "new", assigned_practitioner_id: "" };
 
 export default function MembersListPage() {
+  const { can } = usePermissions();
+  const canEdit = can("members.edit");
+  const canDelete = can("members.delete");
+  const canViewUsers = can("users.view");
+
   const [members, setMembers] = useState([]);
+  const [lastPage, setLastPage] = useState(1);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -27,13 +34,38 @@ export default function MembersListPage() {
   const [form, setForm] = useState(EMPTY);
   const [toDelete, setToDelete] = useState(null);
 
-  const loadMembers = () => api.members().then((res) => setMembers(res.data));
+  const [search, setSearch] = useState("");
+  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 20 });
+
+  const loadMembers = () =>
+    api
+      .members({ page: pagination.pageIndex + 1, per_page: pagination.pageSize, ...(search ? { search } : {}) })
+      .then((res) => {
+        setMembers(res.data);
+        setLastPage(res.last_page ?? 1);
+      });
+
+  const handleSearchChange = (value) => {
+    setSearch(value);
+    setPagination((p) => ({ ...p, pageIndex: 0 }));
+  };
 
   useEffect(() => {
-    Promise.all([loadMembers(), api.users().then(setUsers)])
+    // Practitioner names are a nice-to-have here (column + assignment dropdown), not
+    // this page's core data — a role without users.view still gets a working members
+    // list, just without practitioner names, instead of a scary permission toast.
+    if (!canViewUsers) return;
+    api.users().then(setUsers).catch(() => {});
+  }, [canViewUsers]);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- resets the spinner when page/search change
+    setLoading(true);
+    loadMembers()
       .catch((err) => toast.error(err.message ?? "Failed to load members"))
       .finally(() => setLoading(false));
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pagination.pageIndex, pagination.pageSize, search]);
 
   const columns = useMemo(
     () => [
@@ -48,12 +80,12 @@ export default function MembersListPage() {
         id: "actions", header: "", enableSorting: false,
         cell: ({ row }) => (
           <div className="flex justify-end" onClick={(e) => e.stopPropagation()}>
-            <IconButton icon={Trash2} label="Remove" variant="danger" onClick={() => setToDelete(row.original)} />
+            <IconButton icon={Trash2} label={canDelete ? "Remove" : "You don't have permission to remove members"} variant="danger" disabled={!canDelete} onClick={() => setToDelete(row.original)} />
           </div>
         ),
       },
     ],
-    [setToDelete]
+    [canDelete, setToDelete]
   );
 
   const handleCreate = async () => {
@@ -98,7 +130,7 @@ export default function MembersListPage() {
           <Button as="button" variant="secondary" icon={Download} onClick={() => downloadAuthed("/admin/members/export", "members.csv").catch((err) => toast.error(err.message ?? "Export failed"))}>
             Export CSV
           </Button>
-          <Button as="button" icon={Plus} onClick={() => setCreateOpen(true)} disabled={loading}>New member</Button>
+          <Button as="button" icon={Plus} onClick={() => setCreateOpen(true)} disabled={loading || !canEdit} title={canEdit ? undefined : "You don't have permission to add members"}>New member</Button>
         </div>
       </div>
 
@@ -111,6 +143,13 @@ export default function MembersListPage() {
             onRowClick={(m) => navigate(`/admin/members/${m.id}`)}
             emptyIcon={UsersRound}
             emptyTitle={loading ? "Loading members…" : "No members yet"}
+            manual
+            enableSorting={false}
+            pageCount={lastPage}
+            pagination={pagination}
+            onPaginationChange={setPagination}
+            globalFilter={search}
+            onGlobalFilterChange={handleSearchChange}
           />
         </div>
       </Card>

@@ -10,7 +10,7 @@ use App\Models\Auth\User;
 #[Fillable(['filename', 'original_name', 'disk', 'path', 'url', 'mime_type', 'size_bytes', 'alt_text', 'folder', 'uploaded_by'])]
 class Media extends Model
 {
-    public const FOLDERS = ['General', 'About', 'Events', 'Meditation'];
+    public const FOLDERS = ['General', 'Home', 'About', 'Wisdom', 'Wellness', 'Meditate', 'Events', 'Mission', 'Contact'];
 
     public function uploader(): BelongsTo
     {

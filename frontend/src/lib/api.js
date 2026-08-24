@@ -86,6 +86,7 @@ export const api = {
   deleteUser: (id) => apiFetch(`/admin/users/${id}`, { method: "DELETE" }),
 
   roles: () => apiFetch("/admin/roles"),
+  role: (id) => apiFetch(`/admin/roles/${id}`),
   createRole: (payload) => apiFetch("/admin/roles", { method: "POST", body: payload }),
   updateRole: (id, payload) => apiFetch(`/admin/roles/${id}`, { method: "PUT", body: payload }),
   deleteRole: (id) => apiFetch(`/admin/roles/${id}`, { method: "DELETE" }),
@@ -133,7 +134,7 @@ export const api = {
   reorderVolunteerCategories: (categoryIds) =>
     apiFetch("/admin/volunteer-categories/reorder", { method: "PUT", body: { category_ids: categoryIds } }),
 
-  volunteerApplications: (params = {}) => apiFetch(`/admin/volunteer-applications?${new URLSearchParams({ per_page: 500, ...params })}`),
+  volunteerApplications: (params = {}) => apiFetch(`/admin/volunteer-applications?${new URLSearchParams({ per_page: 20, ...params })}`),
   updateVolunteerApplicationStatus: (id, status) =>
     apiFetch(`/admin/volunteer-applications/${id}/status`, { method: "PATCH", body: { status } }),
   deleteVolunteerApplication: (id) => apiFetch(`/admin/volunteer-applications/${id}`, { method: "DELETE" }),
@@ -170,7 +171,7 @@ export const api = {
   updateContactSubmission: (id, status) =>
     apiFetch(`/admin/contact-submissions/${id}`, { method: "PATCH", body: { status } }),
 
-  members: (params = {}) => apiFetch(`/admin/members?${new URLSearchParams({ per_page: 500, ...params })}`),
+  members: (params = {}) => apiFetch(`/admin/members?${new URLSearchParams({ per_page: 20, ...params })}`),
   member: (id) => apiFetch(`/admin/members/${id}`),
   createMember: (payload) => apiFetch("/admin/members", { method: "POST", body: payload }),
   updateMember: (id, payload) => apiFetch(`/admin/members/${id}`, { method: "PUT", body: payload }),
@@ -180,7 +181,7 @@ export const api = {
   memberJourney: (id) => apiFetch(`/admin/members/${id}/journey`),
   addMemberJourneyEntry: (id, payload) => apiFetch(`/admin/members/${id}/journey`, { method: "POST", body: payload }),
 
-  queries: (params = {}) => apiFetch(`/admin/queries?${new URLSearchParams({ per_page: 500, ...params })}`),
+  queries: (params = {}) => apiFetch(`/admin/queries?${new URLSearchParams({ per_page: 20, ...params })}`),
   query: (id) => apiFetch(`/admin/queries/${id}`),
   updateQueryStatus: (id, status) => apiFetch(`/admin/queries/${id}/status`, { method: "PATCH", body: { status } }),
   assignQuery: (id, userId) => apiFetch(`/admin/queries/${id}/assign`, { method: "PATCH", body: { assigned_to: userId } }),
@@ -224,8 +225,10 @@ export async function downloadAuthed(path, filename) {
   const a = document.createElement("a");
   a.href = url;
   a.download = filename;
+  document.body.appendChild(a);
   a.click();
-  URL.revokeObjectURL(url);
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
 export const practitionerApi = {
@@ -242,9 +245,14 @@ export const practitionerApi = {
 export const publicApi = {
   content: () => apiFetch("/content", { auth: false }),
   contentBySlug: (slug) => apiFetch(`/content/${slug}`, { auth: false }),
+  page: (slug) => apiFetch(`/pages/${slug}`, { auth: false }),
   events: () => apiFetch("/events", { auth: false }),
+  testimonials: () => apiFetch("/testimonials", { auth: false }),
   settings: () => apiFetch("/settings", { auth: false }),
   submitContact: (payload) => apiFetch("/contact", { method: "POST", body: payload, auth: false }),
   volunteerCategories: () => apiFetch("/volunteer-categories", { auth: false }),
   submitVolunteerApplication: (payload) => apiFetch("/volunteer-applications", { method: "POST", body: payload, auth: false }),
+  contactChannels: () => apiFetch("/contact-channels", { auth: false }),
+  donationMethods: () => apiFetch("/donation-methods", { auth: false }),
+  broadcasts: (page) => apiFetch(`/broadcasts/active${page ? `?page=${encodeURIComponent(page)}` : ""}`, { auth: false }),
 };

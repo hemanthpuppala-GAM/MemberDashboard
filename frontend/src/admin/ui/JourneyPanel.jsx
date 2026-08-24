@@ -12,7 +12,7 @@ const ENTRY_LABEL = { note: "Note", status_change: "Status change", session_comp
  * structured Q&A record of what they asked and how they were guided.
  * Used by both the admin MemberProfilePage and the practitioner's own dashboard.
  */
-export default function JourneyPanel({ entries, onAddNote, onAddQa }) {
+export default function JourneyPanel({ entries, onAddNote, onAddQa, readOnly = false }) {
   const [mode, setMode] = useState("note");
   const [note, setNote] = useState("");
   const [question, setQuestion] = useState("");
@@ -35,25 +35,27 @@ export default function JourneyPanel({ entries, onAddNote, onAddQa }) {
 
   return (
     <div className="flex flex-col gap-5">
-      <div className="flex flex-col gap-3">
-        <PillTabs
-          tabs={[{ key: "note", label: "Quick note" }, { key: "qa", label: "Question & answer" }]}
-          active={mode}
-          onChange={setMode}
-        />
-        {mode === "note" ? (
-          <div className="flex items-start gap-2">
-            <TextArea rows={2} value={note} onChange={(e) => setNote(e.target.value)} placeholder="Add a note about this member's journey..." />
-            <Button as="button" icon={Send} onClick={submitNote}>Add</Button>
-          </div>
-        ) : (
-          <div className="flex flex-col gap-2 rounded-lg border border-[var(--a-border)] p-3">
-            <TextArea rows={2} value={question} onChange={(e) => setQuestion(e.target.value)} placeholder="What did they ask? e.g. &quot;Is it normal to feel dizzy during pranayama?&quot;" />
-            <TextArea rows={2} value={answer} onChange={(e) => setAnswer(e.target.value)} placeholder="Your answer / guidance..." />
-            <Button as="button" icon={Send} onClick={submitQa} className="w-fit">Save Q&A</Button>
-          </div>
-        )}
-      </div>
+      {!readOnly && (
+        <div className="flex flex-col gap-3">
+          <PillTabs
+            tabs={[{ key: "note", label: "Quick note" }, { key: "qa", label: "Question & answer" }]}
+            active={mode}
+            onChange={setMode}
+          />
+          {mode === "note" ? (
+            <div className="flex items-start gap-2">
+              <TextArea rows={2} value={note} onChange={(e) => setNote(e.target.value)} placeholder="Add a note about this member's journey..." />
+              <Button as="button" icon={Send} onClick={submitNote}>Add</Button>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-2 rounded-lg border border-[var(--a-border)] p-3">
+              <TextArea rows={2} value={question} onChange={(e) => setQuestion(e.target.value)} placeholder="What did they ask? e.g. &quot;Is it normal to feel dizzy during pranayama?&quot;" />
+              <TextArea rows={2} value={answer} onChange={(e) => setAnswer(e.target.value)} placeholder="Your answer / guidance..." />
+              <Button as="button" icon={Send} onClick={submitQa} className="w-fit">Save Q&A</Button>
+            </div>
+          )}
+        </div>
+      )}
 
       <div className="flex flex-col gap-5 border-l border-[var(--a-border)] pl-5">
         {sorted.length === 0 && <p className="text-[13.5px] text-[var(--a-text-muted)]">No journey entries yet.</p>}

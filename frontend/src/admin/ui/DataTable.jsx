@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   useReactTable,
   getCoreRowModel,
@@ -14,6 +14,13 @@ import { Select } from "./Field";
 /**
  * Generic admin list table: sorting, global search, pagination, row selection slot.
  * `toolbar` renders filter chips/buttons to the right of the search box.
+ *
+ * By default sorting/filtering/pagination run client-side over `data`.
+ * Pass `manual` to hand all three to the server instead: the table then
+ * expects `data` to already be one page, `pageCount` to reflect the server's
+ * total, and `pagination`/`onPaginationChange` (+ optionally `sorting`/
+ * `onSortingChange` and `globalFilter`/`onGlobalFilterChange`) to be controlled
+ * by the parent.
  */
 export default function DataTable({
   columns,
@@ -25,26 +32,60 @@ export default function DataTable({
   emptyIcon,
   pageSize = 10,
   onRowClick,
+  manual = false,
+  pageCount,
+  enableSorting = true,
+  sorting: controlledSorting,
+  onSortingChange: controlledOnSortingChange,
+  globalFilter: controlledGlobalFilter,
+  onGlobalFilterChange: controlledOnGlobalFilterChange,
+  pagination: controlledPagination,
+  onPaginationChange: controlledOnPaginationChange,
+  searchDebounceMs = 350,
 }) {
-  const [sorting, setSorting] = useState([]);
-  const [globalFilter, setGlobalFilter] = useState("");
-  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize });
+  const [internalSorting, setInternalSorting] = useState([]);
+  const [internalGlobalFilter, setInternalGlobalFilter] = useState("");
+  const [internalPagination, setInternalPagination] = useState({ pageIndex: 0, pageSize });
+
+  const sorting = manual ? controlledSorting ?? [] : internalSorting;
+  const onSortingChange = manual ? controlledOnSortingChange ?? (() => {}) : setInternalSorting;
+  const globalFilter = manual ? controlledGlobalFilter ?? "" : internalGlobalFilter;
+  const onGlobalFilterChange = manual ? controlledOnGlobalFilterChange ?? (() => {}) : setInternalGlobalFilter;
+  const pagination = manual ? controlledPagination ?? { pageIndex: 0, pageSize } : internalPagination;
+  const onPaginationChange = manual ? controlledOnPaginationChange ?? (() => {}) : setInternalPagination;
+
+  // Debounce the search box so manual mode doesn't fire a request per keystroke.
+  const [searchInput, setSearchInput] = useState(globalFilter);
+  useEffect(() => setSearchInput(globalFilter), [globalFilter]);
+  useEffect(() => {
+    if (!manual) return undefined;
+    const id = setTimeout(() => {
+      if (searchInput !== globalFilter) onGlobalFilterChange(searchInput);
+    }, searchDebounceMs);
+    return () => clearTimeout(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchInput, manual]);
 
   const table = useReactTable({
     data,
     columns,
     state: { sorting, globalFilter, pagination },
-    onSortingChange: setSorting,
-    onGlobalFilterChange: setGlobalFilter,
-    onPaginationChange: setPagination,
+    onSortingChange,
+    onGlobalFilterChange,
+    onPaginationChange,
+    enableSorting,
+    manualPagination: manual,
+    manualSorting: manual,
+    manualFiltering: manual,
+    pageCount: manual ? pageCount ?? -1 : undefined,
     getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: manual ? undefined : getSortedRowModel(),
+    getFilteredRowModel: manual ? undefined : getFilteredRowModel(),
+    getPaginationRowModel: manual ? undefined : getPaginationRowModel(),
   });
 
   const rows = table.getRowModel().rows;
-  const pageCount = table.getPageCount();
+  const rowCount = table.getPageCount();
 
   return (
     <div className="flex flex-col gap-4">
@@ -52,8 +93,8 @@ export default function DataTable({
         <div className="relative w-full max-w-xs">
           <Search size={15} className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-[var(--a-text-faint)]" />
           <input
-            value={globalFilter}
-            onChange={(e) => setGlobalFilter(e.target.value)}
+            value={manual ? searchInput : globalFilter}
+            onChange={(e) => (manual ? setSearchInput(e.target.value) : onGlobalFilterChange(e.target.value))}
             placeholder={searchPlaceholder}
             className="w-full rounded-lg border border-[var(--a-border)] bg-[var(--a-bg-base)] py-2 pr-3 pl-9 text-[13px] text-[var(--a-text-primary)] placeholder:text-[var(--a-text-faint)] outline-none focus:border-[var(--a-focus)] focus:ring-2 focus:ring-[var(--a-focus-muted)]"
           />
@@ -126,7 +167,7 @@ export default function DataTable({
           </div>
           <div className="flex items-center gap-3">
             <span>
-              Page {pagination.pageIndex + 1} of {Math.max(pageCount, 1)}
+              Page {pagination.pageIndex + 1} of {Math.max(rowCount, 1)}
             </span>
             <div className="flex items-center gap-1">
               <button

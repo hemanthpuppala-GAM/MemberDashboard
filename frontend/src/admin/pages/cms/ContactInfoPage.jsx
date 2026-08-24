@@ -11,11 +11,17 @@ import Toggle from "../../ui/Toggle";
 import EmptyState from "../../ui/EmptyState";
 import { api } from "../../../lib/api";
 import { CONTACT_CHANNEL_TYPES } from "../../mock/mockData";
+import { usePermissions } from "../../usePermissions";
 
 const TYPE_ICON = { phone: Phone, whatsapp: MessageCircle, email: Mail, address: MapPin, website: Globe, social: Share2 };
 const EMPTY = { type: "phone", label: "", value: "", is_visible: true };
 
 export default function ContactInfoPage() {
+  const { can } = usePermissions();
+  const canCreate = can("contact_channels.create");
+  const canEdit = can("contact_channels.edit");
+  const canDelete = can("contact_channels.delete");
+
   const [channels, setChannels] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(null); // null = closed, {} = new, {...} = edit
@@ -97,7 +103,7 @@ export default function ContactInfoPage() {
             Every phone number, email, address, and social link shown on the public Contact page. Toggle visibility without deleting, reorder how they appear.
           </p>
         </div>
-        <Button as="button" icon={Plus} onClick={openNew} disabled={loading}>Add contact option</Button>
+        <Button as="button" icon={Plus} onClick={openNew} disabled={loading || !canCreate} title={canCreate ? undefined : "You don't have permission to add contact options"}>Add contact option</Button>
       </div>
 
       <Card padded={false}>
@@ -122,11 +128,11 @@ export default function ContactInfoPage() {
                     <p className="truncate text-[12.5px] text-[var(--a-text-muted)]">{c.value}</p>
                   </div>
                   <div className="flex shrink-0 items-center gap-1">
-                    <IconButton icon={ChevronUp} label="Move up" onClick={() => move(c.id, "up")} disabled={i === 0} />
-                    <IconButton icon={ChevronDown} label="Move down" onClick={() => move(c.id, "down")} disabled={i === sorted.length - 1} />
-                    <Toggle checked={c.is_visible} onChange={(v) => toggleVisible(c, v)} />
-                    <IconButton icon={Pencil} label="Edit" variant="accent" onClick={() => openEdit(c)} />
-                    <IconButton icon={Trash2} label="Delete" variant="danger" onClick={() => setToDelete(c)} />
+                    <IconButton icon={ChevronUp} label="Move up" onClick={() => move(c.id, "up")} disabled={!canEdit || i === 0} />
+                    <IconButton icon={ChevronDown} label="Move down" onClick={() => move(c.id, "down")} disabled={!canEdit || i === sorted.length - 1} />
+                    <Toggle checked={c.is_visible} onChange={(v) => toggleVisible(c, v)} disabled={!canEdit} />
+                    <IconButton icon={Pencil} label={canEdit ? "Edit" : "You don't have permission to edit contact options"} variant="accent" disabled={!canEdit} onClick={() => openEdit(c)} />
+                    <IconButton icon={Trash2} label={canDelete ? "Delete" : "You don't have permission to delete contact options"} variant="danger" disabled={!canDelete} onClick={() => setToDelete(c)} />
                   </div>
                 </div>
               );

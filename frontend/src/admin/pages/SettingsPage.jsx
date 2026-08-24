@@ -8,6 +8,7 @@ import Toggle from "../ui/Toggle";
 import ColorField from "../ui/ColorField";
 import { PillTabs } from "../ui/Tabs";
 import { api } from "../../lib/api";
+import { usePermissions } from "../usePermissions";
 import { useAdminTheme } from "../theme/useAdminTheme";
 import { COLOR_PRESETS, FONT_OPTIONS, TEXT_SIZES, getPresetTokens } from "../theme/displayPresets";
 
@@ -33,15 +34,15 @@ function decodeBooleans(settings) {
   return next;
 }
 
-function GroupForm({ group, fields, values, onChange, areas = [] }) {
+function GroupForm({ group, fields, values, onChange, areas = [], disabled = false }) {
   return (
     <div className="grid gap-5 sm:grid-cols-2">
       {fields.map(([key, label]) => (
         <Field key={key} label={label} className={areas.includes(key) ? "sm:col-span-2" : ""}>
           {areas.includes(key) ? (
-            <TextArea rows={2} value={values[key] ?? ""} onChange={(e) => onChange(group, { [key]: e.target.value })} />
+            <TextArea rows={2} value={values[key] ?? ""} onChange={(e) => onChange(group, { [key]: e.target.value })} disabled={disabled} />
           ) : (
-            <TextInput value={values[key] ?? ""} onChange={(e) => onChange(group, { [key]: e.target.value })} />
+            <TextInput value={values[key] ?? ""} onChange={(e) => onChange(group, { [key]: e.target.value })} disabled={disabled} />
           )}
         </Field>
       ))}
@@ -50,6 +51,9 @@ function GroupForm({ group, fields, values, onChange, areas = [] }) {
 }
 
 export default function SettingsPage() {
+  const { can } = usePermissions();
+  const canEdit = can("settings.edit");
+
   const [settings, setSettings] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -126,8 +130,9 @@ export default function SettingsPage() {
             values={settings.general}
             onChange={updateGroup}
             fields={[["siteName", "Site name"], ["tagline", "Tagline"], ["adminEmail", "Admin email"], ["timezone", "Timezone"]]}
+            disabled={!canEdit}
           />
-          <Button as="button" size="sm" className="mt-5" onClick={() => save("general", "General settings")} disabled={saving}>Save</Button>
+          <Button as="button" size="sm" className="mt-5" onClick={() => save("general", "General settings")} disabled={saving || !canEdit} title={canEdit ? undefined : "You don't have permission to edit settings"}>Save</Button>
         </Card>
       )}
 
@@ -139,33 +144,34 @@ export default function SettingsPage() {
             onChange={updateGroup}
             areas={["address"]}
             fields={[["youtube", "YouTube"], ["instagram", "Instagram"], ["facebook", "Facebook"], ["whatsapp", "WhatsApp"], ["phone", "Phone"], ["address", "Address"]]}
+            disabled={!canEdit}
           />
-          <Button as="button" size="sm" className="mt-5" onClick={() => save("social", "Social & contact settings")} disabled={saving}>Save</Button>
+          <Button as="button" size="sm" className="mt-5" onClick={() => save("social", "Social & contact settings")} disabled={saving || !canEdit} title={canEdit ? undefined : "You don't have permission to edit settings"}>Save</Button>
         </Card>
       )}
 
       {tab === "banner" && (
         <Card title="Live session banner">
           <div className="flex flex-col gap-5">
-            <Toggle checked={settings.banner.enabled} onChange={(v) => updateGroup("banner", { enabled: v })} label="Show banner" description="Displays across the public site when a live session is on" />
-            <Field label="Banner text"><TextInput value={settings.banner.text} onChange={(e) => updateGroup("banner", { text: e.target.value })} /></Field>
+            <Toggle checked={settings.banner.enabled} onChange={(v) => updateGroup("banner", { enabled: v })} label="Show banner" description="Displays across the public site when a live session is on" disabled={!canEdit} />
+            <Field label="Banner text"><TextInput value={settings.banner.text} onChange={(e) => updateGroup("banner", { text: e.target.value })} disabled={!canEdit} /></Field>
             <div className="grid gap-5 sm:grid-cols-2">
-              <Field label="CTA label"><TextInput value={settings.banner.ctaLabel} onChange={(e) => updateGroup("banner", { ctaLabel: e.target.value })} /></Field>
-              <Field label="CTA URL"><TextInput value={settings.banner.ctaUrl} onChange={(e) => updateGroup("banner", { ctaUrl: e.target.value })} /></Field>
+              <Field label="CTA label"><TextInput value={settings.banner.ctaLabel} onChange={(e) => updateGroup("banner", { ctaLabel: e.target.value })} disabled={!canEdit} /></Field>
+              <Field label="CTA URL"><TextInput value={settings.banner.ctaUrl} onChange={(e) => updateGroup("banner", { ctaUrl: e.target.value })} disabled={!canEdit} /></Field>
             </div>
           </div>
-          <Button as="button" size="sm" className="mt-5" onClick={() => save("banner", "Banner settings")} disabled={saving}>Save</Button>
+          <Button as="button" size="sm" className="mt-5" onClick={() => save("banner", "Banner settings")} disabled={saving || !canEdit} title={canEdit ? undefined : "You don't have permission to edit settings"}>Save</Button>
         </Card>
       )}
 
       {tab === "maintenance" && (
         <Card title="Maintenance mode">
           <div className="flex flex-col gap-5">
-            <Toggle checked={settings.maintenance.enabled} onChange={(v) => updateGroup("maintenance", { enabled: v })} label="Enable maintenance mode" description="Visitors see the maintenance message instead of the site" />
-            <Field label="Maintenance message"><TextArea rows={2} value={settings.maintenance.message} onChange={(e) => updateGroup("maintenance", { message: e.target.value })} /></Field>
-            <Field label="Allowed IPs" hint="Comma-separated — these IPs bypass maintenance mode"><TextInput value={settings.maintenance.allowedIps} onChange={(e) => updateGroup("maintenance", { allowedIps: e.target.value })} /></Field>
+            <Toggle checked={settings.maintenance.enabled} onChange={(v) => updateGroup("maintenance", { enabled: v })} label="Enable maintenance mode" description="Visitors see the maintenance message instead of the site" disabled={!canEdit} />
+            <Field label="Maintenance message"><TextArea rows={2} value={settings.maintenance.message} onChange={(e) => updateGroup("maintenance", { message: e.target.value })} disabled={!canEdit} /></Field>
+            <Field label="Allowed IPs" hint="Comma-separated — these IPs bypass maintenance mode"><TextInput value={settings.maintenance.allowedIps} onChange={(e) => updateGroup("maintenance", { allowedIps: e.target.value })} disabled={!canEdit} /></Field>
           </div>
-          <Button as="button" size="sm" className="mt-5" onClick={() => save("maintenance", "Maintenance settings")} disabled={saving}>Save</Button>
+          <Button as="button" size="sm" className="mt-5" onClick={() => save("maintenance", "Maintenance settings")} disabled={saving || !canEdit} title={canEdit ? undefined : "You don't have permission to edit settings"}>Save</Button>
         </Card>
       )}
 
@@ -283,9 +289,10 @@ export default function SettingsPage() {
               values={settings.appearance}
               onChange={updateGroup}
               fields={[["logoUrl", "Logo URL"], ["faviconUrl", "Favicon URL"]]}
+              disabled={!canEdit}
             />
             <p className="mt-2 text-[12px] text-[var(--a-text-muted)]">Paste a Media Library URL — direct file upload for branding assets isn't wired up yet.</p>
-            <Button as="button" size="sm" className="mt-5" onClick={() => save("appearance", "Branding settings")} disabled={saving}>Save</Button>
+            <Button as="button" size="sm" className="mt-5" onClick={() => save("appearance", "Branding settings")} disabled={saving || !canEdit} title={canEdit ? undefined : "You don't have permission to edit settings"}>Save</Button>
           </Card>
         </>
       )}
@@ -294,24 +301,35 @@ export default function SettingsPage() {
         <Card title="Email & notifications">
           <div className="flex flex-col gap-5">
             <div className="grid gap-5 sm:grid-cols-2">
-              <Field label="SMTP host"><TextInput value={settings.email.smtpHost} onChange={(e) => updateGroup("email", { smtpHost: e.target.value })} /></Field>
-              <Field label="SMTP port"><TextInput type="number" value={settings.email.smtpPort} onChange={(e) => updateGroup("email", { smtpPort: e.target.value })} /></Field>
-              <Field label="SMTP user"><TextInput value={settings.email.smtpUser} onChange={(e) => updateGroup("email", { smtpUser: e.target.value })} /></Field>
+              <Field label="SMTP host"><TextInput value={settings.email.smtpHost} onChange={(e) => updateGroup("email", { smtpHost: e.target.value })} disabled={!canEdit} /></Field>
+              <Field label="SMTP port"><TextInput type="number" value={settings.email.smtpPort} onChange={(e) => updateGroup("email", { smtpPort: e.target.value })} disabled={!canEdit} /></Field>
+              <Field label="SMTP user"><TextInput value={settings.email.smtpUser} onChange={(e) => updateGroup("email", { smtpUser: e.target.value })} disabled={!canEdit} /></Field>
               <Field label="SMTP password" hint="Write-only — leave blank to keep the current password">
-                <TextInput type="password" value={settings.email.smtpPassword ?? ""} onChange={(e) => updateGroup("email", { smtpPassword: e.target.value })} placeholder="••••••••" />
+                <TextInput type="password" value={settings.email.smtpPassword ?? ""} onChange={(e) => updateGroup("email", { smtpPassword: e.target.value })} placeholder="••••••••" disabled={!canEdit} />
               </Field>
             </div>
-            <Toggle checked={settings.email.notifyOnSubmission} onChange={(v) => updateGroup("email", { notifyOnSubmission: v })} label="Notify admin on new submission" />
-            <Button as="button" size="sm" variant="secondary" icon={Send} onClick={sendTestEmail} className="w-fit">Send test email</Button>
+            <Toggle checked={settings.email.notifyOnSubmission} onChange={(v) => updateGroup("email", { notifyOnSubmission: v })} label="Notify admin on new submission" disabled={!canEdit} />
+            <Button as="button" size="sm" variant="secondary" icon={Send} onClick={sendTestEmail} className="w-fit" disabled={!canEdit} title={canEdit ? undefined : "You don't have permission to send test emails"}>Send test email</Button>
           </div>
-          <Button as="button" size="sm" className="mt-5" onClick={() => save("email", "Email settings")} disabled={saving}>Save</Button>
+          <Button as="button" size="sm" className="mt-5" onClick={() => save("email", "Email settings")} disabled={saving || !canEdit} title={canEdit ? undefined : "You don't have permission to edit settings"}>Save</Button>
         </Card>
       )}
 
       {tab === "advanced" && (
         <Card title="Advanced">
           <div className="flex flex-col gap-5">
-            <Button as="button" size="sm" variant="secondary" icon={Trash2} onClick={clearCache} className="w-fit">Clear cache</Button>
+            <Button
+              as="button"
+              size="sm"
+              variant="secondary"
+              icon={Trash2}
+              onClick={clearCache}
+              className="w-fit"
+              disabled={!canEdit}
+              title={canEdit ? undefined : "You don't have permission to clear the cache"}
+            >
+              Clear cache
+            </Button>
           </div>
         </Card>
       )}

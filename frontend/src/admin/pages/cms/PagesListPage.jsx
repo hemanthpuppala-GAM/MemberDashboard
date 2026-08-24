@@ -9,8 +9,14 @@ import DataTable from "../../ui/DataTable";
 import { StatusBadge } from "../../ui/Badge";
 import ConfirmModal from "../../ui/ConfirmModal";
 import { api } from "../../../lib/api";
+import { usePermissions } from "../../usePermissions";
 
 export default function PagesListPage() {
+  const { can } = usePermissions();
+  const canCreate = can("cms.create");
+  const canEdit = can("cms.edit");
+  const canDelete = can("cms.delete");
+
   const [pages, setPages] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -77,25 +83,24 @@ export default function PagesListPage() {
             <div className="flex items-center justify-end gap-1" onClick={(e) => e.stopPropagation()}>
               <IconButton
                 icon={page.status === "published" ? EyeOff : Eye}
-                label={page.status === "published" ? "Unpublish" : "Publish"}
+                label={canEdit ? (page.status === "published" ? "Unpublish" : "Publish") : "You don't have permission to publish pages"}
+                disabled={!canEdit}
                 onClick={() => togglePublish(page)}
               />
               <IconButton icon={Pencil} label="Edit" onClick={() => navigate(`/admin/cms/pages/${page.slug}`)} />
               <IconButton
                 icon={Trash2}
-                label="Delete"
+                label={!canDelete ? "You don't have permission to delete pages" : page.is_builtin ? "Built-in pages can't be deleted" : "Delete"}
                 variant="danger"
-                disabled={page.is_builtin}
-                onClick={() => !page.is_builtin && setToDelete(page)}
-                className={page.is_builtin ? "cursor-not-allowed opacity-30" : ""}
+                disabled={!canDelete || page.is_builtin}
+                onClick={() => setToDelete(page)}
               />
             </div>
           );
         },
       },
     ],
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+    [canEdit, canDelete, navigate]
   );
 
   return (
@@ -105,7 +110,7 @@ export default function PagesListPage() {
           <h1 className="text-[24px] font-bold text-[var(--a-text-primary)]">Pages</h1>
           <p className="mt-1 text-[13.5px] text-[var(--a-text-muted)]">Manage every page on the public site, built-in and custom.</p>
         </div>
-        <Button as="button" icon={Plus} onClick={() => navigate("/admin/cms/pages/new")}>New page</Button>
+        <Button as="button" icon={Plus} onClick={() => navigate("/admin/cms/pages/new")} disabled={!canCreate} title={canCreate ? undefined : "You don't have permission to create pages"}>New page</Button>
       </div>
 
       <Card padded={false}>

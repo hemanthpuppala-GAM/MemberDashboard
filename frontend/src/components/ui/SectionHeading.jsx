@@ -17,9 +17,10 @@ export default function SectionHeading({
         {title}
       </h2>
       {description && (
-        <p className="max-w-xl text-base leading-relaxed text-[var(--color-muted)]">
-          {description}
-        </p>
+        <p
+          className="max-w-xl text-base leading-relaxed text-[var(--color-muted)]"
+          dangerouslySetInnerHTML={{ __html: description }}
+        />
       )}
     </div>
   );

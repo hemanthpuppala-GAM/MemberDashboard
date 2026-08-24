@@ -1,42 +1,55 @@
-import { chakraIcons } from "../mandala/icons";
 import SectionHeading from "../ui/SectionHeading";
 import Button from "../ui/Button";
+import Reveal from "../ui/Reveal";
+
+const SHAPE_CLASSES = {
+  circle: "aspect-square max-w-[280px] rounded-full",
+  vertical: "aspect-[3/4] max-w-[260px] rounded-2xl",
+  rectangle: "aspect-video max-w-[420px] rounded-2xl",
+};
 
 /**
  * Shared layout for the six chakra-mapped content sections. Each section
  * file (AboutSection.jsx, WisdomSection.jsx, ...) supplies copy + chakra
- * id and reuses this so the glyph/heading/CTA pattern stays one component.
+ * id and reuses this so the heading/CTA pattern stays one component.
+ * `position` (left/right/top/bottom/center), `shape` (circle/rectangle/
+ * vertical) and `animation` come straight from the admin's per-section
+ * layout controls. With no image set, only the text renders — full width.
  */
 export default function ChakraContentSection({
-  chakraId,
   chakra,
   eyebrow,
   title,
   description,
   points = [],
   cta,
-  reverse = false,
+  position = "right",
+  shape = "circle",
+  animation = "fade",
+  image,
 }) {
-  const Icon = chakraIcons[chakraId];
+  const stacked = position === "top" || position === "bottom" || position === "center";
+  const imageFirst = position === "left" || position === "top" || position === "center";
+  const centered = position === "center";
+  const shapeClass = SHAPE_CLASSES[shape] ?? SHAPE_CLASSES.circle;
 
   return (
     <section
-      id={chakraId}
-      className="mx-auto flex max-w-5xl flex-col items-center gap-10 px-2 py-6 sm:px-4 md:flex-row md:items-center md:gap-12"
+      className={`mx-auto flex max-w-5xl gap-10 px-2 py-6 sm:px-4 ${
+        image && stacked ? `flex-col ${centered ? "items-center text-center" : ""}` : "flex-col items-center md:flex-row md:items-center md:gap-12"
+      }`}
       style={{ borderTop: `1px solid rgba(110,198,234,0.35)` }}
     >
-      <div
-        className={`flex w-full flex-1 flex-col gap-6 ${reverse ? "md:order-2" : ""}`}
+      <Reveal
+        animation={animation}
+        className={`flex w-full flex-1 flex-col gap-6 ${!image ? "items-start text-left" : centered ? "items-center" : ""} ${
+          !image ? "" : stacked ? (imageFirst ? "order-2" : "order-1") : imageFirst ? "md:order-2" : ""
+        }`}
       >
-        <SectionHeading
-          eyebrow={eyebrow}
-          title={title}
-          description={description}
-          color={chakra.color}
-        />
+        <SectionHeading eyebrow={eyebrow} title={title} description={description} color={chakra.color} />
 
         {points.length > 0 && (
-          <ul className="flex flex-col gap-3">
+          <ul className={`flex flex-col gap-3 ${image && centered ? "items-center" : ""}`}>
             {points.map((point) => (
               <li
                 key={point}
@@ -57,28 +70,24 @@ export default function ChakraContentSection({
             {cta.label}
           </Button>
         )}
-      </div>
+      </Reveal>
 
-      <div
-        className={`flex w-full flex-1 items-center justify-center ${reverse ? "md:order-1" : ""}`}
-      >
-        <div
-          className="relative flex aspect-square w-full max-w-[280px] items-center justify-center rounded-full border bg-[var(--color-surface)]/70 shadow-[0_20px_60px_-20px_rgba(0,0,0,0.7),0_0_40px_rgba(110,198,234,0.15)] backdrop-blur-sm"
-          style={{ borderColor: `${chakra.color}55` }}
+      {image && (
+        <Reveal
+          animation={animation}
+          delay={120}
+          className={`flex w-full flex-1 items-center justify-center ${
+            stacked ? (imageFirst ? "order-1" : "order-2") : imageFirst ? "md:order-1" : ""
+          }`}
         >
-          <span
-            className="absolute inset-[10%] rounded-full opacity-40 blur-2xl"
-            style={{ background: chakra.color }}
-            aria-hidden="true"
-          />
-          <span className="relative" style={{ color: chakra.color }}>
-            <Icon size="42%" petals={chakra.petals} />
-          </span>
-          <span className="absolute bottom-6 text-xs tracking-[0.2em] text-[var(--color-muted-soft)] uppercase">
-            {chakra.sanskrit} · {chakra.common}
-          </span>
-        </div>
-      </div>
+          <div
+            className={`relative flex w-full items-center justify-center overflow-hidden border bg-[var(--color-surface)]/70 shadow-[0_20px_60px_-20px_rgba(0,0,0,0.7),0_0_40px_rgba(110,198,234,0.15)] backdrop-blur-sm ${shapeClass}`}
+            style={{ borderColor: `${chakra.color}55` }}
+          >
+            <img src={image} alt="" className="absolute inset-0 h-full w-full object-cover" />
+          </div>
+        </Reveal>
+      )}
     </section>
   );
 }

@@ -12,6 +12,7 @@ import { StatusBadge } from "../../ui/Badge";
 import EmptyState from "../../ui/EmptyState";
 import ImageUploader from "../../ui/ImageUploader";
 import { api } from "../../../lib/api";
+import { usePermissions } from "../../usePermissions";
 
 const EMPTY = {
   label: "", account_holder: "", bank_name: "", account_number: "", ifsc: "",
@@ -52,6 +53,11 @@ function toFormData(form, qrImageFile) {
 }
 
 export default function DonationsPage() {
+  const { can } = usePermissions();
+  const canCreate = can("donations.create");
+  const canEdit = can("donations.edit");
+  const canDelete = can("donations.delete");
+
   const [donationMethods, setDonationMethods] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(null);
@@ -125,7 +131,7 @@ export default function DonationsPage() {
             Bank accounts, UPI, and payment links shown on the public donate page — each with its own QR code. Deactivate an old account instead of deleting it to keep its history.
           </p>
         </div>
-        <Button as="button" icon={Plus} onClick={openNew} disabled={loading}>Add donation method</Button>
+        <Button as="button" icon={Plus} onClick={openNew} disabled={loading || !canCreate} title={canCreate ? undefined : "You don't have permission to add donation methods"}>Add donation method</Button>
       </div>
 
       {!loading && donationMethods.length === 0 ? (
@@ -143,8 +149,8 @@ export default function DonationsPage() {
                   {d.account_holder && <p className="mt-0.5 text-[12.5px] text-[var(--a-text-muted)]">{d.account_holder}</p>}
                 </div>
                 <div className="flex shrink-0 items-center gap-1">
-                  <IconButton icon={Pencil} label="Edit" variant="accent" onClick={() => openEdit(d)} />
-                  <IconButton icon={Trash2} label="Delete" variant="danger" onClick={() => setToDelete(d)} />
+                  <IconButton icon={Pencil} label={canEdit ? "Edit" : "You don't have permission to edit donation methods"} variant="accent" disabled={!canEdit} onClick={() => openEdit(d)} />
+                  <IconButton icon={Trash2} label={canDelete ? "Delete" : "You don't have permission to delete donation methods"} variant="danger" disabled={!canDelete} onClick={() => setToDelete(d)} />
                 </div>
               </div>
 

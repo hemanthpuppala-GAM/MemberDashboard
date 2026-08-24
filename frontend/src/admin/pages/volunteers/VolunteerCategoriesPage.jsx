@@ -10,10 +10,16 @@ import Field, { TextInput } from "../../ui/Field";
 import Toggle from "../../ui/Toggle";
 import EmptyState from "../../ui/EmptyState";
 import { api } from "../../../lib/api";
+import { usePermissions } from "../../usePermissions";
 
 const EMPTY = { name: "", is_active: true };
 
 export default function VolunteerCategoriesPage() {
+  const { can } = usePermissions();
+  const canCreate = can("volunteers.create");
+  const canEdit = can("volunteers.edit");
+  const canDelete = can("volunteers.delete");
+
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(null); // null = closed, {} = new, {...} = edit
@@ -95,7 +101,7 @@ export default function VolunteerCategoriesPage() {
             The options shown in the "category" dropdown on the public volunteer form. Toggle active without deleting, reorder how they appear.
           </p>
         </div>
-        <Button as="button" icon={Plus} onClick={openNew} disabled={loading}>Add category</Button>
+        <Button as="button" icon={Plus} onClick={openNew} disabled={loading || !canCreate} title={canCreate ? undefined : "You don't have permission to add categories"}>Add category</Button>
       </div>
 
       <Card padded={false}>
@@ -112,11 +118,11 @@ export default function VolunteerCategoriesPage() {
                   <span className="truncate text-[13.5px] font-semibold text-[var(--a-text-primary)]">{c.name}</span>
                 </div>
                 <div className="flex shrink-0 items-center gap-1">
-                  <IconButton icon={ChevronUp} label="Move up" onClick={() => move(c.id, "up")} disabled={i === 0} />
-                  <IconButton icon={ChevronDown} label="Move down" onClick={() => move(c.id, "down")} disabled={i === sorted.length - 1} />
-                  <Toggle checked={c.is_active} onChange={(v) => toggleActive(c, v)} />
-                  <IconButton icon={Pencil} label="Edit" variant="accent" onClick={() => openEdit(c)} />
-                  <IconButton icon={Trash2} label="Delete" variant="danger" onClick={() => setToDelete(c)} />
+                  <IconButton icon={ChevronUp} label="Move up" onClick={() => move(c.id, "up")} disabled={!canEdit || i === 0} />
+                  <IconButton icon={ChevronDown} label="Move down" onClick={() => move(c.id, "down")} disabled={!canEdit || i === sorted.length - 1} />
+                  <Toggle checked={c.is_active} onChange={(v) => toggleActive(c, v)} disabled={!canEdit} />
+                  <IconButton icon={Pencil} label={canEdit ? "Edit" : "You don't have permission to edit categories"} variant="accent" disabled={!canEdit} onClick={() => openEdit(c)} />
+                  <IconButton icon={Trash2} label={canDelete ? "Delete" : "You don't have permission to delete categories"} variant="danger" disabled={!canDelete} onClick={() => setToDelete(c)} />
                 </div>
               </div>
             ))}

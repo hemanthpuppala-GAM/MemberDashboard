@@ -10,12 +10,16 @@ import JourneyPanel from "../../ui/JourneyPanel";
 import MemberSummaryCard from "../../ui/MemberSummaryCard";
 import { api } from "../../../lib/api";
 import { CATEGORY_LABELS } from "../../mock/mockData";
+import { usePermissions } from "../../usePermissions";
 
 function decorateEntries(entries) {
   return entries.map((e) => ({ ...e, date: e.created_at, type: e.entry_type, addedBy: e.author?.name }));
 }
 
 export default function MemberJourneyPage() {
+  const { can } = usePermissions();
+  const canEdit = can("members.edit");
+
   const { id } = useParams();
   const navigate = useNavigate();
   const [member, setMember] = useState(null);
@@ -97,10 +101,10 @@ export default function MemberJourneyPage() {
         </div>
       </div>
 
-      <MemberSummaryCard value={summary} onChange={setSummary} onBlur={saveSummary} />
+      <MemberSummaryCard value={summary} onChange={setSummary} onBlur={saveSummary} readOnly={!canEdit} />
 
       <Card title="Journey timeline">
-        <JourneyPanel entries={entries} onAddNote={addNote} onAddQa={addQa} />
+        <JourneyPanel entries={entries} onAddNote={addNote} onAddQa={addQa} readOnly={!canEdit} />
       </Card>
     </div>
   );

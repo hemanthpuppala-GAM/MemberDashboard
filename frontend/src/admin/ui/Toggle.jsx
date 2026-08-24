@@ -1,6 +1,13 @@
-export default function Toggle({ checked, onChange, label, description }) {
+export default function Toggle({ checked, onChange, label, description, disabled = false }) {
   return (
-    <button type="button" role="switch" aria-checked={checked} onClick={() => onChange(!checked)} className="inline-flex items-start gap-3 text-left">
+    <button
+      type="button"
+      role="switch"
+      aria-checked={checked}
+      disabled={disabled}
+      onClick={() => onChange(!checked)}
+      className="inline-flex items-start gap-3 text-left disabled:cursor-not-allowed disabled:opacity-40"
+    >
       <span
         className={`relative mt-0.5 h-6 w-11 shrink-0 rounded-full transition-colors duration-200 ${
           checked ? "bg-[var(--a-accent)]" : "bg-[var(--a-border)]"

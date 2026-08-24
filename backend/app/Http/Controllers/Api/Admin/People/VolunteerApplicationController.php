@@ -11,7 +11,10 @@ class VolunteerApplicationController extends Controller
 {
     public function index(Request $request)
     {
-        $query = VolunteerApplication::query()->with('category')->latest();
+        $query = VolunteerApplication::query()
+            ->select(['id', 'name', 'email', 'phone', 'category_id', 'notes', 'status', 'created_at'])
+            ->with('category')
+            ->latest();
 
         if ($status = $request->query('status')) {
             $query->where('status', $status);
@@ -20,7 +23,7 @@ class VolunteerApplicationController extends Controller
             $query->where('category_id', $categoryId);
         }
         if ($search = $request->query('search')) {
-            $query->where(fn ($q) => $q->where('name', 'like', "%{$search}%")->orWhere('email', 'like', "%{$search}%"));
+            $query->where(fn ($q) => $q->where('name', 'like', "{$search}%")->orWhere('email', 'like', "{$search}%"));
         }
 
         return response()->json($query->paginate((int) $request->query('per_page', 20)));

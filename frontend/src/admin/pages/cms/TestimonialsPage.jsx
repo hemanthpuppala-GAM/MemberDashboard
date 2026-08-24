@@ -13,6 +13,7 @@ import EmptyState from "../../ui/EmptyState";
 import Avatar from "../../ui/Avatar";
 import ImageUploader from "../../ui/ImageUploader";
 import { api } from "../../../lib/api";
+import { usePermissions } from "../../usePermissions";
 
 const EMPTY = { name: "", role: "", quote: "", rating: 5, status: "draft", is_featured: false };
 
@@ -47,6 +48,11 @@ function toFormData(form, photoFile) {
 }
 
 export default function TestimonialsPage() {
+  const { can } = usePermissions();
+  const canCreate = can("testimonials.create");
+  const canEdit = can("testimonials.edit");
+  const canDelete = can("testimonials.delete");
+
   const [testimonials, setTestimonials] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(null);
@@ -117,7 +123,7 @@ export default function TestimonialsPage() {
             Stories from members and practitioners shown on the public site. Feature the strongest ones to highlight them on the homepage.
           </p>
         </div>
-        <Button as="button" icon={Plus} onClick={openNew} disabled={loading}>Add testimonial</Button>
+        <Button as="button" icon={Plus} onClick={openNew} disabled={loading || !canCreate} title={canCreate ? undefined : "You don't have permission to add testimonials"}>Add testimonial</Button>
       </div>
 
       {!loading && sorted.length === 0 ? (
@@ -139,8 +145,8 @@ export default function TestimonialsPage() {
                   </div>
                 </div>
                 <div className="flex shrink-0 items-center gap-1">
-                  <IconButton icon={Pencil} label="Edit" variant="accent" onClick={() => openEdit(t)} />
-                  <IconButton icon={Trash2} label="Delete" variant="danger" onClick={() => setToDelete(t)} />
+                  <IconButton icon={Pencil} label={canEdit ? "Edit" : "You don't have permission to edit testimonials"} variant="accent" disabled={!canEdit} onClick={() => openEdit(t)} />
+                  <IconButton icon={Trash2} label={canDelete ? "Delete" : "You don't have permission to delete testimonials"} variant="danger" disabled={!canDelete} onClick={() => setToDelete(t)} />
                 </div>
               </div>
 

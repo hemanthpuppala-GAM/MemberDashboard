@@ -8,8 +8,11 @@ import DataTable from "../../ui/DataTable";
 import Modal from "../../ui/Modal";
 import ConfirmModal from "../../ui/ConfirmModal";
 import Field, { TextInput, TextArea, Select } from "../../ui/Field";
+import ImageField from "../../ui/ImageField";
+import MediaPickerModal from "../../ui/MediaPickerModal";
 import { StatusBadge } from "../../ui/Badge";
 import { api } from "../../../lib/api";
+import { usePermissions } from "../../usePermissions";
 
 const TYPES = [
   { value: "text_banner", label: "Text banner" },
@@ -20,7 +23,7 @@ const TYPES = [
 const FREQUENCIES = ["every_visit", "once_per_session", "once_per_day", "once_ever"];
 const AUDIENCES = ["all", "new_visitors", "returning"];
 const EMPTY = {
-  title: "", type: "popup_card", content_text: "", cta_label: "", cta_url: "", target_pages: [],
+  title: "", type: "popup_card", content_text: "", content_image_path: "", cta_label: "", cta_url: "", target_pages: [],
   audience: "all", active_from: "", active_until: "", show_after_seconds: 0, frequency: "once_per_session", status: "draft",
 };
 
@@ -42,7 +45,14 @@ function Preview({ form }) {
   }
   return (
     <div className="mx-auto w-64 rounded-xl border border-[var(--a-border)] bg-[var(--a-bg-surface)] p-4 shadow-[var(--a-shadow)]">
-      {form.type === "media_popup" && <div className="mb-3 flex h-24 items-center justify-center rounded-lg bg-[var(--a-bg-surface-2)] text-[var(--a-text-faint)]"><Megaphone size={22} /></div>}
+      {form.type === "media_popup" && (
+        <div className="mb-3 flex h-24 items-center justify-center overflow-hidden rounded-lg bg-[var(--a-bg-surface-2)] text-[var(--a-text-faint)]">
+          {form.content_image_path ? <img src={form.content_image_path} alt="" className="h-full w-full object-cover" /> : <Megaphone size={22} />}
+        </div>
+      )}
+      {form.type === "popup_card" && form.content_image_path && (
+        <img src={form.content_image_path} alt="" className="mb-3 h-24 w-full rounded-lg object-cover" />
+      )}
       <p className="text-[13.5px] font-semibold text-[var(--a-text-primary)]">{form.title || "Popup title"}</p>
       <p className="mt-1 text-[12px] text-[var(--a-text-muted)]">{form.content_text || "Popup body text"}</p>
       {form.cta_label && <div className="mt-3 w-fit rounded-lg bg-[var(--a-accent)] px-3 py-1.5 text-[11.5px] font-semibold text-white">{form.cta_label}</div>}
@@ -51,6 +61,12 @@ function Preview({ form }) {
 }
 
 export default function BroadcastsPage() {
+  const { can } = usePermissions();
+  const canCreate = can("broadcast.create");
+  const canEdit = can("broadcast.edit");
+  const canDelete = can("broadcast.delete");
+  const canViewCms = can("cms.view");
+
   const [broadcasts, setBroadcasts] = useState([]);
   const [pages, setPages] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -58,19 +74,25 @@ export default function BroadcastsPage() {
   const [form, setForm] = useState(EMPTY);
   const [saving, setSaving] = useState(false);
   const [toDelete, setToDelete] = useState(null);
+  const [pickerOpen, setPickerOpen] = useState(false);
 
   const loadBroadcasts = () => api.broadcasts().then(setBroadcasts);
 
   useEffect(() => {
-    Promise.all([loadBroadcasts(), api.pages().then(setPages)])
-      .catch((err) => toast.error(err.message ?? "Failed to load broadcasts"))
+    // The pages list only populates the "Target pages" picker when composing
+    // — a role without cms.view still gets a working broadcast list.
+    const jobs = [loadBroadcasts(), canViewCms ? api.pages().then(setPages) : Promise.resolve()];
+    Promise.allSettled(jobs)
+      .then((results) => {
+        if (results[0].status === "rejected") toast.error(results[0].reason?.message ?? "Failed to load broadcasts");
+      })
       .finally(() => setLoading(false));
-  }, []);
+  }, [canViewCms]);
 
   const openCreate = () => { setForm(EMPTY); setModal("new"); };
   const openEdit = (b) => {
     setForm({
-      title: b.title, type: b.type, content_text: b.content_text ?? "", cta_label: b.cta_label ?? "", cta_url: b.cta_url ?? "",
+      title: b.title, type: b.type, content_text: b.content_text ?? "", content_image_path: b.content_image_path ?? "", cta_label: b.cta_label ?? "", cta_url: b.cta_url ?? "",
       target_pages: b.target_pages ?? [], audience: b.audience, active_from: b.active_from ?? "", active_until: b.active_until ?? "",
       show_after_seconds: b.show_after_seconds ?? 0, frequency: b.frequency, status: b.status,
     });
@@ -117,13 +139,13 @@ export default function BroadcastsPage() {
         id: "actions", header: "", enableSorting: false,
         cell: ({ row }) => (
           <div className="flex justify-end gap-1">
-            <IconButton icon={Pencil} label="Edit" onClick={() => openEdit(row.original)} />
-            <IconButton icon={Trash2} label="Delete" variant="danger" onClick={() => setToDelete(row.original)} />
+            <IconButton icon={Pencil} label={canEdit ? "Edit" : "You don't have permission to edit broadcasts"} disabled={!canEdit} onClick={() => openEdit(row.original)} />
+            <IconButton icon={Trash2} label={canDelete ? "Delete" : "You don't have permission to delete broadcasts"} variant="danger" disabled={!canDelete} onClick={() => setToDelete(row.original)} />
           </div>
         ),
       },
     ],
-    []
+    [canEdit, canDelete]
   );
 
   return (
@@ -133,7 +155,7 @@ export default function BroadcastsPage() {
           <h1 className="text-[24px] font-bold text-[var(--a-text-primary)]">Broadcasts</h1>
           <p className="mt-1 text-[13.5px] text-[var(--a-text-muted)]">Pop-ups and banners shown to website visitors.</p>
         </div>
-        <Button as="button" icon={Plus} onClick={openCreate} disabled={loading}>New broadcast</Button>
+        <Button as="button" icon={Plus} onClick={openCreate} disabled={loading || !canCreate} title={canCreate ? undefined : "You don't have permission to create broadcasts"}>New broadcast</Button>
       </div>
 
       <Card padded={false}>
@@ -157,7 +179,17 @@ export default function BroadcastsPage() {
                 {TYPES.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
               </Select>
             </Field>
-            <Field label="Content"><TextArea rows={3} value={form.content_text} onChange={(e) => setForm((f) => ({ ...f, content_text: e.target.value }))} /></Field>
+            <Field label="Content" hint={form.type === "media_popup" ? "Optional — a media popup can be image-only" : undefined}>
+              <TextArea rows={3} value={form.content_text} onChange={(e) => setForm((f) => ({ ...f, content_text: e.target.value }))} />
+            </Field>
+            {(form.type === "popup_card" || form.type === "media_popup") && (
+              <ImageField
+                label="Image (optional)"
+                value={form.content_image_path}
+                onChange={(v) => setForm((f) => ({ ...f, content_image_path: v }))}
+                onPick={() => setPickerOpen(true)}
+              />
+            )}
             <div className="grid grid-cols-2 gap-4">
               <Field label="CTA label" hint="Optional"><TextInput value={form.cta_label} onChange={(e) => setForm((f) => ({ ...f, cta_label: e.target.value }))} /></Field>
               <Field label="CTA URL" hint="Optional"><TextInput value={form.cta_url} onChange={(e) => setForm((f) => ({ ...f, cta_url: e.target.value }))} /></Field>
@@ -218,6 +250,12 @@ export default function BroadcastsPage() {
         onClose={() => setToDelete(null)}
         title={`Delete "${toDelete?.title}"?`}
         onConfirm={handleDelete}
+      />
+
+      <MediaPickerModal
+        open={pickerOpen}
+        onClose={() => setPickerOpen(false)}
+        onSelect={(url) => setForm((f) => ({ ...f, content_image_path: url }))}
       />
     </div>
   );

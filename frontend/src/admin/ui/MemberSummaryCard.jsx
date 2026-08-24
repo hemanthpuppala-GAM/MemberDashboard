@@ -6,7 +6,7 @@ import { TextArea } from "./Field";
  * the raw journey timeline, so anyone picking up this member gets up to
  * speed in one read instead of scrolling through every past note.
  */
-export default function MemberSummaryCard({ value, onChange, onBlur }) {
+export default function MemberSummaryCard({ value, onChange, onBlur, readOnly = false }) {
   return (
     <Card
       title="Summary"
@@ -18,6 +18,7 @@ export default function MemberSummaryCard({ value, onChange, onBlur }) {
         onChange={(e) => onChange(e.target.value)}
         onBlur={onBlur ? (e) => onBlur(e.target.value) : undefined}
         placeholder='e.g. "Came in for kundalini activation support after an intense group session. Responds well to breathwork; still hesitant about long sits. Sleep has improved since week 2."'
+        disabled={readOnly}
       />
     </Card>
   );

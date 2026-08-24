@@ -14,7 +14,9 @@ class ContactSubmissionController extends Controller
 {
     public function index(Request $request)
     {
-        $query = ContactSubmission::query()->latest();
+        $query = ContactSubmission::query()
+            ->select(['id', 'name', 'email', 'phone', 'message', 'category', 'status', 'assigned_to', 'converted_to_member_id', 'created_at'])
+            ->latest();
 
         if ($status = $request->query('status')) {
             $query->where('status', $status);
@@ -26,7 +28,7 @@ class ContactSubmissionController extends Controller
             $query->where('assigned_to', $assignedTo);
         }
         if ($search = $request->query('search')) {
-            $query->where(fn ($q) => $q->where('name', 'like', "%{$search}%")->orWhere('email', 'like', "%{$search}%"));
+            $query->where(fn ($q) => $q->where('name', 'like', "{$search}%")->orWhere('email', 'like', "{$search}%"));
         }
         if ($from = $request->query('date_from')) {
             $query->whereDate('created_at', '>=', $from);

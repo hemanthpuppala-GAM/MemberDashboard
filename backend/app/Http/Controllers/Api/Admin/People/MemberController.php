@@ -12,7 +12,10 @@ class MemberController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Member::query()->with('practitioner:id,name')->latest();
+        $query = Member::query()
+            ->select(['id', 'name', 'email', 'phone', 'category', 'status', 'join_date', 'assigned_practitioner_id'])
+            ->with('practitioner:id,name')
+            ->latest();
 
         if ($category = $request->query('category')) {
             $query->where('category', $category);
@@ -24,7 +27,7 @@ class MemberController extends Controller
             $query->where('assigned_practitioner_id', $practitionerId);
         }
         if ($search = $request->query('search')) {
-            $query->where(fn ($q) => $q->where('name', 'like', "%{$search}%")->orWhere('email', 'like', "%{$search}%"));
+            $query->where(fn ($q) => $q->where('name', 'like', "{$search}%")->orWhere('email', 'like', "{$search}%"));
         }
 
         return response()->json($query->paginate((int) $request->query('per_page', 20)));

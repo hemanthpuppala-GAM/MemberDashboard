@@ -6,13 +6,14 @@ import { BarChart, Bar, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGri
 import Card from "../ui/Card";
 import StatCard from "../ui/StatCard";
 import { useAuth } from "../useAuth";
+import { usePermissions } from "../usePermissions";
 import { api } from "../../lib/api";
 
 const QUICK_LINKS = [
-  { to: "/admin/cms/pages/new", label: "New page", icon: Files },
-  { to: "/admin/cms/media", label: "Upload media", icon: Image },
-  { to: "/admin/queries", label: "Query inbox", icon: Inbox },
-  { to: "/admin/announcements", label: "New announcement", icon: UsersRound },
+  { to: "/admin/cms/pages/new", label: "New page", icon: Files, permission: "cms.create" },
+  { to: "/admin/cms/media", label: "Upload media", icon: Image, permission: "cms.view" },
+  { to: "/admin/queries", label: "Query inbox", icon: Inbox, permission: "members.view" },
+  { to: "/admin/announcements", label: "New announcement", icon: UsersRound, permission: "announcements.create" },
 ];
 
 function timeAgo(iso) {
@@ -25,37 +26,44 @@ function timeAgo(iso) {
 
 export default function DashboardPage() {
   const { user } = useAuth();
-  const [stats, setStats] = useState(null);
+  const { can } = usePermissions();
+  const canViewCms = can("cms.view");
+  const canViewMembers = can("members.view");
+  const canViewUsers = can("users.view");
+  const canViewReports = can("reports.view");
+
+  const [stats, setStats] = useState({});
   const [submissionsMonthly, setSubmissionsMonthly] = useState([]);
   const [activity, setActivity] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    Promise.all([
-      api.dashboard(),
-      api.pages(),
-      api.media(),
-      api.members(),
-      api.users(),
-      api.reportsOverview(),
-      api.reportsActivityLog({ per_page: 6 }),
-    ])
-      .then(([dash, pages, media, membersRes, users, overview, log]) => {
-        setStats({
-          pages: pages.length,
-          media: media.length,
-          newQueries: dash.contact_new,
-          activeMembers: membersRes.data.filter((m) => m.status !== "archived").length,
-          practitioners: users.filter((u) => u.primary_role?.name === "practitioner").length,
-        });
-        setSubmissionsMonthly(overview.submissions_monthly);
-        setActivity(log.data);
-      })
-      .catch((err) => toast.error(err.message ?? "Failed to load dashboard"))
-      .finally(() => setLoading(false));
-  }, []);
+    // Each widget only fetches what its own permission covers, and failures
+    // are isolated per-widget — a role missing e.g. reports.view still gets
+    // a working dashboard for everything it can see, instead of the whole
+    // page dying on one 403 (see git history for the Promise.all version
+    // this replaced).
+    const jobs = [
+      canViewCms && api.pages().then((pages) => setStats((s) => ({ ...s, pages: pages.length }))),
+      canViewCms && api.media().then((media) => setStats((s) => ({ ...s, media: media.length }))),
+      canViewMembers && api.dashboard().then((dash) => setStats((s) => ({ ...s, newQueries: dash.contact_new }))),
+      canViewMembers &&
+        api.members().then((res) => setStats((s) => ({ ...s, activeMembers: res.data.filter((m) => m.status !== "archived").length }))),
+      canViewUsers &&
+        api.users().then((users) => setStats((s) => ({ ...s, practitioners: users.filter((u) => u.primary_role?.name === "practitioner").length }))),
+      canViewReports && api.reportsOverview().then((overview) => setSubmissionsMonthly(overview.submissions_monthly)),
+      canViewReports && api.reportsActivityLog({ per_page: 6 }).then((log) => setActivity(log.data)),
+    ].filter(Boolean);
 
-  if (loading || !stats) {
+    Promise.allSettled(jobs)
+      .then((results) => {
+        const failed = results.find((r) => r.status === "rejected");
+        if (failed) toast.error(failed.reason?.message ?? "Some dashboard widgets failed to load");
+      })
+      .finally(() => setLoading(false));
+  }, [canViewCms, canViewMembers, canViewUsers, canViewReports]);
+
+  if (loading) {
     return <p className="py-20 text-center text-[13.5px] text-[var(--a-text-muted)]">Loading…</p>;
   }
 
@@ -68,35 +76,39 @@ export default function DashboardPage() {
         <p className="mt-1 text-[13.5px] text-[var(--a-text-muted)]">Here's what's happening across the site today.</p>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-5">
-        <StatCard icon={Files} label="Website pages" value={stats.pages} />
-        <StatCard icon={Image} label="Media items" value={stats.media} />
-        <StatCard icon={Inbox} label="New queries" value={stats.newQueries} />
-        <StatCard icon={UsersRound} label="Active members" value={stats.activeMembers} />
-        <StatCard icon={UserCog} label="Practitioners" value={stats.practitioners} />
-      </div>
+      {(canViewCms || canViewMembers || canViewUsers) && (
+        <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-5">
+          {canViewCms && <StatCard icon={Files} label="Website pages" value={stats.pages ?? 0} />}
+          {canViewCms && <StatCard icon={Image} label="Media items" value={stats.media ?? 0} />}
+          {canViewMembers && <StatCard icon={Inbox} label="New queries" value={stats.newQueries ?? 0} />}
+          {canViewMembers && <StatCard icon={UsersRound} label="Active members" value={stats.activeMembers ?? 0} />}
+          {canViewUsers && <StatCard icon={UserCog} label="Practitioners" value={stats.practitioners ?? 0} />}
+        </div>
+      )}
 
       <div className="grid gap-5 lg:grid-cols-3">
-        <Card title="Contact submissions" description="Last 6 months" className="lg:col-span-2">
-          <div className="h-56">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={submissionsMonthly}>
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--a-border)" vertical={false} />
-                <XAxis dataKey="month" tick={{ fill: "var(--a-text-muted)", fontSize: 12 }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fill: "var(--a-text-muted)", fontSize: 12 }} axisLine={false} tickLine={false} width={28} />
-                <Tooltip
-                  cursor={{ fill: "var(--a-bg-surface-2)" }}
-                  contentStyle={{ background: "var(--a-bg-surface)", border: "1px solid var(--a-border)", borderRadius: 8, fontSize: 12.5 }}
-                />
-                <Bar dataKey="count" fill="var(--a-accent)" radius={[6, 6, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </Card>
+        {canViewReports && (
+          <Card title="Contact submissions" description="Last 6 months" className="lg:col-span-2">
+            <div className="h-56">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={submissionsMonthly}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--a-border)" vertical={false} />
+                  <XAxis dataKey="month" tick={{ fill: "var(--a-text-muted)", fontSize: 12 }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fill: "var(--a-text-muted)", fontSize: 12 }} axisLine={false} tickLine={false} width={28} />
+                  <Tooltip
+                    cursor={{ fill: "var(--a-bg-surface-2)" }}
+                    contentStyle={{ background: "var(--a-bg-surface)", border: "1px solid var(--a-border)", borderRadius: 8, fontSize: 12.5 }}
+                  />
+                  <Bar dataKey="count" fill="var(--a-accent)" radius={[6, 6, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </Card>
+        )}
 
-        <Card title="Quick links">
+        <Card title="Quick links" className={canViewReports ? undefined : "lg:col-span-3"}>
           <div className="flex flex-col gap-2">
-            {QUICK_LINKS.map(({ to, label, icon: Icon }) => (
+            {QUICK_LINKS.filter((l) => can(l.permission)).map(({ to, label, icon: Icon }) => (
               <Link
                 key={to}
                 to={to}
@@ -107,17 +119,20 @@ export default function DashboardPage() {
                 <ArrowRight size={14} className="text-[var(--a-text-faint)]" />
               </Link>
             ))}
-            <Link
-              to="/admin/events"
-              className="flex items-center gap-3 rounded-lg border border-dashed border-[var(--a-border)] px-3.5 py-2.5 text-[13px] text-[var(--a-text-muted)] hover:text-[var(--a-text-primary)]"
-            >
-              <CalendarDays size={16} />
-              <span className="flex-1">Upcoming events (via Pages &gt; Events)</span>
-            </Link>
+            {canViewCms && (
+              <Link
+                to="/admin/events"
+                className="flex items-center gap-3 rounded-lg border border-dashed border-[var(--a-border)] px-3.5 py-2.5 text-[13px] text-[var(--a-text-muted)] hover:text-[var(--a-text-primary)]"
+              >
+                <CalendarDays size={16} />
+                <span className="flex-1">Upcoming events (via Pages &gt; Events)</span>
+              </Link>
+            )}
           </div>
         </Card>
       </div>
 
+      {canViewReports && (
       <Card title="Recent activity" description="Latest changes across the admin panel" actions={<Link to="/admin/reports" className="text-[12.5px] font-semibold text-[var(--a-accent)] hover:underline">View log</Link>}>
         {activity.length === 0 ? (
           <p className="py-4 text-[13.5px] text-[var(--a-text-muted)]">No activity recorded yet.</p>
@@ -135,6 +150,7 @@ export default function DashboardPage() {
           </div>
         )}
       </Card>
+      )}
     </div>
   );
 }

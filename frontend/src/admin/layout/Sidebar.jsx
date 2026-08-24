@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { ChevronDown } from "lucide-react";
 import { NAV } from "./navConfig";
+import { usePermissions } from "../usePermissions";
 import logoMark from "../../assets/logo-128.webp";
 
 function isGroupActive(group, pathname) {
@@ -32,6 +33,15 @@ function NavItem({ to, end, icon: Icon, label, nested }) {
 export default function Sidebar({ onNavigate }) {
   const { pathname } = useLocation();
   const [openGroups, setOpenGroups] = useState(() => new Set(["cms", "people", "engage"]));
+  const { can } = usePermissions();
+
+  const visibleNav = useMemo(
+    () =>
+      NAV.map((entry) =>
+        entry.type === "group" ? { ...entry, items: entry.items.filter((item) => can(item.permission)) } : entry
+      ).filter((entry) => (entry.type === "group" ? entry.items.length > 0 : can(entry.permission))),
+    [can]
+  );
 
   const toggleGroup = (key) =>
     setOpenGroups((prev) => {
@@ -51,7 +61,7 @@ export default function Sidebar({ onNavigate }) {
       </div>
 
       <nav className="flex flex-1 flex-col gap-1 overflow-y-auto" onClick={onNavigate}>
-        {NAV.map((entry) => {
+        {visibleNav.map((entry) => {
           if (entry.type === "link") {
             return <NavItem key={entry.to} to={entry.to} end={entry.end} icon={entry.icon} label={entry.label} />;
           }

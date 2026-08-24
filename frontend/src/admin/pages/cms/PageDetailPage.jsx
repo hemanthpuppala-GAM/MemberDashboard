@@ -4,7 +4,7 @@ import toast from "react-hot-toast";
 import { DndContext, closestCenter, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy, useSortable, arrayMove } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { GripVertical, Plus, Pencil, Trash2, ArrowLeft, Lock } from "lucide-react";
+import { GripVertical, Plus, Pencil, Trash2, ArrowLeft, Lock, Eye } from "lucide-react";
 import Card from "../../ui/Card";
 import Button from "../../ui/Button";
 import IconButton from "../../ui/IconButton";
@@ -15,20 +15,55 @@ import Field, { TextInput, Select } from "../../ui/Field";
 import { api } from "../../../lib/api";
 import { SECTION_TYPES } from "../../mock/mockData";
 import { contentArrayToByLang } from "./sectionContentUtil";
+import { usePermissions } from "../../usePermissions";
 
 function withDecodedContent(page) {
   return { ...page, sections: page.sections.map((s) => ({ ...s, contentByLang: contentArrayToByLang(s.content) })) };
 }
 
-function SortableRow({ section, pageSlug, onDelete }) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: section.id });
+/**
+ * The public site is a single-page app with no per-page routes — views are
+ * client-side state, addressed only via a `#view` (or `#view:sectionId`)
+ * hash (see HomePage.jsx's parseHash). This maps a CMS page slug to that
+ * hash key so "view on site" can jump straight to the right view + section.
+ * Pages created via the wizard with a slug outside this list have no public
+ * renderer yet, so no view link is shown for them.
+ */
+const PUBLIC_VIEW_BY_SLUG = {
+  home: "hub",
+  about: "about",
+  wisdom: "wisdom",
+  wellness: "wellness",
+  meditate: "practice",
+  events: "events",
+  mission: "mission",
+  contact: "contact",
+  volunteer: "volunteer",
+  donate: "donate",
+};
+
+function publicSectionUrl(pageSlug, sectionId) {
+  const view = PUBLIC_VIEW_BY_SLUG[pageSlug];
+  if (!view) return null;
+  return `${window.location.origin}/#${view}:${sectionId}`;
+}
+
+function SortableRow({ section, pageSlug, onDelete, canEdit, canDelete }) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: section.id, disabled: !canEdit });
   const style = { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.6 : 1 };
   const meta = SECTION_TYPES.find((t) => t.type === section.type);
   const heading = section.contentByLang?.en?.heading || section.contentByLang?.en?.eyebrow || meta?.label;
+  const viewUrl = publicSectionUrl(pageSlug, section.id);
 
   return (
     <div ref={setNodeRef} style={style} className="flex items-center gap-3 border-b border-[var(--a-border)] py-3.5 last:border-0">
-      <button {...attributes} {...listeners} className="cursor-grab text-[var(--a-text-faint)] hover:text-[var(--a-text-muted)] active:cursor-grabbing">
+      <button
+        {...attributes}
+        {...listeners}
+        disabled={!canEdit}
+        title={canEdit ? undefined : "You don't have permission to reorder sections"}
+        className="cursor-grab text-[var(--a-text-faint)] hover:text-[var(--a-text-muted)] active:cursor-grabbing disabled:cursor-not-allowed disabled:opacity-30"
+      >
         <GripVertical size={16} />
       </button>
       <div className="min-w-0 flex-1">
@@ -37,15 +72,37 @@ function SortableRow({ section, pageSlug, onDelete }) {
           <span className="truncate text-[13.5px] font-medium text-[var(--a-text-primary)]">{heading}</span>
         </div>
       </div>
+      {viewUrl && section.status === "active" && (
+        <a
+          href={viewUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          title="View on site"
+          className="rounded-lg p-1.5 text-[var(--a-text-muted)] hover:bg-[var(--a-accent-muted)] hover:text-[var(--a-accent)]"
+        >
+          <Eye size={16} />
+        </a>
+      )}
       <Link to={`/admin/cms/pages/${pageSlug}/sections/${section.id}`} className="rounded-lg p-1.5 text-[var(--a-text-muted)] hover:bg-[var(--a-accent-muted)] hover:text-[var(--a-accent)]">
         <Pencil size={16} />
       </Link>
-      <IconButton icon={Trash2} label="Delete section" variant="danger" onClick={() => onDelete(section)} />
+      <IconButton
+        icon={Trash2}
+        label={canDelete ? "Delete section" : "You don't have permission to delete sections"}
+        variant="danger"
+        disabled={!canDelete}
+        onClick={() => onDelete(section)}
+      />
     </div>
   );
 }
 
 export default function PageDetailPage() {
+  const { can } = usePermissions();
+  const canCreate = can("cms.create");
+  const canEdit = can("cms.edit");
+  const canDelete = can("cms.delete");
+
   const { slug } = useParams();
   const navigate = useNavigate();
   const [page, setPage] = useState(null);
@@ -154,29 +211,55 @@ export default function PageDetailPage() {
           )}
           <StatusBadge status={page.status} />
         </div>
+        {PUBLIC_VIEW_BY_SLUG[page.slug] && page.status === "published" && (
+          <Button
+            as="a"
+            href={`${window.location.origin}/#${PUBLIC_VIEW_BY_SLUG[page.slug]}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            variant="secondary"
+            size="sm"
+            icon={Eye}
+          >
+            View on site
+          </Button>
+        )}
       </div>
 
       <Card title="Page details" description={page.is_builtin ? "Built-in pages can't be deleted, but content is fully editable." : undefined}>
         <div className="grid gap-5 sm:grid-cols-2">
           <Field label="Title" required>
-            <TextInput value={meta.title} onChange={(e) => setMeta((m) => ({ ...m, title: e.target.value }))} />
+            <TextInput value={meta.title} onChange={(e) => setMeta((m) => ({ ...m, title: e.target.value }))} disabled={!canEdit} />
           </Field>
           <Field label="Status">
-            <Select value={meta.status} onChange={(e) => setMeta((m) => ({ ...m, status: e.target.value }))}>
+            <Select value={meta.status} onChange={(e) => setMeta((m) => ({ ...m, status: e.target.value }))} disabled={!canEdit}>
               <option value="draft">Draft</option>
               <option value="published">Published</option>
             </Select>
           </Field>
         </div>
         <div className="mt-4">
-          <Button as="button" size="sm" onClick={saveMeta}>Save details</Button>
+          <Button as="button" size="sm" onClick={saveMeta} disabled={!canEdit} title={canEdit ? undefined : "You don't have permission to edit pages"}>
+            Save details
+          </Button>
         </div>
       </Card>
 
       <Card
         title="Sections"
         description="Drag to reorder. Each section renders on the public page in this order."
-        actions={<Button as="button" size="sm" icon={Plus} onClick={() => setAddOpen(true)}>Add section</Button>}
+        actions={
+          <Button
+            as="button"
+            size="sm"
+            icon={Plus}
+            onClick={() => setAddOpen(true)}
+            disabled={!canCreate}
+            title={canCreate ? undefined : "You don't have permission to add sections"}
+          >
+            Add section
+          </Button>
+        }
       >
         {page.sections.length === 0 ? (
           <p className="py-8 text-center text-[13.5px] text-[var(--a-text-muted)]">No sections yet — add one to start building this page.</p>
@@ -184,7 +267,7 @@ export default function PageDetailPage() {
           <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
             <SortableContext items={page.sections.map((s) => s.id)} strategy={verticalListSortingStrategy}>
               {page.sections.map((section) => (
-                <SortableRow key={section.id} section={section} pageSlug={page.slug} onDelete={setToDelete} />
+                <SortableRow key={section.id} section={section} pageSlug={page.slug} onDelete={setToDelete} canEdit={canEdit} canDelete={canDelete} />
               ))}
             </SortableContext>
           </DndContext>
@@ -196,7 +279,7 @@ export default function PageDetailPage() {
         onClose={() => setAddOpen(false)}
         title="Add section"
         description="Pick a section type — you'll fill in the content next."
-        footer={<Button as="button" onClick={handleAddSection}>Add section</Button>}
+        footer={<Button as="button" onClick={handleAddSection} disabled={!canCreate}>Add section</Button>}
       >
         <div className="grid gap-2 sm:grid-cols-2">
           {SECTION_TYPES.map((t) => (

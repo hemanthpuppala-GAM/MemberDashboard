@@ -2,7 +2,7 @@ import { useCallback, useMemo, useState } from "react";
 import { AdminDataContext } from "./adminDataContextInstance";
 import {
   PAGES, MEDIA, LANGUAGES, ROLES, USERS, QUERIES, MEMBERS, JOURNEYS,
-  ANNOUNCEMENTS, BROADCASTS, QR_CODES, SETTINGS, CONTACT_CHANNELS, DONATION_METHODS,
+  BROADCASTS, QR_CODES, SETTINGS, CONTACT_CHANNELS, DONATION_METHODS,
   MUSIC_TRACKS, TESTIMONIALS,
 } from "../mock/mockData";
 
@@ -23,7 +23,6 @@ export function AdminDataProvider({ children }) {
   const [queries, setQueries] = useState(QUERIES);
   const [members, setMembers] = useState(MEMBERS);
   const [journeys, setJourneys] = useState(JOURNEYS);
-  const [announcements, setAnnouncements] = useState(ANNOUNCEMENTS);
   const [broadcasts, setBroadcasts] = useState(BROADCASTS);
   const [qrCodes, setQrCodes] = useState(QR_CODES);
   const [settings, setSettings] = useState(SETTINGS);
@@ -161,15 +160,6 @@ export function AdminDataProvider({ children }) {
     return created;
   }, []);
 
-  // ---- Announcements ----
-  const addAnnouncement = useCallback((a) => {
-    const created = { id: nextId(), sentOn: new Date().toISOString(), readCount: 0, totalRecipients: users.length, ...a };
-    setAnnouncements((prev) => [created, ...prev]);
-    return created;
-  }, [users.length]);
-  const updateAnnouncement = useCallback((id, patch) => setAnnouncements((prev) => prev.map((a) => (a.id === id ? { ...a, ...patch } : a))), []);
-  const deleteAnnouncement = useCallback((id) => setAnnouncements((prev) => prev.filter((a) => a.id !== id)), []);
-
   // ---- Broadcasts ----
   const addBroadcast = useCallback((b) => {
     const created = { id: nextId(), status: "draft", ...b };
@@ -262,7 +252,6 @@ export function AdminDataProvider({ children }) {
       queries, updateQuery, convertToMember,
       members, addMember, updateMember, deleteMember,
       journeys, addJourneyEntry,
-      announcements, addAnnouncement, updateAnnouncement, deleteAnnouncement,
       broadcasts, addBroadcast, updateBroadcast, deleteBroadcast,
       qrCodes, addQrCode, deleteQrCode, bumpQrDownload,
       settings, updateSettingsGroup,
@@ -280,7 +269,6 @@ export function AdminDataProvider({ children }) {
       queries, updateQuery, convertToMember,
       members, addMember, updateMember, deleteMember,
       journeys, addJourneyEntry,
-      announcements, addAnnouncement, updateAnnouncement, deleteAnnouncement,
       broadcasts, addBroadcast, updateBroadcast, deleteBroadcast,
       qrCodes, addQrCode, deleteQrCode, bumpQrDownload,
       settings, updateSettingsGroup,

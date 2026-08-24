@@ -14,7 +14,7 @@ class Page extends Model
 {
     use LogsActivity;
 
-    public const BUILTIN_SLUGS = ['home', 'about', 'meditate', 'wellness', 'events', 'mission', 'contact'];
+    public const BUILTIN_SLUGS = ['home', 'about', 'meditate', 'wellness', 'events', 'mission', 'wisdom', 'contact', 'volunteer', 'donate'];
 
     public const STATUSES = ['draft', 'published'];
 
