@@ -1,12 +1,17 @@
-import { NavLink, Link } from "react-router-dom";
-import logoMark from "../../assets/logo-128.webp";
+import { NavLink, Link, useNavigate } from "react-router-dom";
+import logoMark from "../../assets/logo-golden-age.jpg";
 import { NAV, ADMIN_LINK } from "./navConfig";
-
-// No member auth wired up yet — set to "admin" or "super_admin" once login exists to reveal Admin panel.
-const CURRENT_ROLE = null;
+import { useMemberAuth } from "../../auth/MemberAuthContext";
 
 export default function Sidebar({ onNavigate }) {
-  const showAdmin = CURRENT_ROLE === "admin" || CURRENT_ROLE === "super_admin";
+  const { user, logout } = useMemberAuth();
+  const navigate = useNavigate();
+  const showAdmin = !!user?.is_admin;
+
+  const handleLogout = async () => {
+    await logout();
+    navigate("/join", { replace: true });
+  };
 
   return (
     <aside className="relative flex h-full w-[260px] shrink-0 flex-col gap-1 border-r border-[rgba(110,198,234,0.25)] bg-[rgba(255,255,255,0.90)] p-4 backdrop-blur-[16px]">
@@ -35,6 +40,13 @@ export default function Sidebar({ onNavigate }) {
           </div>
         </div>
       </Link>
+
+      {user && (
+        <div className="mb-3 rounded-2xl border border-[rgba(110,198,234,0.25)] bg-[rgba(110,198,234,0.08)] px-3 py-2.5">
+          <div className="truncate text-[13.5px] font-semibold text-[var(--color-ink)]">{user.name}</div>
+          <div className="truncate text-[11.5px] text-[var(--color-muted)]">{user.email}</div>
+        </div>
+      )}
 
       <nav className="flex flex-1 flex-col gap-1" onClick={onNavigate}>
         {NAV.map(({ to, end, icon: Icon, label }) => (
@@ -71,12 +83,20 @@ export default function Sidebar({ onNavigate }) {
       {showAdmin && (
         <NavLink
           to={ADMIN_LINK.to}
-          className="flex items-center gap-2.5 rounded-full border border-[var(--color-gold)]/50 bg-[rgba(243,216,154,0.12)] px-3.5 py-2.5 text-[13.5px] font-medium text-[var(--color-ink)] transition-colors hover:bg-[rgba(243,216,154,0.28)]"
+          className="mb-2 flex items-center gap-2.5 rounded-full border border-[var(--color-gold)]/50 bg-[rgba(243,216,154,0.12)] px-3.5 py-2.5 text-[13.5px] font-medium text-[var(--color-ink)] transition-colors hover:bg-[rgba(243,216,154,0.28)]"
         >
           <ADMIN_LINK.icon size={17} strokeWidth={2} />
           {ADMIN_LINK.label}
         </NavLink>
       )}
+
+      <button
+        type="button"
+        onClick={handleLogout}
+        className="rounded-full px-3.5 py-2 text-left text-[12.5px] font-medium text-[var(--color-muted)] transition-colors hover:bg-[rgba(110,198,234,0.12)] hover:text-[var(--color-ink)]"
+      >
+        Sign out
+      </button>
     </aside>
   );
 }

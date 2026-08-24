@@ -72,7 +72,7 @@ export default function Header({ onLogoClick, onNavigate, activeView = "hub" }) 
       <div className="flex min-w-0 shrink-0 items-center justify-end">
         <Button
           as={Link}
-          to="/dashboard"
+          to="/join"
           className="px-4 py-1.5 text-[13.5px] shadow-[0_0_20px_rgba(213,183,124,0.25)]"
         >
           Join free
