@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import logoMark from "../../assets/logo-128.webp";
+import logoMark from "../../assets/logo-golden-age.jpg";
 import { publicApi } from "../../lib/api";
 import { CHANNEL_ICONS, channelHref } from "../../lib/contactChannels";
 
@@ -153,9 +153,6 @@ function HubFooter({ onNavigate }) {
         Choose a path · the center breathes with you
       </div>
       <div className="flex flex-wrap items-center justify-center gap-[18px]">
-        <button type="button" onClick={() => onNavigate("volunteer")} className="text-white/75 transition-colors hover:text-[var(--color-gold)]">
-          Volunteer
-        </button>
         <button type="button" onClick={() => onNavigate("donate")} className="text-white/75 transition-colors hover:text-[var(--color-gold)]">
           Support
         </button>

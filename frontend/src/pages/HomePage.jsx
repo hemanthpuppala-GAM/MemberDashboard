@@ -132,7 +132,7 @@ export default function HomePage() {
         )}
       </main>
 
-      <QrJoinCard show={isHub} />
+      <QrJoinCard show={isHub} onNavigate={setView} />
       <Footer view={view} onBack={() => setView("hub")} onNavigate={setView} />
     </div>
   );
