@@ -63,8 +63,24 @@ export async function memberFetch(path, { method = "GET", body, auth = true } = 
 
 export const memberAuthApi = {
   demo: () => memberFetch("/auth/demo", { method: "POST", auth: false }),
+  register: (payload) => memberFetch("/auth/register", { method: "POST", body: payload, auth: false }),
+  login: (payload) => memberFetch("/auth/login", { method: "POST", body: payload, auth: false }),
   me: () => memberFetch("/auth/me"),
   logout: () => memberFetch("/auth/logout", { method: "POST" }),
+
+  overview: () => memberFetch("/member/overview"),
+  practiceSessions: () => memberFetch("/member/practice-sessions"),
+  logPracticeSession: (duration_minutes, sit_preset_id) =>
+    memberFetch("/member/practice-sessions", { method: "POST", body: { duration_minutes, sit_preset_id } }),
+  journal: () => memberFetch("/member/journal"),
+  addJournalEntry: (content) => memberFetch("/member/journal", { method: "POST", body: { content } }),
+  updateJournalEntry: (id, content) => memberFetch(`/member/journal/${id}`, { method: "PUT", body: { content } }),
+  deleteJournalEntry: (id) => memberFetch(`/member/journal/${id}`, { method: "DELETE" }),
+  liveSessions: () => memberFetch("/member/live-sessions"),
+  referral: () => memberFetch("/member/referral"),
+  updateProfile: (payload) => memberFetch("/member/profile", { method: "PUT", body: payload }),
+  updatePassword: (payload) => memberFetch("/member/password", { method: "PUT", body: payload }),
+  contact: (payload) => memberFetch("/contact", { method: "POST", body: payload }),
 };
 
 export { API_ORIGIN };

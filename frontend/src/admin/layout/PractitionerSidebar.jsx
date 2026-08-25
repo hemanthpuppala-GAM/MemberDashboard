@@ -1,6 +1,6 @@
 import { NavLink } from "react-router-dom";
 import { LayoutDashboard, UsersRound, Megaphone } from "lucide-react";
-import logoMark from "../../assets/logo-128.webp";
+import logoMark from "../../assets/logo-golden-age.jpg";
 
 const LINKS = [
   { to: "/admin/my-dashboard", end: true, icon: LayoutDashboard, label: "Dashboard" },

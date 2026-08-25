@@ -11,6 +11,7 @@ import LangTabs from "../../ui/LangTabs";
 import RichTextEditor from "../../ui/RichTextEditor";
 import MediaPickerModal from "../../ui/MediaPickerModal";
 import ImageField from "../../ui/ImageField";
+import RangeField from "../../ui/RangeField";
 import { api } from "../../../lib/api";
 import { SECTION_TYPES, MEDIA_FOLDERS } from "../../mock/mockData";
 import { contentArrayToByLang, FLAG_BY_CODE } from "./sectionContentUtil";
@@ -202,7 +203,37 @@ function SectionFields({ type, content, set, openPicker }) {
             <Field label="CTA label"><TextInput value={content.cta_label ?? ""} onChange={(e) => set("cta_label")(e.target.value)} /></Field>
             <Field label="CTA link"><TextInput value={content.cta_href ?? ""} onChange={(e) => set("cta_href")(e.target.value)} /></Field>
           </div>
-          <ImageField value={content.image} onChange={set("image")} onPick={() => openPicker(set("image"))} label="Background image" />
+          <ImageField value={content.image} onChange={set("image")} onPick={() => openPicker(set("image"))} label="Background image (desktop)" />
+          <ImageField
+            value={content.image_mobile}
+            onChange={set("image_mobile")}
+            onPick={() => openPicker(set("image_mobile"))}
+            label="Background image (mobile)"
+            hint="Optional — falls back to the desktop image if left empty. Use a portrait crop so the subject stays visible on small screens."
+          />
+          <div className="grid gap-5 sm:grid-cols-2">
+            <RangeField
+              label="Chakra wheel — horizontal position"
+              hint="Desktop only — mobile keeps the wheel centered below the copy"
+              value={content.mandala_x ?? 64}
+              onChange={set("mandala_x")}
+            />
+            <RangeField
+              label="Chakra wheel — vertical position"
+              hint="Desktop only"
+              value={content.mandala_y ?? 62}
+              onChange={set("mandala_y")}
+            />
+          </div>
+          <RangeField
+            label="Chakra wheel — circle size"
+            hint="How far the orbiting icons sit from the center. Desktop only."
+            value={content.mandala_radius ?? 148}
+            onChange={set("mandala_radius")}
+            min={80}
+            max={220}
+            unit="px"
+          />
           <LayoutFields showPosition={false} showShape={false} animation={content.animation} onAnimationChange={set("animation")} />
         </>
       );

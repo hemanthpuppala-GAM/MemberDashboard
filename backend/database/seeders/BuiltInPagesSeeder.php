@@ -2,12 +2,14 @@
 
 namespace Database\Seeders;
 
+use App\Models\Cms\Media;
 use App\Models\Cms\Page;
 use App\Models\Cms\PageSection;
 use App\Models\Cms\PageTranslation;
 use App\Models\Cms\SectionContent;
 use App\Models\Languages\Language;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Seeds the pages/page_sections/section_content system (the one the admin
@@ -149,13 +151,17 @@ class BuiltInPagesSeeder extends Seeder
             $this->seedPage($block['slug'], $block['title'], $language, 'content_block', $block['fields']);
         }
 
-        $this->seedPage('home', 'Home', $language, 'hero', [
+        $heroFields = [
             'eyebrow' => '',
             'heading' => "Peace begins within —\ntogether we *radiate it* across the world",
             'description' => 'A global movement to awaken consciousness, live in harmony, and create a golden future.',
             'cta_label' => 'Join the movement',
             'cta_href' => 'https://goldenagewisdom.org/join',
-        ]);
+        ];
+        if ($heroImageUrl = $this->seedHeroImage()) {
+            $heroFields['image'] = $heroImageUrl;
+        }
+        $this->seedPage('home', 'Home', $language, 'hero', $heroFields);
 
         $this->seedMeditateDeepContent($language);
         $this->seedAboutStrengths($language);
@@ -257,6 +263,39 @@ class BuiltInPagesSeeder extends Seeder
             'goal_label' => 'of humanity in meditative space — the critical mass of consciousness that tips the world into Satya Yugam.',
             'goal_caption' => 'Every lit dot is a meditator · be the next one.',
         ]);
+    }
+
+    /**
+     * Copies the homepage hero photo out of the frontend's bundled assets
+     * into DB-backed storage (media table + public disk), so it shows up in
+     * the Media Library and the hero section's "Background image" field is
+     * admin-editable/replaceable instead of silently falling back to the
+     * hardcoded frontend import.
+     */
+    private function seedHeroImage(): ?string
+    {
+        $source = base_path('../frontend/src/assets/hari_sir_stream.png');
+        if (! is_file($source)) {
+            return null;
+        }
+
+        $path = 'media/hari-sir-stream.png';
+        Storage::disk('public')->put($path, file_get_contents($source));
+
+        $media = Media::updateOrCreate(
+            ['path' => $path],
+            [
+                'filename' => 'hari-sir-stream.png',
+                'original_name' => 'hari_sir_stream.png',
+                'disk' => 'public',
+                'url' => Storage::disk('public')->url($path),
+                'mime_type' => 'image/png',
+                'size_bytes' => filesize($source),
+                'folder' => 'Home',
+            ],
+        );
+
+        return $media->url;
     }
 
     private function seedPage(string $slug, string $title, Language $language, string $sectionType, array $fields): void

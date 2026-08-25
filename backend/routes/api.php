@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\Admin\Cms\MediaController;
 use App\Http\Controllers\Api\Admin\People\MemberController;
 use App\Http\Controllers\Api\Admin\People\MemberJourneyController;
 use App\Http\Controllers\Api\Admin\Content\MusicController as AdminMusicController;
+use App\Http\Controllers\Api\Admin\Content\SitPresetController as AdminSitPresetController;
 use App\Http\Controllers\Api\Admin\Cms\PageController as AdminPageController;
 use App\Http\Controllers\Api\Admin\Auth\PermissionController;
 use App\Http\Controllers\Api\Admin\Engage\QrCodeController;
@@ -27,6 +28,13 @@ use App\Http\Controllers\Api\Admin\Content\TestimonialController as AdminTestimo
 use App\Http\Controllers\Api\Admin\Auth\UserController;
 use App\Http\Controllers\Api\Public\Auth\AuthController;
 use App\Http\Controllers\Api\Public\Auth\OAuthController;
+use App\Http\Controllers\Api\Public\Auth\MemberAuthController;
+use App\Http\Controllers\Api\Public\Member\JournalController;
+use App\Http\Controllers\Api\Public\Member\LiveSessionController;
+use App\Http\Controllers\Api\Public\Member\OverviewController as MemberOverviewController;
+use App\Http\Controllers\Api\Public\Member\PracticeSessionController;
+use App\Http\Controllers\Api\Public\Member\ProfileController as MemberProfileController;
+use App\Http\Controllers\Api\Public\Member\ReferralController;
 use App\Http\Controllers\Api\Public\Engage\BroadcastController;
 use App\Http\Controllers\Api\Public\Content\ContactChannelController;
 use App\Http\Controllers\Api\Public\Content\VolunteerCategoryController;
@@ -37,6 +45,7 @@ use App\Http\Controllers\Api\Public\Content\DonationMethodController;
 use App\Http\Controllers\Api\Public\Cms\EventController;
 use App\Http\Controllers\Api\Public\Languages\LanguageController;
 use App\Http\Controllers\Api\Public\Content\MusicController;
+use App\Http\Controllers\Api\Public\Content\SitPresetController;
 use App\Http\Controllers\Api\Public\Cms\PageController;
 use App\Http\Controllers\Api\Practitioner\PractitionerController;
 use App\Http\Controllers\Api\Public\Settings\SettingController;
@@ -57,6 +66,7 @@ Route::prefix('v1')->group(function () {
     Route::get('/events', [EventController::class, 'index']);
     Route::get('/settings', [SettingController::class, 'index']);
     Route::get('/music', [MusicController::class, 'index']);
+    Route::get('/sit-presets', [SitPresetController::class, 'index']);
     Route::get('/testimonials', [TestimonialController::class, 'index']);
     Route::get('/testimonials/featured', [TestimonialController::class, 'featured']);
     Route::get('/contact-channels', [ContactChannelController::class, 'index']);
@@ -78,6 +88,28 @@ Route::prefix('v1')->group(function () {
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('/auth/me', [OAuthController::class, 'me']);
         Route::post('/auth/logout', [OAuthController::class, 'logout']);
+    });
+
+    // ---- Member auth (public sign-up / sign-in, e.g. /join) ----
+    Route::post('/auth/register', [MemberAuthController::class, 'register'])->middleware('throttle:10,1');
+    Route::post('/auth/login', [MemberAuthController::class, 'login'])->middleware('throttle:10,1');
+    Route::middleware(['auth:sanctum', 'member'])->group(function () {
+        Route::post('/auth/logout', [MemberAuthController::class, 'logout']);
+        Route::get('/auth/me', [MemberAuthController::class, 'me']);
+
+        Route::prefix('member')->group(function () {
+            Route::get('/overview', [MemberOverviewController::class, 'index']);
+            Route::get('/practice-sessions', [PracticeSessionController::class, 'index']);
+            Route::post('/practice-sessions', [PracticeSessionController::class, 'store']);
+            Route::get('/journal', [JournalController::class, 'index']);
+            Route::post('/journal', [JournalController::class, 'store']);
+            Route::put('/journal/{journalEntry}', [JournalController::class, 'update']);
+            Route::delete('/journal/{journalEntry}', [JournalController::class, 'destroy']);
+            Route::get('/live-sessions', [LiveSessionController::class, 'index']);
+            Route::get('/referral', [ReferralController::class, 'index']);
+            Route::put('/profile', [MemberProfileController::class, 'update']);
+            Route::put('/password', [MemberProfileController::class, 'updatePassword']);
+        });
     });
 
     // ---- Admin auth ----
@@ -130,6 +162,15 @@ Route::prefix('v1')->group(function () {
             Route::put('/music/{music}', [AdminMusicController::class, 'update']);
         });
         Route::middleware('permission:music.delete')->delete('/music/{music}', [AdminMusicController::class, 'destroy']);
+
+        // ---- Sit presets (Sit & Scribe session templates) ----
+        Route::middleware('permission:music.view')->get('/sit-presets', [AdminSitPresetController::class, 'index']);
+        Route::middleware('permission:music.create')->post('/sit-presets', [AdminSitPresetController::class, 'store']);
+        Route::middleware('permission:music.edit')->group(function () {
+            Route::put('/sit-presets/reorder', [AdminSitPresetController::class, 'reorder']);
+            Route::put('/sit-presets/{sitPreset}', [AdminSitPresetController::class, 'update']);
+        });
+        Route::middleware('permission:music.delete')->delete('/sit-presets/{sitPreset}', [AdminSitPresetController::class, 'destroy']);
 
         // ---- Testimonials ----
         Route::middleware('permission:testimonials.view')->get('/testimonials', [AdminTestimonialController::class, 'index']);

@@ -4,7 +4,7 @@ import { useAuth } from "../useAuth";
 import Field, { TextInput } from "../ui/Field";
 import Button from "../ui/Button";
 import ScaledShell from "../theme/ScaledShell";
-import logoMark from "../../assets/logo-128.webp";
+import logoMark from "../../assets/logo-golden-age.jpg";
 import logoFull from "../../assets/goldenage_logo_optimized.jpg";
 
 export default function LoginPage() {

@@ -1,21 +1,36 @@
-import { NavLink, Link, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import logoMark from "../../assets/logo-golden-age.jpg";
-import { NAV, ADMIN_LINK } from "./navConfig";
+import { NAV } from "./navConfig";
 import { useMemberAuth } from "../../auth/MemberAuthContext";
+import { useActiveSit } from "../ActiveSitContext";
 
 export default function Sidebar({ onNavigate }) {
   const { user, logout } = useMemberAuth();
+  const { hasActiveSit, requestNavigation } = useActiveSit();
   const navigate = useNavigate();
-  const showAdmin = !!user?.is_admin;
 
-  const handleLogout = async () => {
-    await logout();
-    navigate("/join", { replace: true });
+  const goTo = (to) => {
+    requestNavigation(() => {
+      navigate(to);
+      onNavigate?.();
+    });
+  };
+
+  const handleLogout = () => {
+    requestNavigation(async () => {
+      await logout();
+      navigate("/join", { replace: true });
+      onNavigate?.();
+    });
   };
 
   return (
     <aside className="relative flex h-full w-[260px] shrink-0 flex-col gap-1 border-r border-[rgba(110,198,234,0.25)] bg-[rgba(255,255,255,0.90)] p-4 backdrop-blur-[16px]">
-      <Link to="/" className="mb-4 flex items-center gap-2.5 px-1.5">
+      <button
+        type="button"
+        onClick={() => goTo("/")}
+        className="mb-4 flex items-center gap-2.5 px-1.5 text-left"
+      >
         <img
           src={logoMark}
           alt="Golden Age Wisdom"
@@ -39,7 +54,7 @@ export default function Sidebar({ onNavigate }) {
             My practice
           </div>
         </div>
-      </Link>
+      </button>
 
       {user && (
         <div className="mb-3 rounded-2xl border border-[rgba(110,198,234,0.25)] bg-[rgba(110,198,234,0.08)] px-3 py-2.5">
@@ -48,12 +63,17 @@ export default function Sidebar({ onNavigate }) {
         </div>
       )}
 
-      <nav className="flex flex-1 flex-col gap-1" onClick={onNavigate}>
+      <nav className="flex flex-1 flex-col gap-1" onClick={() => !hasActiveSit && onNavigate?.()}>
         {NAV.map(({ to, end, icon: Icon, label }) => (
           <NavLink
             key={to}
             to={to}
             end={end}
+            onClick={(e) => {
+              if (!hasActiveSit) return;
+              e.preventDefault();
+              goTo(to);
+            }}
             className={({ isActive }) =>
               `group flex items-center gap-3 rounded-full px-3.5 py-2.5 text-[13.5px] font-medium transition-all duration-200 ${
                 isActive
@@ -79,16 +99,6 @@ export default function Sidebar({ onNavigate }) {
           </NavLink>
         ))}
       </nav>
-
-      {showAdmin && (
-        <NavLink
-          to={ADMIN_LINK.to}
-          className="mb-2 flex items-center gap-2.5 rounded-full border border-[var(--color-gold)]/50 bg-[rgba(243,216,154,0.12)] px-3.5 py-2.5 text-[13.5px] font-medium text-[var(--color-ink)] transition-colors hover:bg-[rgba(243,216,154,0.28)]"
-        >
-          <ADMIN_LINK.icon size={17} strokeWidth={2} />
-          {ADMIN_LINK.label}
-        </NavLink>
-      )}
 
       <button
         type="button"

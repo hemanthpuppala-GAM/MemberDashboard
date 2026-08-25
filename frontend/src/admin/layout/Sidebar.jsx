@@ -3,7 +3,7 @@ import { NavLink, useLocation } from "react-router-dom";
 import { ChevronDown } from "lucide-react";
 import { NAV } from "./navConfig";
 import { usePermissions } from "../usePermissions";
-import logoMark from "../../assets/logo-128.webp";
+import logoMark from "../../assets/logo-golden-age.jpg";
 
 function isGroupActive(group, pathname) {
   return group.items.some((item) => pathname.startsWith(item.to));
