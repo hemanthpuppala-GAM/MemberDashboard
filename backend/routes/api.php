@@ -26,6 +26,7 @@ use App\Http\Controllers\Api\Admin\Settings\SettingController as AdminSettingCon
 use App\Http\Controllers\Api\Admin\Content\TestimonialController as AdminTestimonialController;
 use App\Http\Controllers\Api\Admin\Auth\UserController;
 use App\Http\Controllers\Api\Public\Auth\AuthController;
+use App\Http\Controllers\Api\Public\Auth\OAuthController;
 use App\Http\Controllers\Api\Public\Engage\BroadcastController;
 use App\Http\Controllers\Api\Public\Content\ContactChannelController;
 use App\Http\Controllers\Api\Public\Content\VolunteerCategoryController;
@@ -65,6 +66,19 @@ Route::prefix('v1')->group(function () {
 
     Route::post('/contact', [ContactController::class, 'store'])->middleware('throttle:5,1');
     Route::post('/volunteer-applications', [VolunteerApplicationController::class, 'store'])->middleware('throttle:5,1');
+
+    // ---- Member OAuth (passwordless join) ----
+    Route::get('/auth/{provider}/redirect', [OAuthController::class, 'redirect'])
+        ->whereIn('provider', ['google', 'microsoft', 'facebook', 'apple'])
+        ->middleware('throttle:20,1');
+    Route::match(['get', 'post'], '/auth/{provider}/callback', [OAuthController::class, 'callback'])
+        ->whereIn('provider', ['google', 'microsoft', 'facebook', 'apple'])
+        ->middleware('throttle:20,1');
+    Route::post('/auth/demo', [OAuthController::class, 'demo'])->middleware('throttle:10,1');
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::get('/auth/me', [OAuthController::class, 'me']);
+        Route::post('/auth/logout', [OAuthController::class, 'logout']);
+    });
 
     // ---- Admin auth ----
     Route::post('/admin/login', [AuthController::class, 'login'])->middleware('throttle:10,1');
