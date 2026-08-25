@@ -4,6 +4,7 @@ import JoinPage from "./pages/JoinPage";
 import AuthCallbackPage from "./pages/AuthCallbackPage";
 import AdminApp from "./admin/AdminApp";
 import UserApp from "./user/UserApp";
+import MaintenanceGate from "./components/MaintenanceGate";
 import { MemberAuthProvider, useMemberAuth } from "./auth/MemberAuthContext";
 
 function MemberGate({ children }) {
@@ -35,7 +36,14 @@ function App() {
               </MemberGate>
             }
           />
-          <Route path="*" element={<HomePage />} />
+          <Route
+            path="*"
+            element={
+              <MaintenanceGate>
+                <HomePage />
+              </MaintenanceGate>
+            }
+          />
         </Routes>
       </MemberAuthProvider>
     </BrowserRouter>

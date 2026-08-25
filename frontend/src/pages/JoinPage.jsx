@@ -34,14 +34,19 @@ const PROVIDERS = [
   },
 ];
 
-/** Passwordless join screen — OAuth providers matching goldenagewisdom.org / Design.md §8. */
+/** Join screen — OAuth providers plus email/password sign-in, matching goldenagewisdom.org / Design.md §8. */
 export default function JoinPage() {
-  const { user, loading, loginDemo } = useMemberAuth();
+  const { user, loading, loginDemo, login, register } = useMemberAuth();
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const [busy, setBusy] = useState(null);
   const [error, setError] = useState(params.get("error") || "");
   const lastMember = useMemo(() => getLastMember(), []);
+
+  const [mode, setMode] = useState("login");
+  const [form, setForm] = useState({ name: "", email: "", password: "", password_confirmation: "" });
+  const [formError, setFormError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   if (!loading && user) return <Navigate to="/dashboard" replace />;
 
@@ -65,6 +70,31 @@ export default function JoinPage() {
     } catch (e) {
       setError(e.message || "Could not start demo session.");
       setBusy(null);
+    }
+  };
+
+  const updateField = (field) => (e) => setForm((f) => ({ ...f, [field]: e.target.value }));
+
+  const switchMode = (nextMode) => {
+    setMode(nextMode);
+    setFormError("");
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setFormError("");
+    setSubmitting(true);
+    try {
+      if (mode === "signup") {
+        await register(form.name, form.email, form.password, form.password_confirmation, params.get("ref") || undefined);
+      } else {
+        await login(form.email, form.password);
+      }
+      navigate("/dashboard", { replace: true });
+    } catch (e) {
+      setFormError(e.message || "Something went wrong. Please try again.");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -137,7 +167,7 @@ export default function JoinPage() {
                 key={id}
                 type="button"
                 onClick={() => startOAuth(id)}
-                disabled={!!busy}
+                disabled={!!busy || submitting}
                 className={`flex w-full items-center justify-center gap-3 rounded-full px-4 py-3 text-[14.5px] font-medium transition-all disabled:opacity-60 ${
                   variant === "google"
                     ? "bg-white text-[#1f1f1f] shadow-[0_4px_20px_rgba(0,0,0,0.25)] hover:bg-white/95"
@@ -156,10 +186,97 @@ export default function JoinPage() {
             </p>
           )}
 
+          <div className="my-4 flex items-center gap-3">
+            <div className="h-px flex-1 bg-white/15" />
+            <span className="text-[11px] tracking-wide text-white/45 uppercase">or use email</span>
+            <div className="h-px flex-1 bg-white/15" />
+          </div>
+
+          <form onSubmit={handleSubmit} className="flex flex-col gap-2.5">
+            {mode === "signup" && (
+              <input
+                type="text"
+                placeholder="Full name"
+                autoComplete="name"
+                required
+                value={form.name}
+                onChange={updateField("name")}
+                disabled={submitting}
+                className="w-full rounded-full border border-white/20 bg-white/8 px-4 py-3 text-[14px] text-white placeholder:text-white/40 outline-none focus:border-[var(--color-gold)]/60 disabled:opacity-60"
+              />
+            )}
+            <input
+              type="email"
+              placeholder="Email"
+              autoComplete="username"
+              required
+              value={form.email}
+              onChange={updateField("email")}
+              disabled={submitting}
+              className="w-full rounded-full border border-white/20 bg-white/8 px-4 py-3 text-[14px] text-white placeholder:text-white/40 outline-none focus:border-[var(--color-gold)]/60 disabled:opacity-60"
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              autoComplete={mode === "signup" ? "new-password" : "current-password"}
+              required
+              minLength={8}
+              value={form.password}
+              onChange={updateField("password")}
+              disabled={submitting}
+              className="w-full rounded-full border border-white/20 bg-white/8 px-4 py-3 text-[14px] text-white placeholder:text-white/40 outline-none focus:border-[var(--color-gold)]/60 disabled:opacity-60"
+            />
+            {mode === "signup" && (
+              <input
+                type="password"
+                placeholder="Confirm password"
+                autoComplete="new-password"
+                required
+                minLength={8}
+                value={form.password_confirmation}
+                onChange={updateField("password_confirmation")}
+                disabled={submitting}
+                className="w-full rounded-full border border-white/20 bg-white/8 px-4 py-3 text-[14px] text-white placeholder:text-white/40 outline-none focus:border-[var(--color-gold)]/60 disabled:opacity-60"
+              />
+            )}
+
+            {formError && (
+              <p className="rounded-xl border border-red-400/30 bg-red-500/10 px-3 py-2 text-center text-[13px] text-red-200">
+                {formError}
+              </p>
+            )}
+
+            <button
+              type="submit"
+              disabled={submitting || !!busy}
+              className="mt-1 w-full rounded-full bg-gradient-to-br from-[var(--color-gold)] to-[var(--color-gold-deep)] px-4 py-3 text-[14.5px] font-semibold text-[var(--color-on-gold)] transition-opacity hover:opacity-95 disabled:opacity-60"
+            >
+              {submitting ? (mode === "signup" ? "Creating account…" : "Signing in…") : mode === "signup" ? "Create account" : "Sign in"}
+            </button>
+          </form>
+
+          <p className="mt-3 text-center text-[13px] text-white/60">
+            {mode === "signup" ? (
+              <>
+                Already have an account?{" "}
+                <button type="button" onClick={() => switchMode("login")} className="font-medium text-[var(--color-gold-light)] hover:underline">
+                  Sign in
+                </button>
+              </>
+            ) : (
+              <>
+                New here?{" "}
+                <button type="button" onClick={() => switchMode("signup")} className="font-medium text-[var(--color-gold-light)] hover:underline">
+                  Create an account
+                </button>
+              </>
+            )}
+          </p>
+
           <button
             type="button"
             onClick={startDemo}
-            disabled={!!busy}
+            disabled={!!busy || submitting}
             className="mt-4 w-full rounded-full border border-dashed border-white/30 px-4 py-3 text-[13.5px] text-white/80 transition-colors hover:border-[var(--color-gold)]/50 hover:text-white disabled:opacity-60"
           >
             <span className="font-medium">{busy === "demo" ? "Opening demo…" : "Look around a demo account"}</span>
@@ -169,8 +286,8 @@ export default function JoinPage() {
           <div className="mt-5 flex items-start gap-2.5 rounded-2xl border border-white/10 bg-white/5 px-3.5 py-3">
             <Shield size={16} className="mt-0.5 shrink-0 text-[var(--color-gold-light)]" />
             <p className="text-[12px] leading-relaxed text-white/65">
-              We never see, store or handle passwords. Sign-in happens entirely with Google, Microsoft,
-              Facebook or Apple — we only receive your name and email.
+              Your password is encrypted and never shared. You can also sign in instantly with Google,
+              Microsoft, Facebook or Apple — no password to remember.
             </p>
           </div>
         </div>

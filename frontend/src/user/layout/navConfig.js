@@ -1,4 +1,4 @@
-import { Sun, Play, Radio, PenLine, Heart, Phone, ShieldCheck } from "lucide-react";
+import { Sun, Play, Radio, PenLine, Heart, Phone, UserRound } from "lucide-react";
 
 export const NAV = [
   { to: "/dashboard", end: true, icon: Sun, label: "Overview" },
@@ -7,6 +7,5 @@ export const NAV = [
   { to: "/dashboard/journal", icon: PenLine, label: "Journal" },
   { to: "/dashboard/share", icon: Heart, label: "Share the light" },
   { to: "/dashboard/circles", icon: Phone, label: "Circles & help" },
+  { to: "/dashboard/profile", icon: UserRound, label: "Profile" },
 ];
-
-export const ADMIN_LINK = { to: "/admin", icon: ShieldCheck, label: "Admin panel" };

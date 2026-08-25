@@ -15,6 +15,7 @@ use App\Models\Auth\User;
     'join_url',
     'is_published',
     'updated_by',
+    'host_practitioner_id',
 ])]
 class Event extends Model
 {
@@ -30,5 +31,10 @@ class Event extends Model
     public function editor()
     {
         return $this->belongsTo(User::class, 'updated_by');
+    }
+
+    public function host()
+    {
+        return $this->belongsTo(User::class, 'host_practitioner_id');
     }
 }

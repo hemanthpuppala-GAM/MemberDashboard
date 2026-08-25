@@ -22,6 +22,8 @@ import MediaLibraryPage from "./pages/cms/MediaLibraryPage";
 import ContactInfoPage from "./pages/cms/ContactInfoPage";
 import DonationsPage from "./pages/cms/DonationsPage";
 import MusicLibraryPage from "./pages/cms/MusicLibraryPage";
+import SitPresetsPage from "./pages/cms/SitPresetsPage";
+import EventsPage from "./pages/cms/EventsPage";
 import TestimonialsPage from "./pages/cms/TestimonialsPage";
 
 import QueryInboxPage from "./pages/people/QueryInboxPage";
@@ -68,6 +70,8 @@ export default function AdminApp() {
                 <Route path="cms/contact" element={guarded("contact_channels.view", <ContactInfoPage />)} />
                 <Route path="cms/donations" element={guarded("donations.view", <DonationsPage />)} />
                 <Route path="cms/music" element={guarded("music.view", <MusicLibraryPage />)} />
+                <Route path="cms/sit-presets" element={guarded("music.view", <SitPresetsPage />)} />
+                <Route path="cms/events" element={guarded("cms.view", <EventsPage />)} />
                 <Route path="cms/testimonials" element={guarded("testimonials.view", <TestimonialsPage />)} />
 
                 <Route path="queries" element={guarded("members.view", <QueryInboxPage />)} />

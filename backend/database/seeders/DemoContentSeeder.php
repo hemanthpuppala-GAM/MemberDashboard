@@ -8,6 +8,7 @@ use App\Models\Content\DonationMethod;
 use App\Models\People\Member;
 use App\Models\People\MemberJourney;
 use App\Models\Content\MusicTrack;
+use App\Models\Content\SitPreset;
 use App\Models\Content\Testimonial;
 use App\Models\Content\VolunteerCategory;
 use App\Models\Auth\User;
@@ -25,6 +26,7 @@ class DemoContentSeeder extends Seeder
         $this->contactChannels();
         $this->donationMethods();
         $this->musicTracks();
+        $this->sitPresets();
         $this->testimonials();
         $this->volunteerCategories();
         $this->queriesAndMembers();
@@ -83,6 +85,30 @@ class DemoContentSeeder extends Seeder
                 [
                     'artist' => $t['artist'], 'category' => $t['category'], 'status' => $t['status'],
                     'file_path' => '', 'duration_seconds' => 0, 'sort_order' => $i + 1,
+                ],
+            );
+        }
+    }
+
+    private function sitPresets(): void
+    {
+        $chanting = MusicTrack::where('title', 'Om Chanting — 108 Repetitions')->first();
+        $meditation = MusicTrack::where('title', 'Twenty Minute Body Scan')->first();
+
+        $presets = [
+            ['title' => 'Silent Sit — 10 min', 'duration_minutes' => 10, 'track_id' => null],
+            ['title' => 'Silent Sit — 20 min', 'duration_minutes' => 20, 'track_id' => null],
+            ['title' => 'Silent Sit — 30 min', 'duration_minutes' => 30, 'track_id' => null],
+            ['title' => 'Chanting — 20 min', 'duration_minutes' => 20, 'track_id' => $chanting?->id],
+            ['title' => 'Guided Meditation — 20 min', 'duration_minutes' => 20, 'track_id' => $meditation?->id],
+        ];
+
+        foreach ($presets as $i => $p) {
+            SitPreset::updateOrCreate(
+                ['title' => $p['title']],
+                [
+                    'duration_minutes' => $p['duration_minutes'], 'music_track_id' => $p['track_id'],
+                    'status' => 'published', 'sort_order' => $i + 1,
                 ],
             );
         }

@@ -12,7 +12,7 @@ class EventController extends Controller
     public function index()
     {
         return response()->json(
-            Event::orderBy('starts_at')->get(),
+            Event::orderBy('starts_at')->with('host')->get(),
         );
     }
 
@@ -23,7 +23,7 @@ class EventController extends Controller
             'updated_by' => $request->user()->id,
         ]);
 
-        return response()->json($event, 201);
+        return response()->json($event->load('host'), 201);
     }
 
     public function update(EventStoreRequest $request, Event $event)
@@ -32,7 +32,7 @@ class EventController extends Controller
         $event->updated_by = $request->user()->id;
         $event->save();
 
-        return response()->json($event);
+        return response()->json($event->load('host'));
     }
 
     public function destroy(Event $event)

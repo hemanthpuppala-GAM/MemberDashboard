@@ -122,6 +122,12 @@ export const api = {
   deleteMusic: (id) => apiFetch(`/admin/music/${id}`, { method: "DELETE" }),
   reorderMusic: (trackIds) => apiFetch("/admin/music/reorder", { method: "PUT", body: { track_ids: trackIds } }),
 
+  sitPresets: () => apiFetch("/admin/sit-presets"),
+  createSitPreset: (payload) => apiFetch("/admin/sit-presets", { method: "POST", body: payload }),
+  updateSitPreset: (id, payload) => apiFetch(`/admin/sit-presets/${id}`, { method: "PUT", body: payload }),
+  deleteSitPreset: (id) => apiFetch(`/admin/sit-presets/${id}`, { method: "DELETE" }),
+  reorderSitPresets: (presetIds) => apiFetch("/admin/sit-presets/reorder", { method: "PUT", body: { preset_ids: presetIds } }),
+
   testimonials: () => apiFetch("/admin/testimonials"),
   createTestimonial: (formData) => apiUpload("/admin/testimonials", formData),
   updateTestimonial: (id, formData) => apiUpload(`/admin/testimonials/${id}`, formData, { method: "PUT" }),
@@ -247,6 +253,8 @@ export const publicApi = {
   contentBySlug: (slug) => apiFetch(`/content/${slug}`, { auth: false }),
   page: (slug) => apiFetch(`/pages/${slug}`, { auth: false }),
   events: () => apiFetch("/events", { auth: false }),
+  music: () => apiFetch("/music", { auth: false }),
+  sitPresets: () => apiFetch("/sit-presets", { auth: false }),
   testimonials: () => apiFetch("/testimonials", { auth: false }),
   settings: () => apiFetch("/settings", { auth: false }),
   submitContact: (payload) => apiFetch("/contact", { method: "POST", body: payload, auth: false }),

@@ -4,8 +4,8 @@ import LiveSessionBanner from "./LiveSessionBanner";
 import Reveal from "../ui/Reveal";
 import { useSectionFields } from "../../hooks/usePage";
 
-/** Large orbit so the six nodes read like the live hub mandala */
-const ORBIT_R = "clamp(96px, min(22vh, 17vw), 148px)";
+/** Default max orbit radius (px) so the six nodes read like the live hub mandala — admin-tunable via mandala_radius */
+const DEFAULT_ORBIT_MAX = 148;
 
 /**
  * Renders a hero heading with two admin-authored conventions: "\n" for a
@@ -43,17 +43,24 @@ function renderHeroHeading(heading) {
  */
 export default function HeroSection({ onNavigate, onWatchIntro }) {
   const { fields } = useSectionFields("home", "hero");
+  const mandalaX = Number(fields?.mandala_x ?? 64);
+  const mandalaY = Number(fields?.mandala_y ?? 62);
+  const orbitMax = Number(fields?.mandala_radius ?? DEFAULT_ORBIT_MAX);
+  const orbitR = `clamp(${Math.round(orbitMax * 0.65)}px, min(22vh, 17vw), ${orbitMax}px)`;
 
   return (
-    <div className="relative flex min-h-0 w-full flex-1 overflow-hidden">
+    <div className="relative flex min-h-0 w-full flex-1 flex-col overflow-x-hidden overflow-y-auto md:flex-row md:overflow-hidden">
 
-      {/* Full-window photo */}
-      <img
-        src={fields?.image || hariPic}
-        alt="Dr Hari Krishna by the forest stream"
-        fetchPriority="high"
-        className="pointer-events-none fixed inset-0 z-0 h-dvh w-full object-cover object-[72%_28%] max-md:object-[80%_22%]"
-      />
+      {/* Full-window photo — separate crops for desktop vs mobile, admin-uploaded */}
+      <picture>
+        {fields?.image_mobile && <source media="(max-width: 767px)" srcSet={fields.image_mobile} />}
+        <img
+          src={fields?.image || hariPic}
+          alt="Dr Hari Krishna by the forest stream"
+          fetchPriority="high"
+          className="pointer-events-none fixed inset-0 z-0 h-dvh w-full object-cover object-[72%_28%] max-md:object-[80%_22%]"
+        />
+      </picture>
 
       {/* Dark violet wash — matches the reference hub look */}
       <div
@@ -65,9 +72,12 @@ export default function HeroSection({ onNavigate, onWatchIntro }) {
         }}
       />
 
-      {/* ── Copy overlay (left) ── */}
-      <div className="pointer-events-none relative z-10 flex w-full max-w-[min(48%,520px)] flex-col justify-center gap-[clamp(10px,2vh,20px)] py-6 pl-[clamp(20px,4vw,72px)] pr-4 max-md:max-w-none">
-        <Reveal animation={fields?.animation} className="pointer-events-auto flex flex-col gap-[clamp(10px,2vh,20px)]">
+      {/* ── Copy overlay (left on desktop, centered stack on mobile) ── */}
+      <div className="pointer-events-none relative z-10 flex w-full max-w-[min(48%,520px)] flex-none flex-col justify-center gap-[clamp(10px,2vh,20px)] py-6 pl-[clamp(20px,4vw,72px)] pr-4 max-md:max-w-none max-md:items-center max-md:px-4 max-md:pt-4 max-md:pb-0 max-md:text-center">
+        <Reveal
+          animation={fields?.animation}
+          className="pointer-events-auto flex flex-col gap-[clamp(8px,1.6vh,20px)] max-md:items-center max-md:rounded-2xl max-md:bg-[rgba(12,8,28,0.45)] max-md:px-4 max-md:py-4 max-md:backdrop-blur-[3px]"
+        >
           <LiveSessionBanner onNavigate={onNavigate} />
 
           {fields?.heading && (
@@ -128,26 +138,26 @@ export default function HeroSection({ onNavigate, onWatchIntro }) {
           className="pointer-events-auto"
           style={{
             position: "absolute",
-            left: "64%",
-            top: "62%",
+            left: `${mandalaX}%`,
+            top: `${mandalaY}%`,
             transform: "translate(-50%, -50%)",
             width: "min(56vw, 560px)",
           }}
         >
           <ChakraMandala
             onNavigate={onNavigate}
-            layout={{ orbitR: ORBIT_R, hubTx: 0, hubTy: 0 }}
+            layout={{ orbitR, hubTx: 0, hubTy: 0 }}
           />
         </div>
       </div>
 
       {/* ── Mobile mandala ── */}
-      <div className="relative z-10 flex flex-1 items-end justify-center pb-6 md:hidden">
-        <div className="w-[min(92vw,360px)]">
+      <div className="relative z-10 flex flex-none items-center justify-center py-4 md:hidden">
+        <div className="w-[min(62vw,240px)]">
           <ChakraMandala
             onNavigate={onNavigate}
             layout={{
-              orbitR: "clamp(78px, 28vw, 110px)",
+              orbitR: "clamp(56px, 19vw, 76px)",
               hubTx: 0,
               hubTy: 0,
             }}

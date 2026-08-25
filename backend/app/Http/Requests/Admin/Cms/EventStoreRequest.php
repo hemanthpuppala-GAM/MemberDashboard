@@ -21,6 +21,7 @@ class EventStoreRequest extends FormRequest
             'location' => ['nullable', 'string', 'max:160'],
             'join_url' => ['nullable', 'string', 'max:255'],
             'is_published' => ['boolean'],
+            'host_practitioner_id' => ['nullable', 'integer', 'exists:users,id'],
         ];
     }
 }

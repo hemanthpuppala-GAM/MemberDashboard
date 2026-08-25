@@ -40,6 +40,26 @@ export function MemberAuthProvider({ children }) {
     return u;
   }, [applySession]);
 
+  const login = useCallback(async (email, password) => {
+    const { token, user: u } = await memberAuthApi.login({ email, password });
+    applySession(token, u);
+    return u;
+  }, [applySession]);
+
+  const register = useCallback(async (name, email, password, password_confirmation, ref) => {
+    const { token, user: u } = await memberAuthApi.register({ name, email, password, password_confirmation, ref });
+    applySession(token, u);
+    return u;
+  }, [applySession]);
+
+  const updateUser = useCallback((patch) => {
+    setUser((prev) => {
+      const next = { ...prev, ...patch };
+      setLastMember(next);
+      return next;
+    });
+  }, []);
+
   const logout = useCallback(async () => {
     try {
       await memberAuthApi.logout();
@@ -51,8 +71,8 @@ export function MemberAuthProvider({ children }) {
   }, []);
 
   const value = useMemo(
-    () => ({ user, loading, lastMember: getLastMember(), applySession, loginDemo, logout }),
-    [user, loading, applySession, loginDemo, logout],
+    () => ({ user, loading, lastMember: getLastMember(), applySession, loginDemo, login, register, logout, updateUser }),
+    [user, loading, applySession, loginDemo, login, register, logout, updateUser],
   );
 
   return <MemberAuthContext.Provider value={value}>{children}</MemberAuthContext.Provider>;

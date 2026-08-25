@@ -4,29 +4,51 @@ import Card from "../ui/Card";
 import IconBadge from "../ui/IconBadge";
 import Modal from "../ui/Modal";
 import Button from "../../components/ui/Button";
+import { useMemberAuth } from "../../auth/MemberAuthContext";
+import { memberAuthApi } from "../../lib/memberAuth";
 
 const TOPICS = [
-  { icon: HeartPulse, tone: "root", label: "Health", description: "Physical wellbeing during practice." },
-  { icon: Sparkles, tone: "crown", label: "Kundalini", description: "Energy experiences and guidance." },
-  { icon: Flower2, tone: "thirdeye", label: "Practice", description: "Technique and sitting questions." },
-  { icon: Compass, tone: "throat", label: "Life", description: "Everyday life and practice balance." },
-  { icon: HelpCircle, tone: "solar", label: "Other", description: "Anything else on your mind." },
+  { icon: HeartPulse, tone: "root", label: "Health", description: "Physical wellbeing during practice.", category: "health" },
+  { icon: Sparkles, tone: "crown", label: "Kundalini", description: "Energy experiences and guidance.", category: "kundalini" },
+  { icon: Flower2, tone: "thirdeye", label: "Practice", description: "Technique and sitting questions.", category: "meditation" },
+  { icon: Compass, tone: "throat", label: "Life", description: "Everyday life and practice balance.", category: "general" },
+  { icon: HelpCircle, tone: "solar", label: "Other", description: "Anything else on your mind.", category: "general" },
 ];
 
 export default function CirclesHelpPage() {
+  const { user } = useMemberAuth();
   const [activeTopic, setActiveTopic] = useState(null);
   const [message, setMessage] = useState("");
+  const [phone, setPhone] = useState(user?.phone ?? "");
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState("");
   const [sent, setSent] = useState(false);
 
   const closeModal = () => {
     setActiveTopic(null);
     setMessage("");
+    setError("");
     setSent(false);
   };
 
-  const handleSend = () => {
-    if (!message.trim()) return;
-    setSent(true);
+  const handleSend = async () => {
+    if (!message.trim() || !phone.trim()) return;
+    setSending(true);
+    setError("");
+    try {
+      await memberAuthApi.contact({
+        name: user?.name ?? "",
+        email: user?.email ?? "",
+        phone: phone.trim(),
+        category: activeTopic.category,
+        message: `[${activeTopic.label}] ${message.trim()}`,
+      });
+      setSent(true);
+    } catch (e) {
+      setError(e.message || "Could not send your question. Please try again.");
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
@@ -89,6 +111,19 @@ export default function CirclesHelpPage() {
                 className="w-full rounded-xl border border-[rgba(110,198,234,0.35)] bg-white/70 p-3 text-[14px] text-[var(--color-ink)] placeholder:text-[var(--color-muted-soft)] transition-colors focus:border-[var(--color-blue)] focus:shadow-[0_0_0_3px_rgba(110,198,234,0.18)] focus:outline-none"
               />
 
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[13px] font-medium text-[var(--color-ink)]">Phone number</label>
+                <input
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="So a volunteer can reach you"
+                  className="w-full rounded-xl border border-[rgba(110,198,234,0.35)] bg-white/70 px-3.5 py-2.5 text-[14px] text-[var(--color-ink)] placeholder:text-[var(--color-muted-soft)] transition-colors focus:border-[var(--color-blue)] focus:shadow-[0_0_0_3px_rgba(110,198,234,0.18)] focus:outline-none"
+                />
+              </div>
+
+              {error && <p className="text-[13px] text-red-600">{error}</p>}
+
               <div className="flex justify-end gap-2">
                 <Button as="button" variant="secondary" onClick={closeModal}>
                   Cancel
@@ -96,11 +131,11 @@ export default function CirclesHelpPage() {
                 <Button
                   as="button"
                   onClick={handleSend}
-                  disabled={!message.trim()}
-                  className={!message.trim() ? "pointer-events-none opacity-50" : ""}
+                  disabled={!message.trim() || !phone.trim() || sending}
+                  className={!message.trim() || !phone.trim() ? "pointer-events-none opacity-50" : ""}
                 >
                   <Send size={15} />
-                  Send
+                  {sending ? "Sending…" : "Send"}
                 </Button>
               </div>
             </div>
