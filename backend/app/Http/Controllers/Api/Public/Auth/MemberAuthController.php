@@ -43,7 +43,7 @@ class MemberAuthController extends Controller
 
         return response()->json([
             'token' => $token,
-            'user' => $this->present($member),
+            'user' => $member->toPortalArray(),
         ], 201);
     }
 
@@ -62,7 +62,7 @@ class MemberAuthController extends Controller
 
         return response()->json([
             'token' => $token,
-            'user' => $this->present($member),
+            'user' => $member->toPortalArray(),
         ]);
     }
 
@@ -76,12 +76,7 @@ class MemberAuthController extends Controller
     public function me(Request $request)
     {
         return response()->json([
-            'user' => $this->present($request->user()),
+            'user' => $request->user()->toPortalArray(),
         ]);
-    }
-
-    private function present(Member $member): array
-    {
-        return $member->only('id', 'name', 'email', 'phone');
     }
 }

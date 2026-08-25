@@ -14,7 +14,7 @@ use Illuminate\Support\Str;
 use Laravel\Sanctum\HasApiTokens;
 use App\Models\Auth\User;
 
-#[Fillable(['name', 'email', 'password', 'phone', 'category', 'summary', 'assigned_practitioner_id', 'source_submission_id', 'status', 'join_date', 'last_contact_date', 'referred_by_code'])]
+#[Fillable(['name', 'email', 'password', 'phone', 'category', 'summary', 'assigned_practitioner_id', 'source_submission_id', 'status', 'join_date', 'last_contact_date', 'referred_by_code', 'oauth_provider', 'oauth_provider_id', 'avatar_url'])]
 #[Hidden(['password', 'remember_token'])]
 class Member extends Authenticatable
 {
@@ -68,5 +68,18 @@ class Member extends Authenticatable
     public function journalEntries(): HasMany
     {
         return $this->hasMany(MemberJournalEntry::class)->latest();
+    }
+
+    /** Shape returned to the member portal by every /auth and /member endpoint. */
+    public function toPortalArray(): array
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'email' => $this->email,
+            'phone' => $this->phone,
+            'avatar_url' => $this->avatar_url,
+            'oauth_provider' => $this->oauth_provider,
+        ];
     }
 }

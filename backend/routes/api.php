@@ -50,6 +50,7 @@ use App\Http\Controllers\Api\Public\Cms\PageController;
 use App\Http\Controllers\Api\Practitioner\PractitionerController;
 use App\Http\Controllers\Api\Public\Settings\SettingController;
 use App\Http\Controllers\Api\Public\Content\TestimonialController;
+use App\Services\Auth\OAuthService;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
@@ -77,22 +78,19 @@ Route::prefix('v1')->group(function () {
     Route::post('/contact', [ContactController::class, 'store'])->middleware('throttle:5,1');
     Route::post('/volunteer-applications', [VolunteerApplicationController::class, 'store'])->middleware('throttle:5,1');
 
-    // ---- Member OAuth (passwordless join) ----
+    // ---- Member auth (public sign-up / sign-in, e.g. /join) ----
+    // Both entry points below issue Member tokens, so they share /auth/me and
+    // /auth/logout — do not register those twice or the later one silently wins.
     Route::get('/auth/{provider}/redirect', [OAuthController::class, 'redirect'])
-        ->whereIn('provider', ['google', 'microsoft', 'facebook', 'apple'])
+        ->whereIn('provider', OAuthService::PROVIDERS)
         ->middleware('throttle:20,1');
     Route::match(['get', 'post'], '/auth/{provider}/callback', [OAuthController::class, 'callback'])
-        ->whereIn('provider', ['google', 'microsoft', 'facebook', 'apple'])
+        ->whereIn('provider', OAuthService::PROVIDERS)
         ->middleware('throttle:20,1');
     Route::post('/auth/demo', [OAuthController::class, 'demo'])->middleware('throttle:10,1');
-    Route::middleware('auth:sanctum')->group(function () {
-        Route::get('/auth/me', [OAuthController::class, 'me']);
-        Route::post('/auth/logout', [OAuthController::class, 'logout']);
-    });
-
-    // ---- Member auth (public sign-up / sign-in, e.g. /join) ----
     Route::post('/auth/register', [MemberAuthController::class, 'register'])->middleware('throttle:10,1');
     Route::post('/auth/login', [MemberAuthController::class, 'login'])->middleware('throttle:10,1');
+
     Route::middleware(['auth:sanctum', 'member'])->group(function () {
         Route::post('/auth/logout', [MemberAuthController::class, 'logout']);
         Route::get('/auth/me', [MemberAuthController::class, 'me']);

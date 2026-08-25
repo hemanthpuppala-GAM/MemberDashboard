@@ -2,7 +2,7 @@
 
 namespace App\Services\Auth;
 
-use App\Models\Auth\User;
+use App\Models\People\Member;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 
@@ -69,43 +69,40 @@ class OAuthService
         };
     }
 
-    /** Find or create a member user from an OAuth identity. */
-    public function upsertUser(string $provider, array $identity): User
+    /**
+     * Find or create the Member behind an OAuth identity.
+     *
+     * Matching falls back to email so a seeker who was first added as a CRM lead
+     * (or who signed up with a password) keeps one account across providers.
+     * The password stays null — these accounts are passwordless by design.
+     */
+    public function upsertMember(string $provider, array $identity): Member
     {
         $email = $identity['email'] ?? null;
         if (! $email) {
             throw new \RuntimeException('OAuth provider did not return an email address.');
         }
 
-        $user = User::where('oauth_provider', $provider)
-            ->where('oauth_provider_id', $identity['id'])
-            ->first();
-
-        if (! $user) {
-            $user = User::where('email', $email)->first();
-        }
-
-        if (! $user) {
-            $user = new User([
-                'email' => $email,
-                'password' => Str::password(64),
+        $member = Member::where('oauth_provider', $provider)
+            ->where('oauth_provider_id', (string) $identity['id'])
+            ->first()
+            ?? Member::where('email', $email)->first()
+            ?? new Member([
+                'category' => 'general',
                 'status' => 'active',
+                'join_date' => now(),
             ]);
-        }
 
-        $user->fill([
-            'name' => $identity['name'] ?: ($user->name ?: Str::before($email, '@')),
+        $member->fill([
+            'name' => $identity['name'] ?: ($member->name ?: Str::before($email, '@')),
             'email' => $email,
             'oauth_provider' => $provider,
             'oauth_provider_id' => (string) $identity['id'],
-            'avatar_url' => $identity['avatar'] ?? $user->avatar_url,
-            'email_verified_at' => $user->email_verified_at ?? now(),
-            'status' => $user->status ?: 'active',
-            'last_login_at' => now(),
+            'avatar_url' => $identity['avatar'] ?? $member->avatar_url,
         ]);
-        $user->save();
+        $member->save();
 
-        return $user;
+        return $member;
     }
 
     public function callbackUrl(string $provider): string
