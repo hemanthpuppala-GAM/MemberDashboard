@@ -162,6 +162,9 @@ export const api = {
   updateLanguage: (id, payload) => apiFetch(`/admin/languages/${id}`, { method: "PUT", body: payload }),
   deleteLanguage: (id) => apiFetch(`/admin/languages/${id}`, { method: "DELETE" }),
 
+  uiStrings: () => apiFetch("/admin/ui-strings"),
+  updateUiStrings: (payload) => apiFetch("/admin/ui-strings", { method: "PUT", body: payload }),
+
   events: () => apiFetch("/admin/events"),
   createEvent: (payload) => apiFetch("/admin/events", { method: "POST", body: payload }),
   updateEvent: (id, payload) => apiFetch(`/admin/events/${id}`, { method: "PUT", body: payload }),
@@ -251,7 +254,9 @@ export const practitionerApi = {
 export const publicApi = {
   content: () => apiFetch("/content", { auth: false }),
   contentBySlug: (slug) => apiFetch(`/content/${slug}`, { auth: false }),
-  page: (slug) => apiFetch(`/pages/${slug}`, { auth: false }),
+  page: (slug, lang) => apiFetch(`/pages/${slug}${lang ? `?lang=${encodeURIComponent(lang)}` : ""}`, { auth: false }),
+  languages: () => apiFetch("/languages/enabled", { auth: false }),
+  uiStrings: (lang) => apiFetch(`/ui-strings${lang ? `?lang=${encodeURIComponent(lang)}` : ""}`, { auth: false }),
   events: () => apiFetch("/events", { auth: false }),
   music: () => apiFetch("/music", { auth: false }),
   sitPresets: () => apiFetch("/sit-presets", { auth: false }),

@@ -28,9 +28,9 @@ class MemberPracticeStats
 
         $totalMinutes = (int) PracticeSession::where('member_id', $member->id)->sum('duration_minutes');
 
-        $challengeDay = $member->join_date
-            ? min(41, max(1, Carbon::parse($member->join_date)->diffInDays(Carbon::today()) + 1))
-            : 1;
+        // Counts distinct days actually practiced, not days elapsed since joining —
+        // skipping days shouldn't silently advance the 41-day challenge.
+        $challengeDay = min(41, $days->count());
 
         $dailyLog = [];
         for ($i = 40; $i >= 0; $i--) {

@@ -53,6 +53,7 @@ export const NAV = [
   },
   { type: "link", to: "/admin/reports", icon: BarChart3, label: "Reports", permission: "reports.view" },
   { type: "link", to: "/admin/languages", icon: Globe, label: "Languages", permission: "languages.view" },
+  { type: "link", to: "/admin/translations", icon: FileText, label: "Translations", permission: "translations.view" },
   { type: "link", to: "/admin/settings", icon: Settings, label: "Settings", permission: "settings.view" },
 ];
 
@@ -82,6 +83,7 @@ export const BREADCRUMB_RULES = [
   { pattern: /^\/admin\/volunteers\/?$/, crumbs: () => ["Volunteers", "Applications"] },
   { pattern: /^\/admin\/reports\/?$/, crumbs: () => ["Reports"] },
   { pattern: /^\/admin\/languages\/?$/, crumbs: () => ["Languages"] },
+  { pattern: /^\/admin\/translations\/?$/, crumbs: () => ["Translations"] },
   { pattern: /^\/admin\/settings\/?$/, crumbs: () => ["Settings"] },
   { pattern: /^\/admin\/my-dashboard\/members\/([^/]+)\/?$/, crumbs: (m) => ["My Dashboard", "Members", m[1]] },
   { pattern: /^\/admin\/my-dashboard\/members\/?$/, crumbs: () => ["My Dashboard", "My Members"] },

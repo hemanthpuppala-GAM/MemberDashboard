@@ -109,7 +109,10 @@ export default function SitScribePage() {
   }, [preset, remaining]);
 
   const elapsedSeconds = preset ? preset.duration_minutes * 60 - remaining : 0;
-  const hasMeaningfulProgress = !!preset && !completed && elapsedSeconds >= 60;
+  // 30s is the real floor, not 60s — Math.round(30/60) already rounds up to a loggable
+  // 1-minute session, so anything below 30s (which the backend's min:1 rejects anyway
+  // once rounded to 0) is the only case with nothing meaningful to save.
+  const hasMeaningfulProgress = !!preset && !completed && elapsedSeconds >= 30;
 
   useEffect(() => {
     if (!hasMeaningfulProgress) {

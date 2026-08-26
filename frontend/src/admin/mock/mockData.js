@@ -23,7 +23,7 @@ export const SECTION_TYPES = [
   { type: "card_grid", label: "Card grid", description: "Heading with a grid of icon cards" },
   { type: "event_list", label: "Event list", description: "Auto-renders published events" },
   { type: "contact_form", label: "Contact form", description: "Public query form with categories" },
-  { type: "media_embed", label: "Media embed", description: "Image or embedded video" },
+  { type: "media_embed", label: "Media embed", description: "One or more embedded videos, or a single image" },
   { type: "custom_html", label: "Custom HTML", description: "Raw HTML block (super admin only)" },
   { type: "quick_answers", label: "Quick answers", description: "Short label/title/body answer cards" },
   { type: "science_panel", label: "Science panel", description: "Explainer text plus an optional techniques list" },

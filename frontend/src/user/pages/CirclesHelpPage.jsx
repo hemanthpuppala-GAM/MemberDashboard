@@ -112,14 +112,18 @@ export default function CirclesHelpPage() {
               />
 
               <div className="flex flex-col gap-1.5">
-                <label className="text-[13px] font-medium text-[var(--color-ink)]">Phone number</label>
+                <label className="text-[13px] font-medium text-[var(--color-ink)]">
+                  Phone number <span className="text-red-500">*</span>
+                </label>
                 <input
                   type="tel"
+                  required
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder="So a volunteer can reach you"
                   className="w-full rounded-xl border border-[rgba(110,198,234,0.35)] bg-white/70 px-3.5 py-2.5 text-[14px] text-[var(--color-ink)] placeholder:text-[var(--color-muted-soft)] transition-colors focus:border-[var(--color-blue)] focus:shadow-[0_0_0_3px_rgba(110,198,234,0.18)] focus:outline-none"
                 />
+                <span className="text-[11.5px] text-[var(--color-muted)]">Required — a volunteer needs a way to reach you.</span>
               </div>
 
               {error && <p className="text-[13px] text-red-600">{error}</p>}

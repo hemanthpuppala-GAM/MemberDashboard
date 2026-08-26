@@ -6,6 +6,7 @@ import AdminApp from "./admin/AdminApp";
 import UserApp from "./user/UserApp";
 import MaintenanceGate from "./components/MaintenanceGate";
 import { MemberAuthProvider, useMemberAuth } from "./auth/MemberAuthContext";
+import { LanguageProvider } from "./lib/LanguageContext";
 
 function MemberGate({ children }) {
   const { user, loading } = useMemberAuth();
@@ -23,29 +24,31 @@ function MemberGate({ children }) {
 function App() {
   return (
     <BrowserRouter>
-      <MemberAuthProvider>
-        <Routes>
-          <Route path="/admin/*" element={<AdminApp />} />
-          <Route path="/join" element={<JoinPage />} />
-          <Route path="/auth/callback" element={<AuthCallbackPage />} />
-          <Route
-            path="/dashboard/*"
-            element={
-              <MemberGate>
-                <UserApp />
-              </MemberGate>
-            }
-          />
-          <Route
-            path="*"
-            element={
-              <MaintenanceGate>
-                <HomePage />
-              </MaintenanceGate>
-            }
-          />
-        </Routes>
-      </MemberAuthProvider>
+      <LanguageProvider>
+        <MemberAuthProvider>
+          <Routes>
+            <Route path="/admin/*" element={<AdminApp />} />
+            <Route path="/join" element={<JoinPage />} />
+            <Route path="/auth/callback" element={<AuthCallbackPage />} />
+            <Route
+              path="/dashboard/*"
+              element={
+                <MemberGate>
+                  <UserApp />
+                </MemberGate>
+              }
+            />
+            <Route
+              path="*"
+              element={
+                <MaintenanceGate>
+                  <HomePage />
+                </MaintenanceGate>
+              }
+            />
+          </Routes>
+        </MemberAuthProvider>
+      </LanguageProvider>
     </BrowserRouter>
   );
 }

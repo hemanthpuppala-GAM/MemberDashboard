@@ -53,7 +53,7 @@ export default function OverviewPage() {
         <div className="relative flex flex-wrap items-center justify-between gap-6">
           <div>
             <p className="flex items-center gap-1.5 text-[12.5px] font-medium tracking-[0.14em] text-[var(--color-blue-dark)] uppercase">
-              <Sparkles size={13} />
+              {/* <Sparkles size={13} /> */}
               Welcome back
             </p>
             <h2 className="mt-1.5 font-display text-[24px] leading-tight text-[var(--color-ink)] sm:text-[28px]">

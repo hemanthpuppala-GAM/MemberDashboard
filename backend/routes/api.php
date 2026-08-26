@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\Admin\DashboardController;
 use App\Http\Controllers\Api\Admin\Content\DonationMethodController as AdminDonationMethodController;
 use App\Http\Controllers\Api\Admin\Cms\EventController as AdminEventController;
 use App\Http\Controllers\Api\Admin\Languages\LanguageController as AdminLanguageController;
+use App\Http\Controllers\Api\Admin\Languages\UiStringController as AdminUiStringController;
 use App\Http\Controllers\Api\Admin\Cms\MediaController;
 use App\Http\Controllers\Api\Admin\People\MemberController;
 use App\Http\Controllers\Api\Admin\People\MemberJourneyController;
@@ -44,6 +45,7 @@ use App\Http\Controllers\Api\Public\Cms\ContentController;
 use App\Http\Controllers\Api\Public\Content\DonationMethodController;
 use App\Http\Controllers\Api\Public\Cms\EventController;
 use App\Http\Controllers\Api\Public\Languages\LanguageController;
+use App\Http\Controllers\Api\Public\Languages\UiStringController;
 use App\Http\Controllers\Api\Public\Content\MusicController;
 use App\Http\Controllers\Api\Public\Content\SitPresetController;
 use App\Http\Controllers\Api\Public\Cms\PageController;
@@ -64,6 +66,7 @@ Route::prefix('v1')->group(function () {
 
     Route::get('/pages/{slug}', [PageController::class, 'show']);
     Route::get('/languages/enabled', [LanguageController::class, 'enabled']);
+    Route::get('/ui-strings', [UiStringController::class, 'index']);
     Route::get('/events', [EventController::class, 'index']);
     Route::get('/settings', [SettingController::class, 'index']);
     Route::get('/music', [MusicController::class, 'index']);
@@ -219,6 +222,9 @@ Route::prefix('v1')->group(function () {
         Route::middleware('permission:languages.create')->post('/languages', [AdminLanguageController::class, 'store']);
         Route::middleware('permission:languages.edit')->put('/languages/{language}', [AdminLanguageController::class, 'update']);
         Route::middleware('permission:languages.delete')->delete('/languages/{language}', [AdminLanguageController::class, 'destroy']);
+
+        Route::middleware('permission:translations.view')->get('/ui-strings', [AdminUiStringController::class, 'index']);
+        Route::middleware('permission:translations.edit')->put('/ui-strings', [AdminUiStringController::class, 'update']);
 
         // ---- Users & Roles ----
         Route::middleware('permission:users.view')->get('/users', [UserController::class, 'index']);

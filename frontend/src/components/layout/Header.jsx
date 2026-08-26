@@ -1,20 +1,23 @@
 import { Link } from "react-router-dom";
 import logoMark from "../../assets/logo-golden-age.jpg";
 import Button from "../ui/Button";
+import LanguageSwitcher from "./LanguageSwitcher";
+import { useLanguage } from "../../lib/LanguageContext";
 
 const NAV_LINKS = [
-  { label: "About", view: "about" },
-  { label: "Wisdom", view: "wisdom" },
-  { label: "Meditation", view: "practice" },
-  { label: "Events", view: "events" },
-  { label: "Mission", view: "mission" },
-  { label: "Volunteer", view: "volunteer" },
-  { label: "Support", view: "donate" },
-  { label: "Contact", view: "contact" },
+  { key: "nav.about", view: "about" },
+  { key: "nav.wisdom", view: "wisdom" },
+  { key: "nav.meditation", view: "practice" },
+  { key: "nav.events", view: "events" },
+  { key: "nav.mission", view: "mission" },
+  { key: "nav.volunteer", view: "volunteer" },
+  { key: "nav.support", view: "donate" },
+  { key: "nav.contact", view: "contact" },
 ];
 
-/** Top bar — logo · section nav · Join free. Transparent on hub so the hero photo shows through. */
+/** Top bar — logo · section nav · language switcher · Join free. Transparent on hub so the hero photo shows through. */
 export default function Header({ onLogoClick, onNavigate, activeView = "hub" }) {
+  const { t } = useLanguage();
   const isHub = activeView === "hub";
 
   return (
@@ -49,7 +52,7 @@ export default function Header({ onLogoClick, onNavigate, activeView = "hub" }) 
       </button>
 
       <div className="hidden min-w-0 flex-1 items-center justify-center gap-1 lg:flex">
-        {NAV_LINKS.map(({ label, view }) => (
+        {NAV_LINKS.map(({ key, view }) => (
           <button
             key={view}
             type="button"
@@ -64,18 +67,19 @@ export default function Header({ onLogoClick, onNavigate, activeView = "hub" }) 
                   : "text-[var(--color-muted)] hover:bg-[rgba(110,198,234,0.18)] hover:text-[var(--color-ink)]"
             }`}
           >
-            {label}
+            {t(key)}
           </button>
         ))}
       </div>
 
-      <div className="flex min-w-0 shrink-0 items-center justify-end">
+      <div className="flex min-w-0 shrink-0 items-center justify-end gap-2.5">
+        <LanguageSwitcher light={isHub} />
         <Button
           as={Link}
           to="/join"
           className="px-4 py-1.5 text-[13.5px] shadow-[0_0_20px_rgba(213,183,124,0.25)]"
         >
-          Join free
+          {t("nav.join_free")}
         </Button>
       </div>
     </nav>

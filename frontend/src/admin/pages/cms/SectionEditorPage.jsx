@@ -309,8 +309,22 @@ function SectionFields({ type, content, set, openPicker }) {
       return (
         <>
           <Field label="Heading" required><TextInput value={content.heading ?? ""} onChange={(e) => set("heading")(e.target.value)} /></Field>
-          <Field label="Video URL" hint="Leave blank to use an image instead"><TextInput value={content.video_url ?? ""} onChange={(e) => set("video_url")(e.target.value)} placeholder="https://youtube.com/watch?v=..." /></Field>
-          <ImageField value={content.image} onChange={set("image")} onPick={() => openPicker(set("image"))} />
+          <ItemsEditor
+            label="Videos"
+            items={content.videos ?? []}
+            onChange={set("videos")}
+            fields={[
+              { key: "url", placeholder: "Video link, e.g. https://youtube.com/watch?v=..." },
+              { key: "title", placeholder: "Caption (optional)" },
+            ]}
+            blank={{ url: "", title: "" }}
+          />
+          <ImageField
+            value={content.image}
+            onChange={set("image")}
+            onPick={() => openPicker(set("image"))}
+            hint="Only shown on the site if no videos are added above"
+          />
           <LayoutFields
             showPosition={false}
             shape={content.image_shape}

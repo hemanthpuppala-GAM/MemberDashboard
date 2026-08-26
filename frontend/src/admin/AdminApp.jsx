@@ -12,6 +12,7 @@ import LoginPage from "./pages/LoginPage";
 import DashboardPage from "./pages/DashboardPage";
 import ReportsPage from "./pages/ReportsPage";
 import LanguagesPage from "./pages/LanguagesPage";
+import TranslationsPage from "./pages/TranslationsPage";
 import SettingsPage from "./pages/SettingsPage";
 
 import PagesListPage from "./pages/cms/PagesListPage";
@@ -90,6 +91,7 @@ export default function AdminApp() {
 
                 <Route path="reports" element={guarded("reports.view", <ReportsPage />)} />
                 <Route path="languages" element={guarded("languages.view", <LanguagesPage />)} />
+                <Route path="translations" element={guarded("translations.view", <TranslationsPage />)} />
                 <Route path="settings" element={guarded("settings.view", <SettingsPage />)} />
               </Route>
 

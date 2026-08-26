@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { publicApi } from "../lib/api";
+import { useLanguage } from "../lib/LanguageContext";
 
 /**
  * Session-lived cache + in-flight dedup, keyed by slug. A page like Meditate
@@ -13,39 +14,43 @@ import { publicApi } from "../lib/api";
 const pageCache = new Map();
 const pendingFetches = new Map();
 
-function fetchPage(slug) {
-  if (pageCache.has(slug)) return Promise.resolve(pageCache.get(slug));
-  if (pendingFetches.has(slug)) return pendingFetches.get(slug);
+function fetchPage(slug, lang) {
+  const cacheKey = `${lang}:${slug}`;
+  if (pageCache.has(cacheKey)) return Promise.resolve(pageCache.get(cacheKey));
+  if (pendingFetches.has(cacheKey)) return pendingFetches.get(cacheKey);
 
   const request = publicApi
-    .page(slug)
+    .page(slug, lang)
     .then((data) => {
-      pageCache.set(slug, data);
+      pageCache.set(cacheKey, data);
       return data;
     })
     .finally(() => {
-      pendingFetches.delete(slug);
+      pendingFetches.delete(cacheKey);
     });
 
-  pendingFetches.set(slug, request);
+  pendingFetches.set(cacheKey, request);
   return request;
 }
 
 /**
- * Loads a CMS page (admin-editable via /admin/cms/pages) by slug. No
- * hardcoded fallback content — callers render a loading/empty state
- * instead, so the admin panel is the single source of truth for copy.
+ * Loads a CMS page (admin-editable via /admin/cms/pages) by slug, in the
+ * visitor's currently selected language. No hardcoded fallback content —
+ * callers render a loading/empty state instead, so the admin panel is the
+ * single source of truth for copy.
  */
 export function usePage(slug) {
-  const [page, setPage] = useState(() => pageCache.get(slug) ?? null);
-  const [loading, setLoading] = useState(!pageCache.has(slug));
+  const { language } = useLanguage();
+  const cacheKey = `${language}:${slug}`;
+  const [page, setPage] = useState(() => pageCache.get(cacheKey) ?? null);
+  const [loading, setLoading] = useState(!pageCache.has(cacheKey));
 
   useEffect(() => {
     let cancelled = false;
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- resets the spinner when the slug changes; a no-op when already loading (initial mount) or already cached (settles next tick)
-    setLoading(!pageCache.has(slug));
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- resets the spinner when the slug/language changes; a no-op when already loading (initial mount) or already cached (settles next tick)
+    setLoading(!pageCache.has(cacheKey));
 
-    fetchPage(slug)
+    fetchPage(slug, language)
       .then((data) => {
         if (!cancelled) setPage(data);
       })
@@ -59,7 +64,7 @@ export function usePage(slug) {
     return () => {
       cancelled = true;
     };
-  }, [slug]);
+  }, [slug, language, cacheKey]);
 
   return { page, loading };
 }

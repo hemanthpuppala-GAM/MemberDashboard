@@ -2,19 +2,21 @@ import { useEffect, useState } from "react";
 import logoMark from "../../assets/logo-golden-age.jpg";
 import { publicApi } from "../../lib/api";
 import { CHANNEL_ICONS, channelHref } from "../../lib/contactChannels";
+import { useLanguage } from "../../lib/LanguageContext";
 
 const EXPLORE_LINKS = [
-  { label: "About", view: "about" },
-  { label: "Wisdom", view: "wisdom" },
-  { label: "Wellness", view: "wellness" },
-  { label: "Meditation", view: "practice" },
-  { label: "Events", view: "events" },
-  { label: "Mission", view: "mission" },
-  { label: "Volunteer", view: "volunteer" },
-  { label: "Support", view: "donate" },
+  { key: "nav.about", view: "about" },
+  { key: "nav.wisdom", view: "wisdom" },
+  { key: "nav.wellness", view: "wellness" },
+  { key: "nav.meditation", view: "practice" },
+  { key: "nav.events", view: "events" },
+  { key: "nav.mission", view: "mission" },
+  { key: "nav.volunteer", view: "volunteer" },
+  { key: "nav.support", view: "donate" },
 ];
 
 function BackButton({ onBack }) {
+  const { t } = useLanguage();
   return (
     <button
       type="button"
@@ -28,13 +30,14 @@ function BackButton({ onBack }) {
           <polygon points="50,92 14,29 86,29" fill="none" stroke="#f7f1e3" strokeWidth="6" strokeLinejoin="round" />
         </svg>
       </span>
-      <span className="whitespace-nowrap text-[11px] tracking-[0.2em] text-[var(--color-ink)] uppercase">Go Back</span>
+      <span className="whitespace-nowrap text-[11px] tracking-[0.2em] text-[var(--color-ink)] uppercase">{t("footer.go_back")}</span>
     </button>
   );
 }
 
 /** Rich site footer shown under every non-hub page — brand, sitemap, contact details, and social links, all tied to real CMS/contact-channel data. */
 function SiteFooter({ onNavigate, channels }) {
+  const { t } = useLanguage();
   const infoChannels = channels.filter((c) => c.type !== "social");
   const socialChannels = channels.filter((c) => c.type === "social");
   const year = new Date().getFullYear();
@@ -58,12 +61,12 @@ function SiteFooter({ onNavigate, channels }) {
             </span>
           </button>
           <p className="max-w-[26ch] text-[13px] leading-relaxed text-[var(--color-muted)]">
-            Free daily meditation and Upanishadic wisdom, offered without cost or obligation to anyone who seeks it.
+            {t("footer.tagline")}
           </p>
         </div>
 
         <div className="flex flex-col gap-2.5">
-          <span className="text-[11px] font-semibold tracking-[0.14em] text-[var(--color-muted-soft)] uppercase">Explore</span>
+          <span className="text-[11px] font-semibold tracking-[0.14em] text-[var(--color-muted-soft)] uppercase">{t("footer.explore_heading")}</span>
           {EXPLORE_LINKS.map((l) => (
             <button
               key={l.view}
@@ -71,16 +74,16 @@ function SiteFooter({ onNavigate, channels }) {
               onClick={() => onNavigate(l.view)}
               className="w-fit text-left text-[13.5px] text-[var(--color-muted)] transition-colors hover:text-[var(--color-gold-deep)]"
             >
-              {l.label}
+              {t(l.key)}
             </button>
           ))}
         </div>
 
         <div className="flex flex-col gap-2.5">
-          <span className="text-[11px] font-semibold tracking-[0.14em] text-[var(--color-muted-soft)] uppercase">Contact</span>
+          <span className="text-[11px] font-semibold tracking-[0.14em] text-[var(--color-muted-soft)] uppercase">{t("footer.contact_heading")}</span>
           {infoChannels.length === 0 ? (
             <button type="button" onClick={() => onNavigate("contact")} className="w-fit text-left text-[13.5px] text-[var(--color-muted)] hover:text-[var(--color-gold-deep)]">
-              Get in touch →
+              {t("footer.get_in_touch")}
             </button>
           ) : (
             infoChannels.map((c) => {
@@ -106,7 +109,7 @@ function SiteFooter({ onNavigate, channels }) {
         </div>
 
         <div className="flex flex-col gap-3">
-          <span className="text-[11px] font-semibold tracking-[0.14em] text-[var(--color-muted-soft)] uppercase">Connect</span>
+          <span className="text-[11px] font-semibold tracking-[0.14em] text-[var(--color-muted-soft)] uppercase">{t("footer.connect_heading")}</span>
           {socialChannels.length > 0 && (
             <div className="flex flex-wrap items-center gap-2">
               {socialChannels.map((c) => {
@@ -132,14 +135,14 @@ function SiteFooter({ onNavigate, channels }) {
             onClick={() => onNavigate("donate")}
             className="w-fit rounded-full bg-gradient-to-br from-[var(--color-gold)] to-[var(--color-gold-deep)] px-4 py-2 font-body text-[13px] font-semibold text-[var(--color-on-gold)] transition-all hover:shadow-[0_0_20px_rgba(243,216,154,0.45)]"
           >
-            Support the mission
+            {t("footer.support_mission")}
           </button>
         </div>
       </div>
 
       <div className="mx-auto mt-10 flex max-w-6xl flex-col gap-1 border-t border-[rgba(110,198,234,0.20)] pt-5 text-[12px] text-[var(--color-muted-soft)] sm:flex-row sm:items-center sm:justify-between">
-        <span>© {year} Golden Age Wisdom · A registered non-profit</span>
-        <span>Funded entirely by voluntary support, never by ads</span>
+        <span>{t("footer.copyright", { year })}</span>
+        <span>{t("footer.funded_by_ads")}</span>
       </div>
     </footer>
   );
@@ -147,16 +150,17 @@ function SiteFooter({ onNavigate, channels }) {
 
 /** Minimal footer for the hub (mandala) view — fixed viewport, no scroll, so it stays compact. */
 function HubFooter({ onNavigate }) {
+  const { t } = useLanguage();
   return (
     <footer className="relative z-10 flex shrink-0 flex-col items-center gap-[7px] px-6 pt-2 pb-3 text-xs font-light text-white/75 [text-shadow:0_1px_10px_rgba(0,0,0,0.45)]">
       <div className="m-caption text-[12.5px] tracking-[0.1em] text-white/80 max-[700px]:hidden">
-        Choose a path · the center breathes with you
+        {t("hub.choose_path")}
       </div>
       <div className="flex flex-wrap items-center justify-center gap-[18px]">
         <button type="button" onClick={() => onNavigate("donate")} className="text-white/75 transition-colors hover:text-[var(--color-gold)]">
-          Support
+          {t("hub.support")}
         </button>
-        <span>A registered non-profit · © {new Date().getFullYear()}</span>
+        <span>{t("hub.copyright", { year: new Date().getFullYear() })}</span>
       </div>
     </footer>
   );
