@@ -16,6 +16,7 @@ class BroadcastController extends Controller
         $broadcasts = Broadcast::where('status', 'active')
             ->where(fn ($q) => $q->whereNull('active_from')->orWhereDate('active_from', '<=', $today))
             ->where(fn ($q) => $q->whereNull('active_until')->orWhereDate('active_until', '>=', $today))
+            ->latest()
             ->get()
             ->filter(fn ($b) => ! $page || empty($b->target_pages) || in_array($page, $b->target_pages, true))
             ->values();

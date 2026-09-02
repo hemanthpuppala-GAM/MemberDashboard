@@ -271,6 +271,7 @@ export const practitionerApi = {
 export const publicApi = {
   content: () => apiFetch("/content", { auth: false }),
   contentBySlug: (slug) => apiFetch(`/content/${slug}`, { auth: false }),
+  pages: () => apiFetch("/pages", { auth: false }),
   page: (slug, lang) => apiFetch(`/pages/${slug}${lang ? `?lang=${encodeURIComponent(lang)}` : ""}`, { auth: false }),
   languages: () => apiFetch("/languages/enabled", { auth: false }),
   uiStrings: (lang) => apiFetch(`/ui-strings${lang ? `?lang=${encodeURIComponent(lang)}` : ""}`, { auth: false }),

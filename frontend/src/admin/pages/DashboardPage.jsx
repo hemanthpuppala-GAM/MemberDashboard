@@ -92,7 +92,7 @@ export default function DashboardPage() {
       {widgets.length > 0 && (
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-5">
           {widgets.map((w) => (
-            <StatCard key={w.id} icon={w.icon} label={w.label} value={stats[w.id] ?? 0} />
+            <StatCard key={w.id} icon={w.icon} label={w.label} value={stats[w.id] ?? 0} to={w.to} />
           ))}
         </div>
       )}

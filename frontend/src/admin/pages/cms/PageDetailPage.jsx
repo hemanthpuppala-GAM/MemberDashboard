@@ -24,10 +24,10 @@ function withDecodedContent(page) {
 /**
  * The public site is a single-page app with no per-page routes — views are
  * client-side state, addressed only via a `#view` (or `#view:sectionId`)
- * hash (see HomePage.jsx's parseHash). This maps a CMS page slug to that
- * hash key so "view on site" can jump straight to the right view + section.
- * Pages created via the wizard with a slug outside this list have no public
- * renderer yet, so no view link is shown for them.
+ * hash (see HomePage.jsx's parseHash). Built-in pages use a hash key that
+ * differs from their slug (e.g. "meditate" -> "practice"); any other slug
+ * is rendered generically by HomePage's PageSections fallback, so it maps
+ * to itself.
  */
 const PUBLIC_VIEW_BY_SLUG = {
   home: "hub",
@@ -43,8 +43,7 @@ const PUBLIC_VIEW_BY_SLUG = {
 };
 
 function publicSectionUrl(pageSlug, sectionId) {
-  const view = PUBLIC_VIEW_BY_SLUG[pageSlug];
-  if (!view) return null;
+  const view = PUBLIC_VIEW_BY_SLUG[pageSlug] ?? pageSlug;
   return `${window.location.origin}${import.meta.env.BASE_URL}#${view}:${sectionId}`;
 }
 
@@ -237,10 +236,10 @@ export default function PageDetailPage() {
           )}
           <StatusBadge status={page.status} />
         </div>
-        {PUBLIC_VIEW_BY_SLUG[page.slug] && page.status === "published" && (
+        {page.status === "published" && (
           <Button
             as="a"
-            href={`${window.location.origin}${import.meta.env.BASE_URL}#${PUBLIC_VIEW_BY_SLUG[page.slug]}`}
+            href={`${window.location.origin}${import.meta.env.BASE_URL}#${PUBLIC_VIEW_BY_SLUG[page.slug] ?? page.slug}`}
             target="_blank"
             rel="noopener noreferrer"
             variant="secondary"

@@ -68,6 +68,7 @@ Route::prefix('v1')->group(function () {
     Route::get('/content', [ContentController::class, 'index']);
     Route::get('/content/{slug}', [ContentController::class, 'show']);
 
+    Route::get('/pages', [PageController::class, 'index']);
     Route::get('/pages/{slug}', [PageController::class, 'show']);
     Route::get('/languages/enabled', [LanguageController::class, 'enabled']);
     Route::get('/ui-strings', [UiStringController::class, 'index']);

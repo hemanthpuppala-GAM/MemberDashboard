@@ -32,7 +32,7 @@ function Preview({ form }) {
     return (
       <div className="flex items-center justify-between gap-3 rounded-lg bg-[var(--a-accent)] px-4 py-2.5 text-white">
         <span className="text-[12.5px] font-medium">{form.content_text || "Banner text goes here"}</span>
-        {form.cta_label && <span className="rounded-full bg-white/20 px-2.5 py-1 text-[11px] font-semibold">{form.cta_label}</span>}
+        {form.cta_label && form.cta_url && <span className="rounded-full bg-white/20 px-2.5 py-1 text-[11px] font-semibold">{form.cta_label}</span>}
       </div>
     );
   }
@@ -55,7 +55,7 @@ function Preview({ form }) {
       )}
       <p className="text-[13.5px] font-semibold text-[var(--a-text-primary)]">{form.title || "Popup title"}</p>
       <p className="mt-1 text-[12px] text-[var(--a-text-muted)]">{form.content_text || "Popup body text"}</p>
-      {form.cta_label && <div className="mt-3 w-fit rounded-lg bg-[var(--a-accent)] px-3 py-1.5 text-[11.5px] font-semibold text-white">{form.cta_label}</div>}
+      {form.cta_label && form.cta_url && <div className="mt-3 w-fit rounded-lg bg-[var(--a-accent)] px-3 py-1.5 text-[11.5px] font-semibold text-white">{form.cta_label}</div>}
     </div>
   );
 }
@@ -191,8 +191,8 @@ export default function BroadcastsPage() {
               />
             )}
             <div className="grid grid-cols-2 gap-4">
-              <Field label="CTA label" hint="Optional"><TextInput value={form.cta_label} onChange={(e) => setForm((f) => ({ ...f, cta_label: e.target.value }))} /></Field>
-              <Field label="CTA URL" hint="Optional"><TextInput value={form.cta_url} onChange={(e) => setForm((f) => ({ ...f, cta_url: e.target.value }))} /></Field>
+              <Field label="CTA label" hint="Leave both blank to hide the button"><TextInput value={form.cta_label} onChange={(e) => setForm((f) => ({ ...f, cta_label: e.target.value }))} /></Field>
+              <Field label="CTA URL" hint="Required if CTA label is set"><TextInput value={form.cta_url} onChange={(e) => setForm((f) => ({ ...f, cta_url: e.target.value }))} /></Field>
             </div>
             <Field label="Target pages">
               <div className="flex flex-wrap gap-1.5">

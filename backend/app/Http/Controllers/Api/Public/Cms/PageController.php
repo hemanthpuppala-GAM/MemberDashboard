@@ -9,6 +9,17 @@ use Illuminate\Http\Request;
 
 class PageController extends Controller
 {
+    public function index()
+    {
+        $pages = Page::where('status', 'published')
+            ->where('is_builtin', false)
+            ->orderBy('sort_order')
+            ->orderBy('title')
+            ->get(['slug', 'title', 'sort_order']);
+
+        return response()->json($pages);
+    }
+
     public function show(Request $request, string $slug)
     {
         $page = Page::where('slug', $slug)->where('status', 'published')->firstOrFail();

@@ -1,11 +1,16 @@
+import { Link } from "react-router-dom";
 import { ArrowDownRight, ArrowUpRight } from "lucide-react";
 import { ResponsiveContainer, AreaChart, Area } from "recharts";
 import Card from "./Card";
 
-export default function StatCard({ icon: Icon, label, value, trend, spark }) {
+export default function StatCard({ icon: Icon, label, value, trend, spark, to }) {
   const positive = trend != null && trend >= 0;
-  return (
-    <Card className="relative overflow-hidden">
+  const content = (
+    <Card
+      className={`relative overflow-hidden ${
+        to ? "transition-colors hover:border-[var(--a-accent)] hover:bg-[var(--a-accent-muted)]" : ""
+      }`}
+    >
       <div className="flex items-start justify-between">
         <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[var(--a-accent-muted)] text-[var(--a-accent)]">
           <Icon size={18} strokeWidth={2.25} />
@@ -39,5 +44,13 @@ export default function StatCard({ icon: Icon, label, value, trend, spark }) {
         </div>
       )}
     </Card>
+  );
+
+  return to ? (
+    <Link to={to} className="block">
+      {content}
+    </Link>
+  ) : (
+    content
   );
 }

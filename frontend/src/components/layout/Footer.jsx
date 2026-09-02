@@ -3,6 +3,13 @@ import logoMark from "../../assets/logo-golden-age.jpg";
 import { publicApi } from "../../lib/api";
 import { CHANNEL_ICONS, channelHref } from "../../lib/contactChannels";
 import { useLanguage } from "../../lib/LanguageContext";
+import { useCustomPages } from "../../hooks/useCustomPages";
+
+/** Animated gold underline sliding in from the left — after: pseudo-element, no extra markup needed. */
+const FOOTER_LINK_CLASS =
+  "relative w-fit text-left text-[13.5px] text-[var(--color-muted)] transition-colors duration-300 hover:text-[var(--color-gold-deep)] " +
+  "after:absolute after:bottom-[-2px] after:left-0 after:h-[1.5px] after:w-full after:origin-left after:scale-x-0 after:bg-[var(--color-gold)] " +
+  "after:transition-transform after:duration-300 after:ease-out after:content-[''] hover:after:scale-x-100 active:after:scale-x-100";
 
 const EXPLORE_LINKS = [
   { key: "nav.about", view: "about" },
@@ -38,6 +45,7 @@ function BackButton({ onBack }) {
 /** Rich site footer shown under every non-hub page — brand, sitemap, contact details, and social links, all tied to real CMS/contact-channel data. */
 function SiteFooter({ onNavigate, channels }) {
   const { t } = useLanguage();
+  const customPages = useCustomPages();
   const infoChannels = channels.filter((c) => c.type !== "social");
   const socialChannels = channels.filter((c) => c.type === "social");
   const year = new Date().getFullYear();
@@ -68,13 +76,13 @@ function SiteFooter({ onNavigate, channels }) {
         <div className="flex flex-col gap-2.5">
           <span className="text-[11px] font-semibold tracking-[0.14em] text-[var(--color-muted-soft)] uppercase">{t("footer.explore_heading")}</span>
           {EXPLORE_LINKS.map((l) => (
-            <button
-              key={l.view}
-              type="button"
-              onClick={() => onNavigate(l.view)}
-              className="w-fit text-left text-[13.5px] text-[var(--color-muted)] transition-colors hover:text-[var(--color-gold-deep)]"
-            >
+            <button key={l.view} type="button" onClick={() => onNavigate(l.view)} className={FOOTER_LINK_CLASS}>
               {t(l.key)}
+            </button>
+          ))}
+          {customPages.map((p) => (
+            <button key={p.slug} type="button" onClick={() => onNavigate(p.slug)} className={FOOTER_LINK_CLASS}>
+              {p.title}
             </button>
           ))}
         </div>

@@ -28,8 +28,8 @@ class Broadcast extends Model
     {
         return [
             'target_pages' => 'array',
-            'active_from' => 'date',
-            'active_until' => 'date',
+            'active_from' => 'date:Y-m-d',
+            'active_until' => 'date:Y-m-d',
         ];
     }
 
