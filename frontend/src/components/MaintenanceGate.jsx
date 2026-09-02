@@ -47,7 +47,7 @@ function MaintenanceScreen({ message }) {
         alt="Golden Age Wisdom"
         width={64}
         height={64}
-        className="h-16 w-16 rounded-full border border-[var(--color-gold)]/60 object-cover shadow-[0_0_24px_rgba(213,183,124,0.35)]"
+        className="h-16 w-16 rounded-full border border-[var(--color-gold)]/60 object-cover shadow-[0_0_24px_rgba(198,161,91,0.35)]"
       />
       <h1 className="font-display text-2xl text-[var(--color-ink)] sm:text-3xl">We'll be right back</h1>
       <p className="max-w-md text-base leading-relaxed text-[var(--color-muted)]">{message}</p>

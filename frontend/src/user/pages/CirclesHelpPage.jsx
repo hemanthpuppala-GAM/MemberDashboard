@@ -55,7 +55,7 @@ export default function CirclesHelpPage() {
     <div className="flex flex-col gap-6">
       <div>
         <h2 className="font-display text-[22px] text-[var(--color-ink)]">Circles & help</h2>
-        <p className="mt-1 text-[14px] text-[var(--color-muted)]">Reach a volunteer for guidance on your topic.</p>
+        <p className="mt-1 text-[14px] text-[var(--color-ink-soft)]">Reach a volunteer for guidance on your topic.</p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
@@ -67,7 +67,7 @@ export default function CirclesHelpPage() {
                 <IconBadge icon={icon} tone={tone} size={44} iconSize={19} />
                 <div>
                   <div className="text-[14.5px] font-semibold text-[var(--color-ink)]">{label}</div>
-                  <div className="text-[13px] text-[var(--color-muted)]">{description}</div>
+                  <div className="text-[13px] text-[var(--color-ink-soft)]">{description}</div>
                 </div>
               </div>
               <Button as="button" variant="secondary" className="shrink-0" onClick={() => setActiveTopic(topic)}>
@@ -97,7 +97,7 @@ export default function CirclesHelpPage() {
             </div>
           ) : (
             <div className="flex flex-col gap-4">
-              <div className="flex w-fit items-center gap-2.5 rounded-full bg-[rgba(110,198,234,0.12)] px-3.5 py-2">
+              <div className="flex w-fit items-center gap-2.5 rounded-full bg-[rgba(168,185,160,0.12)] px-3.5 py-2">
                 <IconBadge icon={activeTopic.icon} tone={activeTopic.tone} size={28} iconSize={14} />
                 <span className="text-[13px] font-medium text-[var(--color-ink)]">{activeTopic.label}</span>
               </div>
@@ -108,7 +108,7 @@ export default function CirclesHelpPage() {
                 onChange={(e) => setMessage(e.target.value)}
                 rows={4}
                 placeholder={`What would you like to ask about ${activeTopic.label.toLowerCase()}?`}
-                className="w-full rounded-xl border border-[rgba(110,198,234,0.35)] bg-white/70 p-3 text-[14px] text-[var(--color-ink)] placeholder:text-[var(--color-muted-soft)] transition-colors focus:border-[var(--color-blue)] focus:shadow-[0_0_0_3px_rgba(110,198,234,0.18)] focus:outline-none"
+                className="w-full rounded-xl border border-[var(--color-border-strong)] bg-[var(--color-bg-soft)] p-3 text-[14px] text-[var(--color-ink)] placeholder:text-[var(--color-ink-soft)] transition-all focus:border-[var(--color-gold-deep)] focus:bg-[var(--color-surface)] focus:shadow-[0_0_0_3px_rgba(198,161,91,0.28)] focus:outline-none"
               />
 
               <div className="flex flex-col gap-1.5">
@@ -121,9 +121,9 @@ export default function CirclesHelpPage() {
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder="So a volunteer can reach you"
-                  className="w-full rounded-xl border border-[rgba(110,198,234,0.35)] bg-white/70 px-3.5 py-2.5 text-[14px] text-[var(--color-ink)] placeholder:text-[var(--color-muted-soft)] transition-colors focus:border-[var(--color-blue)] focus:shadow-[0_0_0_3px_rgba(110,198,234,0.18)] focus:outline-none"
+                  className="w-full rounded-xl border border-[var(--color-border-strong)] bg-[var(--color-bg-soft)] px-3.5 py-2.5 text-[14px] text-[var(--color-ink)] placeholder:text-[var(--color-ink-soft)] transition-all focus:border-[var(--color-gold-deep)] focus:bg-[var(--color-surface)] focus:shadow-[0_0_0_3px_rgba(198,161,91,0.28)] focus:outline-none"
                 />
-                <span className="text-[11.5px] text-[var(--color-muted)]">Required — a volunteer needs a way to reach you.</span>
+                <span className="text-[11.5px] text-[var(--color-ink-soft)]">Required — a volunteer needs a way to reach you.</span>
               </div>
 
               {error && <p className="text-[13px] text-red-600">{error}</p>}

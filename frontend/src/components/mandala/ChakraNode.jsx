@@ -46,9 +46,9 @@ export default function ChakraNode({ chakra, index, onNavigate }) {
             style={{
               width: "clamp(48px, calc(var(--orbit-r) * 0.42), 72px)",
               height: "clamp(48px, calc(var(--orbit-r) * 0.42), 72px)",
-              borderColor: "rgba(243,216,154,0.55)",
+              borderColor: "rgba(198,161,91,0.55)",
               borderWidth: "1.5px",
-              background: "rgba(12, 8, 28, 0.42)",
+              background: "rgba(22,16,10,0.42)",
               backdropFilter: "blur(10px)",
               boxShadow: `0 4px 22px rgba(0,0,0,0.35), 0 0 18px ${chakra.color}55, inset 0 0 14px rgba(255,255,255,0.06)`,
             }}
@@ -56,7 +56,7 @@ export default function ChakraNode({ chakra, index, onNavigate }) {
             <span
               className="m-node-aura pointer-events-none absolute inset-[-48%] scale-75 rounded-full opacity-0 blur-[12px] transition-all duration-[450ms] group-hover:scale-100 group-hover:opacity-100 group-focus-visible:scale-100 group-focus-visible:opacity-100"
               style={{
-                background: `radial-gradient(closest-side, ${chakra.color}55, transparent 72%)`,
+                background: "radial-gradient(closest-side, #C6A15B66, transparent 72%)",
               }}
               aria-hidden="true"
             />

@@ -143,7 +143,7 @@ export default function JournalPage() {
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h2 className="font-display text-[22px] text-[var(--color-ink)]">Journal</h2>
-          <p className="mt-1 text-[14px] text-[var(--color-muted)]">Reflect on today's sit.</p>
+          <p className="mt-1 text-[14px] text-[var(--color-ink-soft)]">Reflect on today's sit.</p>
         </div>
         <Button as="button" variant="secondary" onClick={handleExport} disabled={exporting || !entries?.length}>
           <Download size={15} />
@@ -151,7 +151,7 @@ export default function JournalPage() {
         </Button>
       </div>
 
-      {exportError && <p className="rounded-xl border border-red-400/30 bg-red-50 px-4 py-3 text-[13.5px] text-red-700">{exportError}</p>}
+      {exportError && <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-[13.5px] text-red-700">{exportError}</p>}
 
       <Card accent title="New entry">
         <textarea
@@ -159,7 +159,7 @@ export default function JournalPage() {
           onChange={(e) => setDraft(e.target.value)}
           rows={4}
           placeholder="What came up during your sit today?"
-          className="w-full rounded-xl border border-[rgba(110,198,234,0.35)] bg-white/70 p-3 text-[14px] text-[var(--color-ink)] placeholder:text-[var(--color-muted-soft)] transition-colors focus:border-[var(--color-blue)] focus:shadow-[0_0_0_3px_rgba(110,198,234,0.18)] focus:outline-none"
+          className="w-full rounded-xl border border-[var(--color-border-strong)] bg-[var(--color-bg-soft)] p-3 text-[14px] text-[var(--color-ink)] placeholder:text-[var(--color-ink-soft)] transition-all focus:border-[var(--color-gold-deep)] focus:bg-[var(--color-surface)] focus:shadow-[0_0_0_3px_rgba(198,161,91,0.28)] focus:outline-none"
         />
         {saveError && <p className="mt-2 text-[13px] text-red-600">{saveError}</p>}
         <div className="mt-3 flex justify-end">
@@ -170,7 +170,7 @@ export default function JournalPage() {
         </div>
       </Card>
 
-      {loadError && <p className="rounded-xl border border-red-400/30 bg-red-50 px-4 py-3 text-[13.5px] text-red-700">{loadError}</p>}
+      {loadError && <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-[13.5px] text-red-700">{loadError}</p>}
 
       {entries?.length === 0 && (
         <Card padded={false}>
@@ -196,11 +196,11 @@ export default function JournalPage() {
           >
             {rowError && <p className="mb-3 text-[13px] text-red-600">{rowError}</p>}
             {dayEntries.length === 0 ? (
-              <p className="text-[13.5px] text-[var(--color-muted)]">No entries for this day.</p>
+              <p className="text-[13.5px] text-[var(--color-ink-soft)]">No entries for this day.</p>
             ) : (
               <div className="flex flex-col gap-3">
                 {dayEntries.map((entry) => (
-                  <div key={entry.id} className="rounded-2xl border border-[rgba(110,198,234,0.25)] bg-white/60 p-3.5">
+                  <div key={entry.id} className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-soft)] p-3.5">
                     {editingId === entry.id ? (
                       <div className="flex flex-col gap-2.5">
                         <textarea
@@ -208,7 +208,7 @@ export default function JournalPage() {
                           value={editDraft}
                           onChange={(e) => setEditDraft(e.target.value)}
                           rows={3}
-                          className="w-full rounded-xl border border-[rgba(110,198,234,0.35)] bg-white/80 p-2.5 text-[13.5px] text-[var(--color-ink)] focus:border-[var(--color-blue)] focus:outline-none"
+                          className="w-full rounded-xl border border-[var(--color-border-strong)] bg-[var(--color-bg-soft)] p-2.5 text-[13.5px] text-[var(--color-ink)] transition-all focus:border-[var(--color-gold-deep)] focus:bg-[var(--color-surface)] focus:shadow-[0_0_0_3px_rgba(198,161,91,0.28)] focus:outline-none"
                         />
                         <div className="flex justify-end gap-2">
                           <Button as="button" variant="secondary" onClick={cancelEdit}>
@@ -224,14 +224,14 @@ export default function JournalPage() {
                     ) : (
                       <>
                         <div className="flex items-center justify-between gap-2">
-                          <span className="text-[12px] font-medium tracking-wide text-[var(--color-muted)]">{formatTime(entry.created_at)}</span>
+                          <span className="text-[12px] font-medium tracking-wide text-[var(--color-ink-soft)]">{formatTime(entry.created_at)}</span>
                         </div>
                         <p className="mt-1 line-clamp-2 text-[13.5px] text-[var(--color-ink)]">{entry.content}</p>
                         <div className="mt-2.5 flex items-center gap-1.5">
                           <button
                             type="button"
                             onClick={() => setViewEntry(entry)}
-                            className="flex items-center gap-1 rounded-full px-2.5 py-1 text-[12px] font-medium text-[var(--color-blue-dark)] transition-colors hover:bg-[rgba(110,198,234,0.15)]"
+                            className="flex items-center gap-1 rounded-full px-2.5 py-1 text-[12px] font-medium text-[var(--color-blue-dark)] transition-colors hover:bg-[rgba(168,185,160,0.15)]"
                           >
                             <Eye size={13} />
                             View
@@ -239,7 +239,7 @@ export default function JournalPage() {
                           <button
                             type="button"
                             onClick={() => startEdit(entry)}
-                            className="flex items-center gap-1 rounded-full px-2.5 py-1 text-[12px] font-medium text-[var(--color-blue-dark)] transition-colors hover:bg-[rgba(110,198,234,0.15)]"
+                            className="flex items-center gap-1 rounded-full px-2.5 py-1 text-[12px] font-medium text-[var(--color-blue-dark)] transition-colors hover:bg-[rgba(168,185,160,0.15)]"
                           >
                             <Pencil size={13} />
                             Edit

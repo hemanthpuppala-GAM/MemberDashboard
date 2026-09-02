@@ -4,7 +4,7 @@ import toast from "react-hot-toast";
 import { DndContext, closestCenter, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy, useSortable, arrayMove } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { GripVertical, Plus, Pencil, Trash2, ArrowLeft, Lock, Eye } from "lucide-react";
+import { GripVertical, Plus, Pencil, Trash2, ArrowLeft, Lock, Eye, EyeOff, ExternalLink } from "lucide-react";
 import Card from "../../ui/Card";
 import Button from "../../ui/Button";
 import IconButton from "../../ui/IconButton";
@@ -45,18 +45,19 @@ const PUBLIC_VIEW_BY_SLUG = {
 function publicSectionUrl(pageSlug, sectionId) {
   const view = PUBLIC_VIEW_BY_SLUG[pageSlug];
   if (!view) return null;
-  return `${window.location.origin}/#${view}:${sectionId}`;
+  return `${window.location.origin}${import.meta.env.BASE_URL}#${view}:${sectionId}`;
 }
 
-function SortableRow({ section, pageSlug, onDelete, canEdit, canDelete }) {
+function SortableRow({ section, pageSlug, onDelete, onToggleStatus, canEdit, canDelete }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: section.id, disabled: !canEdit });
   const style = { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.6 : 1 };
   const meta = SECTION_TYPES.find((t) => t.type === section.type);
   const heading = section.contentByLang?.en?.heading || section.contentByLang?.en?.eyebrow || meta?.label;
   const viewUrl = publicSectionUrl(pageSlug, section.id);
+  const isHidden = section.status === "hidden";
 
   return (
-    <div ref={setNodeRef} style={style} className="flex items-center gap-3 border-b border-[var(--a-border)] py-3.5 last:border-0">
+    <div ref={setNodeRef} style={style} className={`flex items-center gap-3 border-b border-[var(--a-border)] py-3.5 last:border-0 ${isHidden ? "opacity-60" : ""}`}>
       <button
         {...attributes}
         {...listeners}
@@ -70,9 +71,23 @@ function SortableRow({ section, pageSlug, onDelete, canEdit, canDelete }) {
         <div className="flex items-center gap-2">
           <span className="rounded bg-[var(--a-accent-muted)] px-1.5 py-0.5 text-[10.5px] font-semibold text-[var(--a-accent)] uppercase">{meta?.label}</span>
           <span className="truncate text-[13.5px] font-medium text-[var(--a-text-primary)]">{heading}</span>
+          {isHidden && <StatusBadge status="hidden" />}
         </div>
       </div>
-      {viewUrl && section.status === "active" && (
+      <IconButton
+        icon={isHidden ? EyeOff : Eye}
+        label={
+          !canEdit
+            ? "You don't have permission to edit sections"
+            : isHidden
+              ? "Hidden from the public site — click to show"
+              : "Visible on the public site — click to hide"
+        }
+        variant={isHidden ? "default" : "accent"}
+        disabled={!canEdit}
+        onClick={() => onToggleStatus(section)}
+      />
+      {viewUrl && !isHidden && (
         <a
           href={viewUrl}
           target="_blank"
@@ -80,7 +95,7 @@ function SortableRow({ section, pageSlug, onDelete, canEdit, canDelete }) {
           title="View on site"
           className="rounded-lg p-1.5 text-[var(--a-text-muted)] hover:bg-[var(--a-accent-muted)] hover:text-[var(--a-accent)]"
         >
-          <Eye size={16} />
+          <ExternalLink size={16} />
         </a>
       )}
       <Link to={`/admin/cms/pages/${pageSlug}/sections/${section.id}`} className="rounded-lg p-1.5 text-[var(--a-text-muted)] hover:bg-[var(--a-accent-muted)] hover:text-[var(--a-accent)]">
@@ -183,6 +198,17 @@ export default function PageDetailPage() {
     }
   };
 
+  const handleToggleStatus = async (section) => {
+    const nextStatus = section.status === "hidden" ? "active" : "hidden";
+    try {
+      await api.updateSection(slug, section.id, { type: section.type, status: nextStatus });
+      toast.success(nextStatus === "hidden" ? "Section hidden from the public site" : "Section shown on the public site");
+      await loadPage();
+    } catch (err) {
+      toast.error(err.message ?? "Failed to update section");
+    }
+  };
+
   const handleDeleteSection = async () => {
     try {
       await api.deleteSection(slug, toDelete.id);
@@ -214,7 +240,7 @@ export default function PageDetailPage() {
         {PUBLIC_VIEW_BY_SLUG[page.slug] && page.status === "published" && (
           <Button
             as="a"
-            href={`${window.location.origin}/#${PUBLIC_VIEW_BY_SLUG[page.slug]}`}
+            href={`${window.location.origin}${import.meta.env.BASE_URL}#${PUBLIC_VIEW_BY_SLUG[page.slug]}`}
             target="_blank"
             rel="noopener noreferrer"
             variant="secondary"
@@ -267,7 +293,7 @@ export default function PageDetailPage() {
           <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
             <SortableContext items={page.sections.map((s) => s.id)} strategy={verticalListSortingStrategy}>
               {page.sections.map((section) => (
-                <SortableRow key={section.id} section={section} pageSlug={page.slug} onDelete={setToDelete} canEdit={canEdit} canDelete={canDelete} />
+                <SortableRow key={section.id} section={section} pageSlug={page.slug} onDelete={setToDelete} onToggleStatus={handleToggleStatus} canEdit={canEdit} canDelete={canDelete} />
               ))}
             </SortableContext>
           </DndContext>

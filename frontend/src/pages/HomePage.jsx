@@ -4,6 +4,7 @@ import Footer from "../components/layout/Footer";
 import PageAtmosphere from "../components/layout/PageAtmosphere";
 import BroadcastManager from "../components/layout/BroadcastManager";
 import HeroSection from "../components/sections/HeroSection";
+import HomeExtraSections from "../components/sections/HomeExtraSections";
 import QrJoinCard from "../components/sections/QrJoinCard";
 import AboutSection from "../components/sections/AboutSection";
 import WisdomSection from "../components/sections/WisdomSection";
@@ -80,9 +81,7 @@ export default function HomePage() {
 
   return (
     <div
-      className={`relative flex flex-col ${
-        isHub ? "h-dvh overflow-hidden bg-transparent" : "min-h-dvh bg-[var(--color-bg)]"
-      }`}
+      className="paper-canvas relative flex min-h-dvh flex-col bg-[var(--color-bg)]"
     >
       <PageAtmosphere showFigure={isHub} />
 
@@ -100,7 +99,7 @@ export default function HomePage() {
 
       <BroadcastManager view={view} />
 
-      <div className="sticky top-0 z-50 shrink-0">
+      <div className={isHub ? "fixed inset-x-0 top-0 z-50" : "sticky top-0 z-50 shrink-0"}>
         <Header onLogoClick={() => setView("hub")} onNavigate={setView} activeView={view} />
       </div>
 
@@ -108,21 +107,24 @@ export default function HomePage() {
         id="main"
         className={
           isHub
-            ? "relative z-10 flex min-h-0 flex-1 items-stretch justify-center overflow-hidden"
+            ? "relative z-10 flex flex-col items-stretch"
             : "relative z-10 flex-1 px-[clamp(12px,3vw,24px)] pt-2 pb-20"
         }
       >
         {isHub && (
-          <HeroSection
-            onNavigate={setView}
-            onWatchIntro={() =>
-              window.open(
-                "https://www.youtube.com/@GoldenAgeGurus",
-                "_blank",
-                "noopener,noreferrer",
-              )
-            }
-          />
+          <>
+            <HeroSection
+              onNavigate={setView}
+              onWatchIntro={() =>
+                window.open(
+                  "https://www.youtube.com/@GoldenAgeGurus",
+                  "_blank",
+                  "noopener,noreferrer",
+                )
+              }
+            />
+            <HomeExtraSections />
+          </>
         )}
 
         {Section && (
@@ -133,6 +135,11 @@ export default function HomePage() {
       </main>
 
       <QrJoinCard show={isHub} onNavigate={setView} />
+
+      {/* <AboutSection/>
+      <WisdomSection/>
+      <MeditateSection/>
+      <DonateSection/> */}
       <Footer view={view} onBack={() => setView("hub")} onNavigate={setView} />
     </div>
   );

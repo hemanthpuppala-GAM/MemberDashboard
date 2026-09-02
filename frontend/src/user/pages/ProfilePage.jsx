@@ -2,19 +2,19 @@ import { useState } from "react";
 import { Save, KeyRound, CheckCircle2 } from "lucide-react";
 import Card from "../ui/Card";
 import Button from "../../components/ui/Button";
+import { INPUT_CLASS } from "../../components/ui/sectionStyles";
 import { useMemberAuth } from "../../auth/MemberAuthContext";
 import { memberAuthApi } from "../../lib/memberAuth";
 
-const inputClass =
-  "w-full rounded-xl border border-[rgba(110,198,234,0.35)] bg-white/70 px-3.5 py-2.5 text-[14px] text-[var(--color-ink)] placeholder:text-[var(--color-muted-soft)] transition-colors focus:border-[var(--color-blue)] focus:shadow-[0_0_0_3px_rgba(110,198,234,0.18)] focus:outline-none";
+const inputClass = INPUT_CLASS;
 
 function Banner({ error, success }) {
   if (!error && !success) return null;
   if (error) {
-    return <p className="rounded-xl border border-red-400/30 bg-red-50 px-3 py-2 text-[13px] text-red-700">{error}</p>;
+    return <p className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-[13px] text-red-700">{error}</p>;
   }
   return (
-    <p className="flex items-center gap-1.5 rounded-xl border border-[rgba(93,184,117,0.35)] bg-[rgba(93,184,117,0.10)] px-3 py-2 text-[13px] text-[#2f8a4d]">
+    <p className="flex items-center gap-1.5 rounded-xl border border-[rgba(122,155,110,0.35)] bg-[rgba(122,155,110,0.10)] px-3 py-2 text-[13px] text-[#2f8a4d]">
       <CheckCircle2 size={14} /> {success}
     </p>
   );
@@ -69,7 +69,7 @@ export default function ProfilePage() {
     <div className="flex flex-col gap-6">
       <div>
         <h2 className="font-display text-[22px] text-[var(--color-ink)]">Profile</h2>
-        <p className="mt-1 text-[14px] text-[var(--color-muted)]">Manage your account details.</p>
+        <p className="mt-1 text-[14px] text-[var(--color-ink-soft)]">Manage your account details.</p>
       </div>
 
       <Card accent title="Your details">

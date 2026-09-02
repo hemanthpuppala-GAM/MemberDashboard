@@ -1,5 +1,5 @@
 /** Member (public join) auth helpers — separate from admin Sanctum token. */
-const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8000/api/v1";
+const API_URL = import.meta.env.VITE_API_URL ?? "https://goldenagewisdom.org/staging/backend/api/v1";
 const API_ORIGIN = API_URL.replace(/\/api\/v1\/?$/, "");
 const MEMBER_TOKEN_KEY = "gaw_member_token";
 const LAST_MEMBER_KEY = "gaw_last_member";

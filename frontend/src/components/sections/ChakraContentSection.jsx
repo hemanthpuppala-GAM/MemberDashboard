@@ -1,6 +1,7 @@
 import SectionHeading from "../ui/SectionHeading";
 import Button from "../ui/Button";
 import Reveal from "../ui/Reveal";
+import { SECTION_CLASS } from "../ui/sectionStyles";
 
 const SHAPE_CLASSES = {
   circle: "aspect-square max-w-[280px] rounded-full",
@@ -35,29 +36,28 @@ export default function ChakraContentSection({
 
   return (
     <section
-      className={`mx-auto flex max-w-5xl gap-10 px-2 py-6 sm:px-4 ${
-        image && stacked ? `flex-col ${centered ? "items-center text-center" : ""}` : "flex-col items-center md:flex-row md:items-center md:gap-12"
+      className={`flex gap-12 ${SECTION_CLASS} ${
+        image && stacked ? `flex-col ${centered ? "items-center text-center" : ""}` : "flex-col items-center md:flex-row md:items-center md:gap-16"
       }`}
-      style={{ borderTop: `1px solid rgba(110,198,234,0.35)` }}
     >
       <Reveal
         animation={animation}
-        className={`flex w-full flex-1 flex-col gap-6 ${!image ? "items-start text-left" : centered ? "items-center" : ""} ${
+        className={`flex w-full flex-1 flex-col gap-7 ${!image ? "items-start text-left" : centered ? "items-center" : ""} ${
           !image ? "" : stacked ? (imageFirst ? "order-2" : "order-1") : imageFirst ? "md:order-2" : ""
         }`}
       >
         <SectionHeading eyebrow={eyebrow} title={title} description={description} color={chakra.color} />
 
         {points.length > 0 && (
-          <ul className={`flex flex-col gap-3 ${image && centered ? "items-center" : ""}`}>
+          <ul className={`flex max-w-[68ch] flex-col gap-3.5 ${image && centered ? "items-center" : ""}`}>
             {points.map((point) => (
               <li
                 key={point}
-                className="flex items-start gap-3 text-sm text-[var(--color-muted)]"
+                className="flex items-start gap-3.5 text-[15px] leading-[1.7] text-[var(--color-ink-soft)]"
               >
                 <span
-                  className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full ring-1"
-                  style={{ background: chakra.color, boxShadow: `0 0 6px ${chakra.color}80` }}
+                  className="mt-[9px] h-1.5 w-1.5 shrink-0 rounded-full"
+                  style={{ background: chakra.color }}
                 />
                 {point}
               </li>
@@ -81,8 +81,8 @@ export default function ChakraContentSection({
           }`}
         >
           <div
-            className={`relative flex w-full items-center justify-center overflow-hidden border bg-[var(--color-surface)]/70 shadow-[0_20px_60px_-20px_rgba(0,0,0,0.7),0_0_40px_rgba(110,198,234,0.15)] backdrop-blur-sm ${shapeClass}`}
-            style={{ borderColor: `${chakra.color}55` }}
+            className={`zoom-frame relative flex w-full items-center justify-center overflow-hidden border bg-[var(--color-surface)] shadow-[0_18px_50px_rgba(80,65,40,0.12)] transition-shadow duration-500 hover:shadow-[0_26px_64px_rgba(80,65,40,0.20)] ${shapeClass}`}
+            style={{ borderColor: `${chakra.color}40` }}
           >
             <img src={image} alt="" className="absolute inset-0 h-full w-full object-cover" />
           </div>

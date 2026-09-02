@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { Bold, Italic, List, ListOrdered, Undo, Redo } from "lucide-react";
@@ -28,6 +29,16 @@ export default function RichTextEditor({ value, onChange, placeholder = "Write s
     },
     onUpdate: ({ editor }) => onChange(editor.getHTML()),
   });
+
+  // Tiptap only reads `content` on mount — without this, switching language
+  // tabs (which swaps `value` for a different language's saved text) leaves
+  // the editor showing whatever language was active when it first mounted.
+  useEffect(() => {
+    if (!editor) return;
+    const current = editor.getHTML();
+    const next = value || "";
+    if (current !== next) editor.commands.setContent(next, { emitUpdate: false });
+  }, [editor, value]);
 
   if (!editor) return null;
 

@@ -1,13 +1,16 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
-import { Files, Image, Inbox, UsersRound, UserCog, CalendarDays, ArrowRight } from "lucide-react";
+import { Files, Image, Inbox, UsersRound, CalendarDays, ArrowRight, SlidersHorizontal } from "lucide-react";
 import { BarChart, Bar, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 import Card from "../ui/Card";
 import StatCard from "../ui/StatCard";
+import Button from "../ui/Button";
 import { useAuth } from "../useAuth";
 import { usePermissions } from "../usePermissions";
 import { api } from "../../lib/api";
+import { DASHBOARD_WIDGETS, DEFAULT_DASHBOARD_WIDGETS } from "../dashboardWidgets";
+import DashboardCustomizeModal from "./DashboardCustomizeModal";
 
 const QUICK_LINKS = [
   { to: "/admin/cms/pages/new", label: "New page", icon: Files, permission: "cms.create" },
@@ -28,11 +31,11 @@ export default function DashboardPage() {
   const { user } = useAuth();
   const { can } = usePermissions();
   const canViewCms = can("cms.view");
-  const canViewMembers = can("members.view");
-  const canViewUsers = can("users.view");
   const canViewReports = can("reports.view");
 
   const [stats, setStats] = useState({});
+  const [layout, setLayout] = useState(null);
+  const [customizing, setCustomizing] = useState(false);
   const [submissionsMonthly, setSubmissionsMonthly] = useState([]);
   const [activity, setActivity] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -44,13 +47,8 @@ export default function DashboardPage() {
     // page dying on one 403 (see git history for the Promise.all version
     // this replaced).
     const jobs = [
-      canViewCms && api.pages().then((pages) => setStats((s) => ({ ...s, pages: pages.length }))),
-      canViewCms && api.media().then((media) => setStats((s) => ({ ...s, media: media.length }))),
-      canViewMembers && api.dashboard().then((dash) => setStats((s) => ({ ...s, newQueries: dash.contact_new }))),
-      canViewMembers &&
-        api.members().then((res) => setStats((s) => ({ ...s, activeMembers: res.data.filter((m) => m.status !== "archived").length }))),
-      canViewUsers &&
-        api.users().then((users) => setStats((s) => ({ ...s, practitioners: users.filter((u) => u.primary_role?.name === "practitioner").length }))),
+      api.dashboard().then(setStats),
+      api.dashboardLayout().then((res) => setLayout(res.widgets)),
       canViewReports && api.reportsOverview().then((overview) => setSubmissionsMonthly(overview.submissions_monthly)),
       canViewReports && api.reportsActivityLog({ per_page: 6 }).then((log) => setActivity(log.data)),
     ].filter(Boolean);
@@ -61,28 +59,41 @@ export default function DashboardPage() {
         if (failed) toast.error(failed.reason?.message ?? "Some dashboard widgets failed to load");
       })
       .finally(() => setLoading(false));
-  }, [canViewCms, canViewMembers, canViewUsers, canViewReports]);
+  }, [canViewReports]);
 
   if (loading) {
     return <p className="py-20 text-center text-[13.5px] text-[var(--a-text-muted)]">Loading…</p>;
   }
 
+  // A saved layout may reference a widget the admin no longer has permission for
+  // (role changed after saving) — stats simply won't have that key, so it drops out.
+  const selectedIds = (layout ?? DEFAULT_DASHBOARD_WIDGETS).filter((id) => stats[id] !== undefined);
+  const widgets = selectedIds.map((id) => DASHBOARD_WIDGETS.find((w) => w.id === id)).filter(Boolean);
+
+  function handleSaveLayout(widgetIds) {
+    setLayout(widgetIds);
+    api.updateDashboardLayout(widgetIds).catch((e) => toast.error(e.message ?? "Failed to save dashboard layout"));
+  }
+
   return (
     <div className="flex flex-col gap-6">
-      <div>
-        <h1 className="text-[24px] font-bold text-[var(--a-text-primary)]">
-          Welcome back{user?.name ? `, ${user.name.split(" ")[0]}` : ""}
-        </h1>
-        <p className="mt-1 text-[13.5px] text-[var(--a-text-muted)]">Here's what's happening across the site today.</p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-[24px] font-bold text-[var(--a-text-primary)]">
+            Welcome back{user?.name ? `, ${user.name.split(" ")[0]}` : ""}
+          </h1>
+          <p className="mt-1 text-[13.5px] text-[var(--a-text-muted)]">Here's what's happening across the site today.</p>
+        </div>
+        <Button variant="secondary" size="sm" icon={SlidersHorizontal} onClick={() => setCustomizing(true)}>
+          Customize
+        </Button>
       </div>
 
-      {(canViewCms || canViewMembers || canViewUsers) && (
+      {widgets.length > 0 && (
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-5">
-          {canViewCms && <StatCard icon={Files} label="Website pages" value={stats.pages ?? 0} />}
-          {canViewCms && <StatCard icon={Image} label="Media items" value={stats.media ?? 0} />}
-          {canViewMembers && <StatCard icon={Inbox} label="New queries" value={stats.newQueries ?? 0} />}
-          {canViewMembers && <StatCard icon={UsersRound} label="Active members" value={stats.activeMembers ?? 0} />}
-          {canViewUsers && <StatCard icon={UserCog} label="Practitioners" value={stats.practitioners ?? 0} />}
+          {widgets.map((w) => (
+            <StatCard key={w.id} icon={w.icon} label={w.label} value={stats[w.id] ?? 0} />
+          ))}
         </div>
       )}
 
@@ -151,6 +162,8 @@ export default function DashboardPage() {
         )}
       </Card>
       )}
+
+      <DashboardCustomizeModal open={customizing} onClose={() => setCustomizing(false)} selected={selectedIds} onSave={handleSaveLayout} />
     </div>
   );
 }

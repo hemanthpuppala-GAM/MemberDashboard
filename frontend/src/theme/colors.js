@@ -6,31 +6,34 @@
  */
 
 export const colors = {
-  bg: "#FAFAFE",
-  bgSoft: "#F0EFF9",
-  surface: "#E8E6F5",
+  bg: "#FCFAF5",
+  bgSoft: "#F5F1E8",
+  surface: "#FFFFFF",
 
-  blue: "#6EC6EA",
-  blueSoft: "#B3E5FA",
-  blueDark: "#2F9FD1",
+  blue: "#A8B9A0",
+  blueSoft: "#D6E0D1",
+  blueDark: "#5F7658",
 
-  goldLight: "#F9ECCB",
-  gold: "#F3D89A",
-  goldDeep: "#DCB96A",
-  goldLive: "#5DB875",
-  onGold: "#3C2B10",
+  goldLight: "#DCC58A",
+  gold: "#C6A15B",
+  goldDeep: "#8A6A32",
+  goldLive: "#7A9B6E",
+  onGold: "#3A2A12",
 
-  ink: "#28246A",
-  muted: "#8886C0",
-  mutedSoft: "#A8A6D4",
+  ink: "#30302D",
+  muted: "#9A968D",
+  mutedSoft: "#B5B1A6",
+
+  sage: "#A8B9A0",
+  lavender: "#C8B9D9",
 
   chakra: {
-    crown: "#c9a6f0",
-    thirdEye: "#9d8fe0",
-    throat: "#7fb0e0",
-    heart: "#F3D89A",
-    solar: "#e6c96a",
-    sacral: "#eda06a",
-    root: "#e08a8a",
+    crown: "#AA8BC2",
+    thirdEye: "#9187B8",
+    throat: "#79AFC0",
+    heart: "#88B28A",
+    solar: "#D6B85C",
+    sacral: "#D99A62",
+    root: "#C96B6B",
   },
 };

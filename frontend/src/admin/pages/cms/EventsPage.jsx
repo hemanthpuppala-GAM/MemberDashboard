@@ -31,6 +31,15 @@ function toLocalInput(iso) {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
+/** Converts a <input type="datetime-local"> value (local time, no offset) to a UTC ISO string for the backend. */
+function fromLocalInput(local) {
+  if (!local) return null;
+  const [datePart, timePart] = local.split("T");
+  const [year, month, day] = datePart.split("-").map(Number);
+  const [hours, minutes] = timePart.split(":").map(Number);
+  return new Date(year, month - 1, day, hours, minutes).toISOString();
+}
+
 export default function EventsPage() {
   const { can } = usePermissions();
   const canCreate = can("cms.create");
@@ -80,7 +89,8 @@ export default function EventsPage() {
     if (!form.title.trim() || !form.starts_at) return;
     const payload = {
       ...form,
-      ends_at: form.ends_at || null,
+      starts_at: fromLocalInput(form.starts_at),
+      ends_at: fromLocalInput(form.ends_at),
       location: form.location || null,
       join_url: form.join_url || null,
       host_practitioner_id: form.host_practitioner_id || null,

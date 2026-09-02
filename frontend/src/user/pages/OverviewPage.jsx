@@ -41,26 +41,18 @@ export default function OverviewPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      {/* Greeting hero */}
-      <div
-        className="relative overflow-hidden rounded-3xl border border-[rgba(110,198,234,0.30)] px-6 py-7 sm:px-9 sm:py-9"
-        style={{
-          background:
-            "radial-gradient(ellipse 90% 140% at 0% 0%, rgba(110,198,234,0.20) 0%, transparent 60%), radial-gradient(ellipse 80% 120% at 100% 100%, rgba(243,216,154,0.28) 0%, transparent 60%), rgba(255,255,255,0.72)",
-        }}
-      >
-        <div className="pointer-events-none absolute -top-10 -right-10 h-40 w-40 rounded-full bg-[var(--color-gold)]/25 blur-3xl" />
+      {/* Greeting hero — a sand band (the same "level 2" surface the public sections alternate onto), not a glowing glass panel. */}
+      <div className="relative overflow-hidden rounded-3xl border border-[var(--color-border)] bg-[var(--color-bg-soft)] px-6 py-7 sm:px-9 sm:py-9">
         <div className="relative flex flex-wrap items-center justify-between gap-6">
           <div>
-            <p className="flex items-center gap-1.5 text-[12.5px] font-medium tracking-[0.14em] text-[var(--color-blue-dark)] uppercase">
-              {/* <Sparkles size={13} /> */}
+            <p className="text-[12.5px] font-semibold tracking-[0.14em] text-[var(--color-blue-dark)] uppercase">
               Welcome back
             </p>
             <h2 className="mt-1.5 font-display text-[24px] leading-tight text-[var(--color-ink)] sm:text-[28px]">
               Your light is{" "}
               <span
                 style={{
-                  background: "linear-gradient(135deg, #F9ECCB 20%, #F3D89A 60%, #DCB96A 100%)",
+                  background: "linear-gradient(135deg, #DCC58A 20%, #C6A15B 60%, #8A6A32 100%)",
                   WebkitBackgroundClip: "text",
                   backgroundClip: "text",
                   color: "transparent",
@@ -75,11 +67,11 @@ export default function OverviewPage() {
           </div>
 
           {overview && (
-            <div className="flex items-center gap-4 rounded-2xl bg-white/60 px-5 py-4 shadow-[0_4px_20px_rgba(140,138,192,0.12)]">
+            <div className="flex items-center gap-4 rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] px-5 py-4 shadow-[0_8px_24px_rgba(80,65,40,0.08)]">
               <ProgressRing value={overview.challenge.day} max={overview.challenge.total} label={`${overview.challenge.day}/${overview.challenge.total}`} />
               <div>
                 <div className="text-[13.5px] font-semibold text-[var(--color-ink)]">41-day challenge</div>
-                <div className="text-[12.5px] text-[var(--color-muted)]">Day {overview.challenge.day} of {overview.challenge.total}</div>
+                <div className="text-[12.5px] text-[var(--color-ink-soft)]">Day {overview.challenge.day} of {overview.challenge.total}</div>
               </div>
             </div>
           )}
@@ -87,19 +79,19 @@ export default function OverviewPage() {
       </div>
 
       {error && (
-        <p className="rounded-xl border border-red-400/30 bg-red-50 px-4 py-3 text-[13.5px] text-red-700">{error}</p>
+        <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-[13.5px] text-red-700">{error}</p>
       )}
 
       {!error && (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           {loading
-            ? [0, 1, 2].map((i) => <Card key={i} className="h-[76px] animate-pulse bg-white/40" />)
+            ? [0, 1, 2].map((i) => <Card key={i} className="h-[76px] animate-pulse !bg-[var(--color-bg-soft)]" />)
             : stats.map(({ icon, tone, label, value }) => (
                 <Card key={label} className="flex items-center gap-3.5">
                   <IconBadge icon={icon} tone={tone} size={44} iconSize={19} />
                   <div>
                     <div className="text-[16px] font-semibold text-[var(--color-ink)]">{value}</div>
-                    <div className="text-[12.5px] text-[var(--color-muted)]">{label}</div>
+                    <div className="text-[12.5px] text-[var(--color-ink-soft)]">{label}</div>
                   </div>
                 </Card>
               ))}
@@ -111,7 +103,7 @@ export default function OverviewPage() {
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
               <div className="text-[15px] font-semibold text-[var(--color-ink)]">{overview.upcoming_session.title}</div>
-              <div className="text-[13px] text-[var(--color-muted)]">{formatSessionTime(overview.upcoming_session.starts_at)}</div>
+              <div className="text-[13px] text-[var(--color-ink-soft)]">{formatSessionTime(overview.upcoming_session.starts_at)}</div>
             </div>
             <Button as={Link} to="/dashboard/join-live">
               Join live

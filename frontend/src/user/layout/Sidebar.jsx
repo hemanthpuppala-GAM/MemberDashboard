@@ -25,7 +25,7 @@ export default function Sidebar({ onNavigate }) {
   };
 
   return (
-    <aside className="relative flex h-full w-[260px] shrink-0 flex-col gap-1 border-r border-[rgba(110,198,234,0.25)] bg-[rgba(255,255,255,0.90)] p-4 backdrop-blur-[16px]">
+    <aside className="relative flex h-full w-[260px] shrink-0 flex-col gap-1 border-r border-[var(--color-border)] bg-[var(--color-surface)] p-4">
       <button
         type="button"
         onClick={() => goTo("/")}
@@ -36,13 +36,13 @@ export default function Sidebar({ onNavigate }) {
           alt="Golden Age Wisdom"
           width={34}
           height={34}
-          className="h-[34px] w-[34px] rounded-full border border-[var(--color-gold)]/60 object-cover shadow-[0_0_14px_rgba(110,198,234,0.35)]"
+          className="h-[34px] w-[34px] rounded-full border border-[var(--color-gold)]/60 object-cover shadow-[0_0_14px_rgba(168,185,160,0.35)]"
         />
         <div>
           <div
             className="font-display text-[14.5px] leading-tight tracking-[0.02em]"
             style={{
-              background: "linear-gradient(115deg, #f6e7c1 10%, #d5b77c 48%, #b89758 90%)",
+              background: "linear-gradient(115deg, #DCC58A 10%, #C6A15B 48%, #8A6A32 90%)",
               WebkitBackgroundClip: "text",
               backgroundClip: "text",
               color: "transparent",
@@ -50,16 +50,16 @@ export default function Sidebar({ onNavigate }) {
           >
             GOLDEN AGE
           </div>
-          <div className="text-[10px] font-medium tracking-[0.18em] text-[var(--color-muted)] uppercase">
+          <div className="text-[10px] font-semibold tracking-[0.18em] text-[var(--color-ink-soft)] uppercase">
             My practice
           </div>
         </div>
       </button>
 
       {user && (
-        <div className="mb-3 rounded-2xl border border-[rgba(110,198,234,0.25)] bg-[rgba(110,198,234,0.08)] px-3 py-2.5">
+        <div className="mb-3 rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-soft)] px-3 py-2.5">
           <div className="truncate text-[13.5px] font-semibold text-[var(--color-ink)]">{user.name}</div>
-          <div className="truncate text-[11.5px] text-[var(--color-muted)]">{user.email}</div>
+          <div className="truncate text-[12px] text-[var(--color-ink-soft)]">{user.email}</div>
         </div>
       )}
 
@@ -75,20 +75,26 @@ export default function Sidebar({ onNavigate }) {
               goTo(to);
             }}
             className={({ isActive }) =>
-              `group flex items-center gap-3 rounded-full px-3.5 py-2.5 text-[13.5px] font-medium transition-all duration-200 ${
+              `group relative flex items-center gap-3 overflow-hidden rounded-full px-3.5 py-2.5 text-[13.5px] font-medium transition-all duration-200 ${
                 isActive
-                  ? "bg-gradient-to-r from-[rgba(110,198,234,0.30)] to-[rgba(243,216,154,0.28)] text-[var(--color-ink)] shadow-[0_2px_14px_rgba(110,198,234,0.30)]"
-                  : "text-[var(--color-muted)] hover:translate-x-0.5 hover:bg-[rgba(110,198,234,0.14)] hover:text-[var(--color-ink)]"
+                  ? "bg-[rgba(198,161,91,0.14)] text-[var(--color-ink)]"
+                  : "text-[var(--color-ink-soft)] hover:translate-x-0.5 hover:bg-[var(--color-bg-soft)] hover:text-[var(--color-ink)]"
               }`
             }
           >
             {({ isActive }) => (
               <>
+                {isActive && (
+                  <span
+                    aria-hidden="true"
+                    className="absolute top-1.5 bottom-1.5 left-0 w-[3px] rounded-r-full bg-[var(--color-gold)]"
+                  />
+                )}
                 <span
                   className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-colors ${
                     isActive
-                      ? "bg-white/70 text-[var(--color-blue-dark)] shadow-[0_0_10px_rgba(110,198,234,0.35)]"
-                      : "bg-[rgba(110,198,234,0.12)] text-[var(--color-muted)] group-hover:text-[var(--color-blue-dark)]"
+                      ? "bg-[var(--color-gold)]/22 text-[var(--color-gold-deep)]"
+                      : "bg-[var(--color-bg-soft)] text-[var(--color-ink-soft)] group-hover:text-[var(--color-gold-deep)]"
                   }`}
                 >
                   <Icon size={16} strokeWidth={2} />
@@ -103,7 +109,7 @@ export default function Sidebar({ onNavigate }) {
       <button
         type="button"
         onClick={handleLogout}
-        className="rounded-full px-3.5 py-2 text-left text-[12.5px] font-medium text-[var(--color-muted)] transition-colors hover:bg-[rgba(110,198,234,0.12)] hover:text-[var(--color-ink)]"
+        className="rounded-full px-3.5 py-2 text-left text-[12.5px] font-medium text-[var(--color-ink-soft)] transition-colors hover:bg-[var(--color-bg-soft)] hover:text-[var(--color-ink)]"
       >
         Sign out
       </button>

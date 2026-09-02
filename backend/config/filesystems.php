@@ -47,7 +47,12 @@ return [
         'local' => [
             'driver' => 'local',
             'root' => storage_path('app/private'),
-            'serve' => true,
+            // Off: Laravel auto-registers a GET /storage/{path} route whenever
+            // a disk has serve => true, which silently shadows our own
+            // /storage/{path} route in routes/web.php (see its comment) — and
+            // that framework route serves from THIS disk's root, not the
+            // 'public' disk where uploads actually live, so it 404s either way.
+            'serve' => false,
             'throw' => false,
             'report' => false,
         ],

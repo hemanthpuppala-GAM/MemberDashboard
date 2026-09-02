@@ -22,7 +22,7 @@ function BackButton({ onBack }) {
       type="button"
       onClick={onBack}
       title="Return to Home · Esc"
-      className="fixed bottom-4 left-[clamp(12px,2vw,24px)] z-[60] flex cursor-pointer items-center gap-2 rounded-full border border-[rgba(110,198,234,0.50)] bg-[rgba(255,255,255,0.90)] py-1 pr-[15px] pl-[5px] font-body shadow-[0_8px_26px_rgba(140,138,192,0.20)] backdrop-blur-[10px] transition-colors hover:border-[var(--color-gold)]/80"
+      className="fixed bottom-4 left-[clamp(12px,2vw,24px)] z-[60] flex cursor-pointer items-center gap-2 rounded-full border border-[rgba(168,185,160,0.50)] bg-[rgba(255,255,255,0.90)] py-1 pr-[15px] pl-[5px] font-body shadow-[0_8px_26px_rgba(80,65,40,0.20)] backdrop-blur-[10px] transition-colors hover:border-[var(--color-gold)]/80"
     >
       <span className="animate-breathe flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-[var(--color-gold)]/50 bg-[radial-gradient(circle_at_38%_34%,rgba(230,211,168,0.35),rgba(184,151,88,0.1))]">
         <svg viewBox="0 0 100 100" className="block h-[13px] w-[13px]">
@@ -43,7 +43,7 @@ function SiteFooter({ onNavigate, channels }) {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="relative z-10 mt-10 border-t border-[rgba(110,198,234,0.30)] bg-[var(--color-surface)]/40 px-[clamp(16px,4vw,48px)] pt-10 pb-24">
+    <footer className="relative z-10 mt-10 border-t border-[rgba(168,185,160,0.30)] bg-[var(--color-surface)]/40 px-[clamp(16px,4vw,48px)] pt-10 pb-24">
       <div className="mx-auto grid max-w-6xl gap-10 sm:grid-cols-2 lg:grid-cols-4">
         <div className="flex flex-col gap-3">
           <button type="button" onClick={() => onNavigate("hub")} className="flex w-fit items-center gap-2.5">
@@ -51,7 +51,7 @@ function SiteFooter({ onNavigate, channels }) {
             <span
               className="font-display text-[15px] tracking-[0.09em]"
               style={{
-                background: "linear-gradient(115deg, #f6e7c1 10%, #d5b77c 48%, #b89758 90%)",
+                background: "linear-gradient(115deg, #DCC58A 10%, #C6A15B 48%, #8A6A32 90%)",
                 WebkitBackgroundClip: "text",
                 backgroundClip: "text",
                 color: "transparent",
@@ -122,7 +122,7 @@ function SiteFooter({ onNavigate, channels }) {
                     target="_blank"
                     rel="noopener noreferrer"
                     title={c.label}
-                    className="flex h-9 w-9 items-center justify-center rounded-full border border-[rgba(110,198,234,0.35)] text-[var(--color-muted)] transition-colors hover:border-[var(--color-gold)]/70 hover:text-[var(--color-gold-deep)]"
+                    className="flex h-9 w-9 items-center justify-center rounded-full border border-[rgba(168,185,160,0.35)] text-[var(--color-muted)] transition-colors hover:border-[var(--color-gold)]/70 hover:text-[var(--color-gold-deep)]"
                   >
                     <Icon size={15} />
                   </a>
@@ -133,14 +133,14 @@ function SiteFooter({ onNavigate, channels }) {
           <button
             type="button"
             onClick={() => onNavigate("donate")}
-            className="w-fit rounded-full bg-gradient-to-br from-[var(--color-gold)] to-[var(--color-gold-deep)] px-4 py-2 font-body text-[13px] font-semibold text-[var(--color-on-gold)] transition-all hover:shadow-[0_0_20px_rgba(243,216,154,0.45)]"
+            className="w-fit rounded-full bg-gradient-to-br from-[var(--color-gold)] to-[var(--color-gold-deep)] px-4 py-2 font-body text-[13px] font-semibold text-[var(--color-on-gold)] transition-all hover:shadow-[0_0_20px_rgba(198,161,91,0.45)]"
           >
             {t("footer.support_mission")}
           </button>
         </div>
       </div>
 
-      <div className="mx-auto mt-10 flex max-w-6xl flex-col gap-1 border-t border-[rgba(110,198,234,0.20)] pt-5 text-[12px] text-[var(--color-muted-soft)] sm:flex-row sm:items-center sm:justify-between">
+      <div className="mx-auto mt-10 flex max-w-6xl flex-col gap-1 border-t border-[rgba(168,185,160,0.20)] pt-5 text-[12px] text-[var(--color-muted-soft)] sm:flex-row sm:items-center sm:justify-between">
         <span>{t("footer.copyright", { year })}</span>
         <span>{t("footer.funded_by_ads")}</span>
       </div>

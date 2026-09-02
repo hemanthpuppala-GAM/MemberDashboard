@@ -17,7 +17,7 @@ export default function ShareLightPage() {
       .catch((e) => setError(e.message || "Could not load your referral link."));
   }, []);
 
-  const link = referral ? `${window.location.origin}/join?ref=${referral.referral_code}` : "";
+  const link = referral ? `${window.location.origin}${import.meta.env.BASE_URL}join?ref=${referral.referral_code}` : "";
 
   const copyLink = () => {
     navigator.clipboard?.writeText(link);
@@ -29,10 +29,10 @@ export default function ShareLightPage() {
     <div className="flex flex-col gap-6">
       <div>
         <h2 className="font-display text-[22px] text-[var(--color-ink)]">Share the light</h2>
-        <p className="mt-1 text-[14px] text-[var(--color-muted)]">Invite others into free daily meditation.</p>
+        <p className="mt-1 text-[14px] text-[var(--color-ink-soft)]">Invite others into free daily meditation.</p>
       </div>
 
-      {error && <p className="rounded-xl border border-red-400/30 bg-red-50 px-4 py-3 text-[13.5px] text-red-700">{error}</p>}
+      {error && <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-[13.5px] text-red-700">{error}</p>}
 
       <Card
         className="relative overflow-hidden"
@@ -46,7 +46,7 @@ export default function ShareLightPage() {
             readOnly
             value={link}
             placeholder="Loading…"
-            className="min-w-0 flex-1 rounded-full border border-[rgba(110,198,234,0.35)] bg-white/70 px-4 py-2 text-[13.5px] text-[var(--color-ink)]"
+            className="min-w-0 flex-1 rounded-full border border-[var(--color-border-strong)] bg-[var(--color-bg-soft)] px-4 py-2 text-[13.5px] text-[var(--color-ink)]"
           />
           <Button as="button" onClick={copyLink} disabled={!link}>
             <Copy size={15} />

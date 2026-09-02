@@ -42,7 +42,7 @@ function BroadcastTicker({ b, onDismiss }) {
 function BroadcastPopup({ b, onDismiss, isHub }) {
   return (
     <div
-      className={`animate-[viewIn_0.35s_ease] fixed right-4 z-[70] w-[min(340px,calc(100vw-2rem))] overflow-hidden rounded-2xl border border-[rgba(110,198,234,0.35)] bg-[var(--color-bg)] shadow-[0_20px_50px_-15px_rgba(0,0,0,0.35)] ${
+      className={`animate-[viewIn_0.35s_ease] fixed right-4 z-[70] w-[min(340px,calc(100vw-2rem))] overflow-hidden rounded-2xl border border-[rgba(168,185,160,0.35)] bg-[var(--color-bg)] shadow-[0_20px_50px_-15px_rgba(0,0,0,0.35)] ${
         isHub ? "bottom-[132px]" : "bottom-4"
       }`}
     >
@@ -63,7 +63,7 @@ function BroadcastPopup({ b, onDismiss, isHub }) {
         {b.cta_label && b.cta_url && (
           <a
             href={b.cta_url}
-            className="mt-1.5 w-fit rounded-full bg-gradient-to-br from-[var(--color-gold)] to-[var(--color-gold-deep)] px-4 py-1.5 text-[12.5px] font-semibold text-[var(--color-on-gold)] transition-all hover:shadow-[0_0_16px_rgba(243,216,154,0.5)]"
+            className="mt-1.5 w-fit rounded-full bg-gradient-to-br from-[var(--color-gold)] to-[var(--color-gold-deep)] px-4 py-1.5 text-[12.5px] font-semibold text-[var(--color-on-gold)] transition-all hover:shadow-[0_0_16px_rgba(198,161,91,0.5)]"
           >
             {b.cta_label}
           </a>

@@ -10,7 +10,7 @@ export default function ProgressRing({ value, max, size = 76, stroke = 7, label 
   return (
     <div className="relative shrink-0" style={{ width: size, height: size }}>
       <svg width={size} height={size} className="-rotate-90">
-        <circle cx={size / 2} cy={size / 2} r={r} stroke="rgba(110,198,234,0.20)" strokeWidth={stroke} fill="none" />
+        <circle cx={size / 2} cy={size / 2} r={r} stroke="rgba(168,185,160,0.20)" strokeWidth={stroke} fill="none" />
         <circle
           cx={size / 2}
           cy={size / 2}
@@ -25,8 +25,8 @@ export default function ProgressRing({ value, max, size = 76, stroke = 7, label 
         />
         <defs>
           <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#F9ECCB" />
-            <stop offset="100%" stopColor="#DCB96A" />
+            <stop offset="0%" stopColor="#DCC58A" />
+            <stop offset="100%" stopColor="#8A6A32" />
           </linearGradient>
         </defs>
       </svg>

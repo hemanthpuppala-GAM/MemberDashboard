@@ -37,6 +37,9 @@ import RolesPage from "./pages/people/RolesPage";
 import AnnouncementsPage from "./pages/engage/AnnouncementsPage";
 import BroadcastsPage from "./pages/engage/BroadcastsPage";
 import QrCodesPage from "./pages/engage/QrCodesPage";
+import RegistrationFormsPage from "./pages/engage/RegistrationFormsPage";
+import RegistrationFormEditorPage from "./pages/engage/RegistrationFormEditorPage";
+import RegistrationFormSubmissionsPage from "./pages/engage/RegistrationFormSubmissionsPage";
 
 import VolunteerApplicationsPage from "./pages/volunteers/VolunteerApplicationsPage";
 import VolunteerCategoriesPage from "./pages/volunteers/VolunteerCategoriesPage";
@@ -85,6 +88,10 @@ export default function AdminApp() {
                 <Route path="announcements" element={guarded("announcements.view", <AnnouncementsPage />)} />
                 <Route path="broadcasts" element={guarded("broadcast.view", <BroadcastsPage />)} />
                 <Route path="qr-codes" element={guarded("qrcode.view", <QrCodesPage />)} />
+                <Route path="registration-forms" element={guarded("registration_forms.view", <RegistrationFormsPage />)} />
+                <Route path="registration-forms/new" element={guarded("registration_forms.create", <RegistrationFormEditorPage />)} />
+                <Route path="registration-forms/:id" element={guarded("registration_forms.view", <RegistrationFormEditorPage />)} />
+                <Route path="registration-forms/:id/submissions" element={guarded("registration_forms.view", <RegistrationFormSubmissionsPage />)} />
 
                 <Route path="volunteers" element={guarded("volunteers.view", <VolunteerApplicationsPage />)} />
                 <Route path="volunteers/categories" element={guarded("volunteers.view", <VolunteerCategoriesPage />)} />

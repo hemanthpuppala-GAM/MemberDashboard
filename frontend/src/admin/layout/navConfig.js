@@ -2,6 +2,7 @@ import {
   LayoutDashboard, FileText, Image, Inbox, UsersRound, UserCog, ShieldCheck,
   Megaphone, Radio, QrCode, BarChart3, Globe, Settings, Files, Phone, Landmark,
   Music2, MessageSquareQuote, HeartHandshake, ListChecks, CalendarClock, Timer,
+  ClipboardList,
 } from "lucide-react";
 
 /**
@@ -42,6 +43,7 @@ export const NAV = [
       { to: "/admin/announcements", label: "Announcements", icon: Megaphone, permission: "announcements.view" },
       { to: "/admin/broadcasts", label: "Broadcasts", icon: Radio, permission: "broadcast.view" },
       { to: "/admin/qr-codes", label: "QR Codes", icon: QrCode, permission: "qrcode.view" },
+      { to: "/admin/registration-forms", label: "Registration Forms", icon: ClipboardList, permission: "registration_forms.view" },
     ],
   },
   {
@@ -79,6 +81,10 @@ export const BREADCRUMB_RULES = [
   { pattern: /^\/admin\/announcements\/?$/, crumbs: () => ["Engage", "Announcements"] },
   { pattern: /^\/admin\/broadcasts\/?$/, crumbs: () => ["Engage", "Broadcasts"] },
   { pattern: /^\/admin\/qr-codes\/?$/, crumbs: () => ["Engage", "QR Codes"] },
+  { pattern: /^\/admin\/registration-forms\/new\/?$/, crumbs: () => ["Engage", "Registration Forms", "New form"] },
+  { pattern: /^\/admin\/registration-forms\/([^/]+)\/submissions\/?$/, crumbs: (m) => ["Engage", "Registration Forms", m[1], "Registrations"] },
+  { pattern: /^\/admin\/registration-forms\/([^/]+)\/?$/, crumbs: (m) => ["Engage", "Registration Forms", m[1]] },
+  { pattern: /^\/admin\/registration-forms\/?$/, crumbs: () => ["Engage", "Registration Forms"] },
   { pattern: /^\/admin\/volunteers\/categories\/?$/, crumbs: () => ["Volunteers", "Categories"] },
   { pattern: /^\/admin\/volunteers\/?$/, crumbs: () => ["Volunteers", "Applications"] },
   { pattern: /^\/admin\/reports\/?$/, crumbs: () => ["Reports"] },

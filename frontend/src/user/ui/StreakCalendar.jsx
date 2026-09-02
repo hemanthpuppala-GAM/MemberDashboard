@@ -12,8 +12,8 @@ export default function StreakCalendar({ days }) {
             title={`${d.date}${d.completed ? " · practiced" : ""}`}
             className={`aspect-square rounded-full transition-colors ${
               d.completed
-                ? "bg-gradient-to-br from-[var(--color-gold)] to-[var(--color-gold-deep)] shadow-[0_0_6px_rgba(243,216,154,0.55)]"
-                : "bg-[rgba(110,198,234,0.15)]"
+                ? "bg-gradient-to-br from-[var(--color-gold)] to-[var(--color-gold-deep)] shadow-[0_0_6px_rgba(198,161,91,0.55)]"
+                : "bg-[rgba(168,185,160,0.15)]"
             } ${isToday ? "ring-2 ring-[var(--color-blue)] ring-offset-1" : ""}`}
           />
         );

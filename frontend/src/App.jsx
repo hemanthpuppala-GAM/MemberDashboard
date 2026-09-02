@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import JoinPage from "./pages/JoinPage";
+import RegisterPage from "./pages/RegisterPage";
 import AuthCallbackPage from "./pages/AuthCallbackPage";
 import AdminApp from "./admin/AdminApp";
 import UserApp from "./user/UserApp";
@@ -10,6 +11,7 @@ import { LanguageProvider } from "./lib/LanguageContext";
 
 function MemberGate({ children }) {
   const { user, loading } = useMemberAuth();
+
   if (loading) {
     return (
       <div className="flex min-h-dvh items-center justify-center bg-[var(--color-bg)] text-[var(--color-muted)]">
@@ -17,19 +19,28 @@ function MemberGate({ children }) {
       </div>
     );
   }
+
   if (!user) return <Navigate to="/join" replace />;
+
   return children;
 }
 
 function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/staging/goldenage">
       <LanguageProvider>
         <MemberAuthProvider>
           <Routes>
             <Route path="/admin/*" element={<AdminApp />} />
+
             <Route path="/join" element={<JoinPage />} />
-            <Route path="/auth/callback" element={<AuthCallbackPage />} />
+            <Route path="/register/:slug" element={<RegisterPage />} />
+
+            <Route
+              path="/auth/callback"
+              element={<AuthCallbackPage />}
+            />
+
             <Route
               path="/dashboard/*"
               element={
@@ -38,6 +49,7 @@ function App() {
                 </MemberGate>
               }
             />
+
             <Route
               path="*"
               element={

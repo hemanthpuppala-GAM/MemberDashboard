@@ -31,6 +31,7 @@ class RolesAndPermissionsSeeder extends Seeder
         'contact_channels' => ['view', 'create', 'edit', 'delete'],
         'donations' => ['view', 'create', 'edit', 'delete'],
         'volunteers' => ['view', 'create', 'edit', 'delete'],
+        'registration_forms' => ['view', 'create', 'edit', 'delete'],
     ];
 
     private const ROLES = [
@@ -44,13 +45,13 @@ class RolesAndPermissionsSeeder extends Seeder
             'name' => 'admin',
             'display_name' => 'Admin',
             'description' => 'All content + practitioner management. Cannot delete roles or other admins.',
-            'permissions' => ['cms.*', 'languages.*', 'translations.*', 'members.*', 'reports.view', 'announcements.*', 'broadcast.*', 'qrcode.*', 'settings.view', 'music.*', 'testimonials.*', 'contact_channels.*', 'donations.*', 'volunteers.*'],
+            'permissions' => ['cms.*', 'languages.*', 'translations.*', 'members.*', 'reports.view', 'announcements.*', 'broadcast.*', 'qrcode.*', 'settings.view', 'music.*', 'testimonials.*', 'contact_channels.*', 'donations.*', 'volunteers.*', 'registration_forms.*'],
         ],
         [
             'name' => 'content_manager',
             'display_name' => 'Content Manager',
             'description' => 'CMS only (pages, media, languages, broadcast). No user management.',
-            'permissions' => ['cms.*', 'languages.*', 'translations.*', 'broadcast.*', 'music.*', 'testimonials.*', 'contact_channels.*', 'donations.*', 'volunteers.*'],
+            'permissions' => ['cms.*', 'languages.*', 'translations.*', 'broadcast.*', 'music.*', 'testimonials.*', 'contact_channels.*', 'donations.*', 'volunteers.*', 'registration_forms.*'],
         ],
         [
             'name' => 'practitioner',

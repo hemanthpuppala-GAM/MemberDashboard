@@ -3,6 +3,12 @@
         Options -MultiViews -Indexes
     </IfModule>
 
+    # Shared hosting (cPanel/GoDaddy) commonly disables FollowSymLinks by
+    # default. Without it, Apache's "does this path exist as a real file?"
+    # check below doesn't follow the public/storage symlink, so every asset
+    # under /storage/... falls through to index.php and Laravel 404s it.
+    Options +FollowSymLinks
+
     RewriteEngine On
 
     # Handle Authorization Header

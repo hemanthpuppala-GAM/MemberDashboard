@@ -3,9 +3,9 @@ import CmsPageHeading from "./CmsPageHeading";
 import Button from "../ui/Button";
 import { colors } from "../../theme/colors";
 import { publicApi } from "../../lib/api";
+import { FORM_PANEL_CLASS, INPUT_CLASS, SECTION_CLASS, SELECT_CLASS } from "../ui/sectionStyles";
 
-const inputClass =
-  "w-full rounded-xl border border-[rgba(110,198,234,0.40)] bg-white/70 px-4 py-3 font-body text-[14px] text-[var(--color-ink)] placeholder:text-[var(--color-muted-soft)] outline-none transition-colors focus:border-[var(--color-gold-deep)] focus:bg-white";
+const inputClass = INPUT_CLASS;
 
 const EMPTY_FORM = { name: "", email: "", phone: "", category_id: "", notes: "" };
 
@@ -41,8 +41,7 @@ export default function VolunteerSection() {
   return (
     <section
       id="volunteer"
-      className="mx-auto flex max-w-2xl flex-col gap-8 px-2 py-6 sm:px-4"
-      style={{ borderTop: "1px solid rgba(110,198,234,0.35)" }}
+      className={`flex max-w-2xl flex-col gap-9 ${SECTION_CLASS}`}
     >
       <CmsPageHeading
         slug="volunteer"
@@ -53,11 +52,11 @@ export default function VolunteerSection() {
       />
 
       {status === "sent" ? (
-        <p className="rounded-xl border border-[rgba(93,184,117,0.45)] bg-[rgba(93,184,117,0.12)] px-5 py-4 text-[14px] text-[var(--color-ink)]">
+        <p className="rounded-xl border border-[rgba(122,155,110,0.40)] bg-[rgba(122,155,110,0.10)] px-5 py-4 text-[14.5px] leading-relaxed text-[var(--color-ink)]">
           Thank you — your application has been received. We'll reach out soon.
         </p>
       ) : (
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <form onSubmit={handleSubmit} className={`flex flex-col gap-4 ${FORM_PANEL_CLASS}`}>
           <input
             type="text"
             required
@@ -87,7 +86,7 @@ export default function VolunteerSection() {
             value={form.category_id}
             onChange={set("category_id")}
             disabled={!categories.length}
-            className={`${inputClass} appearance-none`}
+            className={SELECT_CLASS}
           >
             {categories.length === 0 && <option value="">No categories available yet</option>}
             {categories.map((c) => (

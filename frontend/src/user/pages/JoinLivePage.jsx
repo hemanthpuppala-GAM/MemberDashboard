@@ -29,7 +29,7 @@ export default function JoinLivePage() {
     <div className="flex flex-col gap-6">
       <div>
         <h2 className="font-display text-[22px] text-[var(--color-ink)]">Join live</h2>
-        <p className="mt-1 text-[14px] text-[var(--color-muted)]">Sit with the community in real time.</p>
+        <p className="mt-1 text-[14px] text-[var(--color-ink-soft)]">Sit with the community in real time.</p>
       </div>
 
       {error && <p className="rounded-xl border border-red-400/30 bg-red-50 px-4 py-3 text-[13.5px] text-red-700">{error}</p>}
@@ -56,8 +56,8 @@ export default function JoinLivePage() {
                   <span
                     className={`relative flex h-12 w-12 items-center justify-center rounded-full ${
                       session.is_live
-                        ? "bg-[rgba(93,184,117,0.22)] text-[#2f8a4d]"
-                        : "bg-[rgba(110,198,234,0.18)] text-[var(--color-blue-dark)]"
+                        ? "bg-[rgba(122,155,110,0.22)] text-[#2f8a4d]"
+                        : "bg-[rgba(168,185,160,0.18)] text-[var(--color-blue-dark)]"
                     }`}
                   >
                     <Radio size={20} />
@@ -67,12 +67,12 @@ export default function JoinLivePage() {
                   <div className="flex items-center gap-2">
                     <span className="text-[15px] font-semibold text-[var(--color-ink)]">{session.title}</span>
                     {session.is_live && (
-                      <span className="rounded-full bg-[var(--color-gold-live)] px-2 py-0.5 text-[10.5px] font-semibold tracking-wide text-white uppercase shadow-[0_0_10px_rgba(93,184,117,0.55)]">
+                      <span className="rounded-full bg-[var(--color-gold-live)] px-2 py-0.5 text-[10.5px] font-semibold tracking-wide text-white uppercase shadow-[0_0_10px_rgba(122,155,110,0.55)]">
                         Live
                       </span>
                     )}
                   </div>
-                  <div className="text-[13px] text-[var(--color-muted)]">
+                  <div className="text-[13px] text-[var(--color-ink-soft)]">
                     {formatSessionTime(session.starts_at)}
                     {session.teacher ? ` · ${session.teacher}` : ""}
                   </div>

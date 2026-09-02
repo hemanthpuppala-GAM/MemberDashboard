@@ -1,4 +1,6 @@
-const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8000/api/v1";
+console.log("API URL:", import.meta.env.VITE_API_URL);
+
+const API_URL = import.meta.env.VITE_API_URL ?? "https://goldenagewisdom.org/staging/backend/api/v1";
 const STORAGE_BASE = API_URL.replace(/\/api\/v1\/?$/, "");
 const TOKEN_KEY = "gaw_admin_token";
 
@@ -78,6 +80,8 @@ export const api = {
   me: () => apiFetch("/admin/me"),
 
   dashboard: () => apiFetch("/admin/dashboard"),
+  dashboardLayout: () => apiFetch("/admin/dashboard/layout"),
+  updateDashboardLayout: (widgets) => apiFetch("/admin/dashboard/layout", { method: "PUT", body: { widgets } }),
   permissions: () => apiFetch("/admin/permissions"),
 
   users: () => apiFetch("/admin/users"),
@@ -202,6 +206,19 @@ export const api = {
   sendAnnouncement: (id) => apiFetch(`/admin/announcements/${id}/send`, { method: "POST" }),
   deleteAnnouncement: (id) => apiFetch(`/admin/announcements/${id}`, { method: "DELETE" }),
 
+  registrationForms: () => apiFetch("/admin/registration-forms"),
+  registrationForm: (id) => apiFetch(`/admin/registration-forms/${id}`),
+  createRegistrationForm: (payload) => apiFetch("/admin/registration-forms", { method: "POST", body: payload }),
+  updateRegistrationForm: (id, payload) => apiFetch(`/admin/registration-forms/${id}`, { method: "PUT", body: payload }),
+  deleteRegistrationForm: (id) => apiFetch(`/admin/registration-forms/${id}`, { method: "DELETE" }),
+  registrationSubmissions: (formId, params = {}) =>
+    apiFetch(`/admin/registration-forms/${formId}/submissions?${new URLSearchParams({ per_page: 20, ...params })}`),
+  updateRegistrationSubmissionStatus: (formId, submissionId, status) =>
+    apiFetch(`/admin/registration-forms/${formId}/submissions/${submissionId}/status`, { method: "PATCH", body: { status } }),
+  deleteRegistrationSubmission: (formId, submissionId) =>
+    apiFetch(`/admin/registration-forms/${formId}/submissions/${submissionId}`, { method: "DELETE" }),
+  registrationSubmissionsExportPath: (formId) => `/admin/registration-forms/${formId}/submissions/export`,
+
   broadcasts: () => apiFetch("/admin/broadcasts"),
   createBroadcast: (payload) => apiFetch("/admin/broadcasts", { method: "POST", body: payload }),
   updateBroadcast: (id, payload) => apiFetch(`/admin/broadcasts/${id}`, { method: "PUT", body: payload }),
@@ -268,4 +285,6 @@ export const publicApi = {
   contactChannels: () => apiFetch("/contact-channels", { auth: false }),
   donationMethods: () => apiFetch("/donation-methods", { auth: false }),
   broadcasts: (page) => apiFetch(`/broadcasts/active${page ? `?page=${encodeURIComponent(page)}` : ""}`, { auth: false }),
+  registrationForm: (slug) => apiFetch(`/registration-forms/${slug}`, { auth: false }),
+  submitRegistration: (slug, payload) => apiFetch(`/registration-forms/${slug}/submit`, { method: "POST", body: payload, auth: false }),
 };

@@ -11,6 +11,7 @@ import LangTabs from "../../ui/LangTabs";
 import RichTextEditor from "../../ui/RichTextEditor";
 import MediaPickerModal from "../../ui/MediaPickerModal";
 import ImageField from "../../ui/ImageField";
+import VideoField from "../../ui/VideoField";
 import RangeField from "../../ui/RangeField";
 import { api } from "../../../lib/api";
 import { SECTION_TYPES, MEDIA_FOLDERS } from "../../mock/mockData";
@@ -67,6 +68,7 @@ export default function SectionEditorPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [pickerCallback, setPickerCallback] = useState(null);
+  const [pickerAccept, setPickerAccept] = useState("image");
 
   const [activeLang, setActiveLang] = useState("en");
   const [savedAt, setSavedAt] = useState(null);
@@ -99,7 +101,10 @@ export default function SectionEditorPage() {
   }, [section, contentByLang, enabledLanguages]);
 
   const mediaFolder = MEDIA_FOLDERS.find((f) => f.toLowerCase() === page?.slug?.toLowerCase()) ?? "General";
-  const openPicker = (onSelect) => setPickerCallback(() => onSelect);
+  const openPicker = (onSelect, accept = "image") => {
+    setPickerCallback(() => onSelect);
+    setPickerAccept(accept);
+  };
 
   if (loading) {
     return <p className="py-20 text-center text-[13.5px] text-[var(--a-text-muted)]">Loading…</p>;
@@ -155,7 +160,7 @@ export default function SectionEditorPage() {
           <LangTabs languages={enabledLanguages} active={activeLang} onChange={setActiveLang} incomplete={incomplete} />
         </div>
         <div className="flex flex-col gap-5 p-5 sm:p-6">
-          <SectionFields type={section.type} content={content} set={set} openPicker={openPicker} />
+          <SectionFields type={section.type} content={content} set={set} openPicker={openPicker} pageSlug={page.slug} />
         </div>
       </Card>
 
@@ -185,14 +190,22 @@ export default function SectionEditorPage() {
         onClose={() => setPickerCallback(null)}
         onSelect={(url) => pickerCallback?.(url)}
         initialFolder={mediaFolder}
+        accept={pickerAccept}
       />
     </div>
   );
 }
 
-function SectionFields({ type, content, set, openPicker }) {
+function SectionFields({ type, content, set, openPicker, pageSlug }) {
   switch (type) {
-    case "hero":
+    case "hero": {
+      // Home's full-viewport background needs a real focal point to match its current
+      // portrait framing (subject positioned right-of-center); other pages' shorter,
+      // centered-text banner defaults to plain center — see HeroSection/HeroBannerSection.
+      const isHome = pageSlug === "home";
+      const defaultFocalX = isHome ? 72 : 50;
+      const defaultFocalY = isHome ? 28 : 50;
+
       return (
         <>
           <Field label="Eyebrow"><TextInput value={content.eyebrow ?? ""} onChange={(e) => set("eyebrow")(e.target.value)} /></Field>
@@ -211,6 +224,35 @@ function SectionFields({ type, content, set, openPicker }) {
             label="Background image (mobile)"
             hint="Optional — falls back to the desktop image if left empty. Use a portrait crop so the subject stays visible on small screens."
           />
+          <VideoField
+            value={content.video}
+            onChange={set("video")}
+            onPick={() => openPicker(set("video"), "video")}
+            label="Background video (optional, desktop only)"
+            hint="Plays muted and looped in place of the desktop background image. Mobile always shows the image above instead, to save data — keep clips short (5–15s) and compressed."
+          />
+          <div className="grid gap-5 sm:grid-cols-2">
+            <RangeField
+              label="Background focal point — horizontal"
+              hint="Desktop only. The background always fills edge-to-edge, cropping as needed — this controls which part stays visible."
+              value={content.focal_x ?? defaultFocalX}
+              onChange={set("focal_x")}
+            />
+            <RangeField
+              label="Background focal point — vertical"
+              hint="Desktop only."
+              value={content.focal_y ?? defaultFocalY}
+              onChange={set("focal_y")}
+            />
+          </div>
+          {isHome && (
+            <Toggle
+              checked={content.show_mandala ?? true}
+              onChange={set("show_mandala")}
+              label="Show chakra wheel"
+              description="Turn off to hide the orbiting chakra icons — useful when a background video needs full visual focus, without them competing for attention."
+            />
+          )}
           <div className="grid gap-5 sm:grid-cols-2">
             <RangeField
               label="Chakra wheel — horizontal position"
@@ -237,6 +279,7 @@ function SectionFields({ type, content, set, openPicker }) {
           <LayoutFields showPosition={false} showShape={false} animation={content.animation} onAnimationChange={set("animation")} />
         </>
       );
+    }
     case "content_block":
       return (
         <>

@@ -3,11 +3,11 @@ export default function RippleRings() {
   const rings = [
     {
       delay: "0s",
-      border: "1.5px solid rgba(243,216,154,0.60)",
-      shadow: "0 0 26px rgba(243,216,154,0.30), inset 0 0 20px rgba(243,216,154,0.15)",
+      border: "1.5px solid rgba(198,161,91,0.60)",
+      shadow: "0 0 26px rgba(198,161,91,0.30), inset 0 0 20px rgba(198,161,91,0.15)",
     },
-    { delay: "2s", border: "1px solid rgba(110,198,234,0.55)", shadow: "0 0 16px rgba(110,198,234,0.25)" },
-    { delay: "4s", border: "1px solid rgba(243,216,154,0.28)", shadow: "none" },
+    { delay: "2s", border: "1px solid rgba(168,185,160,0.55)", shadow: "0 0 16px rgba(168,185,160,0.25)" },
+    { delay: "4s", border: "1px solid rgba(198,161,91,0.28)", shadow: "none" },
   ];
 
   return (

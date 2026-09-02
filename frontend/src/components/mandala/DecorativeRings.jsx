@@ -16,7 +16,7 @@ export default function DecorativeRings() {
         }}
       />
       <span
-        className="m-ring1 animate-ring-pulse-reverse absolute rounded-full border border-dashed border-[rgba(243,216,154,0.42)]"
+        className="m-ring1 animate-ring-pulse-reverse absolute rounded-full border border-dashed border-[rgba(198,161,91,0.42)]"
         style={{
           width: "calc(var(--orbit-r) * 1.52)",
           height: "calc(var(--orbit-r) * 1.52)",

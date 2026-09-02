@@ -14,7 +14,7 @@ export default function LanguageSwitcher({ light = false }) {
       className={`shrink-0 cursor-pointer rounded-full border bg-transparent px-2.5 py-1.5 text-[12.5px] font-medium tracking-wide outline-none transition-colors ${
         light
           ? "border-white/25 text-white/85 hover:border-white/50 [&>option]:text-[var(--color-ink)]"
-          : "border-[rgba(110,198,234,0.35)] text-[var(--color-muted)] hover:border-[var(--color-gold)]/60"
+          : "border-[rgba(168,185,160,0.35)] text-[var(--color-muted)] hover:border-[var(--color-gold)]/60"
       }`}
     >
       {languages.map((lang) => (

@@ -2,8 +2,10 @@ import { useState } from "react";
 import Reveal from "../ui/Reveal";
 import CardMedia from "../ui/CardMedia";
 import { cardFlexClass } from "../ui/cardLayout";
+import { CardBracket } from "../ui/CardAccent";
+import { CARD_CLASS, SECTION_CLASS } from "../ui/sectionStyles";
 
-const DEFAULT_COLOR = "#6EC6EA";
+const DEFAULT_COLOR = "#A8B9A0";
 
 /** "Where are you on the path?" toggle — a quiet note by default, or a grid of deeper cards — the `deep_cards` CMS section type. */
 export default function DeepCardsSection({ fields, color = DEFAULT_COLOR }) {
@@ -14,8 +16,8 @@ export default function DeepCardsSection({ fields, color = DEFAULT_COLOR }) {
   const items = fields.items ?? [];
 
   return (
-    <section className="mx-auto flex max-w-5xl flex-col gap-6 px-2 py-6 sm:px-4">
-      <div className="mx-auto flex w-fit rounded-full border border-[rgba(110,198,234,0.35)] bg-[var(--color-surface)]/50 p-1">
+    <section className={`flex flex-col gap-8 ${SECTION_CLASS}`}>
+      <div className="mx-auto flex w-fit rounded-full border border-[var(--color-border)] bg-[var(--color-bg-soft)] p-1">
         {[
           { key: false, label: fields.new_label || "New to this" },
           { key: true, label: fields.seasoned_label || "Seasoned meditator" },
@@ -24,10 +26,10 @@ export default function DeepCardsSection({ fields, color = DEFAULT_COLOR }) {
             key={String(tab.key)}
             type="button"
             onClick={() => setSeasoned(tab.key)}
-            className="rounded-full px-4 py-1.5 font-body text-[13px] font-medium whitespace-nowrap transition-colors"
+            className="cursor-pointer rounded-full px-5 py-2 font-body text-[13px] font-semibold whitespace-nowrap transition-all duration-300"
             style={
               seasoned === tab.key
-                ? { background: color, color: "var(--color-on-gold)" }
+                ? { background: color, color: "var(--color-on-gold)", boxShadow: "0 2px 10px rgba(80,65,40,0.12)" }
                 : { color: "var(--color-muted)" }
             }
           >
@@ -38,32 +40,34 @@ export default function DeepCardsSection({ fields, color = DEFAULT_COLOR }) {
 
       {!seasoned ? (
         fields.new_body && (
-          <p className="mx-auto max-w-xl text-center text-[14.5px] leading-relaxed text-[var(--color-muted)]">
+          <p className="mx-auto max-w-[56ch] text-center text-[15.5px] leading-[1.75] text-[var(--color-ink-soft)]">
             {fields.new_body}
           </p>
         )
       ) : (
         <>
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid gap-5 sm:grid-cols-2">
             {items.map((item, i) => (
-              <Reveal key={i} animation={item.animation} delay={i * 60}>
-                <div
-                  className={`flex h-full gap-3 rounded-2xl border border-[rgba(110,198,234,0.35)] bg-[var(--color-surface)]/50 px-5 py-4 ${cardFlexClass(item.image_position)}`}
-                >
+              <Reveal key={i} animation={item.animation} delay={i * 60} className="h-full">
+                <div className={`flex h-full gap-4 overflow-hidden ${CARD_CLASS} ${cardFlexClass(item.image_position)}`}>
+                  <CardBracket />
                   <CardMedia src={item.image} alt={item.title} position={item.image_position} shape={item.image_shape} />
-                  <div className="flex flex-1 flex-col gap-2">
-                    <span className="text-lg" style={{ color }}>
+                  <div className="flex flex-1 flex-col gap-2.5">
+                    <span
+                      className="text-xl transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover/card:-translate-y-0.5 motion-reduce:transition-none motion-reduce:group-hover/card:translate-y-0"
+                      style={{ color }}
+                    >
                       {item.icon}
                     </span>
-                    <span className="font-body text-[15px] font-medium text-[var(--color-ink)]">{item.title}</span>
-                    <p className="text-[13.5px] leading-relaxed text-[var(--color-muted)]">{item.body}</p>
+                    <span className="font-body text-[15.5px] font-semibold tracking-[-0.005em] text-[var(--color-ink)]">{item.title}</span>
+                    <p className="text-[14px] leading-[1.7] text-[var(--color-ink-soft)]">{item.body}</p>
                   </div>
                 </div>
               </Reveal>
             ))}
           </div>
           {fields.footer_note && (
-            <p className="mx-auto max-w-xl text-center text-[13px] leading-relaxed text-[var(--color-muted-soft)] italic">
+            <p className="mx-auto max-w-[56ch] text-center text-[13.5px] leading-[1.7] text-[var(--color-muted)] italic">
               {fields.footer_note}
             </p>
           )}

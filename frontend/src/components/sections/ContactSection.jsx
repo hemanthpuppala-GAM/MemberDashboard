@@ -4,9 +4,9 @@ import Button from "../ui/Button";
 import { colors } from "../../theme/colors";
 import { publicApi } from "../../lib/api";
 import { CHANNEL_ICONS, channelHref } from "../../lib/contactChannels";
+import { FORM_PANEL_CLASS, INPUT_CLASS, SECTION_CLASS, SELECT_CLASS } from "../ui/sectionStyles";
 
-const inputClass =
-  "w-full rounded-xl border border-[rgba(110,198,234,0.40)] bg-white/70 px-4 py-3 font-body text-[14px] text-[var(--color-ink)] placeholder:text-[var(--color-muted-soft)] outline-none transition-colors focus:border-[var(--color-gold-deep)] focus:bg-white";
+const inputClass = INPUT_CLASS;
 
 const CATEGORY_OPTIONS = [
   { value: "meditation", label: "Meditation doubts" },
@@ -27,12 +27,12 @@ function ContactChannelsList({ channels }) {
           <>
             <span
               className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full"
-              style={{ background: "rgba(110,198,234,0.16)", color: colors.blueDark }}
+              style={{ background: "rgba(198,161,91,0.14)", color: colors.goldDeep }}
             >
               <Icon size={17} />
             </span>
             <span className="min-w-0">
-              <span className="block text-[11px] font-medium tracking-[0.08em] text-[var(--color-muted-soft)] uppercase">{c.label}</span>
+              <span className="block text-[11px] font-semibold tracking-[0.14em] text-[var(--color-muted)] uppercase">{c.label}</span>
               <span className="block break-words font-body text-[14.5px] font-medium text-[var(--color-ink)]">{c.value}</span>
             </span>
           </>
@@ -43,12 +43,12 @@ function ContactChannelsList({ channels }) {
             href={href}
             target={c.type === "website" || c.type === "social" ? "_blank" : undefined}
             rel="noopener noreferrer"
-            className="flex items-center gap-3 rounded-xl px-2 py-1.5 transition-colors hover:bg-[rgba(110,198,234,0.10)]"
+            className="flex items-center gap-3.5 rounded-xl px-3 py-2 transition-colors hover:bg-[var(--color-bg-soft)]"
           >
             {body}
           </a>
         ) : (
-          <div key={c.id} className="flex items-center gap-3 px-2 py-1.5">
+          <div key={c.id} className="flex items-center gap-3.5 px-3 py-2">
             {body}
           </div>
         );
@@ -83,31 +83,30 @@ export default function ContactSection() {
   return (
     <section
       id="contact"
-      className="mx-auto flex max-w-5xl flex-col gap-8 px-2 py-6 sm:px-4"
-      style={{ borderTop: "1px solid rgba(110,198,234,0.35)" }}
+      className={`flex flex-col gap-9 ${SECTION_CLASS}`}
     >
       <CmsPageHeading
         slug="contact"
-        color={colors.blue}
+        color={colors.goldDeep}
         fallbackEyebrow="Contact"
         fallbackTitle="Send us a question"
         fallbackDescription="Whether it's about a session, a retreat, or getting involved — we read every message."
       />
 
-      <div className="grid gap-10 lg:grid-cols-[minmax(0,260px)_1fr]">
+      <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,290px)_1fr]">
         {channels.length > 0 && (
-          <div className="flex flex-col gap-1 lg:border-r lg:border-[rgba(110,198,234,0.25)] lg:pr-8">
+          <div className="flex flex-col gap-1 rounded-[22px] border border-[var(--color-border)] bg-[var(--color-bg-soft)] p-4 sm:p-5">
             <ContactChannelsList channels={channels} />
           </div>
         )}
 
         <div className="max-w-2xl">
           {status === "sent" ? (
-            <p className="rounded-xl border border-[rgba(93,184,117,0.45)] bg-[rgba(93,184,117,0.12)] px-5 py-4 text-[14px] text-[var(--color-ink)]">
+            <p className="rounded-xl border border-[rgba(122,155,110,0.40)] bg-[rgba(122,155,110,0.10)] px-5 py-4 text-[14.5px] leading-relaxed text-[var(--color-ink)]">
               Thank you — your message has been sent. We'll get back to you soon.
             </p>
           ) : (
-            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+            <form onSubmit={handleSubmit} className={`flex flex-col gap-4 ${FORM_PANEL_CLASS}`}>
               <input
                 type="text"
                 required
@@ -136,7 +135,7 @@ export default function ContactSection() {
                 required
                 value={form.category}
                 onChange={set("category")}
-                className={`${inputClass} appearance-none`}
+                className={SELECT_CLASS}
               >
                 {CATEGORY_OPTIONS.map((opt) => (
                   <option key={opt.value} value={opt.value}>{opt.label}</option>

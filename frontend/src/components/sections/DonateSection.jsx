@@ -4,6 +4,8 @@ import CmsPageHeading from "./CmsPageHeading";
 import Button from "../ui/Button";
 import { colors } from "../../theme/colors";
 import { publicApi } from "../../lib/api";
+import { CardRule } from "../ui/CardAccent";
+import { CARD_CLASS, SECTION_CLASS } from "../ui/sectionStyles";
 
 const BANK_FIELDS = [
   ["account_holder", "Account holder"],
@@ -41,10 +43,10 @@ function CopyRow({ label, value }) {
     <button
       type="button"
       onClick={copy}
-      className="group flex w-full items-center justify-between gap-3 px-4 py-2.5 text-left transition-colors hover:bg-[rgba(110,198,234,0.10)]"
+      className="group flex w-full cursor-pointer items-center justify-between gap-3 px-4 py-3 text-left transition-colors hover:bg-[var(--color-bg-soft)]"
     >
       <span className="min-w-0">
-        <span className="block text-[10.5px] font-semibold tracking-[0.09em] text-[var(--color-muted-soft)] uppercase">{label}</span>
+        <span className="block text-[10.5px] font-semibold tracking-[0.14em] text-[var(--color-muted)] uppercase">{label}</span>
         <span className="block break-words font-body text-[14.5px] font-medium text-[var(--color-ink)]">{value}</span>
       </span>
       {copied ? (
@@ -64,33 +66,34 @@ function DonationCard({ method }) {
   const linkOnly = !bankRows.length && !method.upi_id && !method.qr_image_path && method.payout_link;
 
   return (
-    <div className="flex flex-col gap-5 rounded-2xl border border-[rgba(110,198,234,0.35)] bg-[var(--color-surface)]/50 p-6 shadow-[0_1px_0_rgba(255,255,255,0.5)_inset]">
+    <div className={`flex flex-col gap-5 overflow-hidden ${CARD_CLASS}`}>
+      <CardRule />
       <div className="flex items-start gap-3">
         <span
-          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full"
-          style={{ background: "rgba(220,185,106,0.18)", color: colors.goldDeep }}
+          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover/card:scale-110 motion-reduce:transition-none motion-reduce:group-hover/card:scale-100"
+          style={{ background: "rgba(138,106,50,0.18)", color: colors.goldDeep }}
         >
           <Icon size={19} />
         </span>
         <div className="min-w-0 pt-1">
-          <h3 className="font-body text-[16.5px] font-semibold text-[var(--color-ink)]">{method.label}</h3>
+          <h3 className="font-body text-[17px] font-semibold tracking-[-0.005em] text-[var(--color-ink)]">{method.label}</h3>
           {method.notes && <p className="mt-0.5 text-[13px] leading-relaxed text-[var(--color-muted)]">{method.notes}</p>}
         </div>
       </div>
 
       {method.qr_image_path && (
-        <div className="flex flex-col items-center gap-2 rounded-xl bg-white/60 py-4">
+        <div className="flex flex-col items-center gap-2.5 rounded-xl bg-[var(--color-bg-soft)] py-5">
           <img
             src={method.qr_image_path}
             alt={`${method.label} QR code`}
-            className="h-40 w-40 rounded-lg border border-[rgba(110,198,234,0.35)] bg-white object-contain p-2"
+            className="h-40 w-40 rounded-lg border border-[var(--color-border)] bg-white object-contain p-2"
           />
           <span className="text-[11.5px] text-[var(--color-muted-soft)]">Scan with any UPI app</span>
         </div>
       )}
 
       {bankRows.length > 0 && (
-        <div className="flex flex-col divide-y divide-[rgba(110,198,234,0.16)] overflow-hidden rounded-xl border border-[rgba(110,198,234,0.25)] bg-white/40">
+        <div className="flex flex-col divide-y divide-[var(--color-border)] overflow-hidden rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-soft)]">
           {bankRows.map(([label, value]) => (
             <CopyRow key={label} label={label} value={value} />
           ))}
@@ -98,7 +101,7 @@ function DonationCard({ method }) {
       )}
 
       {method.upi_id && (
-        <div className="overflow-hidden rounded-xl border border-[rgba(110,198,234,0.25)] bg-white/40">
+        <div className="overflow-hidden rounded-xl border border-[var(--color-border)] bg-[var(--color-bg-soft)]">
           <CopyRow label="UPI ID" value={method.upi_id} />
         </div>
       )}
@@ -135,8 +138,7 @@ export default function DonateSection() {
   return (
     <section
       id="donate"
-      className="mx-auto flex max-w-4xl flex-col gap-8 px-2 py-6 sm:px-4"
-      style={{ borderTop: "1px solid rgba(110,198,234,0.35)" }}
+      className={`flex max-w-4xl flex-col gap-10 ${SECTION_CLASS}`}
     >
       <CmsPageHeading
         slug="donate"

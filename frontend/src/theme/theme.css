@@ -1,44 +1,53 @@
 /*
   Golden Age Wisdom — design tokens.
-  Dark cosmic + gold theme, matching Replicated-Design/Design.md §4.1 and
-  the site's reference mockup (deep indigo-black backdrop, gold "house"
-  accent, chakra hues scoped to their own node/section only).
+  Light, warm-ivory + muted-gold theme: premium wellness/wisdom palette,
+  gold "house" accent, sage + lavender as soft secondary accents, chakra
+  hues scoped to their own node/section only.
 */
 
 @theme {
-  /* ---- Base surfaces (light lavender-white) ---- */
-  --color-bg: #FAFAFE;
-  --color-bg-soft: #F0EFF9;
-  --color-surface: #E8E6F5;
-  --color-surface-glass: rgba(110, 198, 234, 0.35);
+  /* ---- Base surfaces (warm ivory) ---- */
+  --color-bg: #FCFAF5;
+  --color-bg-soft: #F5F1E8;
+  --color-surface: #FFFFFF;
+  --color-surface-glass: rgba(252,250,245, 0.92);
+  --color-border: #E8E1D4;
+  /* Boundary for interactive controls (fields, selects). WCAG 1.4.11 wants
+     3:1 against the surface behind them — the hairline --color-border is
+     only 1.3:1 on white, which makes a field invisible as a shape. */
+  --color-border-strong: #A08B60;
 
-  /* ---- Sky-blue accent ---- */
-  --color-blue: #6EC6EA;
-  --color-blue-soft: #B3E5FA;
-  --color-blue-dark: #2F9FD1;
-  --color-blue-glow: rgba(110, 198, 234, 0.45);
+  /* ---- Sage accent (secondary/info accent, replaces the old sky-blue) ---- */
+  --color-blue: #A8B9A0;
+  --color-blue-soft: #D6E0D1;
+  --color-blue-dark: #5F7658;
+  --color-blue-glow: rgba(168,185,160, 0.45);
 
   /* ---- Gold accent ---- */
-  --color-gold-light: #F9ECCB;
-  --color-gold: #F3D89A;
-  --color-gold-deep: #DCB96A;
-  --color-gold-live: #5DB875;
-  --color-on-gold: #3C2B10;
+  --color-gold-light: #DCC58A;
+  --color-gold: #C6A15B;
+  --color-gold-deep: #8A6A32;
+  --color-gold-live: #7A9B6E;
+  --color-on-gold: #3A2A12;
 
-  /* ---- Text (deep purple on light surfaces) ---- */
-  --color-ink: #28246A;
-  --color-ink-soft: #5854A0;
-  --color-muted: #8886C0;
-  --color-muted-soft: #A8A6D4;
+  /* ---- Text (warm charcoal on light surfaces) ---- */
+  --color-ink: #30302D;
+  --color-ink-soft: #6F6D66;
+  --color-muted: #9A968D;
+  --color-muted-soft: #B5B1A6;
 
-  /* ---- Chakra accent colors (scoped to their own node/section only) ---- */
-  --color-chakra-crown: #c9a6f0;
-  --color-chakra-thirdeye: #9d8fe0;
-  --color-chakra-throat: #7fb0e0;
-  --color-chakra-heart: #F3D89A;
-  --color-chakra-solar: #e6c96a;
-  --color-chakra-sacral: #eda06a;
-  --color-chakra-root: #e08a8a;
+  /* ---- Extra soft accents (spiritual/wellness atmosphere) ---- */
+  --color-sage: #A8B9A0;
+  --color-lavender: #C8B9D9;
+
+  /* ---- Chakra accent colors (scoped to their own node/section only, muted) ---- */
+  --color-chakra-crown: #AA8BC2;
+  --color-chakra-thirdeye: #9187B8;
+  --color-chakra-throat: #79AFC0;
+  --color-chakra-heart: #88B28A;
+  --color-chakra-solar: #D6B85C;
+  --color-chakra-sacral: #D99A62;
+  --color-chakra-root: #C96B6B;
 
   /* ---- Type ---- */
   --font-display: "Marcellus", "Georgia", serif;

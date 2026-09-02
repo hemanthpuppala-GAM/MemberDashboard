@@ -25,7 +25,7 @@ export default function MonthCalendar({ month, onMonthChange, markedDates, selec
         <button
           type="button"
           onClick={() => onMonthChange(new Date(year, monthIndex - 1, 1))}
-          className="rounded-full p-1.5 text-[var(--color-muted)] transition-colors hover:bg-[rgba(110,198,234,0.15)]"
+          className="rounded-full p-1.5 text-[var(--color-ink-soft)] transition-colors hover:bg-[rgba(168,185,160,0.15)]"
           aria-label="Previous month"
         >
           <ChevronLeft size={16} />
@@ -34,7 +34,7 @@ export default function MonthCalendar({ month, onMonthChange, markedDates, selec
         <button
           type="button"
           onClick={() => onMonthChange(new Date(year, monthIndex + 1, 1))}
-          className="rounded-full p-1.5 text-[var(--color-muted)] transition-colors hover:bg-[rgba(110,198,234,0.15)]"
+          className="rounded-full p-1.5 text-[var(--color-ink-soft)] transition-colors hover:bg-[rgba(168,185,160,0.15)]"
           aria-label="Next month"
         >
           <ChevronRight size={16} />
@@ -43,7 +43,7 @@ export default function MonthCalendar({ month, onMonthChange, markedDates, selec
 
       <div className="grid grid-cols-7 gap-y-1 text-center">
         {WEEKDAYS.map((w, i) => (
-          <div key={i} className="py-1 text-[11px] font-medium tracking-wide text-[var(--color-muted-soft)] uppercase">
+          <div key={i} className="py-1 text-[11px] font-semibold tracking-wide text-[var(--color-ink-soft)] uppercase">
             {w}
           </div>
         ))}
@@ -62,9 +62,9 @@ export default function MonthCalendar({ month, onMonthChange, markedDates, selec
                 title={hasEntry ? `${key} · has entries` : undefined}
                 className={`flex h-8 w-8 items-center justify-center rounded-full text-[12.5px] transition-all ${
                   isSelected
-                    ? "bg-gradient-to-br from-[var(--color-gold)] to-[var(--color-gold-deep)] font-semibold text-[var(--color-on-gold)] shadow-[0_0_10px_rgba(243,216,154,0.5)]"
+                    ? "bg-gradient-to-br from-[var(--color-gold)] to-[var(--color-gold-deep)] font-semibold text-[var(--color-on-gold)] shadow-[0_0_10px_rgba(198,161,91,0.5)]"
                     : hasEntry
-                      ? "bg-[rgba(110,198,234,0.18)] font-medium text-[var(--color-ink)] hover:bg-[rgba(110,198,234,0.32)]"
+                      ? "bg-[rgba(168,185,160,0.18)] font-medium text-[var(--color-ink)] hover:bg-[rgba(168,185,160,0.32)]"
                       : "text-[var(--color-muted-soft)]"
                 } ${isToday && !isSelected ? "ring-1 ring-[var(--color-blue)]" : ""}`}
               >

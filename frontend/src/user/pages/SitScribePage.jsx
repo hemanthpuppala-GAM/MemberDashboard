@@ -160,13 +160,13 @@ export default function SitScribePage() {
     <div className="flex flex-col gap-6">
       <div>
         <h2 className="font-display text-[22px] text-[var(--color-ink)]">Sit & Scribe</h2>
-        <p className="mt-1 text-[14px] text-[var(--color-muted)]">
+        <p className="mt-1 text-[14px] text-[var(--color-ink-soft)]">
           Choose a session, then scribe your reflections after.
         </p>
       </div>
 
       {presetsError && (
-        <p className="rounded-xl border border-red-400/30 bg-red-50 px-4 py-3 text-[13.5px] text-red-700">{presetsError}</p>
+        <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-[13.5px] text-red-700">{presetsError}</p>
       )}
 
       {!presetsError && presets && presets.length === 0 && (
@@ -183,11 +183,11 @@ export default function SitScribePage() {
                 key={p.id}
                 type="button"
                 onClick={() => choosePreset(p)}
-                className="flex items-center justify-between gap-3 rounded-2xl border border-[rgba(110,198,234,0.28)] bg-white/60 px-4 py-3.5 text-left transition-all hover:-translate-y-0.5 hover:border-[var(--color-gold)]/55 hover:bg-white/85"
+                className="flex items-center justify-between gap-3 rounded-2xl border border-[var(--color-border-strong)] bg-[var(--color-bg-soft)] px-4 py-3.5 text-left transition-all hover:-translate-y-0.5 hover:border-[var(--color-gold-deep)] hover:bg-[var(--color-surface)] hover:shadow-[0_8px_20px_rgba(80,65,40,0.10)]"
               >
                 <div>
                   <div className="text-[14px] font-semibold text-[var(--color-ink)]">{p.title}</div>
-                  <div className="mt-0.5 flex items-center gap-1.5 text-[12.5px] text-[var(--color-muted)]">
+                  <div className="mt-0.5 flex items-center gap-1.5 text-[12.5px] text-[var(--color-ink-soft)]">
                     {p.track ? <Music2 size={12} /> : <VolumeX size={12} />}
                     {p.duration_minutes} min · {p.track ? p.track.category : "Silent"}
                   </div>
@@ -211,7 +211,7 @@ export default function SitScribePage() {
 
           <Card className="overflow-visible">
             <div className="flex flex-col items-center gap-7 py-6">
-              <p className="text-[13px] font-medium tracking-wide text-[var(--color-muted)] uppercase">{preset.title}</p>
+              <p className="text-[13px] font-medium tracking-wide text-[var(--color-ink-soft)] uppercase">{preset.title}</p>
 
               <div className="relative flex h-52 w-52 items-center justify-center">
                 <div
@@ -220,7 +220,7 @@ export default function SitScribePage() {
                   }`}
                 />
                 <svg width={208} height={208} className="absolute -rotate-90">
-                  <circle cx={104} cy={104} r={96} stroke="rgba(110,198,234,0.18)" strokeWidth={8} fill="none" />
+                  <circle cx={104} cy={104} r={96} stroke="rgba(168,185,160,0.18)" strokeWidth={8} fill="none" />
                   <circle
                     cx={104}
                     cy={104}
@@ -235,9 +235,9 @@ export default function SitScribePage() {
                   />
                   <defs>
                     <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stopColor="#B3E5FA" />
-                      <stop offset="60%" stopColor="#F3D89A" />
-                      <stop offset="100%" stopColor="#DCB96A" />
+                      <stop offset="0%" stopColor="#D6E0D1" />
+                      <stop offset="60%" stopColor="#C6A15B" />
+                      <stop offset="100%" stopColor="#8A6A32" />
                     </linearGradient>
                   </defs>
                 </svg>
@@ -247,7 +247,7 @@ export default function SitScribePage() {
                   ) : (
                     <span className="font-display text-[38px] leading-none text-[var(--color-ink)]">{formatClock(remaining)}</span>
                   )}
-                  <span className="mt-1.5 text-[12px] tracking-wide text-[var(--color-muted)] uppercase">
+                  <span className="mt-1.5 text-[12px] tracking-wide text-[var(--color-ink-soft)] uppercase">
                     {completed ? (logging ? "Saving…" : "Sit complete") : running ? "Sitting…" : "Ready when you are"}
                   </span>
                 </div>
@@ -277,7 +277,7 @@ export default function SitScribePage() {
           title="Your streak"
           description={`${overview.streak_days} day${overview.streak_days === 1 ? "" : "s"} in a row · ${overview.stage}`}
         >
-          <div className="flex items-center gap-2 text-[12.5px] text-[var(--color-muted)]">
+          <div className="flex items-center gap-2 text-[12.5px] text-[var(--color-ink-soft)]">
             <Flame size={14} className="text-[var(--color-gold-deep)]" />
             Last 41 days — lit days are ones you sat.
           </div>
@@ -292,19 +292,19 @@ export default function SitScribePage() {
           {sessions.length === 0 ? (
             <EmptyState icon={History} title="No sits logged yet" description="Complete a sit above and it will show up here." />
           ) : (
-            <div className="flex flex-col divide-y divide-[rgba(110,198,234,0.18)]">
+            <div className="flex flex-col divide-y divide-[rgba(168,185,160,0.18)]">
               {sessions.map((s) => (
                 <div key={s.id} className="flex items-center justify-between gap-3 py-2.5 first:pt-0 last:pb-0">
                   <div className="flex items-center gap-2.5">
-                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[rgba(110,198,234,0.15)] text-[var(--color-blue-dark)]">
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[rgba(168,185,160,0.15)] text-[var(--color-blue-dark)]">
                       {s.sit_preset?.music_track_id ? <Music2 size={14} /> : <VolumeX size={14} />}
                     </div>
                     <div>
                       <div className="text-[13.5px] font-medium text-[var(--color-ink)]">{s.sit_preset?.title ?? "Silent sit"}</div>
-                      <div className="text-[12px] text-[var(--color-muted)]">{formatLogDate(s.completed_at)}</div>
+                      <div className="text-[12px] text-[var(--color-ink-soft)]">{formatLogDate(s.completed_at)}</div>
                     </div>
                   </div>
-                  <span className="shrink-0 text-[13px] font-medium text-[var(--color-muted)]">{s.duration_minutes} min</span>
+                  <span className="shrink-0 text-[13px] font-medium text-[var(--color-ink-soft)]">{s.duration_minutes} min</span>
                 </div>
               ))}
             </div>

@@ -58,8 +58,8 @@ export default function Starfield() {
             width: s.size,
             height: s.size,
             borderRadius: "50%",
-            background: s.lit ? "#DCB96A" : "rgba(140,138,192,0.45)",
-            boxShadow: s.lit ? "0 0 7px rgba(243,216,154,0.80)" : "none",
+            background: s.lit ? "#8A6A32" : "rgba(80,65,40,0.45)",
+            boxShadow: s.lit ? "0 0 7px rgba(198,161,91,0.80)" : "none",
             animationDelay: s.delay,
           }}
         />

@@ -13,7 +13,7 @@ export default function PageAtmosphere({ showFigure = true }) {
         aria-hidden="true"
         style={{
           background:
-            "radial-gradient(ellipse 55% 60% at 50% 40%, rgba(110,198,234,0.35) 0%, rgba(110,198,234,0.12) 55%, transparent 80%)",
+            "radial-gradient(ellipse 55% 60% at 50% 40%, rgba(200,185,217,0.22) 0%, rgba(200,185,217,0.08) 55%, transparent 80%)",
           opacity: showFigure ? 0 : 1,
           transition: "opacity 0.6s ease",
         }}
@@ -26,7 +26,7 @@ export default function PageAtmosphere({ showFigure = true }) {
           aria-hidden="true"
           style={{
             background:
-              "linear-gradient(to top, rgba(240,238,255,0.80) 0%, rgba(240,238,255,0.30) 40%, transparent 100%)",
+              "linear-gradient(to top, rgba(252,250,245,0.80) 0%, rgba(252,250,245,0.30) 40%, transparent 100%)",
           }}
         />
       )}

@@ -2,12 +2,15 @@
 
 use App\Http\Controllers\Api\Admin\Engage\AnnouncementController;
 use App\Http\Controllers\Api\Admin\Engage\BroadcastController as AdminBroadcastController;
+use App\Http\Controllers\Api\Admin\Engage\RegistrationFormController as AdminRegistrationFormController;
+use App\Http\Controllers\Api\Admin\Engage\RegistrationFormSubmissionController;
 use App\Http\Controllers\Api\Admin\Content\ContactChannelController as AdminContactChannelController;
 use App\Http\Controllers\Api\Admin\Content\VolunteerCategoryController as AdminVolunteerCategoryController;
 use App\Http\Controllers\Api\Admin\People\ContactSubmissionController;
 use App\Http\Controllers\Api\Admin\People\VolunteerApplicationController as AdminVolunteerApplicationController;
 use App\Http\Controllers\Api\Admin\Cms\ContentController as AdminContentController;
 use App\Http\Controllers\Api\Admin\DashboardController;
+use App\Http\Controllers\Api\Admin\DashboardLayoutController;
 use App\Http\Controllers\Api\Admin\Content\DonationMethodController as AdminDonationMethodController;
 use App\Http\Controllers\Api\Admin\Cms\EventController as AdminEventController;
 use App\Http\Controllers\Api\Admin\Languages\LanguageController as AdminLanguageController;
@@ -37,6 +40,7 @@ use App\Http\Controllers\Api\Public\Member\PracticeSessionController;
 use App\Http\Controllers\Api\Public\Member\ProfileController as MemberProfileController;
 use App\Http\Controllers\Api\Public\Member\ReferralController;
 use App\Http\Controllers\Api\Public\Engage\BroadcastController;
+use App\Http\Controllers\Api\Public\Engage\RegistrationFormController;
 use App\Http\Controllers\Api\Public\Content\ContactChannelController;
 use App\Http\Controllers\Api\Public\Content\VolunteerCategoryController;
 use App\Http\Controllers\Api\Public\People\ContactController;
@@ -81,6 +85,9 @@ Route::prefix('v1')->group(function () {
     Route::post('/contact', [ContactController::class, 'store'])->middleware('throttle:5,1');
     Route::post('/volunteer-applications', [VolunteerApplicationController::class, 'store'])->middleware('throttle:5,1');
 
+    Route::get('/registration-forms/{slug}', [RegistrationFormController::class, 'show']);
+    Route::post('/registration-forms/{slug}/submit', [RegistrationFormController::class, 'submit'])->middleware('throttle:5,1');
+
     // ---- Member auth (public sign-up / sign-in, e.g. /join) ----
     // Both entry points below issue Member tokens, so they share /auth/me and
     // /auth/logout — do not register those twice or the later one silently wins.
@@ -120,6 +127,8 @@ Route::prefix('v1')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout']);
         Route::get('/me', [AuthController::class, 'me']);
         Route::get('/dashboard', [DashboardController::class, 'index']);
+        Route::get('/dashboard/layout', [DashboardLayoutController::class, 'show']);
+        Route::put('/dashboard/layout', [DashboardLayoutController::class, 'update']);
         Route::get('/permissions', [PermissionController::class, 'index']);
 
         // ---- Legacy flat content blocks ----
@@ -275,6 +284,23 @@ Route::prefix('v1')->group(function () {
             Route::post('/announcements/{announcement}/send', [AnnouncementController::class, 'send']);
         });
         Route::middleware('permission:announcements.delete')->delete('/announcements/{announcement}', [AnnouncementController::class, 'destroy']);
+
+        // ---- Registration forms ----
+        Route::middleware('permission:registration_forms.view')->group(function () {
+            Route::get('/registration-forms', [AdminRegistrationFormController::class, 'index']);
+            Route::get('/registration-forms/{registrationForm}', [AdminRegistrationFormController::class, 'show']);
+            Route::get('/registration-forms/{registrationForm}/submissions', [RegistrationFormSubmissionController::class, 'index']);
+            Route::get('/registration-forms/{registrationForm}/submissions/export', [RegistrationFormSubmissionController::class, 'export']);
+        });
+        Route::middleware('permission:registration_forms.create')->post('/registration-forms', [AdminRegistrationFormController::class, 'store']);
+        Route::middleware('permission:registration_forms.edit')->group(function () {
+            Route::put('/registration-forms/{registrationForm}', [AdminRegistrationFormController::class, 'update']);
+            Route::patch('/registration-forms/{registrationForm}/submissions/{submission}/status', [RegistrationFormSubmissionController::class, 'update']);
+        });
+        Route::middleware('permission:registration_forms.delete')->group(function () {
+            Route::delete('/registration-forms/{registrationForm}', [AdminRegistrationFormController::class, 'destroy']);
+            Route::delete('/registration-forms/{registrationForm}/submissions/{submission}', [RegistrationFormSubmissionController::class, 'destroy']);
+        });
 
         // ---- Broadcasts ----
         Route::middleware('permission:broadcast.view')->get('/broadcasts', [AdminBroadcastController::class, 'index']);

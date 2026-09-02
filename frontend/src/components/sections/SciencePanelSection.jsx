@@ -1,50 +1,51 @@
 import SectionHeading from "../ui/SectionHeading";
+import { SECTION_CLASS } from "../ui/sectionStyles";
 
-const DEFAULT_COLOR = "#6EC6EA";
+const DEFAULT_COLOR = "#A8B9A0";
 
 /** "The science, simply" style explainer + optional techniques list — the `science_panel` CMS section type. */
 export default function SciencePanelSection({ fields, color = DEFAULT_COLOR }) {
   if (!fields) return null;
 
   return (
-    <section className="mx-auto flex max-w-5xl flex-col gap-8 px-2 py-6 sm:px-4">
+    <section className={`flex flex-col gap-9 ${SECTION_CLASS}`}>
       <SectionHeading eyebrow={fields.eyebrow} title={fields.heading} color={color} />
-      <p className="max-w-3xl text-[14.5px] leading-relaxed text-[var(--color-muted)]">{fields.body}</p>
+      <p className="max-w-[64ch] text-[15.5px] leading-[1.75] text-[var(--color-ink-soft)]">{fields.body}</p>
 
       {(fields.recommend_heading || fields.recommend_body) && (
         <div
-          className="flex flex-col gap-2 rounded-2xl border px-6 py-5"
-          style={{ borderColor: `${color}55`, background: `${color}0d` }}
+          className="flex max-w-[72ch] flex-col gap-2 rounded-2xl border px-7 py-6"
+          style={{ borderColor: `${color}45`, background: `${color}0f` }}
         >
           {fields.recommend_heading && (
-            <h4 className="font-body text-[15px] font-medium text-[var(--color-ink)]">{fields.recommend_heading}</h4>
+            <h4 className="font-body text-[15.5px] font-semibold text-[var(--color-ink)]">{fields.recommend_heading}</h4>
           )}
           {fields.recommend_body && (
-            <p className="text-[13.5px] leading-relaxed text-[var(--color-muted)]">{fields.recommend_body}</p>
+            <p className="text-[14px] leading-[1.7] text-[var(--color-ink-soft)]">{fields.recommend_body}</p>
           )}
         </div>
       )}
 
       {fields.techniques?.length > 0 && (
-        <div className="flex flex-col gap-2">
-          <div className="flex flex-wrap gap-2">
+        <div className="flex flex-col gap-3">
+          <div className="flex flex-wrap gap-2.5">
             {fields.techniques.map((technique) => (
               <span
                 key={technique}
-                className="rounded-full border border-[rgba(110,198,234,0.35)] px-3 py-1 text-[12.5px] text-[var(--color-muted)]"
+                className="pill-sweep cursor-default rounded-full border border-[var(--color-border)] bg-[var(--color-bg-soft)] px-4 py-1.5 text-[13px] text-[var(--color-ink-soft)] transition-colors duration-300 hover:border-[rgba(198,161,91,0.5)] hover:text-[var(--color-gold-deep)]"
               >
                 {technique}
               </span>
             ))}
           </div>
           {fields.techniques_note && (
-            <p className="text-[13px] leading-relaxed text-[var(--color-muted-soft)]">{fields.techniques_note}</p>
+            <p className="text-[13.5px] leading-[1.7] text-[var(--color-muted)]">{fields.techniques_note}</p>
           )}
         </div>
       )}
 
       {fields.body_note && (
-        <p className="max-w-3xl text-[13.5px] leading-relaxed text-[var(--color-muted)]">{fields.body_note}</p>
+        <p className="max-w-[64ch] text-[14px] leading-[1.7] text-[var(--color-muted)]">{fields.body_note}</p>
       )}
     </section>
   );
