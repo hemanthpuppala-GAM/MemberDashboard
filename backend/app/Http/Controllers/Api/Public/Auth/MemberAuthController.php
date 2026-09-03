@@ -6,12 +6,15 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Public\Auth\LoginRequest;
 use App\Http\Requests\Public\Auth\RegisterRequest;
 use App\Models\People\Member;
+use App\Services\Mail\MemberWelcomeMailer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
 class MemberAuthController extends Controller
 {
+    public function __construct(private MemberWelcomeMailer $welcomeMailer) {}
+
     public function register(RegisterRequest $request)
     {
         $data = $request->validated();
@@ -38,6 +41,8 @@ class MemberAuthController extends Controller
                 'referred_by_code' => $data['ref'] ?? null,
             ]);
         }
+
+        $this->welcomeMailer->send($member);
 
         $token = $member->createToken('member-portal')->plainTextToken;
 
