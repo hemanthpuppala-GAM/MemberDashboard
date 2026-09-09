@@ -1,4 +1,5 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import Header from "../components/layout/Header";
 import Footer from "../components/layout/Footer";
 import PageAtmosphere from "../components/layout/PageAtmosphere";
@@ -16,6 +17,7 @@ import ContactSection from "../components/sections/ContactSection";
 import VolunteerSection from "../components/sections/VolunteerSection";
 import DonateSection from "../components/sections/DonateSection";
 import PageSections from "../components/sections/PageSections";
+import { pathForView, viewForSlug } from "../lib/publicRoutes";
 
 const SECTION_VIEWS = {
   about: AboutSection,
@@ -30,77 +32,62 @@ const SECTION_VIEWS = {
 };
 
 /**
- * Reads `#<view>` or `#<view>:<sectionId>` from the URL — the format the
- * admin panel's per-section "view" button links to (see PageDetailPage.jsx).
- * Not a full router: this SPA has one route ("*" -> HomePage) and switches
- * views via component state, so the hash is the only shareable/refreshable
- * pointer into a specific view (and, best-effort, a specific CMS section).
- * A view outside SECTION_VIEWS isn't rejected here — it falls through to a
- * generic PageSections render below, which handles a bad/unpublished slug
- * gracefully on its own.
+ * Public site. Each view is a real URL (/wisdom, /meditation, …) via the
+ * ":slug" route param — shareable and refreshable. Legacy "#view" and
+ * "#view:sectionId" links from the admin panel are redirected to the path.
  */
-function parseHash() {
-  const raw = window.location.hash.slice(1);
-  if (!raw) return { view: "hub", sectionId: null };
-  const [view, sectionId] = raw.split(":");
-  return { view: view || "hub", sectionId: sectionId ?? null };
-}
-
 export default function HomePage() {
-  const [view, setViewState] = useState(() => parseHash().view);
+  const { slug } = useParams();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const view = viewForSlug(slug);
   const isHub = view === "hub";
   const topBarRef = useRef(null);
 
   const setView = (nextView) => {
-    setViewState(nextView);
-    const hash = nextView === "hub" ? "" : `#${nextView}`;
-    window.history.replaceState(null, "", `${window.location.pathname}${window.location.search}${hash}`);
+    if (nextView === view) return;
+    navigate(pathForView(nextView));
+    window.scrollTo({ top: 0 });
   };
 
+  // Legacy hash links: "#wisdom" or "#wisdom:12"
   useEffect(() => {
-    const { sectionId } = parseHash();
+    const raw = location.hash.slice(1);
+    if (!raw) return undefined;
+    const [hashView, sectionId] = raw.split(":");
+    if (hashView && hashView !== view) {
+      navigate(pathForView(hashView) + (sectionId ? `#${hashView}:${sectionId}` : ""), { replace: true });
+      return undefined;
+    }
     if (!sectionId) return undefined;
-    // Best-effort: give the view's CMS data time to fetch + mount, then scroll to it.
     const t = setTimeout(() => {
-      document.getElementById(`cms-section-${sectionId}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
+      const el = document.getElementById(`cms-section-${sectionId}`);
+      if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 80, behavior: "smooth" });
     }, 700);
     return () => clearTimeout(t);
-  }, []);
-
-  useEffect(() => {
-    const onHashChange = () => setViewState(parseHash().view);
-    window.addEventListener("hashchange", onHashChange);
-    return () => window.removeEventListener("hashchange", onHashChange);
-  }, []);
+  }, [location.hash, view, navigate]);
 
   useEffect(() => {
     const onKey = (e) => {
-      if (e.key === "Escape" && view !== "hub") setView("hub");
+      if (e.key === "Escape" && !isHub) setView("hub");
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [view]);
+  }, [isHub]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // On the hub, the banner+header float together (fixed) instead of sitting
-  // in flow, so nothing reserves space for them in <main> — hero content
-  // would otherwise render underneath. Measure their combined height live
-  // (banner can appear/disappear/wrap at any time) and feed it to <main>
-  // as top padding.
+  // On the hub the banner+header float (fixed); reserve their height in <main>.
   useLayoutEffect(() => {
     const root = document.documentElement;
     if (!isHub) {
       root.style.setProperty("--gaw-topbar-h", "0px");
       return undefined;
     }
-
     const topBarEl = topBarRef.current;
     if (!topBarEl) return undefined;
-
     const observer = new ResizeObserver(([entry]) => {
       root.style.setProperty("--gaw-topbar-h", `${entry.contentRect.height}px`);
     });
     observer.observe(topBarEl);
-
     return () => observer.disconnect();
   }, [isHub]);
 
@@ -108,10 +95,8 @@ export default function HomePage() {
   const isCustomPage = !isHub && !Section;
 
   return (
-    <div
-      className="paper-canvas relative flex min-h-dvh flex-col bg-[var(--color-bg)]"
-    >
-      <PageAtmosphere showFigure={isHub} />
+    <div className="paper-canvas relative flex min-h-dvh flex-col bg-[var(--color-bg)]">
+      <PageAtmosphere showFigure={isHub || Boolean(Section)} />
 
       <a
         href="#main"
@@ -121,8 +106,7 @@ export default function HomePage() {
       </a>
 
       <h1 className="sr-only">
-        Golden Age Wisdom — free daily live meditation and Upanishadic wisdom,
-        taught by Dr Hari Krishna, MD
+        Golden Age Wisdom — free daily live meditation and Upanishadic wisdom, taught by Dr Hari Krishna, MD
       </h1>
 
       {isHub ? (
@@ -141,48 +125,33 @@ export default function HomePage() {
 
       <main
         id="main"
-        className={
-          isHub
-            ? "relative z-10 flex flex-col items-stretch"
-            : "relative z-10 flex-1 px-[clamp(12px,3vw,24px)] pt-2 pb-20"
-        }
+        className={isHub ? "relative z-10 flex flex-col items-stretch" : "relative z-10 flex flex-1 flex-col"}
         style={isHub ? { paddingTop: "var(--gaw-topbar-h, 0px)" } : undefined}
       >
         {isHub && (
           <>
             <HeroSection
               onNavigate={setView}
-              onWatchIntro={() =>
-                window.open(
-                  "https://www.youtube.com/@GoldenAgeGurus",
-                  "_blank",
-                  "noopener,noreferrer",
-                )
-              }
+              onWatchIntro={() => window.open("https://www.youtube.com/@GoldenAgeGurus", "_blank", "noopener,noreferrer")}
             />
             <HomeExtraSections />
           </>
         )}
 
         {Section && (
-          <div className="m-view mx-auto flex w-[min(1120px,100%)] animate-[viewIn_0.45s_ease] flex-col justify-start gap-4">
-            <Section />
+          <div className="m-view flex w-full animate-[viewIn_0.45s_ease] flex-col">
+            <Section onNavigate={setView} />
           </div>
         )}
 
         {isCustomPage && (
-          <div className="m-view mx-auto flex w-[min(1120px,100%)] animate-[viewIn_0.45s_ease] flex-col justify-start gap-4">
-            <PageSections slug={view} />
+          <div className="m-view mx-auto flex w-[min(1120px,100%)] animate-[viewIn_0.45s_ease] flex-col justify-start gap-4 px-[clamp(12px,3vw,24px)] pt-2 pb-20">
+            <PageSections slug={slug} />
           </div>
         )}
       </main>
 
       <QrJoinCard show={isHub} onNavigate={setView} />
-
-      {/* <AboutSection/>
-      <WisdomSection/>
-      <MeditateSection/>
-      <DonateSection/> */}
       <Footer view={view} onBack={() => setView("hub")} onNavigate={setView} />
     </div>
   );

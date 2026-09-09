@@ -27,7 +27,9 @@ function MemberGate({ children }) {
 
 function App() {
   return (
-    <BrowserRouter basename="/staging/goldenage">
+    // basename follows vite.config's `base` — one setting drives assets and routing
+    // ('/staging/goldenage/' on team staging, '/staging/preview/' on preview, '/' in production).
+    <BrowserRouter basename={import.meta.env.BASE_URL}>
       <LanguageProvider>
         <MemberAuthProvider>
           <Routes>
@@ -35,11 +37,7 @@ function App() {
 
             <Route path="/join" element={<JoinPage />} />
             <Route path="/register/:slug" element={<RegisterPage />} />
-
-            <Route
-              path="/auth/callback"
-              element={<AuthCallbackPage />}
-            />
+            <Route path="/auth/callback" element={<AuthCallbackPage />} />
 
             <Route
               path="/dashboard/*"
@@ -50,14 +48,24 @@ function App() {
               }
             />
 
+            {/* Public site: "/" is the hub, "/:slug" a section (/wisdom, /meditation, …) or a CMS page */}
             <Route
-              path="*"
+              path="/"
               element={
                 <MaintenanceGate>
                   <HomePage />
                 </MaintenanceGate>
               }
             />
+            <Route
+              path="/:slug"
+              element={
+                <MaintenanceGate>
+                  <HomePage />
+                </MaintenanceGate>
+              }
+            />
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </MemberAuthProvider>
       </LanguageProvider>

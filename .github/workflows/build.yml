@@ -1,0 +1,58 @@
+name: Build deploy zips
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      target:
+        description: "Which frontend build"
+        type: choice
+        options: [staging, production]
+        default: staging
+
+jobs:
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20, cache: npm, cache-dependency-path: frontend/package-lock.json }
+      - name: Configure target
+        working-directory: frontend
+        run: |
+          TARGET="${{ github.event.inputs.target || 'staging' }}"
+          if [ "$TARGET" = "production" ]; then
+            echo "VITE_API_URL=https://goldenagewisdom.org/backend/api/v1" > .env.production
+            sed -i "s#base: '/staging/goldenage/'#base: '/'#" vite.config.js
+          else
+            echo "VITE_API_URL=https://goldenagewisdom.org/staging/backend/api/v1" > .env.production
+          fi
+          echo "Building for $TARGET"
+      - run: npm ci
+        working-directory: frontend
+      - run: npm run build
+        working-directory: frontend
+      - run: cp deploy/htaccess-frontend frontend/dist/.htaccess
+      - uses: actions/upload-artifact@v4
+        with:
+          name: frontend-${{ github.event.inputs.target || 'staging' }}
+          path: frontend/dist
+          include-hidden-files: true
+
+  backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with: { php-version: "8.3", tools: composer:v2 }
+      - run: composer install --no-dev --optimize-autoloader --no-interaction
+        working-directory: backend
+      - run: cp deploy/htaccess-backend-root backend/.htaccess
+      - name: Strip local-only files
+        run: rm -rf backend/tests backend/node_modules backend/.env backend/storage/logs/*.log
+      - uses: actions/upload-artifact@v4
+        with:
+          name: backend
+          path: backend
+          include-hidden-files: true

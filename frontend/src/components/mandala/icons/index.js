@@ -17,12 +17,4 @@ export const chakraIcons = {
   "meditate-now": IconHeart,
 };
 
-export {
-  IconCrown,
-  IconThirdEye,
-  IconSacral,
-  IconRoot,
-  IconThroat,
-  IconSolarPlexus,
-  IconHeart,
-};
+export { IconCrown, IconThirdEye, IconSacral, IconRoot, IconThroat, IconSolarPlexus, IconHeart };

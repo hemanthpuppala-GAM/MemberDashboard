@@ -1,33 +1,21 @@
-import { useLayoutEffect, useRef } from "react";
 import { heartChakra } from "../../data/chakras";
+import logoCoin from "../../assets/logo-coin.jpg";
 
-const ARC_LABEL_PATH_ID = "center-orb-arc-label-path";
+const BEADS = [
+  "var(--color-chakra-crown)",
+  "var(--color-chakra-thirdeye)",
+  "var(--color-chakra-throat)",
+  "var(--color-chakra-heart)",
+  "var(--color-chakra-solar)",
+  "var(--color-chakra-sacral)",
+  "var(--color-chakra-root)",
+];
 
 /**
- * Anahata / Heart — fixed centre of the mandala (live site orb).
+ * Anahata / Heart — the mandala's centre is the coin itself ("Living Coin").
+ * Seven chakra beads run down the meditator on the coin and light in sequence.
  */
 export default function CenterOrb({ onNavigate }) {
-  const textPathRef = useRef(null);
-  const orbRef = useRef(null);
-
-  useLayoutEffect(() => {
-    const el = textPathRef.current;
-    if (!el) return;
-    el.textContent = "Mass Meditation · ";
-    const path = el.ownerDocument.getElementById(ARC_LABEL_PATH_ID);
-    if (path) {
-      el.setAttribute("textLength", String(path.getTotalLength()));
-      el.setAttribute("lengthAdjust", "spacing");
-    }
-    const orb = orbRef.current;
-    const lab = el.ownerDocument.querySelector(".m-node-label");
-    const w = orb ? orb.getBoundingClientRect().width : 0;
-    if (w > 20 && lab && el.parentElement) {
-      const target = parseFloat(getComputedStyle(lab).fontSize) || 14;
-      el.parentElement.style.fontSize = `${((target * 200) / w).toFixed(2)}px`;
-    }
-  }, []);
-
   const handleClick = (e) => {
     if (onNavigate) {
       e.preventDefault();
@@ -36,67 +24,57 @@ export default function CenterOrb({ onNavigate }) {
   };
 
   return (
-    <a
-      ref={orbRef}
-      href={heartChakra.href}
-      onClick={handleClick}
-      title="Mass meditation for global peace"
-      aria-label={`${heartChakra.label} — join the daily group meditation`}
-      className="m-orb animate-breathe relative z-[5] -top-1 flex aspect-square w-[clamp(88px,calc(var(--orbit-r)*0.78),128px)] flex-col items-center justify-center gap-1 rounded-full border border-[rgba(198,161,91,0.75)] no-underline outline-none backdrop-blur-[12px]"
-      style={{
-        background:
-          "radial-gradient(circle at 38% 34%, rgba(198,161,91,0.42), rgba(58,42,30,0.55) 55%, rgba(30,22,16,0.72))",
-        boxShadow:
-          "0 0 50px rgba(198,161,91,0.35), 0 0 70px rgba(168,185,160,0.22), inset 0 0 22px rgba(255,255,255,0.12)",
-      }}
+    <div
+      className="relative z-[5] aspect-square w-[clamp(96px,calc(var(--orbit-r)*0.9),440px)]"
+      style={{ perspective: 900 }}
     >
-      <svg
-        viewBox="0 0 100 100"
-        className="relative z-[1] block h-[46%] w-[46%] shrink-0"
-        style={{ filter: "drop-shadow(0 2px 16px rgba(230,211,168,0.7))" }}
-      >
-        <polygon
-          points="50,8 86,71 14,71"
-          fill="none"
-          stroke="#f7f1e3"
-          strokeWidth="3"
-          strokeLinejoin="round"
-        />
-        <polygon
-          points="50,92 14,29 86,29"
-          fill="none"
-          stroke="#f7f1e3"
-          strokeWidth="3"
-          strokeLinejoin="round"
-        />
-      </svg>
-
-      <svg
-        viewBox="0 0 200 200"
+      <span
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 h-full w-full overflow-visible"
+        className="pointer-events-none absolute left-1/2 top-1/2 aspect-square w-[105%] -translate-x-1/2 -translate-y-1/2 rounded-full border border-[rgba(232,207,131,0.45)]"
+        style={{ animation: "hero-ripple 9s ease-out infinite" }}
+      />
+      <a
+        href={heartChakra.href}
+        onClick={handleClick}
+        title="Mass meditation for global peace"
+        aria-label={`${heartChakra.label} — join the daily group meditation`}
+        className="m-orb animate-coin-tilt animate-breathe-glow relative block h-full w-full overflow-hidden rounded-full bg-[#0F0D0B] no-underline outline-none"
+        style={{
+          clipPath: "circle(50%)",
+          boxShadow:
+            "0 24px 60px rgba(0,0,0,.55), 0 0 50px rgba(201,162,74,.28), 0 0 0 2.5px rgba(60,42,16,.95), 0 1px 0 1px rgba(232,207,131,.6)",
+        }}
       >
-        <defs>
-          <path
-            id={ARC_LABEL_PATH_ID}
-            d="M100,100 m-66,0 a66,66 0 1,1 132,0 a66,66 0 1,1 -132,0"
-            fill="none"
+        <img
+          src={logoCoin}
+          alt=""
+          className="absolute inset-0 h-full w-full object-cover"
+          style={{ transform: "scale(1.45)" }}
+        />
+        {BEADS.map((color, i) => (
+          <span
+            key={color}
+            aria-hidden="true"
+            className="absolute left-1/2 h-[5%] w-[5%] -translate-x-1/2 -translate-y-1/2 rounded-full"
+            style={{
+              top: `${43.5 + i * 6}%`,
+              background: color,
+              boxShadow: `0 0 14px 4px ${color}`,
+              animation: `coin-bead 10s ease-in-out ${(i * 0.9).toFixed(1)}s infinite`,
+            }}
           />
-        </defs>
-        <text
-          className="font-body font-medium uppercase"
-          style={{
-            fill: "#e6d3a8",
-            filter: "drop-shadow(0 1px 4px rgba(24,17,10,0.95))",
-          }}
-        >
-          <textPath
-            ref={textPathRef}
-            href={`#${ARC_LABEL_PATH_ID}`}
-            startOffset="0%"
-          />
-        </text>
-      </svg>
-    </a>
+        ))}
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 rounded-full mix-blend-screen"
+          style={{ background: "radial-gradient(circle at 32% 26%, rgba(255,244,214,.4), rgba(255,244,214,0) 45%)" }}
+        />
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 rounded-full"
+          style={{ boxShadow: "inset 0 0 0 1.5px rgba(232,207,131,.6), inset 0 4px 10px rgba(255,240,200,.25), inset 0 -6px 12px rgba(0,0,0,.65)" }}
+        />
+      </a>
+    </div>
   );
 }

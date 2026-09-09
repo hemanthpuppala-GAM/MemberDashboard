@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Menu, X } from "lucide-react";
-import logoMark from "../../assets/logo-golden-age.jpg";
-import Button from "../ui/Button";
+import CoinLogo from "../ui/CoinLogo";
 import LanguageSwitcher from "./LanguageSwitcher";
 import { useLanguage } from "../../lib/LanguageContext";
 import { useCustomPages } from "../../hooks/useCustomPages";
@@ -10,23 +9,32 @@ import { useCustomPages } from "../../hooks/useCustomPages";
 const NAV_LINKS = [
   { key: "nav.about", view: "about" },
   { key: "nav.wisdom", view: "wisdom" },
+  { key: "nav.wellness", view: "wellness" },
   { key: "nav.meditation", view: "practice" },
   { key: "nav.events", view: "events" },
   { key: "nav.mission", view: "mission" },
-  { key: "nav.volunteer", view: "volunteer" },
+];
+
+/**
+ * Secondary links (right of the section nav, before Join). `privacy` has no
+ * dedicated section — it resolves to the CMS custom page with slug "privacy"
+ * (publicRoutes.viewForSlug falls through to PageSections), so admins own the copy.
+ */
+const UTILITY_LINKS = [
   { key: "nav.support", view: "donate" },
-  { key: "nav.contact", view: "contact" },
+  { key: "nav.volunteer", view: "volunteer" },
+  { key: "nav.privacy", view: "privacy", fallback: "Privacy" },
 ];
 
 function navLinkClass(active) {
-  return `rounded-full px-3.5 py-1.5 font-display text-[15px] tracking-[0.01em] transition-all duration-200 ${
+  return `whitespace-nowrap border-b pb-[3px] font-body text-[11px] tracking-[0.1em] uppercase transition-colors duration-200 ${
     active
-      ? "bg-[rgba(168,185,160,0.35)] text-[var(--color-ink)] shadow-[0_0_14px_rgba(168,185,160,0.30)]"
-      : "text-[var(--color-muted)] hover:bg-[var(--color-gold)] hover:text-[var(--color-on-gold)]"
+      ? "border-[var(--color-gold-light)] text-[var(--color-gold-light)]"
+      : "border-transparent text-[rgba(237,230,214,0.7)] hover:text-[var(--color-cream)]"
   }`;
 }
 
-/** Full-height slide-in nav for narrow screens — mirrors the built-in + custom links shown in the desktop bar. */
+/** Full-height slide-in nav for narrow screens. */
 function MobileNavDrawer({ open, onClose, links, activeView, onNavigate }) {
   useEffect(() => {
     if (!open) return undefined;
@@ -41,18 +49,18 @@ function MobileNavDrawer({ open, onClose, links, activeView, onNavigate }) {
 
   return (
     <div className="lg:hidden">
-      <div className="fixed inset-0 z-[60] bg-black/40" onClick={onClose} aria-hidden="true" />
+      <div className="fixed inset-0 z-[60] bg-black/60" onClick={onClose} aria-hidden="true" />
       <div
         role="dialog"
         aria-modal="true"
         aria-label="Site menu"
-        className="fixed top-0 right-0 z-[61] flex h-dvh w-[min(320px,85vw)] flex-col gap-1 overflow-y-auto bg-[var(--color-bg)] p-5 pt-6 shadow-[-10px_0_40px_rgba(0,0,0,0.20)]"
+        className="fixed top-0 right-0 z-[61] flex h-dvh w-[min(320px,85vw)] flex-col gap-1 overflow-y-auto bg-[var(--color-night)] p-5 pt-6 shadow-[-10px_0_40px_rgba(0,0,0,0.5)]"
       >
         <button
           type="button"
           onClick={onClose}
           aria-label="Close menu"
-          className="mb-3 flex h-9 w-9 shrink-0 items-center justify-center self-end rounded-full text-[var(--color-muted)] hover:bg-[var(--color-gold)] hover:text-[var(--color-on-gold)]"
+          className="mb-3 flex h-9 w-9 shrink-0 items-center justify-center self-end rounded-full text-[var(--color-cream)] hover:bg-[rgba(201,162,74,0.15)]"
         >
           <X size={18} />
         </button>
@@ -66,19 +74,11 @@ function MobileNavDrawer({ open, onClose, links, activeView, onNavigate }) {
                 onNavigate?.(view);
                 onClose();
               }}
-              className={`group relative w-full overflow-hidden rounded-full text-left font-display text-[15px] tracking-[0.01em] ${
-                active ? "text-[var(--color-ink)]" : "text-[var(--color-muted)]"
+              className={`w-full rounded-lg px-4 py-3 text-left font-body text-[13px] tracking-[0.1em] uppercase transition-colors ${
+                active ? "bg-[rgba(201,162,74,0.15)] text-[var(--color-gold-light)]" : "text-[rgba(237,230,214,0.75)] hover:bg-[rgba(201,162,74,0.1)] hover:text-[var(--color-cream)]"
               }`}
             >
-              <span
-                aria-hidden="true"
-                className={`absolute inset-0 origin-left bg-[var(--color-gold)] transition-transform duration-300 ease-out group-hover:scale-x-100 group-active:scale-x-100 ${
-                  active ? "scale-x-100 bg-[rgba(168,185,160,0.35)]" : "scale-x-0"
-                }`}
-              />
-              <span className="relative z-10 block px-4 py-2.5 transition-colors duration-300 group-hover:text-[var(--color-on-gold)] group-active:text-[var(--color-on-gold)]">
-                {label ?? key}
-              </span>
+              {label ?? key}
             </button>
           );
         })}
@@ -87,7 +87,7 @@ function MobileNavDrawer({ open, onClose, links, activeView, onNavigate }) {
   );
 }
 
-/** Top bar — logo · section nav · language switcher · Join free. Same light bar on every view, including the hub. */
+/** Night header — coin · wordmark · section nav · language · Join. Full-width bar, same on every view. */
 export default function Header({ onLogoClick, onNavigate, activeView = "hub" }) {
   const { t } = useLanguage();
   const customPages = useCustomPages();
@@ -96,30 +96,27 @@ export default function Header({ onLogoClick, onNavigate, activeView = "hub" }) 
   const drawerLinks = [
     ...NAV_LINKS.map(({ key, view }) => ({ view, label: t(key) })),
     ...customPages.map(({ slug, title }) => ({ view: slug, label: title })),
+    ...UTILITY_LINKS.map(({ key, view, fallback }) => ({ view, label: t(key) === key ? fallback : t(key) })),
   ];
 
   return (
     <nav
-      className="relative z-50 mx-auto mt-3 flex w-[min(1180px,calc(100%-32px))] shrink-0 items-center justify-between gap-4 rounded-full border border-[rgba(168,185,160,0.35)] bg-[rgba(252,250,245,0.92)] px-2 py-1.5 backdrop-blur-[16px] sm:gap-5 sm:px-3"
+      className="relative z-50 flex w-full shrink-0 items-center justify-between gap-6 border-b border-[rgba(201,162,74,0.22)] bg-[rgba(5,8,15,0.82)] px-5 py-3 backdrop-blur-[14px] sm:px-8 lg:px-12"
       aria-label="Primary"
-      style={{ boxShadow: "0 4px 24px rgba(168,185,160,0.12)" }}
     >
       <button
         type="button"
         onClick={onLogoClick}
-        className="flex min-w-0 shrink-0 cursor-pointer items-center justify-start border-0 bg-transparent p-0 text-left"
+        className="flex min-w-0 shrink-0 cursor-pointer items-center gap-3 border-0 bg-transparent p-0 text-left whitespace-nowrap"
         aria-label="Golden Age Wisdom — Home"
       >
-        <img
-          src={logoMark}
-          alt="Golden Age Wisdom"
-          width={72}
-          height={72}
-          className="h-11 w-11 shrink-0 rounded-full border border-[var(--color-gold)]/50 object-cover shadow-[0_0_18px_rgba(168,185,160,0.25)] sm:h-12 sm:w-12"
-        />
+        <CoinLogo size={44} />
+        <span className="hidden font-display text-[14px] tracking-[0.18em] text-[var(--color-cream)] sm:inline">
+          GOLDEN AGE <span className="ml-1.5 text-[10px] tracking-[0.3em] text-[var(--color-gold)]">WISDOM</span>
+        </span>
       </button>
 
-      <div className="hidden min-w-0 flex-1 items-center justify-center gap-1 lg:flex">
+      <div className="hidden min-w-0 flex-1 items-center justify-center gap-[clamp(12px,1.8vw,28px)] lg:flex">
         {NAV_LINKS.map(({ key, view }) => (
           <button key={view} type="button" onClick={() => onNavigate?.(view)} className={navLinkClass(activeView === view)}>
             {t(key)}
@@ -132,20 +129,27 @@ export default function Header({ onLogoClick, onNavigate, activeView = "hub" }) 
         ))}
       </div>
 
-      <div className="flex min-w-0 shrink-0 items-center justify-end gap-2.5">
+      <div className="flex min-w-0 shrink-0 items-center justify-end gap-3 whitespace-nowrap">
+        <div className="hidden items-center gap-[clamp(10px,1.4vw,20px)] border-r border-[rgba(201,162,74,0.22)] pr-4 xl:flex">
+          {UTILITY_LINKS.map(({ key, view, fallback }) => (
+            <button key={view} type="button" onClick={() => onNavigate?.(view)} className={navLinkClass(activeView === view)}>
+              {t(key) === key ? fallback : t(key)}
+            </button>
+          ))}
+        </div>
         <LanguageSwitcher />
-        <Button
-          as={Link}
+        <Link
           to="/join"
-          className="px-4 py-1.5 text-[13.5px] shadow-[0_0_20px_rgba(198,161,91,0.25)]"
+          className="rounded-full px-5 py-2.5 font-body text-[11px] font-medium tracking-[0.12em] text-[var(--color-on-gold)] uppercase shadow-[0_0_30px_rgba(201,162,74,0.35)] transition-shadow hover:shadow-[0_0_40px_rgba(201,162,74,0.55)]"
+          style={{ background: "linear-gradient(135deg, #E8CF83, #C9A24A)" }}
         >
           {t("nav.join_free")}
-        </Button>
+        </Link>
         <button
           type="button"
           onClick={() => setMenuOpen(true)}
           aria-label="Open menu"
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[var(--color-muted)] hover:bg-[var(--color-gold)] hover:text-[var(--color-on-gold)] lg:hidden"
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-[var(--color-cream)] hover:bg-[rgba(201,162,74,0.15)] lg:hidden"
         >
           <Menu size={19} />
         </button>

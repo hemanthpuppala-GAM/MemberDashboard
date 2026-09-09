@@ -1,0 +1,14 @@
+# Backend root — place as .htaccess in backend/ (beside artisan)
+# Forwards every request into public/ so the API works from a subfolder
+# without changing the cPanel document root.
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteCond %{REQUEST_URI} !^/(staging/)?backend/public/
+  RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
+
+# Nothing but public/ should ever be readable over HTTP
+<FilesMatch "^(\.env|artisan|composer\.(json|lock)|package\.json)$">
+  Require all denied
+</FilesMatch>
+Options -Indexes

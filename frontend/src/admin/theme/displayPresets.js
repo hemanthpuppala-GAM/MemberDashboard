@@ -1,24 +1,24 @@
 /**
  * Preset color palettes, font choices, and text-size scale for the admin panel's
- * "Display" preferences (Settings > Appearance). Each color preset carries a full
- * light + dark token bundle so switching presets stays coherent in both modes.
+ * "Display" preferences (Settings > Appearance). The first preset is the brand
+ * default and mirrors theme/theme.css (coin gold + dusk-sky blue).
  */
 
 export const COLOR_PRESETS = [
   {
     id: "gold-blue",
-    label: "Gold & Blue",
+    label: "Gold & Dusk (brand)",
     light: {
-      accent: "#B8923F", accentHover: "#9C7A2E", accentMuted: "#FAF1DA",
-      accentFrom: "#F3D89A", accentTo: "#DCB96A", accentInk: "#3C2B10",
-      focus: "#2F9FD1", focusHover: "#2688B5", focusMuted: "rgba(110,198,234,0.18)",
-      border: "#E6E1F5",
+      accent: "#C9A24A", accentHover: "#8A6A22", accentMuted: "#F6EED8",
+      accentFrom: "#E8CF83", accentTo: "#C9A24A", accentInk: "#2A1F08",
+      focus: "#3C5A85", focusHover: "#2E4668", focusMuted: "rgba(107,141,181,0.18)",
+      border: "#E6DECF",
     },
     dark: {
-      accent: "#E6D3A8", accentHover: "#F2E9D8", accentMuted: "rgba(213,183,124,0.16)",
-      accentFrom: "#E6D3A8", accentTo: "#B89758", accentInk: "#2A1F08",
-      focus: "#6EC6EA", focusHover: "#8ED4EF", focusMuted: "rgba(110,198,234,0.22)",
-      border: "rgba(213,183,124,0.22)",
+      accent: "#E8CF83", accentHover: "#F2E6C4", accentMuted: "rgba(201,162,74,0.16)",
+      accentFrom: "#E8CF83", accentTo: "#8A6A22", accentInk: "#2A1F08",
+      focus: "#6B8DB5", focusHover: "#8FAACB", focusMuted: "rgba(107,141,181,0.22)",
+      border: "rgba(201,162,74,0.22)",
     },
   },
   {
@@ -27,13 +27,13 @@ export const COLOR_PRESETS = [
     light: {
       accent: "#2F8F63", accentHover: "#25764F", accentMuted: "#E1F3EA",
       accentFrom: "#7FD1A6", accentTo: "#2F8F63", accentInk: "#042216",
-      focus: "#2F9FD1", focusHover: "#2688B5", focusMuted: "rgba(110,198,234,0.18)",
+      focus: "#3C5A85", focusHover: "#2E4668", focusMuted: "rgba(107,141,181,0.18)",
       border: "#E0F0E8",
     },
     dark: {
       accent: "#7FE3B4", accentHover: "#9BEAC4", accentMuted: "rgba(127,227,180,0.16)",
       accentFrom: "#7FE3B4", accentTo: "#2F8F63", accentInk: "#042216",
-      focus: "#6EC6EA", focusHover: "#8ED4EF", focusMuted: "rgba(110,198,234,0.22)",
+      focus: "#6B8DB5", focusHover: "#8FAACB", focusMuted: "rgba(107,141,181,0.22)",
       border: "rgba(127,227,180,0.2)",
     },
   },
@@ -59,21 +59,21 @@ export const COLOR_PRESETS = [
     light: {
       accent: "#4B5565", accentHover: "#3A4250", accentMuted: "#E7E9ED",
       accentFrom: "#8792A2", accentTo: "#4B5565", accentInk: "#FFFFFF",
-      focus: "#2F9FD1", focusHover: "#2688B5", focusMuted: "rgba(110,198,234,0.18)",
+      focus: "#3C5A85", focusHover: "#2E4668", focusMuted: "rgba(107,141,181,0.18)",
       border: "#E3E5EA",
     },
     dark: {
       accent: "#B7BECB", accentHover: "#CBD1DA", accentMuted: "rgba(183,190,203,0.16)",
       accentFrom: "#B7BECB", accentTo: "#7C8798", accentInk: "#1B2027",
-      focus: "#6EC6EA", focusHover: "#8ED4EF", focusMuted: "rgba(110,198,234,0.22)",
+      focus: "#6B8DB5", focusHover: "#8FAACB", focusMuted: "rgba(107,141,181,0.22)",
       border: "rgba(183,190,203,0.22)",
     },
   },
 ];
 
 export const FONT_OPTIONS = [
+  { id: "manrope", label: "Manrope", stack: '"Manrope", "Segoe UI", sans-serif' },
   { id: "outfit", label: "Outfit", stack: '"Outfit", "Segoe UI", sans-serif' },
-  { id: "inter", label: "Inter", stack: '"Inter", "Segoe UI", sans-serif' },
   { id: "georgia", label: "Georgia", stack: 'Georgia, "Times New Roman", serif' },
   { id: "system", label: "System UI", stack: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' },
 ];

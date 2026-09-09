@@ -4,3 +4,20 @@
 # OS junk
 .DS_Store
 Thumbs.db
+
+# Never commit secrets or build output
+backend/.env
+frontend/.env
+frontend/.env.production
+frontend/dist/
+frontend/dist.zip
+backend.zip
+backend/vendor/
+backend/node_modules/
+frontend/node_modules/
+backend/storage/logs/*.log
+backend/storage/framework/cache/*
+backend/storage/framework/sessions/*
+backend/storage/framework/views/*
+backend/public/storage
+backend.zip

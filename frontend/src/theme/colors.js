@@ -1,39 +1,42 @@
 /**
- * JS-side mirror of theme.css tokens, for places Tailwind classes can't
- * reach directly (inline glow colors passed as CSS custom properties,
- * SVG fills). Keep values in sync with ./theme.css by hand — there are
- * only ~16 tokens, a build-step sync isn't worth it at this scale.
+ * JS-side mirror of theme.css tokens (v2). Keep in sync by hand.
  */
 
 export const colors = {
-  bg: "#FCFAF5",
-  bgSoft: "#F5F1E8",
+  night: "#05080F",
+  nightSoft: "#0C1728",
+  dusk: "#3C5A85",
+  duskLight: "#6B8DB5",
+
+  bg: "#F8F5EE",
+  bgSoft: "#EFE9DD",
   surface: "#FFFFFF",
 
-  blue: "#A8B9A0",
-  blueSoft: "#D6E0D1",
-  blueDark: "#5F7658",
+  blue: "#6B8DB5",
+  blueSoft: "#E3EAF2",
+  blueDark: "#3C5A85",
 
-  goldLight: "#DCC58A",
-  gold: "#C6A15B",
-  goldDeep: "#8A6A32",
-  goldLive: "#7A9B6E",
-  onGold: "#3A2A12",
+  goldLight: "#E8CF83",
+  gold: "#C9A24A",
+  goldDeep: "#8A6A22",
+  goldLive: "#3FA65B",
+  onGold: "#2A1F08",
 
-  ink: "#30302D",
-  muted: "#9A968D",
-  mutedSoft: "#B5B1A6",
+  ink: "#1E2A3C",
+  muted: "#6B655C",
+  mutedSoft: "#8A8377",
+  cream: "#F2E6C4",
 
-  sage: "#A8B9A0",
+  sage: "#6B8DB5",
   lavender: "#C8B9D9",
 
   chakra: {
-    crown: "#AA8BC2",
-    thirdEye: "#9187B8",
-    throat: "#79AFC0",
-    heart: "#88B28A",
-    solar: "#D6B85C",
-    sacral: "#D99A62",
-    root: "#C96B6B",
+    crown: "#8E5BC8",
+    thirdEye: "#5B6BD6",
+    throat: "#3F8FD6",
+    heart: "#3FA65B",
+    solar: "#E8B93A",
+    sacral: "#E8792F",
+    root: "#D63B3B",
   },
 };
