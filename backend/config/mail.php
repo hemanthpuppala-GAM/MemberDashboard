@@ -65,6 +65,15 @@ return [
             'transport' => 'resend',
         ],
 
+        // Brevo (formerly Sendinblue) transactional email API — not one of
+        // Laravel's built-in drivers, registered via Mail::extend('brevo', ...)
+        // in AppServiceProvider::boot(). Needs an API key (Brevo dashboard →
+        // SMTP & API → API Keys), not an SMTP key.
+        'brevo' => [
+            'transport' => 'brevo',
+            'api_key' => env('BREVO_API_KEY'),
+        ],
+
         'sendmail' => [
             'transport' => 'sendmail',
             'path' => env('MAIL_SENDMAIL_PATH', '/usr/sbin/sendmail -bs -i'),

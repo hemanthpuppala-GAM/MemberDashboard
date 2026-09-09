@@ -44,4 +44,19 @@ class Setting extends Model
 
     /** Never returned by GET /admin/settings — write-only. */
     public const WRITE_ONLY_KEYS = ['email.smtp_password'];
+
+    private static function value(string $key): string
+    {
+        return static::where('key', $key)->value('value') ?? static::DEFAULTS[$key];
+    }
+
+    public static function adminEmail(): string
+    {
+        return static::value('general.admin_email');
+    }
+
+    public static function notifyOnSubmission(): bool
+    {
+        return static::value('email.notify_on_submission') === 'true';
+    }
 }
