@@ -3,6 +3,7 @@
 namespace App\Services\Auth;
 
 use App\Models\People\Member;
+use App\Services\Mail\MemberWelcomeMailer;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 
@@ -13,6 +14,8 @@ use Illuminate\Support\Str;
 class OAuthService
 {
     public const PROVIDERS = ['google', 'microsoft', 'facebook', 'apple'];
+
+    public function __construct(private MemberWelcomeMailer $welcomeMailer) {}
 
     public function isConfigured(string $provider): bool
     {
@@ -93,6 +96,9 @@ class OAuthService
                 'join_date' => now(),
             ]);
 
+        $isFirstLogin = ! $member->exists
+            || (! filled($member->password) && ! filled($member->oauth_provider));
+
         $member->fill([
             'name' => $identity['name'] ?: ($member->name ?: Str::before($email, '@')),
             'email' => $email,
@@ -101,6 +107,10 @@ class OAuthService
             'avatar_url' => $identity['avatar'] ?? $member->avatar_url,
         ]);
         $member->save();
+
+        if ($isFirstLogin) {
+            $this->welcomeMailer->send($member);
+        }
 
         return $member;
     }

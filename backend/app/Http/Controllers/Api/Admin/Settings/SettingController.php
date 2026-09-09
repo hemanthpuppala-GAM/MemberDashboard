@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Admin\Settings;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Settings\SettingUpdateRequest;
 use App\Models\Settings\Setting;
+use App\Services\Mail\SmtpSettings;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Mail;
 
@@ -33,6 +34,7 @@ class SettingController extends Controller
     public function testEmail()
     {
         try {
+            SmtpSettings::apply();
             Mail::raw('This is a test email from the Golden Age Wisdom admin panel.', function ($message) {
                 $message->to(Setting::where('key', 'general.admin_email')->value('value') ?? Setting::DEFAULTS['general.admin_email'])
                     ->subject('Test email');
