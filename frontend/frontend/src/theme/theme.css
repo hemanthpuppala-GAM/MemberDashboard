@@ -1,0 +1,99 @@
+/*
+  Golden Age Wisdom — design tokens (v2, from the coin logo).
+  Night (ink) for header/footer/hero, warm ivory paper for reading,
+  gold as the single warm accent, dusk-sky blue as the single cool accent.
+  Chakra hues are jewel-toned like the enamel beads on the logo and stay
+  scoped to their own node/section only.
+*/
+
+@theme {
+  /* ---- Night surfaces ---- */
+  --color-night: #05080F;
+  --color-night-soft: #0C1728;
+  --color-dusk: #3C5A85;
+  --color-dusk-light: #6B8DB5;
+  --color-dawn: #C9D3E0;
+
+  /* ---- Paper surfaces (reading) ---- */
+  --color-bg: #F8F5EE;
+  --color-bg-soft: #EFE9DD;
+  --color-surface: #FFFFFF;
+  --color-surface-glass: rgba(248,245,238, 0.92);
+  --color-border: #E6DECF;
+  --color-border-strong: #A08B60;
+
+  /* ---- Secondary accent: dusk-sky blue (replaces sage) ---- */
+  --color-blue: #6B8DB5;
+  --color-blue-soft: #E3EAF2;
+  --color-blue-dark: #3C5A85;
+  --color-blue-glow: rgba(107,141,181, 0.40);
+
+  /* ---- Gold accent (from the coin) ---- */
+  --color-gold-light: #E8CF83;
+  --color-gold: #C9A24A;
+  --color-gold-deep: #8A6A22;
+  --color-gold-live: #3FA65B;
+  --color-on-gold: #2A1F08;
+
+  /* ---- Text ---- */
+  --color-ink: #1E2A3C;
+  --color-ink-soft: #4A5568;
+  --color-muted: #6B655C;
+  --color-muted-soft: #8A8377;
+  --color-cream: #F2E6C4;
+
+  /* ---- Soft accents ---- */
+  --color-sage: #6B8DB5;
+  --color-lavender: #C8B9D9;
+
+  /* ---- Chakra colors (jewel tones, scoped to their node/section) ---- */
+  --color-chakra-crown: #8E5BC8;
+  --color-chakra-thirdeye: #5B6BD6;
+  --color-chakra-throat: #3F8FD6;
+  --color-chakra-heart: #3FA65B;
+  --color-chakra-solar: #E8B93A;
+  --color-chakra-sacral: #E8792F;
+  --color-chakra-root: #D63B3B;
+
+  /* ---- Type ---- */
+  --font-display: "Marcellus", "Georgia", serif;
+  --font-headline: "Cormorant Garamond", "Marcellus", "Georgia", serif;
+  --font-body: "Manrope", "Outfit", "Segoe UI", sans-serif;
+
+  /* ---- Motion ---- */
+  --ease-breathe: cubic-bezier(0.45, 0, 0.55, 1);
+}
+
+/* ---- Motion (Living Coin hero) ---- */
+@keyframes coin-tilt { 0%{transform:rotateX(3deg) rotateY(-6deg)} 50%{transform:rotateX(-3deg) rotateY(6deg)} 100%{transform:rotateX(3deg) rotateY(-6deg)} }
+@keyframes coin-bead { 0%,100%{opacity:.15;transform:scale(.7)} 12%{opacity:1;transform:scale(1.25)} 30%{opacity:.15;transform:scale(.7)} }
+@keyframes hero-rise { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:none} }
+@keyframes hero-aurora { 0%{transform:translateX(-6%) skewX(-8deg)} 50%{transform:translateX(6%) skewX(-4deg)} 100%{transform:translateX(-6%) skewX(-8deg)} }
+@keyframes hero-ripple { 0%{transform:scale(.95);opacity:.35} 100%{transform:scale(2.1);opacity:0} }
+@keyframes hero-ticker { 0%,100%{opacity:1} 50%{opacity:.3} }
+@keyframes slow-spin { to{transform:rotate(360deg)} }
+.animate-coin-tilt { animation: coin-tilt 18s ease-in-out infinite; transform-style: preserve-3d; }
+.hero-rise { animation: hero-rise .9s both; }
+@media (prefers-reduced-motion: reduce) {
+  .animate-coin-tilt, .hero-rise { animation: none; }
+}
+
+/* Breathing wheel — 5s in / 5s out, the Coherence Protocol rhythm. */
+@keyframes breathe { 0%,100%{transform:scale(.965)} 50%{transform:scale(1.035)} }
+@keyframes breathe-glow { 0%,100%{box-shadow:0 24px 60px rgba(0,0,0,.55),0 0 40px rgba(201,162,74,.18),0 0 0 2.5px rgba(60,42,16,.95),0 1px 0 1px rgba(232,207,131,.6)} 50%{box-shadow:0 24px 60px rgba(0,0,0,.55),0 0 110px rgba(201,162,74,.5),0 0 0 2.5px rgba(60,42,16,.95),0 1px 0 1px rgba(232,207,131,.6)} }
+@keyframes breathe-word { 0%,44%{opacity:1} 50%,94%{opacity:0} 100%{opacity:1} }
+@keyframes breathe-word2 { 0%,44%{opacity:0} 50%,94%{opacity:1} 100%{opacity:0} }
+.animate-breathe { animation: breathe 10s ease-in-out infinite; }
+
+/* ---- Sri Yantra hero (components/mandala/SriYantra.jsx) ---- */
+/* Triangles stroke themselves in on mount (pathLength="100" on the polygon). */
+@keyframes yantra-draw { from{stroke-dashoffset:100} to{stroke-dashoffset:0} }
+.yantra-draw { animation: yantra-draw 3s ease-out both; }
+/* Vertex nodes pop in; uses `scale` (not transform) so the centring translate is untouched. */
+@keyframes yantra-node-in { from{opacity:0;scale:.4} to{opacity:1;scale:1} }
+@media (prefers-reduced-motion: reduce) {
+  .yantra-draw, .animate-breathe, .sri-yantra * { animation: none !important; }
+}
+.animate-breathe-glow { animation: coin-tilt 18s ease-in-out infinite, breathe-glow 10s ease-in-out infinite; }
+.animate-breathe-word { animation: breathe-word 10s ease-in-out infinite; }
+.animate-breathe-word2 { animation: breathe-word2 10s ease-in-out infinite; }
