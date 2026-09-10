@@ -1,10 +1,9 @@
-import { useMemo, useState } from "react";
-import { Volume2, VolumeX } from "lucide-react";
+import { useMemo } from "react";
 import SriYantra from "../mandala/SriYantra";
 import Reveal from "../ui/Reveal";
 import { useSectionFields } from "../../hooks/usePage";
 import { getSessionTimeLabel } from "../../utils/peaceTime";
-import heroFallback from "../../assets/hero-hari-forest.png";
+import heroPortrait from "../../assets/hero-hari-forest.png";
 import { HOME } from "../../data/liveContent";
 
 /**
@@ -20,14 +19,10 @@ import { HOME } from "../../data/liveContent";
  * └──────────────────────────────┘        │ portrait (bg)    │
  *                                         └──────────────────┘
  *
- * The wheel is a single fluid component sized by `--yantra-r`; the portrait
- * is a full-bleed <img> whose focal point is CMS-driven, so there is no
- * pixel-positioning in this file — only the proportions of the reference mock.
- *
- * CMS (admin → Pages → Home → Hero) fields honoured:
- *   heading, subheading, description, cta_label, cta_href, image, image_mobile,
- *   video, focal_x, focal_y, show_mandala, mandala_radius (px), animation
- * Every field falls back to data/liveContent.js so the page never renders empty.
+ * Composition is locked in code: portrait, focal point, wheel radius and
+ * visibility are not CMS-driven. Admin (Pages → Home → Hero) edits copy only:
+ *   heading, subheading, description, cta_label, cta_href, animation
+ * Every field falls back to a default so the page never renders empty.
  */
 
 /** "\n" = line break, "*word*" = gold italic highlight (admin conventions). */
@@ -49,28 +44,21 @@ function renderHeroHeading(heading) {
   ));
 }
 
-/** Locked headline for the Sri Yantra hero — one line on desktop. CMS `heading` overrides. */
 const DEFAULT_HEADING = "Peace begins within — together we *radiate it*";
 const DEFAULT_SUBLINE = "Free daily group meditation with Dr Hari Krishna, MD.";
+/** Dr Hari sits in the right third of the source photo. */
+const PORTRAIT_FOCAL = "60% 30%";
+/** Wheel circumradius — tracks the viewport. */
+const YANTRA_RADIUS = "clamp(150px, min(19vw, 30vh), 270px)";
 
 export default function HeroSection({ onNavigate, onWatchIntro }) {
   const { fields } = useSectionFields("home", "hero");
-  const [videoMuted, setVideoMuted] = useState(true);
-  const sessionTime = useMemo(() => getSessionTimeLabel(), []); // "Daily at 8:30 PM IST" / "Daily at 11:00 AM EDT · 8:30 PM IST"
+  const sessionTime = useMemo(() => getSessionTimeLabel(), []);
 
-  const image = fields?.image || heroFallback;
   const heading = fields?.heading || DEFAULT_HEADING;
   const subline = fields?.subheading || DEFAULT_SUBLINE;
   const ctaLabel = fields?.cta_label || HOME.ctaLabel;
   const ctaHref = fields?.cta_href || HOME.ctaHref;
-  // Portrait focal point: Dr Hari sits in the right third of the source photo.
-  const focalX = Number(fields?.focal_x ?? 60);
-  const focalY = Number(fields?.focal_y ?? 30);
-  const showMandala = !["0", "false", false, 0].includes(fields?.show_mandala);
-  // Wheel circumradius. Admin `mandala_radius` pins it; otherwise it tracks the viewport.
-  const yantraR = fields?.mandala_radius
-    ? `${Number(fields.mandala_radius)}px`
-    : "clamp(150px, min(19vw, 30vh), 270px)";
 
   return (
     <section
@@ -79,48 +67,18 @@ export default function HeroSection({ onNavigate, onWatchIntro }) {
       aria-label="Welcome"
     >
       {/* ── Portrait (full-bleed, fades into the night on the left) ── */}
-      {/* Base wash sits under the masked portrait so its left edge is never a hard seam */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-0" style={{ background: "linear-gradient(90deg, #0C1728 0%, #142640 30%, #22406A 55%, #2F5482 100%)" }} />
-      <picture>
-        {fields?.image_mobile && <source media="(max-width: 767px)" srcSet={fields.image_mobile} />}
-        <img
-          src={image}
-          alt=""
-          fetchPriority="high"
-          style={{
-            objectPosition: `${focalX}% ${focalY}%`,
-            maskImage: "linear-gradient(90deg, transparent 0%, #000 22%)",
-            WebkitMaskImage: "linear-gradient(90deg, transparent 0%, #000 22%)",
-          }}
-          className={`pointer-events-none absolute inset-y-0 right-0 z-0 h-full w-[calc(100%-16vw)] object-cover max-lg:inset-x-0 max-lg:w-full max-lg:opacity-70 ${
-            fields?.video ? "lg:hidden motion-reduce:lg:block" : ""
-          }`}
-        />
-      </picture>
-
-      {fields?.video && (
-        <>
-          <video
-            src={fields.video}
-            poster={image}
-            autoPlay
-            muted={videoMuted}
-            loop
-            playsInline
-            preload="auto"
-            style={{ objectPosition: `${focalX}% ${focalY}%` }}
-            className="pointer-events-none absolute inset-0 z-0 hidden h-full w-full object-cover lg:block motion-reduce:hidden"
-          />
-          <button
-            type="button"
-            onClick={() => setVideoMuted((m) => !m)}
-            aria-label={videoMuted ? "Unmute background video" : "Mute background video"}
-            className="absolute bottom-4 left-4 z-30 hidden h-9 w-9 items-center justify-center rounded-full border border-[rgba(232,207,131,0.4)] bg-[rgba(5,8,15,0.5)] text-[var(--color-cream)] backdrop-blur-[8px] transition-all hover:border-[var(--color-gold)] lg:flex motion-reduce:hidden"
-          >
-            {videoMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
-          </button>
-        </>
-      )}
+      <img
+        src={heroPortrait}
+        alt=""
+        fetchPriority="high"
+        style={{
+          objectPosition: PORTRAIT_FOCAL,
+          maskImage: "linear-gradient(90deg, transparent 0%, #000 22%)",
+          WebkitMaskImage: "linear-gradient(90deg, transparent 0%, #000 22%)",
+        }}
+        className="pointer-events-none absolute inset-y-0 right-0 z-0 h-full w-[calc(100%-16vw)] object-cover max-lg:inset-x-0 max-lg:w-full max-lg:opacity-70"
+      />
 
       {/* ── Night washes: left (behind the wheel) + vertical (header / page hand-off) ── */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-[1] max-lg:hidden" style={{ background: "linear-gradient(90deg, rgba(12,23,40,.96) 0%, rgba(20,36,62,.9) 34%, rgba(20,36,62,.7) 50%, rgba(60,90,133,.25) 62%, rgba(60,90,133,0) 72%)" }} />
@@ -167,13 +125,11 @@ export default function HeroSection({ onNavigate, onWatchIntro }) {
       </Reveal>
 
       {/* ── Wheel: left half on desktop (portrait owns the right), centred below the copy on smaller screens ── */}
-      {showMandala && (
-        <div className="relative z-20 flex flex-1 items-center pt-[clamp(6px,1.5vh,14px)] pb-[clamp(20px,4vh,40px)] lg:w-[58%] lg:justify-center lg:pl-[2vw] max-lg:justify-center max-lg:px-4">
-          <div style={{ filter: "drop-shadow(0 30px 60px rgba(0,0,0,.55))" }}>
-            <SriYantra onNavigate={onNavigate} radius={yantraR} />
-          </div>
+      <div className="relative z-20 flex flex-1 items-center pt-[clamp(6px,1.5vh,14px)] pb-[clamp(20px,4vh,40px)] lg:w-[58%] lg:justify-center lg:pl-[2vw] max-lg:justify-center max-lg:px-4">
+        <div style={{ filter: "drop-shadow(0 30px 60px rgba(0,0,0,.55))" }}>
+          <SriYantra onNavigate={onNavigate} radius={YANTRA_RADIUS} />
         </div>
-      )}
+      </div>
     </section>
   );
 }

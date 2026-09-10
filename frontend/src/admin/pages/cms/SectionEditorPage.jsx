@@ -198,13 +198,11 @@ export default function SectionEditorPage() {
 
 function SectionFields({ type, content, set, openPicker, pageSlug }) {
   switch (type) {
-    case "hero": {
-      // Home's full-viewport background needs a real focal point to match its current
-      // portrait framing (subject positioned right-of-center); other pages' shorter,
-      // centered-text banner defaults to plain center — see HeroSection/HeroBannerSection.
+        case "hero": {
+      // Home's hero is the locked Sri Yantra composition — layout, portrait and mandala
+      // live in code (HeroSection/SriYantra), so admin only edits copy. Other pages use
+      // HeroBannerSection, which still reads a background image + focal point.
       const isHome = pageSlug === "home";
-      const defaultFocalX = isHome ? 72 : 50;
-      const defaultFocalY = isHome ? 28 : 50;
 
       return (
         <>
@@ -214,68 +212,24 @@ function SectionFields({ type, content, set, openPicker, pageSlug }) {
           <Field label="Body text"><TextArea rows={3} value={content.description ?? ""} onChange={(e) => set("description")(e.target.value)} /></Field>
           <div className="grid gap-5 sm:grid-cols-2">
             <Field label="CTA label"><TextInput value={content.cta_label ?? ""} onChange={(e) => set("cta_label")(e.target.value)} /></Field>
-            <Field label="CTA link"><TextInput value={content.cta_href ?? ""} onChange={(e) => set("cta_href")(e.target.value)} /></Field>
+            <Field label="CTA link" hint="Use a relative path, e.g. /join"><TextInput value={content.cta_href ?? ""} onChange={(e) => set("cta_href")(e.target.value)} /></Field>
           </div>
-          <ImageField value={content.image} onChange={set("image")} onPick={() => openPicker(set("image"))} label="Background image (desktop)" />
-          <ImageField
-            value={content.image_mobile}
-            onChange={set("image_mobile")}
-            onPick={() => openPicker(set("image_mobile"))}
-            label="Background image (mobile)"
-            hint="Optional — falls back to the desktop image if left empty. Use a portrait crop so the subject stays visible on small screens."
-          />
-          <VideoField
-            value={content.video}
-            onChange={set("video")}
-            onPick={() => openPicker(set("video"), "video")}
-            label="Background video (optional, desktop only)"
-            hint="Plays muted and looped in place of the desktop background image. Mobile always shows the image above instead, to save data — keep clips short (5–15s) and compressed."
-          />
-          <div className="grid gap-5 sm:grid-cols-2">
-            <RangeField
-              label="Background focal point — horizontal"
-              hint="Desktop only. The background always fills edge-to-edge, cropping as needed — this controls which part stays visible."
-              value={content.focal_x ?? defaultFocalX}
-              onChange={set("focal_x")}
-            />
-            <RangeField
-              label="Background focal point — vertical"
-              hint="Desktop only."
-              value={content.focal_y ?? defaultFocalY}
-              onChange={set("focal_y")}
-            />
-          </div>
-          {isHome && (
-            <Toggle
-              checked={content.show_mandala ?? true}
-              onChange={set("show_mandala")}
-              label="Show chakra wheel"
-              description="Turn off to hide the orbiting chakra icons — useful when a background video needs full visual focus, without them competing for attention."
-            />
+
+          {!isHome && (
+            <>
+              <ImageField value={content.image} onChange={set("image")} onPick={() => openPicker(set("image"))} label="Background image" />
+              <div className="grid gap-5 sm:grid-cols-2">
+                <RangeField
+                  label="Background focal point — horizontal"
+                  hint="The background fills edge-to-edge, cropping as needed — this controls which part stays visible."
+                  value={content.focal_x ?? 50}
+                  onChange={set("focal_x")}
+                />
+                <RangeField label="Background focal point — vertical" value={content.focal_y ?? 50} onChange={set("focal_y")} />
+              </div>
+            </>
           )}
-          <div className="grid gap-5 sm:grid-cols-2">
-            <RangeField
-              label="Chakra wheel — horizontal position"
-              hint="Desktop only — mobile keeps the wheel centered below the copy"
-              value={content.mandala_x ?? 64}
-              onChange={set("mandala_x")}
-            />
-            <RangeField
-              label="Chakra wheel — vertical position"
-              hint="Desktop only"
-              value={content.mandala_y ?? 62}
-              onChange={set("mandala_y")}
-            />
-          </div>
-          <RangeField
-            label="Chakra wheel — circle size"
-            hint="How far the orbiting icons sit from the center. Desktop only."
-            value={content.mandala_radius ?? 148}
-            onChange={set("mandala_radius")}
-            min={80}
-            max={220}
-            unit="px"
-          />
+
           <LayoutFields showPosition={false} showShape={false} animation={content.animation} onAnimationChange={set("animation")} />
         </>
       );
