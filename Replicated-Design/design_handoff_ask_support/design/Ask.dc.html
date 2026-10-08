@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;700&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="./gaw-config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+<script src="./gaw-qr.js"></script>
+<style>
+  html, body { margin: 0; padding: 0; background: #F3EAD3; }
+  body { font-family: 'Manrope', sans-serif; color: #1B3328; font-weight: 500; -webkit-font-smoothing: antialiased; }
+  a { color: #7A5E22; text-decoration: none; } a:hover { color: #14241C; }
+  @keyframes micPulse { 0% { box-shadow: 0 0 0 0 rgba(168,64,63,0.45); } 100% { box-shadow: 0 0 0 14px rgba(168,64,63,0); } }
+</style>
+</helmet>
+
+<div style="min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 28px 18px 48px; box-sizing: border-box">
+  <div style="width: 100%; max-width: 560px; display: flex; flex-direction: column; gap: 22px">
+
+    <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px">
+      <a href="index.html" style="display: flex; align-items: center; gap: 10px">
+        <img src="assets/logo-coin-tight.png" alt="" style="width: 40px; height: 40px; border-radius: 50%">
+        <span style="font-family: 'Cormorant Garamond', serif; font-weight: 700; font-size: 18px; color: #14241C">Golden Age Wisdom</span>
+      </a>
+      <div style="display: flex; gap: 6px">
+        <sc-for list="{{ pageLangs }}" as="pl" hint-placeholder-count="3">
+          <button onClick="{{ pl.pick }}" style="min-height: 44px; padding: 10px 14px; border-radius: 999px; border: 1px solid {{ pl.border }}; background: {{ pl.bg }}; color: #7A5E22; font-family: 'Manrope', sans-serif; font-size: 14px; font-weight: {{ pl.weight }}; cursor: pointer">{{ pl.label }}</button>
+        </sc-for>
+      </div>
+    </div>
+
+    <sc-if value="{{ isMember }}" hint-placeholder-val="{{ false }}">
+      <div style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 14px; background: rgba(201,162,74,0.12); border: 1px solid rgba(201,162,74,0.3); font-size: 13px; color: #2E3A33">
+        <span style="width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: #14241C; color: #E8CF83; font-family: 'Cormorant Garamond', serif; font-weight: 700; font-size: 14px">{{ memberInitial }}</span>
+        <span>{{ t.signedInAs }} <strong>{{ memberName }}</strong> · {{ t.ackPromise }}</span>
+      </div>
+    </sc-if>
+    <div>
+      <h1 style="font-family: 'Cormorant Garamond', serif; font-weight: 700; font-size: 40px; line-height: 1.05; margin: 0; color: #14241C">{{ t.title }}</h1>
+      <p style="margin: 8px 0 0; font-size: 15px; line-height: 1.6; color: #2E3A33">{{ t.intro }}</p>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 8px">
+      <span style="font-size: 12px; font-weight: 600; color: #7A5E22">{{ t.step1 }}</span>
+      <textarea value="{{ text }}" onChange="{{ onText }}" placeholder="{{ t.hint }}" rows="5" style="width: 100%; box-sizing: border-box; background: #FFFDF8; border: 1px solid rgba(138,111,52,0.28); border-radius: 16px; padding: 16px; color: #1B3328; font-family: 'Manrope', sans-serif; font-size: 16px; font-weight: 400; line-height: 1.6; resize: vertical; outline: none"></textarea>
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <span style="font-size: 12px; color: #5A5546">{{ t.speakIn }}</span>
+        <div style="display: flex; flex-wrap: wrap; gap: 6px">
+          <sc-for list="{{ voiceLangs }}" as="l" hint-placeholder-count="7">
+            <button onClick="{{ l.pick }}" style="min-height: 44px; padding: 10px 16px; border-radius: 999px; border: 1px solid {{ l.border }}; background: {{ l.bg }}; color: {{ l.color }}; font-family: 'Manrope', sans-serif; font-size: 14px; font-weight: {{ l.weight }}; cursor: pointer">{{ l.label }}</button>
+          </sc-for>
+        </div>
+      </div>
+      <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px">
+        <sc-if value="{{ canVoice }}" hint-placeholder-val="{{ true }}">
+          <button onClick="{{ toggleVoice }}" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 18px; border-radius: 999px; border: 1px solid {{ micBorder }}; background: {{ micBg }}; color: {{ micColor }}; font-family: 'Manrope', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; animation: {{ micAnim }}">
+            <span style="font-size: 16px">●</span>{{ micLabel }}
+          </button>
+        </sc-if>
+        <span style="font-size: 12.5px; color: #5A5546">{{ voiceNote }}</span>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 8px">
+      <span style="font-size: 12px; font-weight: 600; color: #7A5E22">{{ t.step2 }}</span>
+      <button onClick="{{ send }}" style="width: 100%; padding: 16px; border-radius: 999px; border: none; background: linear-gradient(135deg, #E8CF83, #C9A24A 55%, #A8853A); color: #14241C; font-family: 'Manrope', sans-serif; font-weight: 600; font-size: 16px; cursor: pointer">{{ t.sendBtn }}</button>
+      <span style="font-size: 12.5px; text-align: center; color: #2E3A33">{{ t.number }}</span>
+      <sc-if value="{{ hasNote }}" hint-placeholder-val="{{ false }}">
+        <div style="padding: 14px 16px; border-radius: 14px; border: 1px solid rgba(47,107,69,0.3); background: rgba(47,107,69,0.07); display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center">
+          <span style="font-size: 14px; font-weight: 600; color: #2F6B45">{{ note }}</span>
+          <sc-if value="{{ showAck }}" hint-placeholder-val="{{ false }}">
+            <span style="font-size: 13px; line-height: 1.6; color: #2E3A33">{{ t.ackLine }} <strong>{{ memberEmail }}</strong></span>
+            <sc-if value="{{ ackPending }}" hint-placeholder-val="{{ false }}">
+              <button onClick="{{ sendAck }}" style="min-height: 44px; padding: 10px 18px; border-radius: 999px; border: 1px solid rgba(47,107,69,0.5); background: none; color: #2F6B45; font-family: 'Manrope', sans-serif; font-size: 13.5px; font-weight: 600; cursor: pointer">{{ t.ackBtn }}</button>
+            </sc-if>
+          </sc-if>
+        </div>
+      </sc-if>
+    </div>
+
+    <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 16px; padding: 18px; border-radius: 20px; border: 1px solid rgba(201,162,74,0.3); background: #FFFDF8">
+      <a href="{{ pageHref }}" title="Open the Ask page" style="flex-shrink: 0; padding: 6px; border-radius: 18px; background: #FFFDF8; border: 2px solid rgba(184,146,62,0.55); box-shadow: 0 6px 18px rgba(20,36,28,0.08); display: block"><img src="{{ qrSrc }}" alt="Scan or tap to ask Golden Age Wisdom" style="width: 128px; height: 128px; border-radius: 12px; display: block"></a>
+      <div style="flex: 1; min-width: 180px; display: flex; flex-direction: column; gap: 6px">
+        <span style="font-family: 'Cormorant Garamond', serif; font-weight: 700; font-size: 20px; color: #14241C">{{ t.qrTitle }}</span>
+        <span style="font-size: 13px; line-height: 1.55; color: #2E3A33">{{ t.qrBody }}</span>
+        <div style="display: flex; flex-wrap: wrap; gap: 14px"><a href="QR Ask Poster.dc.html" style="font-size: 12.5px; font-weight: 600; text-decoration: underline; text-underline-offset: 3px">{{ t.qrPoster }}</a><a href="QR Ask Zoom.dc.html" style="font-size: 12.5px; font-weight: 600; text-decoration: underline; text-underline-offset: 3px">Zoom slide</a></div>
+      </div>
+    </div>
+
+    <p style="margin: 0; font-size: 12px; font-weight: 400; line-height: 1.6; color: #5A5546">{{ t.footnote }}</p>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { lang: 'en', voice: 'en-IN', text: '', listening: false, note: '', voiceNote: '' };
+  VOICES = [['en-IN','English'],['te-IN','తెలుగు'],['kn-IN','ಕನ್ನಡ'],['hi-IN','हिन्दी'],['ta-IN','தமிழ்'],['ml-IN','മലയാളം'],['mr-IN','मराठी']];
+  get WA() { const s = (window.GAW_CONFIG || {}).support || {}; return (s.web && s.web.e164) || '917396119111'; }
+  get WA_PRIMARY() { const s = (window.GAW_CONFIG || {}).support || {}; return (s.primary && s.primary.display) || '+91 7396 112 111'; }
+  T = {
+    en: {
+      langBtn: 'తెలుగు', title: 'Ask a question', intro: 'No login needed. Type your question, or press the mic and speak. Then press Send — WhatsApp opens with your message ready. Our support team will reply there.',
+      step1: '1. Your question', step2: '2. Send it', speakIn: 'Speak in:', signedInAs: 'Signed in as', ackPromise: 'you will get a confirmation email.', ackLine: 'We will also send a confirmation email to', ackBtn: 'Send confirmation email', ackDone: 'Confirmation email opened — press send there.', ackSubject: 'We received your question — Golden Age Wisdom', ackBody: 'Namaste {name},\n\nWe have received your question. Thank you. A volunteer will get back to you as soon as possible.\n\nGolden Age Wisdom seva team', hint: 'Type here, or press the mic and speak.',
+      mic: 'Speak your question', micStop: 'Stop · listening…', sendBtn: 'Send on WhatsApp', number: 'Goes to our support team on WhatsApp · Call or message: +91 7396 112 111',
+      qrTitle: 'Share this page', qrBody: 'Anyone can scan this code to ask a question — no account needed.', qrPoster: 'Print a QR poster',
+      footnote: 'Our volunteers are seekers, not doctors. If something is urgent, see a doctor first.',
+      empty: 'Please write or speak your question first.', opening: 'WhatsApp is opening. Press send there.', noVoice: 'Voice typing works best in Chrome on a phone.', voiceErr: 'Could not hear you. Please try again or type.'
+    },
+    te: {
+      langBtn: 'English', title: 'ప్రశ్న అడగండి', intro: 'లాగిన్ అవసరం లేదు. మీ ప్రశ్న టైప్ చేయండి, లేదా మైక్ నొక్కి మాట్లాడండి. తర్వాత "పంపండి" నొక్కండి — WhatsApp తెరుచుకుంటుంది, మీ సందేశం సిద్ధంగా ఉంటుంది. మా బృందం అక్కడే జవాబు ఇస్తుంది.',
+      step1: '1. మీ ప్రశ్న', step2: '2. పంపండి', speakIn: 'ఈ భాషలో మాట్లాడండి:', signedInAs: 'లాగిన్:', ackPromise: 'మీకు ధృవీకరణ ఇమెయిల్ వస్తుంది.', ackLine: 'ధృవీకరణ ఇమెయిల్ ఇక్కడికి పంపబడుతుంది:', ackBtn: 'ధృవీకరణ ఇమెయిల్ పంపండి', ackDone: 'ధృవీకరణ ఇమెయిల్ తెరుచుకుంది — అక్కడ పంపండి.', ackSubject: 'మీ ప్రశ్న అందింది — Golden Age Wisdom', ackBody: 'నమస్కారం {name},\n\nమీ ప్రశ్న మాకు అందింది. ధన్యవాదాలు. మా స్వచ్ఛంద సేవకుడు వీలైనంత త్వరగా జవాబు ఇస్తారు.\n\nGolden Age Wisdom సేవా బృందం', hint: 'ఇక్కడ టైప్ చేయండి, లేదా మైక్ నొక్కి మాట్లాడండి.',
+      mic: 'మాట్లాడి ప్రశ్న చెప్పండి', micStop: 'ఆపండి · వింటోంది…', sendBtn: 'WhatsApp లో పంపండి', number: 'మా సహాయ బృందానికి WhatsApp లో వెళ్తుంది · కాల్ / మెసేజ్: +91 7396 112 111',
+      qrTitle: 'ఈ పేజీని పంచుకోండి', qrBody: 'ఎవరైనా ఈ కోడ్ స్కాన్ చేసి ప్రశ్న అడగవచ్చు — ఖాతా అవసరం లేదు.', qrPoster: 'QR పోస్టర్ ప్రింట్ చేయండి',
+      footnote: 'మా స్వచ్ఛంద సేవకులు సాధకులు, వైద్యులు కాదు. అత్యవసరమైతే ముందుగా వైద్యుడిని కలవండి.',
+      empty: 'ముందుగా మీ ప్రశ్న రాయండి లేదా చెప్పండి.', opening: 'WhatsApp తెరుచుకుంటోంది. అక్కడ పంపండి.', noVoice: 'వాయిస్ టైపింగ్ ఫోన్‌లో Chrome లో బాగా పనిచేస్తుంది.', voiceErr: 'వినిపించలేదు. మళ్ళీ ప్రయత్నించండి లేదా టైప్ చేయండి.'
+    },
+    kn: {
+      title: 'ಪ್ರಶ್ನೆ ಕೇಳಿ', intro: 'ಲಾಗಿನ್ ಅಗತ್ಯವಿಲ್ಲ. ನಿಮ್ಮ ಪ್ರಶ್ನೆಯನ್ನು ಟೈಪ್ ಮಾಡಿ, ಅಥವಾ ಮೈಕ್ ಒತ್ತಿ ಮಾತನಾಡಿ. ನಂತರ "ಕಳುಹಿಸಿ" ಒತ್ತಿ — WhatsApp ತೆರೆಯುತ್ತದೆ, ನಿಮ್ಮ ಸಂದೇಶ ಸಿದ್ಧವಾಗಿರುತ್ತದೆ. ನಮ್ಮ ತಂಡ ಅಲ್ಲಿಯೇ ಉತ್ತರಿಸುತ್ತದೆ.',
+      step1: '1. ನಿಮ್ಮ ಪ್ರಶ್ನೆ', step2: '2. ಕಳುಹಿಸಿ', speakIn: 'ಈ ಭಾಷೆಯಲ್ಲಿ ಮಾತನಾಡಿ:', signedInAs: 'ಲಾಗಿನ್:', ackPromise: 'ನಿಮಗೆ ದೃಢೀಕರಣ ಇಮೇಲ್ ಬರುತ್ತದೆ.', ackLine: 'ದೃಢೀಕರಣ ಇಮೇಲ್ ಇಲ್ಲಿಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ:', ackBtn: 'ದೃಢೀಕರಣ ಇಮೇಲ್ ಕಳುಹಿಸಿ', ackDone: 'ದೃಢೀಕರಣ ಇಮೇಲ್ ತೆರೆಯಿತು — ಅಲ್ಲಿ ಕಳುಹಿಸಿ.', ackSubject: 'ನಿಮ್ಮ ಪ್ರಶ್ನೆ ಸ್ವೀಕರಿಸಲಾಗಿದೆ — Golden Age Wisdom', ackBody: 'ನಮಸ್ಕಾರ {name},\n\nನಿಮ್ಮ ಪ್ರಶ್ನೆ ನಮಗೆ ತಲುಪಿದೆ. ಧನ್ಯವಾದಗಳು. ನಮ್ಮ ಸ್ವಯಂಸೇವಕರು ಆದಷ್ಟು ಬೇಗ ಉತ್ತರಿಸುತ್ತಾರೆ.\n\nGolden Age Wisdom ಸೇವಾ ತಂಡ', hint: 'ಇಲ್ಲಿ ಟೈಪ್ ಮಾಡಿ, ಅಥವಾ ಮೈಕ್ ಒತ್ತಿ ಮಾತನಾಡಿ.',
+      mic: 'ಮಾತನಾಡಿ ಪ್ರಶ್ನೆ ಹೇಳಿ', micStop: 'ನಿಲ್ಲಿಸಿ · ಕೇಳುತ್ತಿದೆ…', sendBtn: 'WhatsApp ನಲ್ಲಿ ಕಳುಹಿಸಿ', number: 'ನಮ್ಮ ಸಹಾಯ ತಂಡಕ್ಕೆ WhatsApp ನಲ್ಲಿ ಹೋಗುತ್ತದೆ · ಕರೆ / ಸಂದೇಶ: +91 7396 112 111',
+      qrTitle: 'ಈ ಪುಟವನ್ನು ಹಂಚಿಕೊಳ್ಳಿ', qrBody: 'ಯಾರಾದರೂ ಈ ಕೋಡ್ ಸ್ಕ್ಯಾನ್ ಮಾಡಿ ಪ್ರಶ್ನೆ ಕೇಳಬಹುದು — ಖಾತೆ ಅಗತ್ಯವಿಲ್ಲ.', qrPoster: 'QR ಪೋಸ್ಟರ್ ಮುದ್ರಿಸಿ',
+      footnote: 'ನಮ್ಮ ಸ್ವಯಂಸೇವಕರು ಸಾಧಕರು, ವೈದ್ಯರಲ್ಲ. ತುರ್ತು ಇದ್ದರೆ ಮೊದಲು ವೈದ್ಯರನ್ನು ಭೇಟಿಯಾಗಿ.',
+      empty: 'ಮೊದಲು ನಿಮ್ಮ ಪ್ರಶ್ನೆ ಬರೆಯಿರಿ ಅಥವಾ ಹೇಳಿ.', opening: 'WhatsApp ತೆರೆಯುತ್ತಿದೆ. ಅಲ್ಲಿ ಕಳುಹಿಸಿ.', noVoice: 'ಧ್ವನಿ ಟೈಪಿಂಗ್ ಫೋನ್‌ನಲ್ಲಿ Chrome ನಲ್ಲಿ ಚೆನ್ನಾಗಿ ಕೆಲಸ ಮಾಡುತ್ತದೆ.', voiceErr: 'ಕೇಳಿಸಲಿಲ್ಲ. ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ ಅಥವಾ ಟೈಪ್ ಮಾಡಿ.'
+    }
+  };
+  member() { try { return JSON.parse(localStorage.getItem('gaw_session') || 'null'); } catch (e) { return null; } }
+  PAGE_LANGS = [['en','English','en-IN'],['te','తెలుగు','te-IN'],['kn','ಕನ್ನಡ','kn-IN']];
+  componentDidMount() {
+    this.buildQR();
+    const p = new URLSearchParams(location.search);
+    const pl = this.PAGE_LANGS.find(x => x[0] === p.get('lang')); if (pl) this.setState({ lang: pl[0], voice: pl[2] });
+    if (!window.qrcode) setTimeout(() => this.forceUpdate(), 800);
+  }
+  pageUrl() {
+    const h = location.hostname;
+    return (h && h !== 'localhost' && !/^\d+\./.test(h) && !/(\.app|\.dev|preview)/.test(h)) ? location.origin + location.pathname : 'https://goldenagewisdom.org/ask';
+  }
+  buildQR(tries) {
+    tries = tries || 0;
+    if (!window.gawBrandedQR || !window.qrcode) { if (tries < 20) setTimeout(() => this.buildQR(tries + 1), 300); return; }
+    window.gawBrandedQR(this.pageUrl(), 512, 'assets/logo-coin-tight.png', src => this.setState({ qrSrc: src }));
+  }
+  toggleVoice = () => {
+    const t = this.T[this.state.lang];
+    if (this.state.listening) { this.rec && this.rec.stop(); return; }
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) { this.setState({ voiceNote: t.noVoice }); return; }
+    const rec = new SR(); this.rec = rec;
+    rec.lang = this.state.voice;
+    rec.interimResults = true; rec.continuous = true;
+    const base = this.state.text ? this.state.text.replace(/\s+$/, '') + ' ' : '';
+    rec.onresult = e => {
+      let s = '';
+      for (let i = 0; i < e.results.length; i++) s += e.results[i][0].transcript + ' ';
+      this.setState({ text: base + s.trim() });
+    };
+    rec.onerror = () => this.setState({ listening: false, voiceNote: t.voiceErr });
+    rec.onend = () => this.setState({ listening: false });
+    try { rec.start(); this.setState({ listening: true, voiceNote: '', note: '' }); } catch (e) { this.setState({ voiceNote: t.voiceErr }); }
+  };
+  renderVals() {
+    const s = this.state, t = this.T[s.lang], te = s.lang === 'te';
+    const m = this.member() || {}, memberEmail = m.email || '', memberName = m.name || '';
+    return {
+      isMember: !!memberEmail, memberEmail, memberName, memberInitial: (memberName.trim()[0] || 'M').toUpperCase(),
+      showAck: !!(s.sent && memberEmail), ackPending: !s.ackSent,
+      sendAck: () => {
+        const body = t.ackBody.replace('{name}', memberName);
+        window.location.href = 'mailto:' + memberEmail + '?cc=info@goldenagewisdom.org&subject=' + encodeURIComponent(t.ackSubject) + '&body=' + encodeURIComponent(body);
+        this.setState({ ackSent: true, note: t.ackDone });
+      },
+      t,
+      pageLangs: this.PAGE_LANGS.map(([code, label, voice]) => { const on = s.lang === code; return { label, pick: () => this.setState({ lang: code, voice }), border: on ? 'rgba(201,162,74,0.75)' : 'rgba(138,111,52,0.25)', bg: on ? 'rgba(201,162,74,0.16)' : 'none', weight: on ? '600' : '400' }; }),
+      voiceLangs: this.VOICES.map(([code, label]) => { const on = s.voice === code; return { label, pick: () => { if (s.listening && this.rec) this.rec.stop(); this.setState({ voice: code }); }, border: on ? 'rgba(201,162,74,0.75)' : 'rgba(138,111,52,0.25)', bg: on ? 'rgba(201,162,74,0.16)' : '#FFFDF8', color: on ? '#7A5E22' : '#2E3A33', weight: on ? '600' : '400' }; }),
+      text: s.text,
+      onText: e => this.setState({ text: e.target.value, note: '' }),
+      canVoice: true,
+      toggleVoice: this.toggleVoice,
+      micLabel: s.listening ? t.micStop : t.mic,
+      micBorder: s.listening ? 'rgba(168,64,63,0.6)' : 'rgba(138,111,52,0.35)',
+      micBg: s.listening ? 'rgba(168,64,63,0.1)' : 'none',
+      micColor: s.listening ? '#A8403F' : '#1B3328',
+      micAnim: s.listening ? 'micPulse 1.2s ease-out infinite' : 'none',
+      voiceNote: s.voiceNote,
+      send: () => {
+        const q = s.text.trim();
+        if (!q) { this.setState({ note: t.empty, sent: false }); return; }
+        const who = memberName ? '\nFrom: ' + memberName + (m.memberId ? ' (' + m.memberId + ')' : '') + (memberEmail ? '\nEmail: ' + memberEmail : '') : '';
+        const body = 'Golden Age Wisdom — question (via ' + (memberName ? 'member' : 'QR/web') + ')' + who + '\n\n' + q;
+        window.open('https://wa.me/' + this.WA + '?text=' + encodeURIComponent(body), '_blank', 'noopener');
+        this.setState({ note: t.opening, sent: true, ackSent: false });
+      },
+      hasNote: !!s.note, note: s.note,
+      pageHref: this.pageUrl(),
+      qrSrc: s.qrSrc || 'https://api.qrserver.com/v1/create-qr-code/?size=240x240&color=14241c&bgcolor=fffdf8&data=' + encodeURIComponent(this.pageUrl())
+    };
+  }
+}
+</script>
+</body>
+</html>

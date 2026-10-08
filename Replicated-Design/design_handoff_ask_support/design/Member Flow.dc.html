@@ -1,0 +1,2343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Join free — members’ circle, streak and journal · Golden Age Wisdom</title>
+<meta name="description" content="Create a free membership: join the members-only Zoom circle, ask Dr. Harikrishna your questions, track your 41-day practice and keep a private journal.">
+<link rel="canonical" href="https://goldenagewisdom.org/join">
+<meta name="theme-color" content="#0E1A14">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Golden Age Wisdom">
+<meta property="og:title" content="Join free — members’ circle, streak and journal">
+<meta property="og:description" content="Create a free membership: join the members-only Zoom circle, ask Dr. Harikrishna your questions, track your 41-day practice and keep a private journal.">
+<meta property="og:image" content="https://goldenagewisdom.org/assets/og-default.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://goldenagewisdom.org/join">
+<meta property="og:locale" content="en_IN">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Join free — members’ circle, streak and journal">
+<meta name="twitter:description" content="Create a free membership: join the members-only Zoom circle, ask Dr. Harikrishna your questions, track your 41-day practice and keep a private journal.">
+<meta name="twitter:image" content="https://goldenagewisdom.org/assets/og-default.jpg">
+<link rel="icon" href="assets/logo-original.jpg" type="image/webp">
+<link rel="apple-touch-icon" href="assets/logo-original.jpg">
+
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Golden Age">
+<meta name="mobile-web-app-capable" content="yes">
+<script defer src="pwa.js"></script>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="./gaw-config.js"></script>
+<script src="./gaw-backend.js"></script>
+<script src="./telemetry.js"></script>
+<script src="https://accounts.google.com/gsi/client" async></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+<style>
+  html, body { margin: 0; padding: 0; background: #F3EAD3; }
+  body { font-family: 'Manrope', sans-serif; color: #1B3328; font-weight: 500; -webkit-font-smoothing: antialiased; }
+  .r-main, .r-main * { font-variant-numeric: lining-nums; }
+  a { color: #7A5E22; text-decoration: none; }
+  a:hover { color: #7A5E22; }
+  button, input, textarea, select, optgroup { font-family: inherit; }
+  * { box-sizing: border-box; }
+  :focus-visible { outline: 2px solid #7A5E22; outline-offset: 3px; border-radius: 6px; }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+  }
+  input::placeholder, textarea::placeholder { color: #5A5546; }
+  @keyframes sessSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  @keyframes rippleOut { 0% { transform: scale(0.72); opacity: 0; } 15% { opacity: 0.5; } 100% { transform: scale(1.9); opacity: 0; } }
+  @keyframes fadeSlow { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  .sess-layer::-webkit-scrollbar { width: 0; }
+  @media (max-height: 700px) {
+    .sess-layer { justify-content: flex-start !important; gap: 16px !important; }
+    .sess-hint { display: none !important; }
+    .sess-orb { width: min(210px, 46vh) !important; height: min(210px, 46vh) !important; }
+    .sess-chips { flex-wrap: nowrap !important; overflow-x: auto !important; justify-content: flex-start !important; padding-bottom: 2px; scrollbar-width: none; mask-image: linear-gradient(to right, transparent 0, #000 18px, #000 calc(100% - 34px), transparent 100%); -webkit-mask-image: linear-gradient(to right, transparent 0, #000 18px, #000 calc(100% - 34px), transparent 100%); }
+    .sess-chips::-webkit-scrollbar { height: 0; }
+  }
+  @keyframes eqBar { 0%, 100% { transform: scaleY(0.32); } 50% { transform: scaleY(1); } }
+  @keyframes sndRing { 0%, 100% { box-shadow: 0 0 0 0 rgba(201,162,74,0.35); } 50% { box-shadow: 0 0 0 7px rgba(201,162,74,0); } }
+  .r-scroll-list::-webkit-scrollbar { width: 5px; }
+  .r-scroll-list::-webkit-scrollbar-thumb { background: rgba(201,162,74,0.25); border-radius: 3px; }
+  @media (max-height: 780px) and (min-width: 821px) {
+    .r-main { overflow-y: auto !important; }
+    .r-overview { height: auto !important; min-height: 100% !important; }
+    .r-grid-2 { flex: 0 0 auto !important; min-height: 0 !important; }
+    .r-scroll-list { overflow: visible !important; flex: 0 0 auto !important; }
+    .r-main > * { flex-shrink: 0; }
+  }
+  @media (max-width: 820px) {
+    .r-main { height: auto !important; overflow: visible !important; }
+  }
+  @media (max-width: 820px) {
+    .r-share-row { grid-template-columns: 1fr !important; }
+    .sched-label { flex: 1 1 100% !important; }
+    .sched-times { margin-left: 20px !important; }
+    .r-shell { flex-direction: column !important; }
+    .r-sidebar { width: 100% !important; height: auto !important; position: sticky !important; top: 0 !important; z-index: 60 !important; flex-direction: row !important; flex-wrap: wrap !important; align-items: center !important; justify-content: center !important; gap: 4px !important; row-gap: 5px !important; padding: 8px 10px !important; overflow: visible !important; background: rgba(243,234,211,0.92) !important; backdrop-filter: blur(14px); border-right: none !important; border-bottom: 1px solid rgba(138,111,52,0.22) !important; }
+    .r-sidebar::-webkit-scrollbar { height: 0; }
+    .r-sidebar > * { flex-shrink: 0 !important; }
+    .r-sidebar .r-side-brand { padding: 0 6px 0 0 !important; }
+    .r-sidebar .r-side-brand span { display: none !important; }
+    .r-sidebar button { padding: 7px 10px !important; font-size: 12.5px !important; gap: 7px !important; border-radius: 999px !important; }
+    .r-sidebar .r-side-collapse, .r-sidebar .r-side-note, .r-sidebar .r-side-spacer { display: none !important; }
+    .r-sidebar .r-side-mobile { display: flex !important; }
+    .r-overview { height: auto !important; min-height: 0 !important; }
+    .r-grid-2 { flex: none !important; }
+    .r-main { padding: 24px 18px calc(96px + env(safe-area-inset-bottom)) !important; height: auto !important; overflow: visible !important; }
+    .r-scroll-list { overflow: visible !important; }
+    .r-fab { bottom: calc(20px + env(safe-area-inset-bottom)) !important; right: 16px !important; }
+    .r-shell { height: auto !important; overflow: visible !important; }
+    .r-dash-head { position: static !important; margin: 0 !important; padding: 0 0 14px !important; background: none !important; backdrop-filter: none !important; }
+    .r-grid-3 { grid-template-columns: 1fr !important; }
+    .r-grid-2 { grid-template-columns: 1fr !important; }
+    .r-grid-gallery { grid-template-columns: repeat(2, 1fr) !important; }
+    .r-dash-head { flex-direction: column !important; align-items: flex-start !important; gap: 14px !important; }
+    .r-dash-head > div { flex: 0 0 auto !important; min-width: 0 !important; }
+    .r-dash-head > div:last-child { align-items: stretch !important; align-self: stretch !important; flex-direction: row !important; flex-wrap: wrap !important; gap: 10px !important; }
+    .r-dash-head > div:last-child > button { flex: 1 1 auto !important; justify-content: center !important; max-width: none !important; }
+  }
+  @media (max-width: 960px) {
+    .r-login-visual { display: none !important; }
+  }
+  /* Comfortable touch targets on phones */
+  @media (max-width: 768px) {
+    nav a, nav button, footer a, footer button { display: inline-flex; align-items: center; min-height: 40px; }
+  }
+</style>
+</helmet>
+<div style="min-height: 100vh; background: #F3EAD3">
+  <!-- LOGIN SCREEN -->
+  <sc-if value="{{ showLogin }}" hint-placeholder-val="{{ true }}">
+    <div data-screen-label="Sign in" style="position: relative; min-height: 100vh; display: flex; align-items: center; justify-content: center; gap: 60px; padding: 40px 24px; overflow: hidden; background: #F3EAD3; flex-wrap: wrap">
+      <img src="assets/meditator-clear.webp" alt="" width="2560" height="1525" fetchPriority="high" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 42%; transform: scale(1.22); transform-origin: 50% 100%; opacity: 0.5">
+      <div style="position: absolute; inset: 0; background: radial-gradient(ellipse 46% 82% at 50% 42%, rgba(201,162,74,0.55) 0%, rgba(251,246,234,0.72) 55%, rgba(243,234,211,0.9) 80%, rgba(243,234,211,0.98) 100%), linear-gradient(180deg, rgba(243,234,211,0.7) 0%, rgba(243,234,211,0) 14%)"></div>
+      <div aria-hidden="true" style="position: absolute; left: 0; right: 0; bottom: 0; height: 170px; pointer-events: none; background: linear-gradient(to top, rgba(243,234,211,0.96) 0%, rgba(243,234,211,0.7) 45%, rgba(243,234,211,0) 100%)"></div>
+      <sc-for list="{{ loginStars }}" as="st" hint-placeholder-count="10">
+        <div style="position: absolute; left: {{ st.x }}%; top: {{ st.y }}%; width: {{ st.s }}px; height: {{ st.s }}px; border-radius: 50%; background: #1B3328; opacity: {{ st.o }}"></div>
+      </sc-for>
+      <div class="r-login-visual" style="position: relative; display: flex; flex-direction: column; align-items: center; gap: 26px; padding: 20px">
+        <div style="position: absolute; inset: -40px; border-radius: 50%; background: radial-gradient(circle, rgba(201,162,74,0.14), rgba(232,207,131,0) 70%)"></div>
+        <div style="display: flex; align-items: baseline; gap: 12px">
+          <span style="font-family: 'Cormorant Garamond', serif; font-weight: 500; font-size: 96px; line-height: 1; color: #7A5E22; text-shadow: 0 2px 40px rgba(201,162,74,0.4)">41</span>
+          <span style="font-family: 'Cormorant Garamond', serif; font-weight: 700; font-size: 44px; line-height: 1; font-variant-numeric: lining-nums; color: #1B3328">days</span>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(10, 16px); gap: 8px">
+          <sc-for list="{{ loginDots }}" as="d" hint-placeholder-count="40">
+            <div style="width: 16px; height: 16px; border-radius: 50%; background: {{ d.bg }}; border: 1px solid rgba(201,162,74,0.4); box-shadow: {{ d.glow }}"></div>
+          </sc-for>
+        </div>
+        <div style="max-width: 380px; text-align: center; padding: 14px 24px; border-radius: 16px; background: rgba(251,246,234,0.65); backdrop-filter: blur(10px); border: 1px solid rgba(201,162,74,0.26)">
+          <div style="font-family: 'Cormorant Garamond', serif; font-weight: 500; font-size: 19px; color: #14241C">Give us 41 days — a 30-minute sit in silence.</div>
+          <div style="font-size: 13px; font-weight: 500; color: #1B3328; margin-top: 5px; line-height: 1.5">No kriyas, no breath techniques. Close your eyes and watch the breath — that's all.</div>
+        </div>
+      </div>
+      <div style="position: relative; width: min(420px, 100%); padding: 44px 38px; border-radius: 24px; background: rgba(251,246,234,0.62); backdrop-filter: blur(28px); -webkit-backdrop-filter: blur(28px); border: 1px solid rgba(201,162,74,0.26); box-shadow: 0 30px 80px rgba(60,42,16,0.25); display: flex; flex-direction: column; align-items: center; gap: 22px; text-align: center">
+        <span style="width: 60px; height: 60px; border-radius: 50%; overflow: hidden; background: #F3EAD3; box-shadow: 0 0 0 2px #1B3328, 0 0 0 3px #C9A24A; display: block; flex-shrink: 0"><img src="assets/logo-original.jpg" alt="Golden Age Wisdom" style="display: block; width: 100%; height: 100%; object-fit: cover; transform: scale(1.26)"></span>
+        <div>
+          <h1 style="font-family: 'Cormorant Garamond', serif; font-weight: 500; font-size: 28px; margin: 0 0 8px; color: #14241C">Welcome back, {{ loginName }}</h1>
+          <p style="margin: 0; font-size: 15px; font-weight: 500; color: #1B3328">Continue your journey with one tap. No passwords to remember.</p>
+        </div>
+        <sc-if value="{{ hasLastUser }}" hint-placeholder-val="{{ false }}">
+          <div style="width: 100%; display: flex; flex-direction: column; gap: 12px">
+            <button onClick="{{ continueAsLast }}" style="display: flex; align-items: center; gap: 12px; width: 100%; padding: 11px 16px; border-radius: 999px; border: 1px solid rgba(201,162,74,0.55); background: rgba(201,162,74,0.12); color: #14241C; font-family: 'Manrope', sans-serif; font-size: 15px; font-weight: 500; cursor: pointer; text-align: left" style-hover="border-color: rgba(201,162,74,0.9); background: rgba(201,162,74,0.18)"><span style="width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #E8CF83, #C9A24A 55%, #A8853A); color: #14241C; font-weight: 600; font-size: 14px">{{ lastUserInitial }}</span><span style="display: flex; flex-direction: column; gap: 1px"><span>Continue as {{ lastUserName }}</span><span style="font-size: 11.5px; font-weight: 400; color: #1B3328">{{ lastUserEmail }}</span></span></button>
+            <div style="display: flex; align-items: center; gap: 10px; color: #5A5546; font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase"><span style="flex: 1; height: 1px; background: rgba(138,111,52,0.25)"></span>or use another account<span style="flex: 1; height: 1px; background: rgba(138,111,52,0.25)"></span></div>
+          </div>
+        </sc-if>
+        <div style="width: 100%; display: flex; flex-direction: column; gap: 12px">
+          <button onClick="{{ signInGoogle }}" style="display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; padding: 13px; border-radius: 999px; border: 1px solid rgba(138,111,52,0.32); background: rgba(255,255,255,0.95); color: #1f1f1f; font-family: 'Manrope', sans-serif; font-size: 15px; font-weight: 500; cursor: pointer"><span style="font-weight: 700; font-size: 16px; background: linear-gradient(90deg, #4285F4, #EA4335, #FBBC05, #34A853); -webkit-background-clip: text; background-clip: text; color: transparent">G</span> Continue with Google</button>
+          <sc-if value="{{ hasOauthNote }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size: 12px; font-weight: 400; line-height: 1.5; color: #7A5E22; padding: 0 6px">{{ oauthNote }}</div>
+          </sc-if>
+          <button onClick="{{ signInMicrosoft }}" style="display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; padding: 13px; border-radius: 999px; border: 1px solid rgba(138,111,52,0.3); background: rgba(20,36,28,0.06); color: #1B3328; font-family: 'Manrope', sans-serif; font-size: 15px; font-weight: 500; cursor: pointer" style-hover="border-color: rgba(201,162,74,0.5)"><svg viewBox="0 0 21 21" style="width: 15px; height: 15px"><rect x="0" y="0" width="10" height="10" fill="#f25022"></rect><rect x="11" y="0" width="10" height="10" fill="#7fba00"></rect><rect x="0" y="11" width="10" height="10" fill="#00a4ef"></rect><rect x="11" y="11" width="10" height="10" fill="#ffb900"></rect></svg> Continue with Microsoft</button>
+          <button onClick="{{ signInFacebook }}" style="display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; padding: 13px; border-radius: 999px; border: 1px solid rgba(138,111,52,0.3); background: rgba(20,36,28,0.06); color: #1B3328; font-family: 'Manrope', sans-serif; font-size: 15px; font-weight: 500; cursor: pointer" style-hover="border-color: rgba(201,162,74,0.5)"><span style="color: #1877F2; font-weight: 700">f</span> Continue with Facebook</button>
+          <button onClick="{{ signInApple }}" style="display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; padding: 13px; border-radius: 999px; border: 1px solid rgba(138,111,52,0.3); background: rgba(20,36,28,0.06); color: #1B3328; font-family: 'Manrope', sans-serif; font-size: 15px; font-weight: 500; cursor: pointer" style-hover="border-color: rgba(201,162,74,0.5)"> Continue with Apple</button>
+          <div style="display: flex; align-items: center; gap: 10px; color: #5A5546; font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; margin-top: 2px"><span style="flex: 1; height: 1px; background: rgba(138,111,52,0.25)"></span>just looking<span style="flex: 1; height: 1px; background: rgba(138,111,52,0.25)"></span></div>
+          <button onClick="{{ signInDemo }}" style="display: flex; align-items: center; gap: 12px; width: 100%; padding: 11px 16px; border-radius: 999px; border: 1px dashed rgba(201,162,74,0.5); background: rgba(201,162,74,0.05); color: #1B3328; font-family: 'Manrope', sans-serif; font-size: 14.5px; font-weight: 500; cursor: pointer; text-align: left" style-hover="border-color: rgba(201,162,74,0.9); background: rgba(201,162,74,0.12)"><span style="width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(201,162,74,0.5); color: #7A5E22; font-weight: 600; font-size: 14px">A</span><span style="display: flex; flex-direction: column; gap: 1px"><span>Look around a demo account</span><span style="font-size: 11.5px; font-weight: 400; color: #1B3328">demo@goldenagewisdom.org · nothing is saved</span></span></button>
+        </div>
+        <div style="width: 100%; display: flex; align-items: center; gap: 12px; padding: 13px 16px; border-radius: 16px; border: 1px solid rgba(201,162,74,0.26); background: rgba(201,162,74,0.06); text-align: left">
+          <svg viewBox="0 0 24 24" style="width: 18px; height: 18px; flex-shrink: 0"><path d="M12 2l8 3.5v5c0 5-3.4 9.3-8 11-4.6-1.7-8-6-8-11v-5L12 2z" fill="none" stroke="#C9A24A" stroke-width="1.6" stroke-linejoin="round"></path><path d="M8.5 12l2.5 2.5 4.5-4.7" fill="none" stroke="#C9A24A" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+          <span style="font-size: 13px; font-weight: 500; line-height: 1.55; color: #1B3328">We never see, store or handle passwords. Sign-in happens entirely with Google, Microsoft, Facebook or Apple — we only receive your name and email. Member sign-ins are protected by a Google Authenticator code. <a href="mailto:info@goldenagewisdom.org?subject=Privacy%20policy" style="font-size: 12.5px">Privacy policy</a></span>
+        </div>
+        <a href="./" style="font-size: 13px; color: #2E3A33">← Back to goldenagewisdom.org</a>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- TWO-STEP VERIFICATION (Google Authenticator) -->
+  <sc-if value="{{ showTwoFa }}" hint-placeholder-val="{{ false }}">
+    <div data-screen-label="Two-step verification" style="position: relative; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; box-sizing: border-box; background: #F3EAD3; overflow: hidden">
+      <img src="assets/meditator-clear.webp" alt="" style="position: fixed; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 42%; transform: scale(1.22); transform-origin: 50% 100%; opacity: 0.35">
+      <div style="position: fixed; inset: 0; background: radial-gradient(ellipse 46% 82% at 50% 42%, rgba(201,162,74,0.55) 0%, rgba(251,246,234,0.8) 55%, rgba(243,234,211,0.98) 100%)"></div>
+      <div style="position: relative; width: min(460px, 100%); max-height: calc(100vh - 48px); overflow-y: auto; box-sizing: border-box; padding: 30px 32px; border-radius: 24px; background: rgba(251,246,234,0.7); backdrop-filter: blur(28px); -webkit-backdrop-filter: blur(28px); border: 1px solid rgba(201,162,74,0.26); box-shadow: 0 30px 80px rgba(60,42,16,0.25); display: flex; flex-direction: column; align-items: center; gap: 16px; text-align: center">
+        <div style="width: 44px; height: 44px; flex-shrink: 0; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(201,162,74,0.5); background: rgba(201,162,74,0.08)"><svg viewBox="0 0 24 24" style="width: 22px; height: 22px"><path d="M12 2l8 3.5v5c0 5-3.4 9.3-8 11-4.6-1.7-8-6-8-11v-5L12 2z" fill="none" stroke="#C9A24A" stroke-width="1.6" stroke-linejoin="round"></path><circle cx="12" cy="11" r="2.2" fill="none" stroke="#C9A24A" stroke-width="1.6"></circle><path d="M12 13.2v3" stroke="#C9A24A" stroke-width="1.6" stroke-linecap="round"></path></svg></div>
+        <div>
+          <div style="font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: #7A5E22; margin-bottom: 6px">Two-step verification</div>
+          <h1 style="font-family: 'Cormorant Garamond', serif; font-weight: 500; font-size: 24px; margin: 0 0 6px; color: #14241C">{{ twoFaTitle }}</h1>
+          <p style="margin: 0; font-size: 14px; font-weight: 500; line-height: 1.5; color: #1B3328">{{ twoFaBody }}</p>
+        </div>
+        <sc-if value="{{ twoFaEnrolling }}" hint-placeholder-val="{{ true }}">
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 10px; width: 100%">
+            <div style="padding: 8px; border-radius: 14px; background: #fff; box-shadow: 0 10px 40px rgba(60,42,16,0.2); min-width: 150px; min-height: 150px">{{ twoFaQrEl }}</div>
+            <div style="display: flex; flex-direction: column; gap: 6px; width: 100%">
+              <div style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: #5A5546">Can't scan? Enter this key</div>
+              <div style="font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 13px; letter-spacing: 0.08em; line-height: 1.6; color: #7A5E22; padding: 10px 12px; border-radius: 12px; border: 1px solid rgba(201,162,74,0.3); background: rgba(201,162,74,0.06); text-align: center; user-select: all">{{ twoFaKeyPretty }}</div>
+            </div>
+          </div>
+        </sc-if>
+        <form onSubmit="{{ twoFaSubmit }}" style="width: 100%; display: flex; flex-direction: column; gap: 12px">
+          <input value="{{ twoFaCode }}" onInput="{{ twoFaType }}" inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]*" maxLength="6" placeholder="••••••" aria-label="6-digit verification code" autoFocus="{{ true }}" style="width: 100%; box-sizing: border-box; padding: 14px; border-radius: 14px; border: 1px solid {{ twoFaInputBorder }}; background: rgba(20,36,28,0.05); color: #14241C; font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 24px; letter-spacing: 0.45em; text-indent: 0.45em; text-align: center; outline: none" style-focus="border-color: rgba(201,162,74,0.8)">
+          <sc-if value="{{ hasTwoFaError }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size: 12.5px; color: #A8403F">{{ twoFaError }}</div>
+          </sc-if>
+          <button type="submit" style="width: 100%; padding: 13px; border-radius: 999px; border: none; background: linear-gradient(135deg, #E8CF83, #C9A24A 55%, #A8853A); color: #14241C; font-family: 'Manrope', sans-serif; font-size: 15px; font-weight: 600; cursor: pointer">{{ twoFaCta }}</button>
+        </form>
+        <div style="display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 12.5px; color: #2E3A33; flex-wrap: wrap">
+          <span style="width: 7px; height: 7px; border-radius: 50%; background: #C9A24A; opacity: {{ twoFaTickOpacity }}; transition: opacity 0.4s"></span>
+          <span>Codes refresh every 30 s · works with Google Authenticator, Authy or any TOTP app</span>
+        </div>
+        <button onClick="{{ twoFaCancel }}" style="background: none; border: none; padding: 6px; font-family: 'Manrope', sans-serif; font-size: 13px; color: #2E3A33; cursor: pointer" style-hover="color: #7A5E22">← Use a different account</button>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- DASHBOARD -->
+  <sc-if value="{{ showDash }}" hint-placeholder-val="{{ false }}">
+    <div data-screen-label="Member dashboard" class="r-shell" style="height: 100vh; overflow: hidden; display: flex">
+      <!-- SIDEBAR -->
+      <aside class="r-sidebar" style="width: {{ sideW }}px; flex-shrink: 0; position: sticky; top: 0; height: 100vh; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 28px 14px; display: flex; flex-direction: column; gap: 8px; background: linear-gradient(180deg,#14241C 0%,#1B3328 100%); border-right: 1px solid rgba(201,162,74,0.25); transition: width 0.28s cubic-bezier(0.3, 0, 0.2, 1)">
+        <button onClick="{{ toggleSide }}" title="{{ sideTitle }}" class="r-side-collapse" style="align-self: flex-end; width: 30px; height: 30px; flex-shrink: 0; margin-bottom: 4px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.04); color: #b9b1a0; font-size: 13px; cursor: pointer" style-hover="border-color: rgba(201,162,74,0.6); color: #E8CF83">{{ sideIcon }}</button>
+        <a href="./" class="r-side-brand" title="Golden Age Wisdom" style="display: flex; align-items: center; gap: 10px; padding: 0 8px 22px">
+          <span style="width: 34px; height: 34px; border-radius: 50%; overflow: hidden; background: #0E1A14; box-shadow: 0 0 0 1.5px #1B3328, 0 0 0 2.5px #C9A24A; display: block; flex-shrink: 0"><img src="assets/logo-original.jpg" alt="" style="display: block; width: 100%; height: 100%; object-fit: cover; transform: scale(1.26)"></span>
+          <sc-if value="{{ sideOpen }}" hint-placeholder-val="{{ true }}"><span style="font-family: 'Cormorant Garamond', serif; font-weight: 500; font-size: 19px; letter-spacing: 0.05em; background: linear-gradient(115deg, #f6e7c1 10%, #C9A24A 48%, #A8853A 90%); -webkit-background-clip: text; background-clip: text; color: transparent; white-space: nowrap; filter: drop-shadow(0 0 12px rgba(201,162,74,0.35))">GOLDEN AGE</span></sc-if>
+        </a>
+        <sc-for list="{{ navItems }}" as="n" hint-placeholder-count="5">
+          <button onClick="{{ n.go }}" title="{{ n.label }}" style="display: flex; align-items: center; gap: 12px; padding: 11px 13px; border-radius: 12px; border: none; text-align: left; font-family: 'Manrope', sans-serif; font-size: 14.5px; cursor: pointer; white-space: nowrap; overflow: hidden; background: {{ n.bg }}; color: {{ n.color }}; font-weight: {{ n.weight }}"><span style="width: 18px; flex-shrink: 0; text-align: center">{{ n.icon }}</span>{{ n.label }}</button>
+        </sc-for>
+        <div class="r-side-mobile" style="display: none; align-items: center; gap: 4px">
+          <button onClick="{{ openDonate }}" title="Support the mission" style="display: flex; align-items: center; gap: 8px; border-radius: 12px; border: none; background: rgba(201,162,74,0.14); text-align: left; font-family: 'Manrope', sans-serif; color: #E8CF83; white-space: nowrap; cursor: pointer"><span style="width: 18px; flex-shrink: 0; text-align: center">♡</span>Support</button>
+          <button onClick="{{ becomeVolunteer }}" title="{{ volLabel }}" style="display: flex; align-items: center; gap: 8px; border-radius: 12px; border: none; background: none; text-align: left; font-family: 'Manrope', sans-serif; color: #b9b1a0; white-space: nowrap; cursor: pointer"><span style="width: 18px; flex-shrink: 0; text-align: center">✦</span>{{ volLabel }}</button>
+        </div>
+        <div class="r-side-spacer" style="flex: 1"></div>
+        <sc-if value="{{ sideOpen }}" hint-placeholder-val="{{ true }}">
+        <div class="r-side-note" style="padding: 16px; border-radius: 16px; background: rgba(201,162,74,0.08); border: 1px solid rgba(201,162,74,0.26); font-size: 13.5px; font-weight: 500; color: #D8D2C4; line-height: 1.55; display: flex; flex-direction: column; gap: 8px">Our teachings stay free because of members like you. <button onClick="{{ openDonate }}" style="background: none; border: none; padding: 0; text-align: left; font-family: 'Manrope', sans-serif; font-size: 13px; color: #C9A24A; cursor: pointer" style-hover="color: #E8CF83">Support the mission ♡</button><button onClick="{{ becomeVolunteer }}" style="background: none; border: none; padding: 0; text-align: left; font-family: 'Manrope', sans-serif; font-size: 13px; color: #C9A24A; cursor: pointer" style-hover="color: #E8CF83">{{ volLabel }}</button></div>
+        </sc-if>
+        <button onClick="{{ syncNow }}" title="Practice history sync — tap to retry" style="display: flex; align-items: center; gap: 12px; padding: 6px 13px; border: none; background: none; text-align: left; font-family: 'Manrope', sans-serif; font-size: 12px; color: {{ syncColor }}; white-space: nowrap; overflow: hidden; cursor: pointer">{{ syncLabel }}</button>
+        <a href="Privacy.dc.html" title="Privacy notice" style="display: flex; align-items: center; gap: 12px; padding: 6px 13px 10px; font-size: 12px; color: #D8D2C4; white-space: nowrap; overflow: hidden" style-hover="color: #E8CF83"><span style="width: 18px; flex-shrink: 0; text-align: center">❋</span>{{ privacyLabel }}</a>
+        <button onClick="{{ signOut }}" style="display: flex; align-items: center; gap: 10px; padding: 11px 14px; border-radius: 12px; border: none; background: none; text-align: left; font-family: 'Manrope', sans-serif; font-size: 13.5px; color: #D8D2C4; cursor: pointer" style-hover="color: #E8CF83"><span style="width: 18px; flex-shrink: 0; text-align: center">↩</span>{{ signOutLabel }}</button>
+      </aside>
+
+      <!-- MAIN -->
+      <main class="r-main" style="flex: 1; height: 100vh; overflow-y: auto; padding: 0 34px 92px; max-width: 1120px; display: flex; flex-direction: column">
+        <!-- Overview tab -->
+        <sc-if value="{{ tabOverview }}" hint-placeholder-val="{{ true }}">
+          <div class="r-overview" style="display: flex; flex-direction: column; gap: 13px; height: 100%; min-height: 0">
+            <sc-if value="{{ demoBanner }}" hint-placeholder-val="{{ false }}">
+              <div style="display: flex; align-items: center; gap: 12px; padding: 11px 16px; border-radius: 16px; border: 1px solid rgba(201,162,74,0.4); background: rgba(201,162,74,0.09)">
+                <span style="font-size: 14px; color: #7A5E22">✦</span>
+                <span style="flex: 1; font-size: 13px; font-weight: 500; line-height: 1.5; color: #7A5E22">You're in a demo session — real account sign-in isn't switched on yet, so this practice is saved on this device only.</span>
+                <button onClick="{{ dismissDemoBanner }}" style="background: none; border: none; color: #2E3A33; font-size: 16px; cursor: pointer; padding: 0 4px" style-hover="color: #7A5E22">×</button>
+              </div>
+            </sc-if>
+            <div class="r-dash-head" style="flex-shrink: 0; position: sticky; top: 0; z-index: 20; margin: 0 -34px; padding: 16px 34px 12px; background: linear-gradient(180deg, rgba(243,234,211,0.96) 60%, rgba(243,234,211,0)); backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: space-between; gap: 16px">
+              <div style="flex: 1 1 300px; min-width: 240px">
+                <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap">
+                  <h1 style="font-family: 'Cormorant Garamond', serif; font-weight: 500; font-size: 18px; margin: 0; color: #14241C">Namaste, {{ memberName }} 🙏</h1>
+                  <sc-if value="{{ hasMemberId }}" hint-placeholder-val="{{ true }}"><span style="padding: 4px 12px; border-radius: 999px; border: 1px solid rgba(201,162,74,0.4); background: rgba(201,162,74,0.08); font-size: 11.5px; letter-spacing: 0.12em; color: #7A5E22; white-space: nowrap">{{ memberId }}</span></sc-if>
+                </div>
+                <p style="margin: 4px 0 0; font-size: 13.5px; font-weight: 500; color: #2E3A33">{{ journeyLine }}</p>
+              </div>
+              <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 8px">
+                <button onClick="{{ startSession }}" style="padding: 11px 24px; border-radius: 999px; border: none; background: linear-gradient(135deg, #E8CF83, #C9A24A 55%, #A8853A); color: #14241C; font-family: 'Manrope', sans-serif; font-weight: 600; font-size: 14px; cursor: pointer; box-shadow: 0 4px 24px rgba(201,162,74,0.4)">▶ Sit &amp; Scribe</button>
+                <button onClick="{{ openLiveSheet }}" style="padding: 8px 18px; border-radius: 999px; border: 1px solid {{ liveCtaBorder }}; background: {{ liveCtaBg }}; color: #7A5E22; font-family: 'Manrope', sans-serif; font-size: 12.5px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; max-width: 230px; overflow: hidden; text-overflow: ellipsis; flex-shrink: 0" style-hover="border-color: rgba(201,162,74,0.9)"><span style="width: 7px; height: 7px; border-radius: 50%; background: {{ liveCtaDot }}; animation: {{ liveCtaAnim }}"></span>{{ liveCtaLabel }}</button>
+              </div>
+            </div>
+            <div class="r-grid-3" style="flex-shrink: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 13px">
+              <div style="padding: 16px 20px; border-radius: 24px; background: #FFFDF8; backdrop-filter: blur(16px); border: 1px solid rgba(201,162,74,0.26)">
+                <div style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: #7A5E22">Current streak</div>
+                <div style="font-family: 'Cormorant Garamond', serif; font-weight: 700; font-size: 44px; line-height: 1; font-variant-numeric: lining-nums; color: #7A5E22; margin: 5px 0 1px">{{ statStreak }} <span style="font-size: 14px; color: #1B3328">{{ streakUnit }}</span></div>
+                <div style="font-size: 13px; font-weight: 500; color: #2E3A33">{{ streakSub }}</div>
+              </div>
+              <div style="padding: 16px 20px; border-radius: 24px; background: #FFFDF8; backdrop-filter: blur(16px); border: 1px solid rgba(138,111,52,0.22)">
+                <div style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: #7A5E22">Total stillness</div>
+                <div style="font-family: 'Cormorant Garamond', serif; font-weight: 700; font-size: 44px; line-height: 1; font-variant-numeric: lining-nums; color: #1B3328; margin: 5px 0 1px">{{ statH }}<span style="font-size: 14px; color: #1B3328">h</span> {{ statM }}<span style="font-size: 14px; color: #1B3328">m</span></div>
+                <div style="font-size: 13px; font-weight: 500; color: #2E3A33">Across {{ statSessions }} sessions</div>
+              </div>
+              <div style="padding: 16px 20px; border-radius: 24px; background: #FFFDF8; backdrop-filter: blur(16px); border: 1px solid rgba(138,111,52,0.22)">
+                <div style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: #7A5E22; white-space: nowrap">Journey stage</div>
+                <div style="font-family: 'Cormorant Garamond', serif; font-weight: 500; font-size: 19px; color: #1B3328; margin: 8px 0 7px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{ stageName }}</div>
+                <div style="height: 6px; border-radius: 3px; background: rgba(20,36,28,0.08)"><div style="width: {{ stagePct }}%; height: 100%; border-radius: 3px; background: linear-gradient(90deg, #C9A24A, #7A5E22)"></div></div>
+                <div style="font-size: 13px; font-weight: 500; color: #2E3A33; margin-top: 6px">Day {{ journeyDay }} of 41</div>
+              </div>
+            </div>
+            <div style="flex-shrink: 0; padding: 14px 20px; border-radius: 24px; background: #FFFDF8; backdrop-filter: blur(16px); border: 1px solid rgba(138,111,52,0.22)">
+              <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px">
+                <h2 style="font-family: 'Cormorant Garamond', serif; font-weight: 600; font-size: 19px; margin: 0; color: #1B3328">This week</h2>
+                <span style="font-size: 12px; color: #2E3A33">{{ weekCount }} of 7 days</span>
+              </div>
+              <div style="display: flex; gap: 9px">
+                <sc-for list="{{ week }}" as="d" hint-placeholder-count="7">
+                  <div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 5px">
+                    <div style="width: 100%; max-width: 36px; aspect-ratio: 1; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; background: {{ d.bg }}; border: 1px solid {{ d.border }}; color: {{ d.color }}">{{ d.mark }}</div>
+                    <span style="font-size: 11px; color: #5A5546">{{ d.label }}</span>
+                  </div>
+                </sc-for>
+              </div>
+              <div style="margin-top: 13px; padding-top: 12px; border-top: 1px solid rgba(20,36,28,0.08); display: flex; flex-direction: column; gap: 8px">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px">
+                  <span style="font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: #7A5E22">41-day challenge</span>
+                  <span style="font-size: 13px; font-weight: 500; color: #2E3A33">{{ challengeLine }}</span>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(41, 1fr); gap: 3px">
+                  <sc-for list="{{ challengeDots }}" as="c" hint-placeholder-count="41">
+                    <span title="Day {{ c.n }}" style="height: 10px; border-radius: 2px; background: {{ c.bg }}; border: 1px solid {{ c.border }}"></span>
+                  </sc-for>
+                </div>
+              </div>
+            </div>
+            <div class="r-grid-2" style="display: grid; grid-template-columns: 1.15fr 1fr; gap: 13px; align-items: start">
+              <div style="min-height: 0; padding: 16px 18px; border-radius: 24px; background: #FFFDF8; backdrop-filter: blur(16px); border: 1px solid rgba(138,111,52,0.22); display: flex; flex-direction: column; gap: 11px">
+                <h2 style="font-family: 'Cormorant Garamond', serif; font-weight: 600; font-size: 19px; margin: 0; color: #1B3328">Wisdom of Dr. Harikrishna</h2>
+                <p style="margin: 0; font-size: 13.5px; font-weight: 500; line-height: 1.55; color: #2E3A33">His teachings cover meditation, kundalini, wellness practices and much more — all discourses live on our YouTube channel.</p>
+                <a href="https://www.youtube.com/@GoldenAgeGurus" target="_blank" rel="noopener" style="display: inline-flex; align-items: center; gap: 10px; padding: 11px 16px; border-radius: 16px; border: 1px solid rgba(201,162,74,0.35); background: rgba(201,162,74,0.08); color: #7A5E22; font-size: 13.5px; font-weight: 500; align-self: flex-start" style-hover="border-color: rgba(201,162,74,0.7); color: #14241C">
+                  <span style="width: 30px; height: 30px; flex-shrink: 0; border-radius: 50%; background: rgba(201,162,74,0.94); display: flex; align-items: center; justify-content: center">
+                    <svg viewBox="0 0 24 24" style="width: 12px; height: 12px; margin-left: 2px"><path d="M8 5.5v13l11-6.5z" fill="#14241C"></path></svg>
+                  </span>
+                  Watch on YouTube — @GoldenAgeGurus
+                </a>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+
+        <!-- Ask a question tab -->
+        <sc-if value="{{ tabHelp }}" hint-placeholder-val="{{ false }}">
+          <div style="padding-top: 34px; display: flex; flex-direction: column; gap: 30px; max-width: 940px">
+            <div style="display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px">
+              <div>
+                <h1 style="font-family: 'Cormorant Garamond', serif; font-weight: 700; font-size: 44px; line-height: 1; font-variant-numeric: lining-nums; margin: 0; color: #14241C">{{ askT.title }}</h1>
+                <p style="margin: 6px 0 0; font-size: 15px; font-weight: 500; color: #2E3A33">{{ askT.sub }}</p>
+              </div>
+              <button onClick="{{ toggleAskLang }}" style="padding: 9px 16px; border-radius: 999px; border: 1px solid rgba(201,162,74,0.6); background: none; color: #7A5E22; font-family: 'Manrope', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer" style-hover="background: rgba(201,162,74,0.12)">{{ askT.langBtn }}</button>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 14px">
+              <p style="margin: 0; max-width: 620px; font-size: 15px; font-weight: 500; line-height: 1.65; color: #2E3A33">{{ askT.intro }}</p>
+
+              <div style="display: flex; flex-direction: column; gap: 6px">
+                <span style="font-size: 12px; font-weight: 600; color: #7A5E22">{{ askT.step1 }}</span>
+                <div style="display: flex; flex-wrap: wrap; gap: 8px">
+                  <sc-for list="{{ askTopics }}" as="t" hint-placeholder-count="5">
+                    <button onClick="{{ t.pick }}" style="padding: 9px 16px; border-radius: 999px; border: 1px solid {{ t.border }}; background: {{ t.bg }}; color: {{ t.color }}; font-family: 'Manrope', sans-serif; font-size: 13px; cursor: pointer" style-hover="border-color: rgba(201,162,74,0.6)">{{ t.label }}</button>
+                  </sc-for>
+                </div>
+              </div>
+
+              <div style="display: flex; flex-direction: column; gap: 6px">
+                <span style="font-size: 12px; font-weight: 600; color: #7A5E22">{{ askT.step2 }}</span>
+                <textarea value="{{ askText }}" onChange="{{ onAskText }}" placeholder="{{ askPlaceholder }}" rows="4" style="width: 100%; max-width: 720px; background: rgba(20,36,28,0.05); border: 1px solid rgba(138,111,52,0.22); border-radius: 16px; padding: 16px; color: #1B3328; font-family: 'Manrope', sans-serif; font-size: 15px; font-weight: 400; line-height: 1.6; resize: vertical; outline: none"></textarea>
+              </div>
+
+              <div style="display: flex; flex-direction: column; gap: 6px">
+                <span style="font-size: 12px; font-weight: 600; color: #7A5E22">{{ askT.step3 }}</span>
+                <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px">
+                  <button onClick="{{ sendAskWhatsapp }}" style="display: inline-flex; align-items: center; gap: 9px; padding: 13px 26px; border-radius: 999px; border: none; background: linear-gradient(135deg, #E8CF83, #C9A24A 55%, #A8853A); color: #14241C; font-family: 'Manrope', sans-serif; font-weight: 600; font-size: 14px; cursor: pointer">{{ askT.sendBtn }}</button>
+                  <span style="font-size: 12.5px; color: #2E3A33">{{ askT.number }}</span>
+                </div>
+              </div>
+
+              <sc-if value="{{ askSent }}" hint-placeholder-val="{{ false }}">
+                <div style="max-width: 720px; padding: 16px 18px; border-radius: 16px; border: 1px solid rgba(47,107,69,0.3); background: rgba(47,107,69,0.07); display: flex; flex-direction: column; gap: 8px">
+                  <span style="font-size: 14px; font-weight: 600; color: #2F6B45">{{ askNote }}</span>
+                  <sc-if value="{{ askAckReady }}" hint-placeholder-val="{{ false }}">
+                    <span style="font-size: 13px; line-height: 1.6; color: #2E3A33">{{ askT.ackLine }} <strong>{{ askAckEmail }}</strong></span>
+                    <sc-if value="{{ askAckPending }}" hint-placeholder-val="{{ false }}">
+                      <button onClick="{{ sendAskAck }}" style="align-self: flex-start; padding: 9px 16px; border-radius: 999px; border: 1px solid rgba(47,107,69,0.5); background: none; color: #2F6B45; font-family: 'Manrope', sans-serif; font-size: 12.5px; font-weight: 600; cursor: pointer">{{ askT.ackBtn }}</button>
+                    </sc-if>
+                  </sc-if>
+                </div>
+              </sc-if>
+
+              <p style="margin: 4px 0 0; max-width: 620px; font-size: 12px; font-weight: 400; line-height: 1.6; color: #5A5546">{{ askT.footnote }}</p>
+              <a href="Ask.dc.html" style="display: inline-flex; align-items: center; gap: 10px; align-self: flex-start; padding: 12px 16px; border-radius: 16px; border: 1px solid rgba(201,162,74,0.3); background: #FFFDF8; font-size: 13px; color: #2E3A33">
+                <span style="font-size: 18px; color: #7A5E22">▦</span><span>{{ askT.qrLink }}</span>
+              </a>
+            </div>
+
+            <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px; padding: 18px 22px; border-radius: 22px; border: 1px solid rgba(201,162,74,0.28); background: rgba(201,162,74,0.06)">
+              <div style="flex: 1 1 300px; display: flex; flex-direction: column; gap: 4px">
+                <span style="font-family: 'Cormorant Garamond', serif; font-weight: 500; font-size: 18px; color: #14241C">Serve, once you have walked it</span>
+                <span style="font-size: 13.5px; font-weight: 500; line-height: 1.55; color: #2E3A33">Seven teams — the helpline, events on the ground, answering experiences, social media, tech and more. Choose what suits you.</span>
+              </div>
+              <button onClick="{{ volunteerSignup }}" style="flex-shrink: 0; padding: 12px 24px; border-radius: 999px; border: 1px solid rgba(201,162,74,0.6); background: none; color: #7A5E22; font-family: 'Manrope', sans-serif; font-size: 13.5px; cursor: pointer" style-hover="background: rgba(201,162,74,0.16)">{{ volunteerLabel }}</button>
+            </div>
+          </div>
+        </sc-if>
+
+        <!-- Journal tab -->
+        <sc-if value="{{ tabJournal }}" hint-placeholder-val="{{ false }}">
+          <div style="padding-top: 34px; display: flex; flex-direction: column; gap: 24px; max-width: 760px">
+            <div>
+              <h1 style="font-family: 'Cormorant Garamond', serif; font-weight: 700; font-size: 44px; line-height: 1; font-variant-numeric: lining-nums; margin: 0; color: #14241C">Private journal</h1>
+              <p style="margin: 6px 0 0; font-size: 15px; font-weight: 500; color: #2E3A33">Only you can read these. Encrypted at rest.</p>
+            </div>
+            <div style="padding: 24px; border-radius: 24px; background: #FFFDF8; backdrop-filter: blur(16px); border: 1px solid rgba(201,162,74,0.26); display: flex; flex-direction: column; gap: 14px">
+              <textarea value="{{ journalDraft }}" onChange="{{ onJournalInput }}" placeholder="What arose in today's sitting?" rows="4" style="width: 100%; background: rgba(20,36,28,0.05); border: 1px solid rgba(138,111,52,0.22); border-radius: 16px; padding: 16px; color: #1B3328; font-family: 'Manrope', sans-serif; font-size: 15px; font-weight: 400; line-height: 1.6; resize: vertical; outline: none"></textarea>
+              <div style="display: flex; align-items: center; justify-content: space-between; gap: 14px"><span style="font-size: 12px; font-weight: 400; color: #5A5546">{{ journalHint }}</span><button onClick="{{ saveJournal }}" disabled="{{ journalEmpty }}" style="padding: 11px 26px; border-radius: 999px; border: none; background: {{ journalBtnBg }}; color: {{ journalBtnColor }}; font-family: 'Manrope', sans-serif; font-weight: 600; font-size: 14px; cursor: {{ journalBtnCursor }}; flex-shrink: 0">Save entry</button></div>
+            </div>
+            <sc-for list="{{ journalEntries }}" as="j" hint-placeholder-count="2">
+              <div style="padding: 22px 26px; border-radius: 24px; background: #FFFDF8; border: 1px solid rgba(138,111,52,0.22)">
+                <div style="font-size: 12.5px; letter-spacing: 0.1em; text-transform: uppercase; color: #7A5E22; margin-bottom: 8px">{{ j.date }}</div>
+                <p style="margin: 0; font-size: 15px; font-weight: 400; line-height: 1.65; color: #1B3328">{{ j.text }}</p>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+
+
+      </main>
+    </div>
+  </sc-if>
+
+  <!-- SESSION OVERLAY -->
+  <sc-if value="{{ donateOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position: fixed; inset: 0; z-index: 110; background: rgba(243,234,211,0.85); backdrop-filter: blur(16px); display: flex; align-items: center; justify-content: center; padding: 24px">
+      <div style="width: min(440px, 100%); padding: 36px 34px; border-radius: 24px; background: rgba(201,162,74,0.75); backdrop-filter: blur(28px); border: 1px solid rgba(201,162,74,0.26); box-shadow: 0 30px 80px rgba(0,0,0,0.55); display: flex; flex-direction: column; gap: 18px; text-align: center">
+        <div style="font-family: 'Cormorant Garamond', serif; font-weight: 500; font-size: 24px; color: #14241C">Support the mission ♡</div>
+        <p style="margin: 0; font-size: 14.5px; font-weight: 500; line-height: 1.6; color: #1B3328">Every teaching stays free because of you. Donations are processed securely by Stripe — we use your member info ({{ memberName }}), nothing to re-enter.</p>
+        <div style="display: flex; gap: 10px; justify-content: center">
+          <sc-for list="{{ donPresets }}" as="dp" hint-placeholder-count="3">
+            <button onClick="{{ dp.pick }}" style="flex: 1; padding: 12px 0; border-radius: 16px; border: 1px solid {{ dp.border }}; background: {{ dp.bg }}; color: {{ dp.color }}; font-family: 'Manrope', sans-serif; font-size: 15px; font-weight: 500; cursor: pointer">₹{{ dp.label }}</button>
+          </sc-for>
+        </div>
+        <input value="{{ donCustom }}" onChange="{{ onDonCustom }}" type="number" min="50" placeholder="Custom amount (₹)" style="width: 100%; background: rgba(20,36,28,0.06); border: 1px solid rgba(138,111,52,0.22); border-radius: 999px; padding: 12px 18px; color: #1B3328; font-family: 'Manrope', sans-serif; font-size: 14px; outline: none; text-align: center">
+        <button onClick="{{ submitDonate }}" style="width: 100%; padding: 13px; border-radius: 999px; border: none; background: linear-gradient(135deg, #E8CF83, #C9A24A 55%, #A8853A); color: #14241C; font-family: 'Manrope', sans-serif; font-size: 15px; font-weight: 600; cursor: pointer; opacity: {{ donOpacity }}">{{ donButtonLabel }}</button>
+        <sc-if value="{{ donHasStatus }}" hint-placeholder-val="{{ false }}">
+          <div style="font-size: 13.5px; font-weight: 500; line-height: 1.5; color: {{ donStatusColor }}">{{ donStatus }}</div>
+        </sc-if>
+        <button onClick="{{ closeDonate }}" style="background: none; border: none; font-family: 'Manrope', sans-serif; font-size: 13px; color: #2E3A33; cursor: pointer" style-hover="color: #14241C">Not now</button>
+      </div>
+    </div>
+  </sc-if>
+  <sc-if value="{{ cardBigOpen }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closeCard }}" style="position: fixed; inset: 0; z-index: 118; background: rgba(8,6,20,0.93); backdrop-filter: blur(12px); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; padding: 24px; cursor: zoom-out">
+      <div style="position: relative; width: min(560px, 86vw, 74vh); aspect-ratio: 1/1; container-type: inline-size; border-radius: 24px; overflow: hidden; background: radial-gradient(ellipse 70% 60% at 50% 42%, #14241C 0%, #14241C 55%, #080614 100%); border: 1px solid rgba(201,162,74,0.4); box-shadow: 0 30px 90px rgba(0,0,0,0.6)">
+        <div style="position: absolute; inset: 0; padding: 8.5cqi; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4cqi; text-align: center">
+          <div style="font-size: 2.6cqi; letter-spacing: 0.34em; text-transform: uppercase; color: #7A5E22">Golden Age Wisdom</div>
+          <div style="font-family: 'Cormorant Garamond', serif; font-weight: 500; font-size: {{ cardFontSize }}; line-height: 1.42; color: #14241C; text-wrap: pretty">“{{ testimonialPreview }}”</div>
+          <div style="font-size: 2.8cqi; font-weight: 400; color: #1B3328">{{ cardByline }}</div>
+        </div>
+      </div>
+      <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center">
+        <button onClick="{{ downloadCard }}" style="padding: 10px 22px; border-radius: 999px; border: none; background: linear-gradient(135deg, #E8CF83, #C9A24A 55%, #A8853A); color: #14241C; font-family: 'Manrope', sans-serif; font-weight: 600; font-size: 13.5px; cursor: pointer">Download this card</button>
+        <button onClick="{{ closeCard }}" style="padding: 10px 22px; border-radius: 999px; border: 1px solid rgba(138,111,52,0.32); background: none; color: #14241C; font-family: 'Manrope', sans-serif; font-size: 13.5px; cursor: pointer">Close</button>
+      </div>
+    </div>
+  </sc-if>
+  <sc-if value="{{ landingOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position: fixed; inset: 0; z-index: 114; background: rgba(8,6,20,0.92); backdrop-filter: blur(12px); display: flex; align-items: flex-start; justify-content: center; padding: 20px; overflow-y: auto">
+      <div style="width: min(680px, 100%); margin: auto; padding: 32px 30px; border-radius: 24px; background: rgba(251,246,234,0.94); border: 1px solid rgba(201,162,74,0.26); box-shadow: 0 30px 90px rgba(0,0,0,0.55); display: flex; flex-direction: column; gap: 20px">
+        <div style="text-align: center; display: flex; flex-direction: column; gap: 7px">
+          <span style="font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: #7A5E22">Welcome, {{ memberName }}</span>
+          <span style="font-family: 'Cormorant Garamond', serif; font-weight: 500; font-size: 26px; color: #14241C">Where would you like to begin?</span>
+          <span style="font-size: 13.5px; font-weight: 500; color: #2E3A33">You can change this any time from the menu.</span>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 13px">
+          <sc-for list="{{ landingCards }}" as="l" hint-placeholder-count="4">
+            <button onClick="{{ l.pick }}" style="display: flex; flex-direction: column; gap: 7px; padding: 17px; border-radius: 24px; border: 1px solid rgba(138,111,52,0.22); background: rgba(20,36,28,0.04); color: #1B3328; text-align: left; font-family: 'Manrope', sans-serif; cursor: pointer" style-hover="border-color: rgba(201,162,74,0.65); background: rgba(201,162,74,0.1)">
+              <span style="font-size: 17px; color: #7A5E22">{{ l.icon }}</span>
+              <span style="font-family: 'Cormorant Garamond', serif; font-weight: 600; font-size: 19px; color: #1B3328">{{ l.title }}</span>
+              <span style="font-size: 13px; font-weight: 500; line-height: 1.5; color: #1B3328">{{ l.body }}</span>
+            </button>
+          </sc-for>
+        </div>
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap">
+          <button onClick="{{ toggleLandingRemember }}" style="display: inline-flex; align-items: center; gap: 9px; padding: 0; border: none; background: none; color: #1B3328; font-family: 'Manrope', sans-serif; font-size: 12.5px; cursor: pointer" style-hover="color: #7A5E22"><span style="width: 17px; height: 17px; border-radius: 5px; border: 1px solid rgba(201,162,74,0.55); display: flex; align-items: center; justify-content: center; font-size: 11px; color: #7A5E22">{{ landingRememberIcon }}</span>Remember my choice</button>
+          <button onClick="{{ closeLanding }}" style="border: none; background: none; color: #5A5546; font-family: 'Manrope', sans-serif; font-size: 12.5px; cursor: pointer" style-hover="color: #1B3328">Skip for now</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ consentOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position: fixed; left: 0; right: 0; bottom: 0; z-index: 120; padding: 14px; display: flex; justify-content: center; pointer-events: none">
+      <div style="pointer-events: auto; width: min(760px, 100%); padding: 16px 20px; border-radius: 24px; background: rgba(251,246,234,0.96); backdrop-filter: blur(14px); border: 1px solid rgba(201,162,74,0.26); box-shadow: 0 20px 60px rgba(60,42,16,0.25); display: flex; align-items: center; gap: 16px; flex-wrap: wrap">
+        <span style="flex: 1 1 300px; font-size: 13.5px; font-weight: 500; line-height: 1.6; color: #1B3328">We set no advertising cookies. May we count anonymous visits to see which teachings people reach for? <a href="Privacy.dc.html">Read the privacy notice →</a></span>
+        <span style="display: flex; gap: 9px; flex-wrap: wrap">
+          <button onClick="{{ acceptCookies }}" style="padding: 10px 20px; border-radius: 999px; border: none; background: linear-gradient(135deg, #E8CF83, #C9A24A 55%, #A8853A); color: #14241C; font-family: 'Manrope', sans-serif; font-weight: 600; font-size: 13px; cursor: pointer">Allow</button>
+          <button onClick="{{ declineCookies }}" style="padding: 10px 20px; border-radius: 999px; border: 1px solid rgba(138,111,52,0.32); background: none; color: #14241C; font-family: 'Manrope', sans-serif; font-size: 13px; cursor: pointer">No thanks</button>
+        </span>
+      </div>
+    </div>
+  </sc-if>
+  <sc-if value="{{ liveBackOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position: fixed; inset: 0; z-index: 112; background: rgba(8,6,20,0.9); backdrop-filter: blur(12px); display: flex; align-items: flex-start; justify-content: center; padding: 20px; overflow-y: auto">
+      <div style="width: min(460px, 100%); margin: auto; padding: 30px 28px; border-radius: 24px; background: rgba(251,246,234,0.94); border: 1px solid rgba(201,162,74,0.26); box-shadow: 0 30px 90px rgba(0,0,0,0.55); display: flex; flex-direction: column; gap: 16px; text-align: center">
+        <div style="font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: #7A5E22">Welcome back</div>
+        <div style="font-family: 'Cormorant Garamond', serif; font-weight: 500; font-size: 24px; color: #14241C">{{ liveBackMins }} minutes with {{ liveBackLabel }}</div>
+        <p style="margin: 0; font-size: 14px; font-weight: 500; line-height: 1.6; color: #1B3328">You were away on {{ liveBackHow }} for {{ liveBackMins }} minutes. Shall I add that to your practice? Only you know how much of it was true stillness.</p>
+        <div style="display: flex; flex-direction: column; gap: 9px">
+          <button onClick="{{ liveBackLog }}" style="padding: 12px 24px; border-radius: 999px; border: none; background: linear-gradient(135deg, #E8CF83, #C9A24A 55%, #A8853A); color: #14241C; font-family: 'Manrope', sans-serif; font-weight: 600; font-size: 14px; cursor: pointer">Log all {{ liveBackMins }} minutes</button>
+          <button onClick="{{ liveBackHalf }}" style="padding: 11px 24px; border-radius: 999px; border: 1px solid rgba(138,111,52,0.32); background: none; color: #14241C; font-family: 'Manrope', sans-serif; font-size: 13.5px; cursor: pointer" style-hover="border-color: rgba(201,162,74,0.6); color: #7A5E22">I sat for about half of it</button>
+          <button onClick="{{ liveBackSkip }}" style="padding: 8px; border: none; background: none; color: #5A5546; font-family: 'Manrope', sans-serif; font-size: 12.5px; cursor: pointer" style-hover="color: #1B3328">Don't log this one</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+  <sc-if value="{{ joinOpen }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ backdropJoin }}" style="position: fixed; inset: 0; z-index: 108; background: rgba(8,6,20,0.9); backdrop-filter: blur(12px); display: flex; align-items: flex-start; justify-content: center; padding: 20px; overflow-y: auto; -webkit-overflow-scrolling: touch">
+      <div data-sheet="join" style="width: min(680px, 100%); margin: auto; padding: 30px 28px; border-radius: 24px; background: rgba(251,246,234,0.92); border: 1px solid rgba(201,162,74,0.26); box-shadow: 0 30px 90px rgba(0,0,0,0.55); display: flex; flex-direction: column; gap: 20px">
+        <div style="display: flex; align-items: flex-start; gap: 14px">
+          <div style="flex: 1; display: flex; flex-direction: column; gap: 8px">
+            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap">
+              <span style="padding: 4px 12px; border-radius: 999px; font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; background: {{ liveBadgeBg }}; color: {{ liveBadgeColor }}">{{ liveBadge }}</span>
+              <span style="font-size: 13px; font-weight: 500; color: #2E3A33">{{ liveNote }}</span>
+            </div>
+            <h2 style="font-family: 'Cormorant Garamond', serif; font-weight: 500; font-size: 25px; margin: 0; color: #14241C">{{ liveLabel }}</h2>
+            <p style="margin: 0; font-size: 14px; font-weight: 500; line-height: 1.55; color: #1B3328">How would you like to sit today, {{ memberName }}?</p>
+          </div>
+          <button onClick="{{ closeJoin }}" title="Close" style="width: 34px; height: 34px; flex-shrink: 0; border-radius: 50%; border: 1px solid rgba(138,111,52,0.3); background: rgba(20,36,28,0.05); color: #14241C; font-size: 16px; cursor: pointer" style-hover="border-color: rgba(201,162,74,0.6); color: #14241C">×</button>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px">
+          <a href="{{ zoomUrl }}" onClick="{{ openZoom }}" target="_blank" rel="noopener" style="display: flex; flex-direction: column; gap: 8px; padding: 18px; border-radius: 24px; border: 1px solid rgba(201,162,74,0.55); background: rgba(201,162,74,0.12); color: #14241C" style-hover="border-color: rgba(201,162,74,0.9); background: rgba(201,162,74,0.18); color: #14241C">
+            <span style="font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: #7A5E22">Members only</span>
+            <span style="font-family: 'Cormorant Garamond', serif; font-weight: 500; font-size: 18px">Join live on Zoom</span>
+            <span style="font-size: 11.5px; color: #7A5E22">{{ zoomStartLine }}</span>
+            <span style="font-size: 11.5px; font-weight: 400; line-height: 1.5; color: #5A5546">The same room every session · ID {{ zoomId }}</span>
+          </a>
+          <div style="position: relative; display: flex; flex-direction: column; gap: 8px; padding: 18px; border-radius: 24px; border: 1px solid rgba(138,111,52,0.22); background: rgba(20,36,28,0.04); color: #1B3328" style-hover="border-color: rgba(201,162,74,0.6); color: #14241C">
+            <button onClick="{{ watchLive }}" aria-label="Watch the live session on this page" style="position: absolute; inset: 0; z-index: 0; width: 100%; border: none; border-radius: 24px; background: transparent; cursor: pointer"></button>
+            <span style="position: relative; z-index: 1; pointer-events: none; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: #2E3A33">Watch only · here</span>
+            <span style="position: relative; z-index: 1; pointer-events: none; font-family: 'Cormorant Garamond', serif; font-weight: 500; font-size: 18px">YouTube live</span>
+            <span style="position: relative; z-index: 1; pointer-events: none; font-size: 13px; font-weight: 500; line-height: 1.5; color: #1B3328">Plays on this page — no camera, no mic, nothing to install.</span>
+            <span style="position: relative; z-index: 1; pointer-events: none; font-size: 11.5px; color: #7A5E22">{{ ytStartLine }}</span>
+            <a href="https://www.youtube.com/@GoldenAgeGurus/streams" target="_blank" rel="noopener" style="position: relative; z-index: 2; align-self: flex-start; font-size: 11.5px; font-weight: 400; color: #2E3A33" style-hover="color: #7A5E22">All live streams on YouTube ↗</a>
+          </div>
+          <button onClick="{{ sitNow }}" style="display: flex; flex-direction: column; gap: 8px; padding: 18px; border-radius: 24px; border: 1px solid rgba(138,111,52,0.22); background: rgba(20,36,28,0.04); color: #1B3328; text-align: left; font-family: 'Manrope', sans-serif; cursor: pointer" style-hover="border-color: rgba(201,162,74,0.6)">
+            <span style="font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: #2E3A33">{{ soloEyebrow }}</span>
+            <span style="font-family: 'Cormorant Garamond', serif; font-weight: 500; font-size: 18px">Sit &amp; Scribe</span>
+            <span style="font-size: 13px; font-weight: 500; line-height: 1.5; color: #1B3328">Sit in silence at any hour — then write what arose, while it is still warm.</span>
+          </button>
+        </div>
+
+        <div style="padding: 16px 18px; border-radius: 24px; border: 1px solid rgba(138,111,52,0.22); background: #FFFDF8; display: flex; flex-direction: column; gap: 10px">
+          <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap">
+            <span style="font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: #7A5E22">Today · Monday to Saturday</span>
+            <span style="font-size: 11.5px; font-weight: 400; color: #5A5546">Times shown for {{ localZone }}</span>
+          </div>
+          <sc-for list="{{ scheduleRows }}" as="r" hint-placeholder-count="3">
+            <div class="sched-row" style="display: flex; align-items: center; flex-wrap: wrap; gap: 6px 12px; padding: 9px 10px; border-radius: 12px; background: {{ r.rowBg }}">
+              <span style="width: 8px; height: 8px; flex-shrink: 0; border-radius: 50%; background: {{ r.dot }}; animation: {{ r.dotAnim }}"></span>
+              <span class="sched-label" style="flex: 1 1 150px; min-width: 120px; font-size: 13.5px; color: {{ r.labelColor }}">{{ r.label }}</span>
+              <span class="sched-times" style="display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 10px; margin-left: auto">
+                <span style="font-family: 'Cormorant Garamond', serif; font-weight: 500; font-size: 14px; color: #7A5E22; white-space: nowrap">{{ r.local }}</span>
+                <span style="font-size: 11px; font-weight: 400; color: #5A5546; white-space: nowrap">{{ r.ist }}</span>
+                <span style="font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: {{ r.stateColor }}; white-space: nowrap">{{ r.state }}</span>
+              </span>
+            </div>
+          </sc-for>
+          <div style="font-size: 11.5px; font-weight: 400; line-height: 1.5; color: #5A5546">The same three sessions run Monday to Saturday — Sunday is the rest day. Group meditation is a silent hour together; the wisdom hour that follows is Dr. Harikrishna answering open questions.</div>
+        </div>
+        <div style="padding: 18px 20px; border-radius: 24px; border: 1px solid rgba(201,162,74,0.26); background: rgba(201,162,74,0.06); display: flex; flex-direction: column; gap: 12px">
+          <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap">
+            <span style="font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: #7A5E22">Your Zoom details</span>
+            <sc-if value="{{ hasCopyNote }}" hint-placeholder-val="{{ false }}"><span style="font-size: 11.5px; color: #2F6B45">{{ copyNote }}</span></sc-if>
+          </div>
+          <div style="display: flex; flex-wrap: wrap; gap: 10px">
+            <button onClick="{{ copyZoomId }}" title="Copy meeting ID" style="display: flex; flex-direction: column; gap: 2px; padding: 9px 15px; border-radius: 12px; border: 1px solid rgba(138,111,52,0.22); background: rgba(20,36,28,0.04); color: #1B3328; font-family: 'Manrope', sans-serif; text-align: left; cursor: pointer" style-hover="border-color: rgba(201,162,74,0.6)"><span style="font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: #2E3A33">Meeting ID</span><span style="font-size: 14.5px">{{ zoomId }}</span></button>
+            <button onClick="{{ copyZoomPass }}" title="Copy passcode" style="display: flex; flex-direction: column; gap: 2px; padding: 9px 15px; border-radius: 12px; border: 1px solid rgba(138,111,52,0.22); background: rgba(20,36,28,0.04); color: #1B3328; font-family: 'Manrope', sans-serif; text-align: left; cursor: pointer" style-hover="border-color: rgba(201,162,74,0.6)"><span style="font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: #2E3A33">Passcode</span><span style="font-size: 14.5px">{{ zoomPass }}</span></button>
+            <button onClick="{{ copyZoomAll }}" style="align-self: stretch; padding: 9px 16px; border-radius: 12px; border: 1px dashed rgba(201,162,74,0.5); background: none; color: #7A5E22; font-family: 'Manrope', sans-serif; font-size: 12.5px; cursor: pointer" style-hover="color: #7A5E22; border-color: rgba(201,162,74,0.8)">Copy full invite</button>
+          </div>
+          <div style="font-size: 11.5px; font-weight: 400; line-height: 1.5; color: #5A5546">The same Zoom room for every session. Please keep these details for your own use — they are shared with members only.</div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+  <sc-if value="{{ videoOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position: fixed; inset: 0; z-index: 110; background: rgba(8,6,20,0.92); backdrop-filter: blur(10px); display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 14px; padding: 24px; overflow-y: auto">
+      <div style="display: flex; align-items: center; gap: 14px; width: min(960px, 100%)">
+        <span style="flex: 1; font-family: 'Cormorant Garamond', serif; font-weight: 500; font-size: 18px; color: #1B3328">{{ videoTitle }}</span>
+        <button onClick="{{ closeVideo }}" title="Close" style="width: 36px; height: 36px; flex-shrink: 0; border-radius: 50%; border: 1px solid rgba(138,111,52,0.32); background: rgba(20,36,28,0.06); color: #14241C; font-size: 17px; cursor: pointer" style-hover="border-color: rgba(201,162,74,0.6); color: #14241C">×</button>
+      </div>
+      <sc-if value="{{ videoIsPlayable }}" hint-placeholder-val="{{ true }}">
+      <div style="position: relative; width: min(960px, 100%); aspect-ratio: 16/9; border-radius: 24px; overflow: hidden; border: 1px solid rgba(201,162,74,0.26); background: #000">
+        <iframe src="{{ videoSrc }}" title="{{ videoTitle }}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen="{{ true }}" style="width: 100%; height: 100%; border: 0; display: block"></iframe>
+      </div>
+      <a href="{{ videoWatchUrl }}" target="_blank" rel="noopener" style="font-size: 13px; font-weight: 500; color: #2E3A33">Player not loading? Watch on YouTube →</a>
+      </sc-if>
+      <sc-if value="{{ videoNotLive }}" hint-placeholder-val="{{ false }}">
+      <div style="width: min(680px, 100%); padding: 40px 32px; border-radius: 24px; border: 1px solid rgba(201,162,74,0.26); background: rgba(251,246,234,0.7); display: flex; flex-direction: column; align-items: center; gap: 16px; text-align: center">
+        <div style="width: 62px; height: 62px; border-radius: 50%; border: 1px solid rgba(201,162,74,0.45); background: radial-gradient(circle at 38% 34%, rgba(201,162,74,0.28), rgba(201,162,74,0.10)); display: flex; align-items: center; justify-content: center; font-size: 24px; color: #7A5E22">☾</div>
+        <div style="font-family: 'Cormorant Garamond', serif; font-weight: 600; font-size: 24px; color: #14241C">No stream is live right now</div>
+        <div style="font-size: 14px; font-weight: 500; line-height: 1.6; color: #1B3328; max-width: 420px">{{ liveNextNote }}</div>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 4px">
+          <a href="https://www.youtube.com/@GoldenAgeGurus/streams" target="_blank" rel="noopener" style="padding: 10px 20px; border-radius: 999px; border: 1px solid rgba(201,162,74,0.45); font-size: 13px; color: #7A5E22" style-hover="border-color: rgba(201,162,74,0.85); color: #14241C">Past streams on YouTube ↗</a>
+          <button onClick="{{ sitFromVideo }}" style="padding: 10px 20px; border-radius: 999px; border: none; background: linear-gradient(135deg, #E8CF83, #C9A24A 55%, #A8853A); color: #14241C; font-family: 'Manrope', sans-serif; font-weight: 600; font-size: 13px; cursor: pointer">Sit &amp; Scribe instead</button>
+        </div>
+      </div>
+      </sc-if>
+    </div>
+  </sc-if>
+  <sc-if value="{{ sessionOpen }}" hint-placeholder-val="{{ false }}">
+    <div class="sess-layer" style="position: fixed; inset: 0; z-index: 100; background: radial-gradient(ellipse 70% 60% at 50% 44%, #14241C 0%, #0E1A14 60%, #080614 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 26px; padding: 24px 16px; overflow-x: hidden; overflow-y: auto; -webkit-overflow-scrolling: touch">
+      <sc-for list="{{ loginStars }}" as="st" hint-placeholder-count="10">
+        <div style="position: absolute; left: {{ st.x }}%; top: {{ st.y }}%; width: {{ st.s }}px; height: {{ st.s }}px; border-radius: 50%; background: #1B3328; opacity: {{ st.o }}"></div>
+      </sc-for>
+      <div style="position: absolute; width: min(620px, 130vw); height: min(620px, 130vw); border-radius: 50%; border: 1px dashed rgba(201,162,74,0.1); animation: sessSpin 120s linear infinite"></div>
+      <div style="position: absolute; width: min(460px, 105vw); height: min(460px, 105vw); border-radius: 50%; border: 1px solid rgba(201,162,74,0.07); animation: sessSpin 80s linear infinite reverse"></div>
+      <div class="sess-orb" style="position: relative; width: min(320px, 80vw); height: min(320px, 80vw); flex-shrink: 0; display: flex; align-items: center; justify-content: center">
+        <svg viewBox="0 0 320 320" style="position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg)">
+          <circle cx="160" cy="160" r="152" fill="none" stroke="rgba(20,36,28,0.06)" stroke-width="2"></circle>
+          <circle cx="160" cy="160" r="152" fill="none" stroke="{{ ringColor }}" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="955" stroke-dashoffset="{{ progOffset }}" style="transition: stroke-dashoffset 1s linear, stroke 1.2s ease"></circle>
+        </svg>
+        <div style="position: absolute; width: 66%; height: 66%; border-radius: 50%; border: 1px solid rgba(201,162,74,0.4); animation: rippleOut 10s cubic-bezier(0.2, 0.6, 0.4, 1) infinite; pointer-events: none"></div>
+        <div style="position: absolute; width: 66%; height: 66%; border-radius: 50%; border: 1px solid rgba(201,162,74,0.28); animation: rippleOut 10s cubic-bezier(0.2, 0.6, 0.4, 1) 5s infinite; pointer-events: none"></div>
+        <div style="width: 62%; height: 62%; border-radius: 50%; background: radial-gradient(circle at 40% 34%, rgba(201,162,74,0.4), rgba(201,162,74,0.1) 55%, rgba(201,162,74,0.02)); border: 1px solid rgba(201,162,74,0.45); box-shadow: 0 0 80px rgba(201,162,74,0.25), inset 0 0 40px rgba(201,162,74,0.12); display: flex; align-items: center; justify-content: center; transform: scale({{ breathScale }}); transition: transform {{ breathSecs }}s cubic-bezier(0.37, 0, 0.63, 1)">
+          <svg viewBox="0 0 64 64" style="width: 34%; height: 34%; opacity: 0.9; filter: drop-shadow(0 2px 18px rgba(201,162,74,0.55))">
+            <circle cx="32" cy="14" r="6.5" fill="#f2e3bb"></circle>
+            <path d="M32 24c-6.5 0-10.5 4-12.5 10l-2 6h29l-2-6c-2-6-6-10-12.5-10z" fill="#f2e3bb"></path>
+            <path d="M12 46c2-4.5 9-7 20-7s18 2.5 20 7c0.8 1.8-0.5 3.5-2.5 3.5h-35c-2 0-3.3-1.7-2.5-3.5z" fill="#f2e3bb"></path>
+          </svg>
+        </div>
+      </div>
+      <div style="position: relative; text-align: center; display: flex; flex-direction: column; gap: 9px; align-items: center">
+        <sc-if value="{{ goalHit }}" hint-placeholder-val="{{ false }}">
+          <div style="display: inline-flex; align-items: center; gap: 8px; padding: 6px 16px; border-radius: 999px; border: 1px solid rgba(47,107,69,0.45); background: rgba(47,107,69,0.10); font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: #2F6B45; animation: fadeSlow 1.4s ease both">
+            <span style="width: 6px; height: 6px; border-radius: 50%; background: #7ecb8f; box-shadow: 0 0 9px #7ecb8f"></span>{{ goalDoneChip }}
+          </div>
+        </sc-if>
+        <div style="font-family: 'Cormorant Garamond', serif; font-weight: 500; font-size: 27px; letter-spacing: 0.04em; color: #1B3328">{{ breathLabel }}</div>
+        <div style="min-height: 20px; font-size: 14px; font-weight: 500; font-style: italic; color: #2E3A33; animation: fadeSlow 1.4s ease both">{{ guidance }}</div>
+        <div style="display: flex; align-items: center; gap: 14px; margin-top: 6px; padding: 7px 18px; border-radius: 999px; border: 1px solid rgba(138,111,52,0.22); background: rgba(20,36,28,0.04); font-size: 12.5px; color: #1B3328; white-space: nowrap">
+          <span style="font-family: 'Cormorant Garamond', serif; font-weight: 500; font-size: 14px; color: #7A5E22">{{ sessionClock }}</span>
+          <span style="width: 1px; height: 12px; background: rgba(255,255,255,0.15)"></span>
+          <span style="color: {{ goalColor }}">{{ goalText }}</span>
+          <span style="width: 1px; height: 12px; background: rgba(255,255,255,0.15)"></span>
+          <span>Day {{ journeyDay }} of 41</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 7px; flex-wrap: wrap; justify-content: center">
+          <span style="font-size: 10.5px; letter-spacing: 0.22em; text-transform: uppercase; color: #5A5546">Sit for</span>
+          <sc-for list="{{ goalChips }}" as="g" hint-placeholder-count="5">
+            <button onClick="{{ g.pick }}" title="Sit for {{ g.label }} minutes" style="min-width: 42px; padding: 5px 11px; border-radius: 999px; cursor: pointer; font-family: 'Manrope', sans-serif; font-size: 12px; border: 1px solid {{ g.border }}; background: {{ g.bg }}; color: {{ g.color }}; font-weight: {{ g.weight }}">{{ g.label }}</button>
+          </sc-for>
+          <span style="font-size: 11.5px; font-weight: 400; color: #5A5546">min</span>
+        </div>
+      </div>
+      <div class="sess-sound" style="position: relative; display: flex; flex-direction: column; align-items: center; gap: 11px; width: min(560px, 100%); flex-shrink: 0">
+        <div style="display: flex; align-items: center; gap: 12px; padding: 7px 18px 7px 7px; border-radius: 999px; border: 1px solid {{ sndBorder }}; background: {{ sndBg }}">
+          <button onClick="{{ toggleSound }}" title="{{ sndTitle }}" style="width: 38px; height: 38px; flex-shrink: 0; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #E8CF83, #C9A24A 55%, #A8853A); animation: {{ sndRingAnim }}">
+            <sc-if value="{{ sndPlaying }}" hint-placeholder-val="{{ false }}">
+              <span style="display: flex; align-items: flex-end; gap: 2.5px; height: 16px">
+                <span style="width: 3px; height: 100%; border-radius: 2px; background: #14241C; transform-origin: bottom; animation: eqBar 1.1s ease-in-out infinite"></span>
+                <span style="width: 3px; height: 100%; border-radius: 2px; background: #14241C; transform-origin: bottom; animation: eqBar 0.82s ease-in-out 0.18s infinite"></span>
+                <span style="width: 3px; height: 100%; border-radius: 2px; background: #14241C; transform-origin: bottom; animation: eqBar 1.36s ease-in-out 0.34s infinite"></span>
+                <span style="width: 3px; height: 100%; border-radius: 2px; background: #14241C; transform-origin: bottom; animation: eqBar 0.95s ease-in-out 0.52s infinite"></span>
+              </span>
+            </sc-if>
+            <sc-if value="{{ sndIdle }}" hint-placeholder-val="{{ true }}">
+              <svg viewBox="0 0 24 24" style="width: 19px; height: 19px"><path d="M4 9.4h3.2L12 5.3v13.4L7.2 14.6H4z" fill="#14241C"></path><path d="M15.6 9.1c1.5 1.6 1.5 4.2 0 5.8" fill="none" stroke="#14241C" stroke-width="1.7" stroke-linecap="round"></path><path d="M18.4 6.6c2.9 3 2.9 7.8 0 10.8" fill="none" stroke="#14241C" stroke-width="1.7" stroke-linecap="round" opacity="0.5"></path></svg>
+            </sc-if>
+          </button>
+          <span style="display: flex; flex-direction: column; gap: 2px; min-width: 118px; text-align: left">
+            <span style="font-size: 10.5px; letter-spacing: 0.24em; text-transform: uppercase; color: #2E3A33">{{ sndStatus }}</span>
+            <span style="font-size: 13.5px; color: #1B3328; white-space: nowrap">{{ sndName }}</span>
+          </span>
+          <span style="display: flex; align-items: center; gap: 8px; flex: 1; min-width: 84px">
+            <svg viewBox="0 0 24 24" style="width: 14px; height: 14px; flex-shrink: 0"><path d="M5 9.5h2.8L12 6v12l-4.2-3.5H5z" fill="none" stroke="#2E3A33" stroke-width="1.5" stroke-linejoin="round"></path></svg>
+            <input type="range" min="0" max="100" step="1" value="{{ sndVolPct }}" onChange="{{ onSndVol }}" aria-label="Sound volume" style="flex: 1; min-width: 56px; height: 3px; accent-color: #7A5E22; cursor: pointer">
+          </span>
+        </div>
+        <div class="sess-chips" style="display: flex; flex-wrap: wrap; gap: 7px; justify-content: center; max-width: 100%">
+          <sc-for list="{{ soundChips }}" as="sc" hint-placeholder-count="7">
+            <button onClick="{{ sc.pick }}" title="Listen in · {{ sc.label }}" style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 13px; border-radius: 999px; cursor: pointer; white-space: nowrap; flex-shrink: 0; font-family: 'Manrope', sans-serif; font-size: 12px; letter-spacing: 0.03em; border: 1px solid {{ sc.border }}; background: {{ sc.bg }}; color: {{ sc.color }}">{{ sc.glyph }} {{ sc.label }}</button>
+          </sc-for>
+        </div>
+        <div class="sess-hint" style="font-size: 11.5px; font-weight: 400; font-style: italic; color: #5A5546">Tap a sound to listen in · or stay in pure silence</div>
+      </div>
+      <div style="position: relative; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; justify-content: center">
+        <button onClick="{{ togglePause }}" style="padding: 11px 26px; border-radius: 999px; border: 1px solid rgba(201,162,74,0.55); background: rgba(201,162,74,0.12); color: #7A5E22; font-family: 'Manrope', sans-serif; font-size: 14px; cursor: pointer" style-hover="border-color: rgba(201,162,74,0.9); color: #14241C">{{ pauseLabel }}</button>
+        <button onClick="{{ endSession }}" style="padding: 11px 28px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.22); background: none; color: #14241C; font-family: 'Manrope', sans-serif; font-size: 14px; cursor: pointer" style-hover="border-color: rgba(201,162,74,0.5); color: #7A5E22">End session</button>
+      </div>
+    </div>
+  </sc-if>
+  <sc-if value="{{ doneOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position: fixed; inset: 0; z-index: 100; background: radial-gradient(ellipse 70% 60% at 50% 44%, #14241C 0%, #0E1A14 60%, #080614 100%); display: flex; align-items: center; justify-content: center; padding: 24px">
+      <div style="text-align: center; display: flex; flex-direction: column; align-items: center; gap: 16px; animation: fadeSlow 1s ease both">
+        <div style="width: 74px; height: 74px; border-radius: 50%; background: radial-gradient(circle at 38% 34%, rgba(201,162,74,0.45), rgba(201,162,74,0.14)); border: 1px solid rgba(201,162,74,0.5); box-shadow: 0 0 60px rgba(201,162,74,0.3); display: flex; align-items: center; justify-content: center">
+          <svg viewBox="0 0 64 64" style="width: 30px; height: 30px"><circle cx="32" cy="14" r="6.5" fill="#f2e3bb"></circle><path d="M32 24c-6.5 0-10.5 4-12.5 10l-2 6h29l-2-6c-2-6-6-10-12.5-10z" fill="#f2e3bb"></path><path d="M12 46c2-4.5 9-7 20-7s18 2.5 20 7c0.8 1.8-0.5 3.5-2.5 3.5h-35c-2 0-3.3-1.7-2.5-3.5z" fill="#f2e3bb"></path></svg>
+        </div>
+        <div style="font-family: 'Cormorant Garamond', serif; font-weight: 500; font-size: clamp(26px, 4vw, 34px); color: #14241C">Well sat, {{ memberName }}.</div>
+        <div style="font-size: 15px; font-weight: 500; color: #1B3328">{{ doneMins }} of stillness · Day {{ journeyDay }} of your 41-day journey</div>
+        <div style="width: 60px; height: 1px; background: linear-gradient(90deg, transparent, rgba(201,162,74,0.6), transparent)"></div>
+        <div style="font-size: 13.5px; font-weight: 500; font-style: italic; color: #2E3A33">The silence you touched stays with you.</div>
+        <textarea value="{{ journalDraft }}" onChange="{{ onJournalInput }}" placeholder="Before it fades — what arose in the silence?" rows="3" style="width: min(460px, 82vw); background: rgba(20,36,28,0.05); border: 1px solid rgba(201,162,74,0.26); border-radius: 16px; padding: 14px 16px; color: #1B3328; font-family: 'Manrope', sans-serif; font-size: 15px; font-weight: 500; line-height: 1.6; resize: none; outline: none"></textarea>
+        <button onClick="{{ saveDoneJournal }}" style="margin-top: 8px; padding: 12px 30px; border-radius: 999px; border: none; background: linear-gradient(135deg, #E8CF83, #C9A24A 55%, #A8853A); color: #14241C; font-family: 'Manrope', sans-serif; font-size: 14.5px; font-weight: 600; cursor: pointer">Return to dashboard</button>
+      </div>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;1280px&quot;,&quot;height&quot;:&quot;800px&quot;},&quot;startOnDashboard&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Demo&quot;},&quot;memberName&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Harikrishna&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Demo&quot;},&quot;googleClientId&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;927688395054-3b3praeptn0muruff5v90hr5t6n121lk.apps.googleusercontent.com&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;OAuth&quot;},&quot;twoFactor&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;OAuth&quot;}}">
+class Component extends DCLogic {
+  state = {
+    screen: 'login', tab: 'overview', sessionOpen: false, breathIn: true, sessionSecs: 0,
+    chatOpen: false, chatInput: '', nudged: false,
+    sndKey: 'off', sndVol: 0.55, sndPlaying: false, sndLoading: false, sessPaused: false, syncState: 'idle', syncNote: '',
+    videoFilter: 'all', videoOpen: null, videoTitle: '',
+    joinOpen: false, copyNote: '', testimonialDraft: '', cardBig: false,
+    sideOpen: true, landingOpen: false, landingRemember: true, consentSeen: false,
+    liveBack: null,
+    suName: '', suEmail: '', suHoney: '', suBusy: false, suStatus: '', suOk: false, suRole: 'member',
+    donateOpen: false, donAmount: 1000, donCustom: '', donBusy: false, donStatus: '', donOk: false, volState: 'idle',
+    chatMessages: [{ from: 'bot', text: 'Namaste 🙏 I\u2019m your Wisdom Guide. I know your streak, your gatherings and your practice — ask me anything, or tap a suggestion below.' }],
+    journalDraft: '',
+    journalEntries: [],
+    // read straight from storage so the RSVP button never paints "I'll be there"
+    // for a moment before flipping to "Going" on every refresh
+    registered: (() => { try { return (this.loadData() || {}).events || {}; } catch (e) { return {}; } })(),
+    sessGoal: (() => { try { return Math.max(5, Math.min(120, parseInt(localStorage.getItem('gaw_goal'), 10) || 30)); } catch (e) { return 30; } })(),
+  };
+  // --- lightweight self-NLP: tokenize, stem, score intents, track context ---
+  // YouTube's live_stream embed renders its own grey "This video is unavailable"
+  // card whenever the channel is not actually broadcasting — including inside a
+  // scheduled slot, if the stream simply has not started. The schedule alone
+  // therefore cannot tell us whether there is anything to watch. With
+  // enablejsapi=1 a working player answers the widget handshake within a second
+  // or two; an unavailable one never initialises the API at all. No answer by
+  // the deadline means there is nothing playing.
+  embedUrl(id) {
+    let p = 'autoplay=1&rel=0&modestbranding=1&playsinline=1&enablejsapi=1';
+    try { if (/^https?:/.test(location.protocol)) p += '&origin=' + encodeURIComponent(location.origin); } catch (e) {}
+    const path = id === 'LIVE' ? 'live_stream?channel=' + this.channelId() + '&' : id + '?';
+    return 'https://www.youtube.com/embed/' + path + p;
+  }
+  channelId() { return 'UCb_5Mpr91TDNqc6zHbq9erQ'; }
+  // Live sessions run Monday–Saturday IST — Sunday is the rest day.
+  sessionSchedule() {
+    // IST minutes-from-midnight. `youtube` marks the windows that are actually
+    // broadcast on the channel — the Zoom circle opens at 8:00 PM IST
+    // (9:30 AM US Central) while the YouTube stream goes live at 9:10 PM IST
+    // (10:40 AM US Central) for the wisdom hour.
+    return [
+      { key: 'morning', label: 'Brahmamuhurtham sit', from: 250, to: 310, zoom: true, youtube: false },
+      { key: 'group', label: 'Group meditation', from: 1200, to: 1260, zoom: true, youtube: false },
+      { key: 'wisdom', label: 'Wisdom sharing with Dr. Harikrishna', from: 1270, to: 1320, zoom: true, youtube: true },
+    ];
+  }
+  /* Next (or current) occurrence of a window, as ABSOLUTE instants so the
+     member's own clock and calendar day are the source of truth. Sunday (IST)
+     is the rest day — live/next windows skip it. */
+  nextOccurrence(list) {
+    const day = 86400000, ist = this.istNow();
+    const dow = ist.getDay();
+    const mins = ist.getHours() * 60 + ist.getMinutes();
+    const live = dow !== 0 && list.find(s => mins >= s.from && mins < s.to);
+    if (live) return { status: 'live', session: live, rest: false, startMs: this.sessionInstant(live.from), endMs: this.sessionInstant(live.to) };
+    const later = dow !== 0 && list.find(s => mins < s.from);
+    if (later) return { status: 'soon', session: later, rest: false, startMs: this.sessionInstant(later.from), endMs: this.sessionInstant(later.to) };
+    // Roll to the next session day: +1 day normally, +2 from Saturday night,
+    // +1 from Sunday itself (whole Sunday counts down to Monday).
+    const first = list[0];
+    const skip = dow === 6 ? 2 : 1;
+    return {
+      status: 'soon', session: first, rest: dow === 0,
+      startMs: this.sessionInstant(first.from) + skip * day,
+      endMs: this.sessionInstant(first.to) + skip * day,
+    };
+  }
+  awayMins(startMs) { return Math.max(0, Math.round((startMs - Date.now()) / 60000)); }
+  awayText(startMs) {
+    const t = this.awayMins(startMs), hh = Math.floor(t / 60), mm = t % 60;
+    if (t < 1) return 'any moment now';
+    if (hh >= 24) { const d = Math.floor(hh / 24); return 'in ' + d + (d === 1 ? ' day ' : ' days ') + (hh % 24) + 'h'; }
+    return 'in ' + (hh ? hh + 'h ' : '') + mm + 'm';
+  }
+  // The next (or current) window that is streamed on YouTube.
+  youtubeWindow() {
+    const o = this.nextOccurrence(this.sessionSchedule().filter(s => s.youtube));
+    return {
+      status: o.status, session: o.session,
+      startMs: o.startMs, endMs: o.endMs, away: this.awayMins(o.startMs),
+    };
+  }
+  istNow() { return new Date(Date.now() + (330 + new Date().getTimezoneOffset()) * 60000); }
+  localZone() {
+    try { return Intl.DateTimeFormat().resolvedOptions().timeZone || 'your time'; } catch (e) { return 'your time'; }
+  }
+  // absolute instant of today's (IST) session start / end
+  sessionInstant(minsIST) {
+    const ist = this.istNow();
+    return Date.UTC(ist.getFullYear(), ist.getMonth(), ist.getDate()) - 330 * 60000 + minsIST * 60000;
+  }
+  fmtIST(m) {
+    const hh = Math.floor(m / 60), mm = m % 60, ap = hh < 12 ? 'AM' : 'PM';
+    const h12 = hh % 12 === 0 ? 12 : hh % 12;
+    return h12 + ':' + String(mm).padStart(2, '0') + ' ' + ap;
+  }
+  fmtLocal(ms) {
+    try { return new Date(ms).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' }); }
+    catch (e) { return ''; }
+  }
+  localDayHint(ms) {
+    const local = new Date(ms), now = new Date();
+    if (local.toDateString() === now.toDateString()) return '';
+    try { return local.toLocaleDateString(undefined, { weekday: 'short' }) + ' '; } catch (e) { return ''; }
+  }
+  scheduleRows() {
+    const ist = this.istNow(), mins = ist.getHours() * 60 + ist.getMinutes(), day = 86400000;
+    return this.sessionSchedule().map(s => {
+      const live = mins >= s.from && mins < s.to;
+      // roll past sessions forward to their next occurrence
+      let roll = 0;
+      if (!live && mins >= s.to) roll = 1;
+      let a = this.sessionInstant(s.from) + roll * day, b = this.sessionInstant(s.to) + roll * day;
+      let nextIstDay = (ist.getDay() + roll) % 7;
+      // state reads from the member's OWN calendar day, the same source as the local time shown
+      let state;
+      if (live) state = 'Live now';
+      else {
+        const inst = new Date(a), today = new Date(), tmr = new Date(Date.now() + day);
+        if (inst.toDateString() === today.toDateString()) state = 'Later today';
+        else if (inst.toDateString() === tmr.toDateString()) state = 'Tomorrow';
+        else { try { state = inst.toLocaleDateString(undefined, { weekday: 'long' }); } catch (e) { state = 'Soon'; } }
+      }
+      return {
+        label: s.label,
+        ist: this.fmtIST(s.from) + ' – ' + this.fmtIST(s.to) + ' IST',
+        local: this.localDayHint(a) + this.fmtLocal(a) + ' – ' + this.localDayHint(b) + this.fmtLocal(b),
+        state,
+        dot: live ? '#e08484' : (roll === 0 ? '#C9A24A' : 'rgba(201,162,74,0.45)'),
+        dotAnim: live ? 'sndRing 2.4s ease-out infinite' : 'none',
+        rowBg: live ? 'rgba(224,132,132,0.09)' : 'transparent',
+        labelColor: live || roll === 0 ? '#F3EAD3' : '#1B3328',
+        stateColor: live ? '#e0a3a3' : '#5A5546',
+      };
+    });
+  }
+  liveInfo() {
+    const o = this.nextOccurrence(this.sessionSchedule());
+    const when = this.localDayHint(o.startMs) + this.fmtLocal(o.startMs) + ' your time · ' + this.fmtIST(o.session.from) + ' IST';
+    if (o.status === 'live') {
+      const left = Math.max(1, Math.round((o.endMs - Date.now()) / 60000));
+      return { status: 'live', label: o.session.label, startMs: o.startMs, endMs: o.endMs,
+               note: when + ' · in progress, about ' + left + ' min left' };
+    }
+    return { status: 'soon', label: o.session.label, startMs: o.startMs, endMs: o.endMs,
+             note: when + ' · starts ' + this.awayText(o.startMs) };
+  }
+  zoomDetails() {
+    return {
+      url: 'https://us05web.zoom.us/j/81783627692?pwd=gassAOQsZh3OCvmNRhPwKHyaFBV83H.1',
+      id: '817 8362 7692',
+      pass: '11111',
+    };
+  }
+  copyText(text, note) {
+    try { navigator.clipboard.writeText(text); } catch (e) {}
+    this.setState({ copyNote: note + ' copied' });
+    clearTimeout(this._copyT);
+    this._copyT = setTimeout(() => this.setState({ copyNote: '' }), 2200);
+  }
+  logSit(mins) {
+    const p = n => String(n).padStart(2, '0'), now = new Date(), d = this.loadData();
+    d.sits.push({ date: now.getFullYear() + '-' + p(now.getMonth() + 1) + '-' + p(now.getDate()), mins, via: 'live', ts: now.toISOString() });
+    this.saveData(d);
+  }
+  markLiveStart(label, how) {
+    try { localStorage.setItem('gaw_live_open', JSON.stringify({ t: Date.now(), label, how })); } catch (e) {}
+  }
+  checkLiveReturn() {
+    let o = null;
+    try { o = JSON.parse(localStorage.getItem('gaw_live_open') || 'null'); } catch (e) {}
+    if (!o || !o.t) return;
+    const mins = Math.round((Date.now() - o.t) / 60000);
+    if (mins < 3) return;                        // too short to be a sit — keep waiting
+    if (mins > 180) { this.clearLiveReturn(); return; }  // stale, likely left the tab open overnight
+    this.setState({ liveBack: { label: o.label || 'the live session', how: o.how || 'Zoom', mins: Math.min(mins, 120) } });
+  }
+  clearLiveReturn() {
+    try { localStorage.removeItem('gaw_live_open'); } catch (e) {}
+    this.setState({ liveBack: null });
+  }
+  confirmLiveSit(mins) {
+    this.logSit(mins);
+    this.clearLiveReturn();
+    this.setState({ doneOpen: true, doneMins: mins + (mins === 1 ? ' minute' : ' minutes'), journalDraft: '' });
+  }
+  socialConfig() {
+    // Confirmed links only — anything left empty is hidden rather than shown broken.
+    return [
+      { key: 'youtube', label: 'YouTube', handle: '@GoldenAgeGurus', url: 'https://www.youtube.com/@GoldenAgeGurus', glyph: '▷' },
+      { key: 'instagram', label: 'Instagram', handle: '@golden.age.spiritual.movement', url: 'https://www.instagram.com/golden.age.spiritual.movement', glyph: '◎' },
+      { key: 'facebook', label: 'Facebook', handle: 'Golden Age Spiritual Movement', url: 'https://facebook.com/share/1JSPUE4kMV', glyph: 'f' },
+      { key: 'whatsapp', label: 'WhatsApp community', handle: 'Daily reminders & satsang', url: '', glyph: '✆' },
+    ];
+  }
+  myMemberId() {
+    const u = this.state.sessionUser || this.session() || this.lastUser();
+    return (u && u.memberId) || '';
+  }
+  referralLink() {
+    const id = this.myMemberId() || 'GAW';
+    return 'https://goldenagewisdom.org/join?ref=' + id;
+  }
+  shareText() {
+    const st = this.computeStats(), t = (this.state.testimonialDraft || '').trim();
+    const line = t || 'Forty-one days of silence changed how I meet my own mind.';
+    const who = this.memberNameNow().trim().split(/\s+/)[0];
+    return '"' + line + '"\n\n— ' + who + ', day ' + st.journeyDay + ' of the 41-day journey\nFree meditation with Golden Age Wisdom: ' + this.referralLink();
+  }
+  async nativeShare() {
+    const text = this.shareText();
+    try {
+      if (navigator.share) { await navigator.share({ title: 'Golden Age Wisdom', text }); return; }
+    } catch (e) { return; }
+    this.copyText(text, 'Your words');
+  }
+  async downloadCard() {
+    const st = this.computeStats(), W = 1080, R = 76;
+    const c = document.createElement('canvas'); c.width = W; c.height = W;
+    const x = c.getContext('2d');
+    // same rounded frame, same radial wash as the on-screen card
+    x.beginPath();
+    x.moveTo(R, 0); x.lineTo(W - R, 0); x.quadraticCurveTo(W, 0, W, R);
+    x.lineTo(W, W - R); x.quadraticCurveTo(W, W, W - R, W);
+    x.lineTo(R, W); x.quadraticCurveTo(0, W, 0, W - R);
+    x.lineTo(0, R); x.quadraticCurveTo(0, 0, R, 0); x.closePath();
+    x.save(); x.clip();
+    const g = x.createRadialGradient(W * 0.5, W * 0.42, 40, W * 0.5, W * 0.42, W * 0.78);
+    g.addColorStop(0, '#14241C'); g.addColorStop(0.55, '#14241C'); g.addColorStop(1, '#080614');
+    x.fillStyle = g; x.fillRect(0, 0, W, W);
+    try { await document.fonts.ready; } catch (e) {}
+    x.textAlign = 'center';
+    // eyebrow — 0.34em tracking, drawn glyph by glyph
+    const tracked = (text, size, y, color, em) => {
+      x.font = size + 'px Outfit, sans-serif'; x.fillStyle = color;
+      const sp = size * em, chars = [...text];
+      const total = chars.reduce((n, ch) => n + x.measureText(ch).width + sp, 0) - sp;
+      let cx = (W - total) / 2;
+      x.textAlign = 'left';
+      chars.forEach(ch => { x.fillText(ch, cx, y); cx += x.measureText(ch).width + sp; });
+      x.textAlign = 'center';
+    };
+    tracked('GOLDEN AGE WISDOM', 28, W * 0.26, '#C9A24A', 0.34);
+    const quote = (this.state.testimonialDraft || '').trim() || 'Forty-one days of silence changed how I meet my own mind.';
+    const size = quote.length > 150 ? 46 : 58;
+    x.font = size + 'px Marcellus, serif'; x.fillStyle = '#14241C';
+    const lines = []; let cur = '';
+    quote.split(/\s+/).forEach(w => {
+      const t = cur ? cur + ' ' + w : w;
+      if (x.measureText(t).width > W - 250 && cur) { lines.push(cur); cur = w; } else cur = t;
+    });
+    if (cur) lines.push(cur);
+    const lh = size * 1.42, top = W * 0.5 - (lines.length - 1) * lh / 2;
+    lines.forEach((l, i) => x.fillText((i === 0 ? '\u201C' : '') + l + (i === lines.length - 1 ? '\u201D' : ''), W / 2, top + i * lh));
+    const who = this.memberNameNow().trim().split(/\s+/)[0];
+    x.font = '30px Outfit, sans-serif'; x.fillStyle = '#1B3328';
+    x.fillText('\u2014 ' + who + ' \u00b7 day ' + st.journeyDay + ' of 41', W / 2, top + lines.length * lh + 34);
+    x.restore();
+    // gold hairline, following the same rounded path
+    x.strokeStyle = 'rgba(201,162,74,0.45)'; x.lineWidth = 3; x.stroke();
+    const a = document.createElement('a');
+    a.href = c.toDataURL('image/png');
+    a.download = 'golden-age-' + who.toLowerCase() + '.png';
+    document.body.appendChild(a); a.click(); a.remove();
+    this.setState({ copyNote: 'Card saved to your downloads' });
+    clearTimeout(this._copyT);
+    this._copyT = setTimeout(() => this.setState({ copyNote: '' }), 2600);
+  }
+  videoList() {
+    // Discourses of Dr. Harikrishna — official channel: youtube.com/@GoldenAgeGurus
+    return [
+      { id: 'xRZMvf0AvPs', cat: 'discourse', catLabel: 'Discourse', title: 'Spirituality Simplified' },
+      { id: '18Zt42-CuRs', cat: 'meditation', catLabel: 'Meditation', title: 'Science of Meditation' },
+      { id: 'IrnwQNZVGVM', cat: 'meditation', catLabel: 'Meditation', title: 'Guided Meditation' },
+      { id: '-nC5vImygJ0', cat: 'practice', catLabel: 'Practice', title: 'Why Spiritual Masters Sun Gaze Every Morning' },
+      { id: 'GhrBu2qsszg', cat: 'discourse', catLabel: 'Discourse', title: 'Secrets of Transformation in Spirituality' },
+    ];
+  }
+  soundList() {
+    return [
+      { key: 'om', label: 'Aum drone', glyph: 'ॐ', src: 'assets/om-deep.wav' },
+      { key: 'flute', label: 'Temple flute', glyph: '♪', src: 'assets/score.wav' },
+      { key: 'bowl', label: 'Singing bowl', glyph: '◎', synth: 'bowl' },
+      { key: 'birds', label: 'Dawn birdsong', glyph: '✧', synth: 'birds' },
+      { key: 'bells', label: 'Temple bells', glyph: '❈', synth: 'bells' },
+      { key: 'off', label: 'Pure silence', glyph: '○' },
+    ];
+  }
+  audioCtx() {
+    if (!window.__gawCtx) { try { window.__gawCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return null; } }
+    const c = window.__gawCtx;
+    if (c && c.state !== 'running' && c.resume) c.resume();
+    return c;
+  }
+  /* Ambience you cannot hear is a bug. The three synthesised sounds are now
+     rendered offline into a seamless WAV loop and played through an <audio>
+     element — iOS silences bare WebAudio output but never a media element.
+     Volume rides a GainNode when WebAudio is awake, because iOS ignores
+     HTMLMediaElement.volume outright. */
+  wavBlob(buf) {
+    const d = buf.getChannelData(0), n = d.length;
+    const ab = new ArrayBuffer(44 + n * 2), v = new DataView(ab);
+    const str = (o, s) => { for (let i = 0; i < s.length; i++) v.setUint8(o + i, s.charCodeAt(i)); };
+    str(0, 'RIFF'); v.setUint32(4, 36 + n * 2, true); str(8, 'WAVEfmt ');
+    v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
+    v.setUint32(24, buf.sampleRate, true); v.setUint32(28, buf.sampleRate * 2, true);
+    v.setUint16(32, 2, true); v.setUint16(34, 16, true);
+    str(36, 'data'); v.setUint32(40, n * 2, true);
+    for (let i = 0; i < n; i++) { const s = Math.max(-1, Math.min(1, d[i])); v.setInt16(44 + i * 2, s * 32767, true); }
+    return new Blob([ab], { type: 'audio/wav' });
+  }
+  async synthUrl(kind) {
+    this._urls = this._urls || {};
+    if (this._urls[kind]) return this._urls[kind];
+    const OAC = window.OfflineAudioContext || window.webkitOfflineAudioContext;
+    if (!OAC) return null;
+    const sr = 44100, dur = kind === 'birds' ? 18 : kind === 'bells' ? 28 : 24;
+    const ctx = new OAC(1, Math.floor(sr * dur), sr);
+    const out = ctx.createGain(); out.gain.value = 0.9; out.connect(ctx.destination);
+    if (kind === 'bowl') this.renderBowl(ctx, out, dur);
+    else if (kind === 'bells') this.renderBells(ctx, out, dur);
+    else this.renderBirds(ctx, out, dur);
+    const buf = await ctx.startRendering();
+    const url = URL.createObjectURL(this.wavBlob(buf));
+    this._urls[kind] = url;
+    return url;
+  }
+  strikeAt(ctx, out, t, root, parts, dec) {
+    parts.forEach(([mul, amp, d]) => {
+      const osc = ctx.createOscillator(), g = ctx.createGain();
+      osc.type = 'sine'; osc.frequency.value = root * mul;
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(amp, t + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + d * dec);
+      osc.connect(g); g.connect(out); osc.start(t); osc.stop(t + d * dec + 0.05);
+    });
+  }
+  // Singing bowl: struck every 8s over a faint sustaining hum, so something is
+  // always sounding instead of a lone strike lost in silence.
+  renderBowl(ctx, out, dur) {
+    const hum = ctx.createGain(); hum.gain.value = 0.06; hum.connect(out);
+    [211, 211.7, 316.5].forEach((hz, i) => {
+      const o = ctx.createOscillator(), g = ctx.createGain();
+      o.type = 'sine'; o.frequency.value = hz; g.gain.value = i === 2 ? 0.34 : 1;
+      o.connect(g); g.connect(hum); o.start(0); o.stop(dur);
+    });
+    for (let t = 0; t < dur - 2; t += 8) {
+      this.strikeAt(ctx, out, t, 211, [[1, 0.34, 1], [2.01, 0.15, 0.7], [2.71, 0.09, 0.5], [4.06, 0.05, 0.34], [5.42, 0.028, 0.24]], 8.5);
+      this.strikeAt(ctx, out, t + 0.004, 212.6, [[1, 0.16, 1]], 8.5); // detuned twin — the bowl's beating shimmer
+    }
+  }
+  renderBells(ctx, out, dur) {
+    const roots = [329.6, 392, 440, 493.9];
+    for (let i = 0, t = 0; t < dur - 2; i++, t += 7) {
+      this.strikeAt(ctx, out, t, roots[i % 4], [[1, 0.4, 1], [2.76, 0.16, 0.62], [5.4, 0.06, 0.36], [8.9, 0.03, 0.2]], 6.5);
+    }
+  }
+  renderBirds(ctx, out, dur) {
+    const len = Math.floor(ctx.sampleRate * 4), nb = ctx.createBuffer(1, len, ctx.sampleRate), nd = nb.getChannelData(0);
+    let a = 0, b = 0, c = 0;
+    for (let i = 0; i < len; i++) { const w = Math.random() * 2 - 1; a = 0.99 * a + w * 0.05; b = 0.96 * b + w * 0.09; c = 0.78 * c + w * 0.22; nd[i] = Math.max(-1, Math.min(1, (a + b + c) * 0.72)); }
+    const src = ctx.createBufferSource(), f = ctx.createBiquadFilter(), body = ctx.createGain();
+    src.buffer = nb; src.loop = true;
+    f.type = 'bandpass'; f.frequency.value = 520; f.Q.value = 0.4; body.gain.value = 0.12;
+    src.connect(f); f.connect(body); body.connect(out); src.start(0); src.stop(dur);
+    const soft = ctx.createBiquadFilter(); soft.type = 'lowpass'; soft.frequency.value = 6200; soft.connect(out);
+    const rnd = (x, y) => x + Math.random() * (y - x);
+    const chirp = (t, f0, f1, l, amp) => {
+      if (t + l > dur - 0.2) return;
+      const osc = ctx.createOscillator(), g = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(f0, t);
+      osc.frequency.exponentialRampToValueAtTime(f1, t + l);
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(amp, t + l * 0.22);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + l);
+      osc.connect(g); g.connect(soft); osc.start(t); osc.stop(t + l + 0.05);
+    };
+    let t = 0.4;
+    while (t < dur - 1.5) {
+      const n = Math.round(rnd(2, 5)), up = Math.random() > 0.45, base = rnd(2100, 3900), amp = rnd(0.1, 0.2);
+      for (let i = 0; i < n; i++) {
+        const l = rnd(0.07, 0.16), f0 = base * rnd(0.94, 1.08);
+        chirp(t, up ? f0 : f0 * 1.5, up ? f0 * rnd(1.3, 1.9) : f0 * rnd(0.6, 0.82), l, amp);
+        t += l + rnd(0.05, 0.14);
+      }
+      if (Math.random() > 0.6) { const fb = rnd(1500, 2400); chirp(t + rnd(0.3, 0.8), fb, fb * rnd(1.2, 1.6), rnd(0.1, 0.2), amp * 0.45); }
+      t += rnd(1.4, 3.2);
+    }
+  }
+  stopSound() {
+    this._sndTok = (this._sndTok || 0) + 1;
+    if (this._el) { try { this._el.pause(); this._el.removeAttribute('src'); this._el.load(); } catch (e) {} this._el = null; }
+    if (this._gain) { try { this._gain.disconnect(); } catch (e) {} this._gain = null; }
+  }
+  async pickSound(key) {
+    this.stopSound();
+    if (key === 'off') { this.setState({ sndKey: 'off', sndPlaying: false, sndLoading: false }); return; }
+    const o = this.soundList().find(x => x.key === key);
+    if (!o) return;
+    const token = this._sndTok;
+    this.setState({ sndKey: key, sndPlaying: true, sndLoading: !o.src });
+    let src = o.src;
+    if (!src) {
+      try { src = await this.synthUrl(o.synth); } catch (e) { src = null; }
+      if (token !== this._sndTok) return;
+      if (!src) { this.setState({ sndPlaying: false, sndLoading: false }); return; }
+    }
+    const el = new Audio(src);
+    el.loop = true; el.preload = 'auto';
+    try { el.volume = this.state.sndVol; } catch (e) {}
+    this._el = el;
+    const ctx = this.audioCtx();
+    if (ctx && ctx.state === 'running') {
+      try {
+        const ms = ctx.createMediaElementSource(el), g = ctx.createGain();
+        g.gain.value = this.state.sndVol;
+        ms.connect(g); g.connect(ctx.destination);
+        this._gain = g;
+      } catch (e) { this._gain = null; }
+    }
+    el.play().then(() => { if (token === this._sndTok) this.setState({ sndLoading: false }); })
+      .catch(() => { if (token === this._sndTok) this.setState({ sndPlaying: false, sndLoading: false }); });
+  }
+  setVolume(v) {
+    this.setState({ sndVol: v });
+    try { localStorage.setItem('gaw_vol', String(v)); } catch (e) {}
+    const ctx = window.__gawCtx;
+    if (this._gain && ctx) { try { this._gain.gain.cancelScheduledValues(ctx.currentTime); this._gain.gain.setTargetAtTime(v, ctx.currentTime, 0.06); } catch (e) {} }
+    if (this._el) { try { this._el.volume = v; } catch (e) {} }
+  }
+  knowledgeBase() {
+    return [
+      'Golden Age Wisdom is a registered non-profit spiritual movement. Everything it teaches is free. Contact: info@goldenagewisdom.org.',
+      'Founder: Dr. Harikrishna, a medical professional and spiritual teacher who founded the Golden Age Spiritual Movement.',
+      'The core practice: sit comfortably, close the eyes and watch the breath. No kriyas, no breath-control techniques, no mantras required.',
+      'The 41-day invitation: one 30-minute sit in silence every day for 41 days, then observe how mind and body heal and how you act.',
+      'Kundalini is the dormant life-energy at the base of the spine. As breath refines, prana is received through the sahasrara and the energy rises chakra by chakra.',
+      'Common experiences as prana refines: tingling at the crown, inner light, deep stillness. Welcome them, do not chase them.',
+      'The journal is private to the member and stored only for them. Writing right after a sit captures what the mind forgets.',
+      'Wellness teachings include sun gazing, earthing (barefoot walking), alkaline water and a 41-day detox diet repeated every 6 months.',
+      'Members sign in with Google, Microsoft, Facebook or Apple. Golden Age Wisdom never sees, stores or handles passwords.',
+      'Donations are optional, processed by Stripe, and keep the teachings free. Members can also volunteer (seva).',
+      'How to meditate, the whole method: sit comfortably with the hands joined in the lap (fingers gently interlaced), eyes closed, watch the breath without controlling it, let thoughts flow, surrender and observe. Nothing to buy or master.',
+      'Best time to meditate: sunrise (Brahmamuhurtham) is finest, but there is no restriction — the hour you can keep is the right one.',
+      'How long: you do not do meditation, it happens. Beginners can start with 30 minutes, or an hour if it comes easily; some experienced practitioners sit 1-2 hours; some drop deep within minutes. Everyone\'s journey is unique and comparison is a thief of joy.',
+      'The goal of meditation: there is no end goal. Keep practising and life transforms on several levels — physical, emotional, spiritual. Verify it in your own experience rather than on belief.',
+      'Breathing techniques that exist: soham, kundalini breathing, anapanasati, kumbhaka, bhramari. These are optional catalysts. Dr. Harikrishna recommends simply sitting and watching the breath as the most efficient way — no technique, no counting, no force; surrender and let whichever breath wants to happen, happen by itself.',
+            'What surrender means: I am nothing. Let the universe — nature, God, whichever word the seeker uses — deal with it. Stop trying to meditate and allow it to happen; that letting-go is the practice itself.',
+      'Why sitting in silence is enough: it costs nothing and needs no technique. Surrender, and the process does its own work.',
+      'The science, simply: sitting still with the hands joined closes the body\'s energy field into a torus — energy leaves the crown, arcs wide around the body and returns through the base of the spine, the same shape a magnet draws in iron filings. Inside that loop healing settles, energy rises, chakras open in their own order; the meditator only stops interfering.',
+      'Meditation and physical health: most disease is stored at the mitochondrial level. Restored prana reaches the cell and healing works upward through cellular, bodily, psychic and emotional levels. The detox diet supports the body while it happens.',
+      'Sources of energy people use: a pyramid as a conductor, group meditation (group consciousness pools higher), direct connection to the universe (energy givers), and guided meditation.',
+      'Kundalini: an infinite energy that rises and aligns every chakra, moving like a serpent, cleansing the nadis and healing at every level. Scientifically, cosmic energy that raises your frequency once you are connected. Emotionally, moving from fear, shame and guilt to bliss and ecstasy.',
+      'Karmas, past-life glimpses, third-eye visions and openings are all part of the terrain of meditation experiences; they come and go. The real beauty is transformation, wisdom and knowing the ultimate truth.',
+      'The ultimate truth depends on what the seeker wants: joy for one, wisdom for another, self-discovery for the next. Come to know yourself through your own journey.',
+      'If a member is new and asks about kundalini, visions or karmas, gently suggest they simply sit first — as Dr. Harikrishna says, \'Gammuga kurchavo\', simply sit quietly.',
+      'Live sessions run Monday to Saturday on Zoom — Sunday is the rest day. 4:10-5:10 AM IST Brahmamuhurtham sit, 8:00-9:00 PM IST group meditation, 9:00-10:00 PM IST wisdom sharing with Dr. Harikrishna.',
+      'The group meditation hour is silent sitting together. The wisdom hour that follows is Dr. Harikrishna answering members\' open spiritual questions, 1:1.',
+      'Members join live from the Join live panel in their dashboard: Zoom (members only, full meeting details shown there), or YouTube live to watch only. Members who cannot attend can Sit & Scribe on their own at any hour.',
+      'Recorded discourses of Dr. Harikrishna are in the Discourses tab of the member area and on youtube.com/@GoldenAgeGurus.',
+      'Retreats, satsangs and seva events beyond the daily sessions are announced by the seva team — the guide does not know unannounced dates.',
+      'The Wisdom Guide is not a doctor. For medical, psychiatric or emergency matters, members must consult a qualified professional.',
+    ];
+  }
+  nlp(q) {
+    const stem = w => w.replace(/(ing|ed|s|ly)$/, '');
+    const toks = q.toLowerCase().replace(/[^a-z0-9\s]/g, ' ').split(/\s+/).filter(Boolean).map(stem);
+    const intents = [
+      { id: 'streak', kw: ['streak', 'day', 'progress', 'journey', 'track', 'consist'], },
+      { id: 'mytime', kw: ['much', 'time', 'total', 'hour', 'spent', 'long', 'did', 'today', 'minut'] },
+      { id: 'begin', kw: ['begin', 'start', 'new', 'how', 'learn', 'first', 'beginner'] },
+      { id: 'kundalini', kw: ['kundalini', 'awaken', 'chakra', 'energy', 'prana', 'sahasrara', 'crown'] },
+      { id: 'silence', kw: ['silence', 'silent', 'quiet', 'still', 'thought', 'mind', 'restless', 'focus'] },
+      { id: 'event', kw: ['event', 'retreat', 'workshop', 'session', 'register', 'gather', 'live', 'group'] },
+      { id: 'journal', kw: ['journal', 'write', 'entry', 'diary', 'note', 'privat'] },
+      { id: 'stress', kw: ['stress', 'anxiety', 'anxiou', 'sleep', 'tired', 'restles', 'worr', 'sad', 'depres', 'angr'] },
+      { id: 'forty', kw: ['41', '40', 'forty', 'challenge', 'commit', '30', 'minute'] },
+      { id: 'donate', kw: ['donat', 'support', 'money', 'pay', 'free', 'cost'] },
+      { id: 'experience', kw: ['experience', 'feel', 'felt', 'vision', 'light', 'tingl', 'goose', 'saw', 'sensation', 'vibrat'] },
+      { id: 'volunteer', kw: ['volunteer', 'seva', 'serve', 'contribut', 'team', 'spread', 'share'] },
+      { id: 'gratitude', kw: ['thank', 'namaste', 'love', 'great', 'nice', 'good'] },
+    ];
+    let best = null, bestScore = 0;
+    for (const it of intents) {
+      const score = it.kw.reduce((n, k) => n + (toks.some(t => t.startsWith(stem(k))) ? 1 : 0), 0);
+      if (score > bestScore) { best = it.id; bestScore = score; }
+    }
+    if (bestScore > 0) return { intent: best, toks };
+    // No keyword hit. Only carry the previous topic forward when the message really
+    // reads as a follow-up ("why?", "tell me more") — otherwise every unmatched
+    // question echoed the first topic instead of switching.
+    const FOLLOW = ['why', 'more', 'explain', 'elaborate', 'detail', 'so', 'then', 'and', 'ok', 'okay', 'yes', 'sure', 'go', 'continue', 'that', 'it', 'this', 'again', 'what'];
+    const isFollow = !!this.chatCtx && toks.length <= 4 && toks.some(t => FOLLOW.includes(t));
+    return { intent: isFollow ? this.chatCtx + '_follow' : null, toks };
+  }
+  // Anything with no real word in it — punctuation, emoji, keysmash.
+  isGibberish(q) {
+    const letters = (q.match(/[a-z]/gi) || []).length;
+    if (letters < 2) return true;
+    const words = q.toLowerCase().match(/[a-z]{2,}/g) || [];
+    return words.length === 0;
+  }
+  botReply(q) {
+    const { intent } = this.nlp(q);
+    const name = this.memberNameNow();
+    const st = this.computeStats();
+    const sits = this.loadData().sits;
+    const pd = n => String(n).padStart(2, '0'), nowD = new Date();
+    const todayKey = nowD.getFullYear() + '-' + pd(nowD.getMonth() + 1) + '-' + pd(nowD.getDate());
+    const todayMins = sits.filter(x => x.date === todayKey).reduce((n, x) => n + (x.mins || 0), 0);
+    const answers = {
+      mytime: st.sessions === 0
+        ? `No stillness logged yet, ${name} — your very first sit awaits. Even two quiet minutes count. Shall we begin?`
+        : `${todayMins > 0 ? `Today you sat for ${todayMins} minute${todayMins === 1 ? '' : 's'}. ` : 'No sit yet today. '}In all, ${st.totalMins} minute${st.totalMins === 1 ? '' : 's'} of stillness across ${st.sessions} sit${st.sessions === 1 ? '' : 's'} — every one of them stays with you.`,
+      streak: st.sessions === 0 ? `Your journey is just beginning, ${name} — no sits recorded yet. Even five quiet minutes today lights the flame. Shall we begin?` : `You're on day ${st.streak}, ${name} — your best is ${st.best} days, across ${st.sessions} sit${st.sessions === 1 ? '' : 's'}. One gentle sit today keeps the flame alive.`,
+      begin: 'Beautiful. Sit comfortably, close your eyes, and simply watch the breath — no kriyas, no techniques. Start with "Breath of Stillness" (12 min) from your Overview. The first week, consistency matters more than duration.',
+      kundalini: 'Kundalini is the dormant life-energy at the base of the spine. As your practice deepens, breath refines, prana is received through the sahasrara, and the energy rises chakra by chakra — bringing stillness and oneness. Our intro film shows this in 70 seconds.',
+      silence: 'When thoughts race, don\u2019t fight them — keep the body still and watch the breath; the mind follows. Writing what you notice in your journal deepens it. Tonight, try the 30-minute Silence Immersion.',
+      event: (() => {
+        const li = this.liveInfo();
+        const rows = this.scheduleRows().map(r => r.label + ' — ' + r.local + ' (' + r.ist + ')').join('\n');
+        return 'Live sessions run Monday to Saturday (Sunday is the rest day):\n' + rows + '\n\n' + (li.status === 'live' ? li.label + ' is live right now — open Join live in your sidebar for the Zoom details.' : (li.status === 'rest' ? 'Sunday is rest — no group session today.' : 'Next: ' + li.label + ', ' + li.note + '.')) + ' For retreats and satsang dates, write to info@goldenagewisdom.org.';
+      })(),
+      journal: 'Your journal is private and encrypted — only you can read it. Writing right after a sit captures what the mind forgets in minutes. Open the Journal tab and note even one line about today\u2019s sitting.',
+      stress: `I hear you, ${name}. Stress softens fastest in silence: sit now for just 5 minutes, eyes closed, watching the breath — nothing else. Your streak shows the healing is already working. Shall I open a session?`,
+      forty: 'The 41-day invitation: one 30-minute sit in silence daily. No kriyas, no breath practices — close your eyes and watch the breath, that\u2019s it. After 41 days, see how well you act and how deeply mind and body heal. You\u2019re on day ' + st.streak + ' of it.',
+      donate: 'Every teaching here is free — we are a non-profit. If our work moves you, the "Support the mission ♡" link in your sidebar keeps it free for all. Never an obligation.',
+      experience: 'Sensations of light, tingling at the crown, or deep stillness are common as prana refines — welcome them without chasing them. Masters explain these experiences here: youtube.com/watch?v=_7xG_Y0RBUo. Note what you felt in your Journal while it\u2019s fresh.',
+      volunteer: `Wonderful, ${name} — meditators who complete the 41 days often feel called to give back. There are seven teams — events on the ground, the helpline, local events, answering experiences, donors, social media and tech. Open goldenagewisdom.org/volunteer and choose the ones that suit you. You can also support the mission with a donation or join our live events — everything stays free for all.`,
+      gratitude: `Namaste, ${name} 🙏 The light in me honors the light in you. Is there anything on your practice I can help with?`,
+    };
+    if (this.isGibberish(q)) {
+      this.chatCtx = null;
+      return `I couldn\u2019t read that one, ${name} — it came through as symbols. Try it in words, e.g. "how do I meditate?", "how is my streak?" or "when is the next live session?"`;
+    }
+    const fallbacks = [
+      `I don\u2019t have that one yet, ${name}. Ask me about your streak, your minutes, the live sessions, the 41-day challenge, the journal, or how you\u2019re feeling today.`,
+      `That\u2019s outside what I know, ${name} — but I can help with your practice, your progress, the live sessions or the journal. For anything else, info@goldenagewisdom.org reaches a person.`,
+      `Still learning that one. Try asking about meditation itself, kundalini, the 41 days, your streak, or tonight\u2019s session.`,
+    ];
+    this._fbN = (this._fbN || 0);
+    const fallback = fallbacks[this._fbN++ % fallbacks.length];
+    if (intent && intent.endsWith('_follow')) {
+      const base = intent.replace('_follow', '');
+      this.chatCtx = base;
+      return 'On ' + base + ' — ' + (answers[base] || fallback);
+    }
+    this.chatCtx = intent;
+    return answers[intent] || fallback;
+  }
+  async submitSignup() {
+    const { suName, suEmail, suHoney, suBusy } = this.state;
+    if (suBusy) return;
+    if (suHoney) { this.setState({ suOk: true, suStatus: 'Welcome!' }); return; } // honeypot
+    if (!suName.trim() || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(suEmail.trim())) {
+      this.setState({ suStatus: 'Please enter your name and a valid email.', suOk: false });
+      return;
+    }
+    this.setState({ suBusy: true, suStatus: '' });
+    let res = null;
+    try { res = window.GAW_BACKEND && await window.GAW_BACKEND.signup(suName.trim(), suEmail.trim()); } catch (e) {}
+    if (res && res.ok && res.memberId) {
+      this.setState({ suBusy: false, suOk: true, suStatus: (res.returning ? 'Welcome back! ' : 'Welcome to the community! ') + 'Your member ID is ' + res.memberId + '.', suName: '', suEmail: '' });
+      this.setSession({ name: suName.trim(), email: suEmail.trim(), role: this.state.suRole, memberId: res.memberId });
+    } else if (res && !res.ok && res.error === 'invalid email') {
+      this.setState({ suBusy: false, suOk: false, suStatus: 'Please enter a valid email address.' });
+    } else {
+      // offline / backend unreachable: sign in with a provisional number; the
+      // silent sync corrects it against the shared registry on the next visit.
+      this.setState({ suBusy: false, suOk: true, suStatus: 'Welcome to the community!' });
+      this.setSession({ name: suName.trim(), email: suEmail.trim(), role: this.state.suRole });
+    }
+  }
+  memberEmail() { const u = this.state.sessionUser || this.lastUser(); return (u && u.email) || this.props.memberEmail || ''; }
+  async submitDonate() {
+    if (this.state.donBusy) return;
+    const amount = this.state.donCustom ? parseInt(this.state.donCustom, 10) : this.state.donAmount;
+    if (!amount || amount < 50) { this.setState({ donStatus: 'Minimum donation is ₹50.', donOk: false }); return; }
+    this.setState({ donBusy: true, donStatus: '' });
+    try {
+      const body = new URLSearchParams({ amount: String(amount), currency: 'inr', name: this.memberNameNow(), email: this.memberEmail() });
+      const r = await fetch('donate.php', { method: 'POST', body });
+      const j = await r.json();
+      if (j.ok && j.url) { this.setState({ donBusy: false, donOk: true, donStatus: 'Redirecting to Stripe…' }); window.location.href = j.url; }
+      else this.setState({ donBusy: false, donOk: false, donStatus: j.error || 'Could not start the payment.' });
+    } catch (e) {
+      this.setState({ donBusy: false, donOk: false, donStatus: 'Could not reach the payment server. On the live site this opens Stripe Checkout once donate.php and your Stripe key are set up.' });
+    }
+  }
+  async becomeVolunteer() {
+    if (this.state.volState !== 'idle') return;
+    this.setState({ volState: 'busy' });
+    try {
+      const body = new URLSearchParams({ name: this.memberNameNow(), email: this.memberEmail(), lang: 'EN', role: 'volunteer', website: '' });
+      const r = await fetch('signup.php', { method: 'POST', body });
+      const j = await r.json();
+      this.setState({ volState: j.ok ? 'done' : 'idle' });
+    } catch (e) { this.setState({ volState: 'done' }); } // preview fallback: mark done locally
+  }
+  sendChat(text) {
+    const q = (text != null ? text : this.state.chatInput).trim();
+    if (!q || q.length > 400) return;
+    // Tag this exchange's placeholder so a slow reply lands on ITS OWN bubble.
+    // Overwriting the last message meant a second question mid-flight received
+    // the first question's answer, and the first kept its typing dots forever.
+    const pid = 'p' + Date.now() + Math.random().toString(36).slice(2, 6);
+    this.setState(s => ({ chatMessages: [...s.chatMessages, { from: 'user', text: q }, { from: 'bot', text: '·  ·  ·', pid }], chatInput: '' }));
+    const land = (reply) => this.setState(s => {
+      const i = s.chatMessages.findIndex(m => m.pid === pid);
+      if (i < 0) return null;
+      const m = s.chatMessages.slice();
+      m[i] = { from: 'bot', text: reply };
+      return { chatMessages: m };
+    });
+    const local = this.botReply(q);
+    this.askGuide(q, local).then(r => setTimeout(() => land(r || local), 250)).catch(() => land(local));
+  }
+  memberContext() {
+    const st = this.computeStats();
+    return 'Member name: ' + this.memberNameNow()
+      + '. Current streak: ' + st.streak + ' days. Best streak: ' + st.best + ' days. Sits logged: ' + st.sessions
+      + '. Total minutes of stillness: ' + st.totalMins + '. Day of the 41-day journey: ' + st.journeyDay
+      + '. Journal entries: ' + (this.state.journalEntries || []).length + '.'
+      + ' Their timezone: ' + this.localZone() + '.'
+      + ' Today: ' + this.liveInfo().label + ' — ' + this.liveInfo().note + '.'
+      + ' Full schedule, next occurrence in their local time: '
+      + this.scheduleRows().map(r => r.label + ' ' + r.local + ' — ' + r.ist + (r.label === 'Brahmamuhurtham sit' ? ' (before dawn, IST)' : ' (evening, IST)') + ' [' + r.state + ']').join('; ')
+      + '. Describe times as the member experiences them locally; the IST labels are early morning for the Brahmamuhurtham sit and evening for the other two.';
+  }
+  async askGuide(q, local) {
+    const facts = this.knowledgeBase().join('\n- ');
+    const rules = 'You are the Wisdom Guide of Golden Age Wisdom, a warm meditation companion. Answer ONLY from the FACTS and MEMBER DATA below. '
+      + 'If the answer is not contained there, say plainly that you do not know and invite the member to write to info@goldenagewisdom.org. '
+      + 'Never invent teachings, events, dates, numbers, names or scripture. Never give medical, psychiatric, legal or financial advice — refer to a qualified professional. '
+      + 'Two to four sentences, calm and plain, no emoji except an occasional 🙏. If the member is distressed, be gentle and suggest a short sit.'
+      + '\n\nFACTS:\n- ' + facts + '\n\nMEMBER DATA:\n' + this.memberContext();
+    try {
+      if (window.claude && window.claude.complete) {
+        const r = await window.claude.complete(rules + '\n\nMEMBER ASKS: ' + q + '\n\nReply as the Wisdom Guide:');
+        if (r && r.trim()) return r.trim();
+      }
+    } catch (e) {}
+    try {
+      const ctl = new AbortController();
+      const t = setTimeout(() => ctl.abort(), 9000);
+      const r = await fetch('chat.php', {
+        method: 'POST', signal: ctl.signal,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question: q, member: this.memberContext() }),
+      });
+      clearTimeout(t);
+      const j = await r.json();
+      if (j && j.ok && j.reply) return String(j.reply).trim();
+    } catch (e) {}
+    return local;
+  }
+  // A preview provider has no real account behind it, so it must not inherit the
+  // last person's email — doing that made assignMemberId match an existing
+  // registry row and hand back that member's number, which is why the GAW id
+  // stopped incrementing for each new sign-in on the same browser.
+  demoIdentity() {
+    let n = 1;
+    try { n = (parseInt(localStorage.getItem('gaw_demo_seq') || '0', 10) || 0) + 1; localStorage.setItem('gaw_demo_seq', String(n)); } catch (e) { n = Date.now() % 100000; }
+    return { name: 'Seeker ' + n, email: 'demo' + n + '@preview.goldenagewisdom.org' };
+  }
+  demoProvider(name) {
+    if (this.state.oauthBusy) return;
+    this.setState({ oauthBusy: true, oauthNote: 'Demo sign-in (preview). Real ' + name + ' OAuth activates once the ' + name + ' app is registered — see HANDOFF.md.' });
+    setTimeout(() => {
+      this.setState({ oauthBusy: false });
+      const live = this.session();
+      const id = (live && live.email) ? { name: live.name, email: live.email } : this.demoIdentity();
+      this.setSession({ name: id.name, email: id.email, role: 'member', provider: name.toLowerCase() + '-demo' });
+    }, 1800);
+  }
+  signInGoogle() {
+    const cid = this.props.googleClientId ?? (window.GAW_CONFIG && window.GAW_CONFIG.googleClientId) ?? '';
+    // Google refuses to render inside an embedded frame (ERR_BLOCKED_BY_RESPONSE), so in a
+    // preview there is nothing to attempt — say so plainly and point at the demo account
+    // rather than opening a popup that can only fail.
+    let framed = false;
+    try { framed = window.top !== window.self; } catch (e) { framed = true; }
+    if (framed) {
+      this.setState({ oauthNote: 'Google will not open inside a preview window. It works on the live site — or use the demo account below to look around.' });
+      return;
+    }
+    if (cid && window.google && google.accounts && google.accounts.oauth2) {
+      try {
+        const tc = google.accounts.oauth2.initTokenClient({
+          client_id: cid,
+          scope: 'openid email profile',
+          callback: async (tok) => {
+            try {
+              const r = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', { headers: { Authorization: 'Bearer ' + tok.access_token } });
+              const u = await r.json();
+              this.setSession({ name: u.name || 'Seeker', email: u.email || '', role: 'member', provider: 'google' });
+            } catch (e) { this.setState({ oauthNote: 'Google sign-in could not fetch your profile — try again.' }); }
+          },
+          error_callback: () => this.setState({ oauthNote: 'Google sign-in was cancelled or blocked.' }),
+        });
+        tc.requestAccessToken();
+        return;
+      } catch (e) { /* fall through to demo */ }
+    }
+    if (this.state.oauthBusy) return;
+    this.setState({ oauthBusy: true, oauthNote: cid ? 'Google SDK not loaded — signed you in as a demo member.' : 'Demo sign-in (preview). Real Google OAuth activates once your Google Client ID is set — see HANDOFF.md.' });
+    setTimeout(() => {
+      this.setState({ oauthBusy: false });
+      const live = this.session();
+      const id = (live && live.email) ? { name: live.name, email: live.email } : this.demoIdentity();
+      this.setSession({ name: id.name, email: id.email, role: 'member', provider: 'google-demo' });
+    }, 1800);
+  }
+  session() {
+    try { return JSON.parse(localStorage.getItem('gaw_session') || 'null'); } catch (e) { return null; }
+  }
+  registry() { try { return JSON.parse(localStorage.getItem('gaw_users') || '[]'); } catch (e) { return []; } }
+  saveRegistry(l) { try { localStorage.setItem('gaw_users', JSON.stringify(l)); } catch (e) {} }
+  // One number per person, handed out in order: GAW-100001, 100002, 100003…
+  // The config roster wins over anything this browser handed out; otherwise a
+  // returning member keeps the number their email already holds.
+  assignMemberId(user) {
+    const list = this.registry(), email = String(user.email || '').trim().toLowerCase();
+    const rostered = window.GAW_ROSTER_ID && window.GAW_ROSTER_ID(email);
+    if (rostered) return rostered;
+    // The founding seal, written at the ceremony, outranks the local counter.
+    try {
+      const seal = JSON.parse(localStorage.getItem('gaw_founder_seal') || 'null');
+      if (seal && seal.memberId && String(seal.email || '').toLowerCase() === email) return seal.memberId;
+    } catch (e) {}
+    const known = email && list.find(u => String(u.email || '').toLowerCase() === email);
+    if (known && known.memberId) return known.memberId;
+    const cfgNum = (window.GAW_CONFIG && window.GAW_CONFIG.numbering) || {};
+    const floor = Math.max((cfgNum.start || 100001) - 1,
+      ((cfgNum.roster || []).filter(r => !r.fixed).reduce((m, r) => Math.max(m, r.n || 0), 0)) || 0);
+    const nums = list.map(u => parseInt(String(u.memberId || '').replace(/[^0-9]/g, ''), 10)).filter(n => !isNaN(n));
+    let seq = floor;
+    try { seq = parseInt(localStorage.getItem('gaw_member_seq') || String(floor), 10) || floor; } catch (e) {}
+    const next = Math.max(floor, seq, nums.length ? Math.max.apply(null, nums) : 0) + 1;
+    try { localStorage.setItem('gaw_member_seq', String(next)); } catch (e) {}
+    return 'GAW-' + next;
+  }
+  /* A bump of numbering.epoch in gaw-config.js retires every provisional
+     number issued under an older epoch — the remote cleanup for test sign-ins.
+     Rostered members are never touched. */
+  applyNumberingEpoch() {
+    const cfgNum = (window.GAW_CONFIG && window.GAW_CONFIG.numbering) || {};
+    const epoch = String(cfgNum.epoch || 1);
+    let seen = null;
+    try { seen = localStorage.getItem('gaw_numbering_epoch'); } catch (e) { return; }
+    if (seen === epoch) return;
+    try {
+      const kept = this.registry().filter(u => u.founding || !!(window.GAW_ROSTER_ID && window.GAW_ROSTER_ID(u.email)));
+      this.saveRegistry(kept);
+      localStorage.removeItem('gaw_member_seq');
+      const s = this.session();
+      if (s && s.email) {
+        const id = window.GAW_ROSTER_ID(s.email);
+        if (id) { s.memberId = id; localStorage.setItem('gaw_session', JSON.stringify(s)); }
+        else localStorage.removeItem('gaw_session');
+      }
+      localStorage.setItem('gaw_numbering_epoch', epoch);
+    } catch (e) {}
+  }
+  registerUser(user) {
+    const list = this.registry(), email = String(user.email || '').trim().toLowerCase();
+    const i = list.findIndex(u => (email && String(u.email || '').toLowerCase() === email) || u.memberId === user.memberId);
+    const row = {
+      memberId: user.memberId, name: user.name || '', email: user.email || '',
+      provider: user.provider || '', joined: (i >= 0 && list[i].joined) || Date.now(), lastSeen: Date.now(),
+    };
+    if (i >= 0) list[i] = Object.assign({}, list[i], row); else list.push(row);
+    this.saveRegistry(list);
+  }
+  myRole() {
+    const u = this.state.sessionUser || this.session();
+    return window.GAW_ROLE ? window.GAW_ROLE(u && u.email) : 'member';
+  }
+  /* Silent number correction: the shared registry is the source of truth.
+     Whatever number this browser handed out locally, the backend's answer
+     replaces it in place — no re-signup, no visible interruption. */
+  async syncBackendNumber(user) {
+    if (!window.GAW_BACKEND || !user || !user.email) return;
+    const email = String(user.email).trim().toLowerCase();
+    if (email.endsWith('@preview.goldenagewisdom.org')) return; // demo identities stay local
+    const res = await window.GAW_BACKEND.signup(user.name, user.email);
+    if (!res || !res.ok || !res.memberId || res.memberId === user.memberId) return;
+    const old = user.memberId;
+    try {
+      const s = this.session();
+      if (s && String(s.email || '').trim().toLowerCase() === email) {
+        s.memberId = res.memberId;
+        localStorage.setItem('gaw_session', JSON.stringify(s));
+        localStorage.setItem('gaw_last_user', JSON.stringify(s));
+      }
+      // carry the member's local progress over to the corrected number
+      const d = localStorage.getItem('gaw_data_' + old);
+      if (d && !localStorage.getItem('gaw_data_' + res.memberId)) localStorage.setItem('gaw_data_' + res.memberId, d);
+    } catch (e) {}
+    this.registerUser(Object.assign({}, user, { memberId: res.memberId }));
+    const cur = this.state.sessionUser;
+    if (cur && String(cur.email || '').trim().toLowerCase() === email) {
+      this.setState({ sessionUser: Object.assign({}, cur, { memberId: res.memberId }) });
+    }
+  }
+  /* ---- Two-step verification (TOTP, RFC 6238 — Google Authenticator compatible) ---- */
+  static B32 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+  b32enc(bytes) { let bits = 0, val = 0, out = ''; for (const b of bytes) { val = (val << 8) | b; bits += 8; while (bits >= 5) { out += Component.B32[(val >>> (bits - 5)) & 31]; bits -= 5; } } if (bits > 0) out += Component.B32[(val << (5 - bits)) & 31]; return out; }
+  b32dec(str) { let bits = 0, val = 0; const out = []; for (const ch of str.replace(/[\s=-]/g, '').toUpperCase()) { const i = Component.B32.indexOf(ch); if (i < 0) continue; val = (val << 5) | i; bits += 5; if (bits >= 8) { out.push((val >>> (bits - 8)) & 255); bits -= 8; } } return new Uint8Array(out); }
+  async totp(secretB32, step = 0) {
+    const key = await crypto.subtle.importKey('raw', this.b32dec(secretB32), { name: 'HMAC', hash: 'SHA-1' }, false, ['sign']);
+    const counter = Math.floor(Date.now() / 30000) + step, msg = new Uint8Array(8); let c = counter; for (let i = 7; i >= 0; i--) { msg[i] = c & 255; c = Math.floor(c / 256); }
+    const h = new Uint8Array(await crypto.subtle.sign('HMAC', key, msg)), o = h[19] & 15;
+    const n = ((h[o] & 127) << 24) | (h[o + 1] << 16) | (h[o + 2] << 8) | h[o + 3];
+    return String(n % 1000000).padStart(6, '0');
+  }
+  twoFaStore() { try { return JSON.parse(localStorage.getItem('gaw_2fa') || '{}'); } catch (e) { return {}; } }
+  twoFaSecretFor(email) { const e = String(email || '').trim().toLowerCase(); return e ? this.twoFaStore()[e] || null : null; }
+  twoFaSave(email, secret) { const s = this.twoFaStore(); s[String(email).trim().toLowerCase()] = secret; try { localStorage.setItem('gaw_2fa', JSON.stringify(s)); } catch (e) {} if (window.GAW_BACKEND && window.GAW_BACKEND.twoFaPut) { try { window.GAW_BACKEND.twoFaPut(email, secret); } catch (e) {} } }
+  twoFaRequired(user) {
+    if (this.props.twoFactor === false) return false;
+    const p = (user && user.provider) || '';
+    return !/demo/.test(p) && !!user.email && !String(user.email).endsWith('@preview.goldenagewisdom.org');
+  }
+  qrFor(text) {
+    try { if (!window.qrcode) return ''; const q = window.qrcode(0, 'M'); q.addData(text); q.make(); return q.createDataURL(6, 0); } catch (e) { return ''; }
+  }
+  beginTwoFa(user) {
+    const existing = this.twoFaSecretFor(user.email);
+    const secret = existing || this.b32enc(crypto.getRandomValues(new Uint8Array(20)));
+    const label = encodeURIComponent('Golden Age Wisdom:' + user.email);
+    const uri = 'otpauth://totp/' + label + '?secret=' + secret + '&issuer=' + encodeURIComponent('Golden Age Wisdom') + '&algorithm=SHA1&digits=6&period=30';
+    this.setState({ screen: 'twofa', twoFaUser: user, twoFaEnrolling: !existing, twoFaSecret: secret, twoFaQr: existing ? '' : this.qrFor(uri), twoFaCode: '', twoFaError: '', twoFaTick: 0 });
+    clearInterval(this._tfTick); this._tfTick = setInterval(() => { if (this.state.screen === 'twofa') this.setState(s => ({ twoFaTick: s.twoFaTick + 1 })); else clearInterval(this._tfTick); }, 1000);
+  }
+  async twoFaSubmit(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    const s = this.state, code = String(s.twoFaCode || '').replace(/\D/g, '');
+    if (code.length !== 6) { this.setState({ twoFaError: 'Enter the 6-digit code from your authenticator app.' }); return; }
+    const ok = (await Promise.all([-1, 0, 1].map(k => this.totp(s.twoFaSecret, k)))).includes(code);
+    if (!ok) { this.setState({ twoFaError: 'That code didn’t match. Codes change every 30 seconds — try the current one.', twoFaCode: '' }); return; }
+    if (s.twoFaEnrolling) this.twoFaSave(s.twoFaUser.email, s.twoFaSecret);
+    clearInterval(this._tfTick);
+    this.finishSession({ ...s.twoFaUser, twoFa: true });
+  }
+  setSession(user) {
+    if (this.twoFaRequired(user) && !user.twoFa) { this.beginTwoFa(user); return; }
+    this.finishSession(user);
+  }
+  finishSession(user) {
+    const rostered = window.GAW_ROSTER_ID && window.GAW_ROSTER_ID(user.email);
+    if (rostered) user.memberId = rostered;              // roster always wins
+    else if (!user.memberId) user.memberId = this.assignMemberId(user); // no server number: provisional local
+    this.registerUser(user);
+    this.syncBackendNumber(user);
+    try { localStorage.setItem('gaw_session', JSON.stringify(user)); localStorage.setItem('gaw_last_user', JSON.stringify(user)); } catch (e) {}
+    // Landing chooser removed — members land on the dashboard overview.
+    this.setState({ screen: 'dash', sessionUser: user, journalEntries: this.loadData().journal || [], registered: this.loadData().events || {} });
+    this.cloudPull(user);
+  }
+  openLanding(where) {
+    this.setState({ landingOpen: false });
+    if (where === 'solo') this.startSit();
+    else if (where === 'live') this.setState({ joinOpen: true });
+    else if (where === 'discourses') this.setState({ tab: 'discourses' });
+    else this.setState({ tab: 'overview' });
+  }
+  chooseLanding(where) {
+    if (this.state.landingRemember) { try { localStorage.setItem('gaw_landing', where); } catch (e) {} }
+    this.openLanding(where);
+  }
+  clearSession() {
+    try { const u = this.session(); if (u && u.name) localStorage.setItem('gaw_last_user', JSON.stringify(u)); } catch (e) {}
+    try { localStorage.removeItem('gaw_session'); } catch (e) {}
+    this.setState({ screen: 'login', sessionUser: null });
+    try { window.location.href = 'index.html'; } catch (e) {}
+  }
+  lastUser() { try { return JSON.parse(localStorage.getItem('gaw_last_user') || 'null'); } catch (e) { return null; } }
+  memberNameNow() {
+    const s = this.state.sessionUser, l = this.lastUser();
+    return (s && s.name) || (l && l.name) || this.props.memberName || 'Seeker';
+  }
+  /* Keyed by email, never by member number: the number starts out provisional
+     and is corrected by the registry, which used to orphan a member's history. */
+  userKey() { const e = this.cloudEmail(); if (e) return 'gaw_data_' + e; const u = this.session(); return 'gaw_data_' + ((u && u.memberId) || 'guest'); }
+  loadData() {
+    const empty = { sits: [], journal: [], events: {} };
+    let d = empty;
+    try { const raw = JSON.parse(localStorage.getItem(this.userKey()) || 'null'); if (raw && raw.sits) d = raw; } catch (e) {}
+    /* One-time rescue of history stranded under an older member-number key.
+       A device may be shared, so a bucket is only claimed when it can be
+       attributed to this email — never swept up on proximity alone. */
+    if (!this._migrated && this.cloudEmail()) {
+      this._migrated = true;
+      const mine = this.userKey(), email = this.cloudEmail();
+      const u = this.session() || {};
+      const reg = this.registry() || [];
+      const ids = new Set();
+      if (u.memberId) ids.add(String(u.memberId));
+      reg.forEach(r => { if (String(r.email || '').trim().toLowerCase() === email && r.memberId) ids.add(String(r.memberId)); });
+      // Only when this browser has ever known exactly one member is an
+      // unattributable leftover bucket safe to claim.
+      const soleMember = reg.filter(r => r.email).length <= 1;
+      let found = false;
+      try {
+        for (let i = 0; i < localStorage.length; i++) {
+          const k = localStorage.key(i);
+          if (!k || k === mine || k.indexOf('gaw_data_') !== 0) continue;
+          if (k.indexOf('@') > -1) continue;                       // another email's bucket
+          const id = k.slice(9);
+          const claimed = ids.has(id) || (soleMember && (id === 'guest' || /^GAW-/.test(id)));
+          if (!claimed) continue;
+          let old = null; try { old = JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) {}
+          if (old && old.sits && (old.sits.length || (old.journal || []).length)) { d = this.mergeData(d, old); found = true; }
+        }
+      } catch (e) {}
+      if (found) { try { localStorage.setItem(mine, JSON.stringify(d)); } catch (e) {} }
+    }
+    return d;
+  }
+  saveData(d) { try { localStorage.setItem(this.userKey(), JSON.stringify(d)); } catch (e) {} this.queueCloudPush(); }
+  /* Practice history lives against the member's email in the registry, so a
+     phone, an iPad and a laptop all show the same streak and journal. */
+  cloudEmail() { const u = this.session() || this.lastUser(); return (u && u.email) ? String(u.email).trim().toLowerCase() : ''; }
+  /* Merging two devices must never cost a member a sit. Legacy records carry no
+     timestamp, so two honest 2-minute sits on the same day look identical — a
+     plain de-dupe would silently delete one. Instead each side is counted
+     separately and the larger count of each identical record is kept: a record
+     the two devices share collapses, a record one device genuinely holds twice
+     survives twice. */
+  mergeData(a, b) {
+    const kS = s => (s.ts || '') + '|' + (s.date || '') + '|' + (s.mins || 0) + '|' + (s.via || '');
+    const kJ = j => (j.date || '') + '|' + (j.text || '');
+    const union = (la, lb, k) => {
+      la = la || []; lb = lb || [];
+      const tally = list => { const m = new Map(); list.forEach(x => { const key = k(x); const e = m.get(key); if (e) e.push(x); else m.set(key, [x]); }); return m; };
+      const ma = tally(la), mb = tally(lb), out = [];
+      const emit = key => {
+        const ga = ma.get(key) || [], gb = mb.get(key) || [];
+        const keep = ga.length >= gb.length ? ga : gb;
+        keep.forEach(x => out.push(x));
+      };
+      const done = new Set();
+      la.forEach(x => { const key = k(x); if (!done.has(key)) { done.add(key); emit(key); } });
+      lb.forEach(x => { const key = k(x); if (!done.has(key)) { done.add(key); emit(key); } });
+      return out;
+    };
+    return {
+      sits: union(a.sits, b.sits, kS),
+      journal: union(a.journal, b.journal, kJ),
+      events: Object.assign({}, a.events || {}, b.events || {}),
+    };
+  }
+  async cloudPull(u) {
+    const email = (u && u.email) ? String(u.email).trim().toLowerCase() : this.cloudEmail();
+    if (!email) { this.setState({ syncState: 'nouser', syncNote: 'No email on this sign-in' }); return; }
+    if (!window.GAW_BACKEND || !window.GAW_BACKEND.practiceGet) { this.setState({ syncState: 'old', syncNote: 'Old cached code — hard-refresh' }); return; }
+    this.setState({ syncState: 'busy', syncNote: 'Syncing…' });
+    let remote = null;
+    try { remote = await window.GAW_BACKEND.practiceGet(email); } catch (e) { remote = null; }
+    if (!remote || typeof remote !== 'object' || Array.isArray(remote)) {
+      this.setState({ syncState: 'down', syncNote: 'Registry unreachable' });
+      return;
+    }
+    this._pulled = true;
+    const merged = this.mergeData(this.loadData(), remote);
+    this.saveData(merged);
+    this.setState({ journalEntries: merged.journal || [], registered: merged.events || {} });
+  }
+  queueCloudPush() {
+    clearTimeout(this._pushT);
+    this._pushT = setTimeout(() => {
+      const email = this.cloudEmail();
+      if (!email) { this.setState({ syncState: 'nouser', syncNote: 'No email on this sign-in' }); return; }
+      if (!window.GAW_BACKEND || !window.GAW_BACKEND.practicePut) { this.setState({ syncState: 'old', syncNote: 'Old cached code — hard-refresh' }); return; }
+      const local = this.loadData(), n = (local.sits || []).length;
+      if (!n && !(local.journal || []).length && !this._pulled) { this.setState({ syncState: 'busy', syncNote: 'Waiting for history…' }); return; }
+      window.GAW_BACKEND.practicePut(email, this.loadData()).then(ok => {
+        this.setState(ok ? { syncState: 'ok', syncNote: n + (n === 1 ? ' sit synced' : ' sits synced') }
+                         : { syncState: 'down', syncNote: 'Registry refused the write' });
+      }).catch(() => this.setState({ syncState: 'down', syncNote: 'Registry unreachable' }));
+    }, 1500);
+  }
+  registeredEvents() {
+    const d = this.loadData();
+    return (d && d.events) || {};
+  }
+  toggleEventRegistration(key) {
+    const d = this.loadData();
+    d.events = d.events || {};
+    d.events[key] = !d.events[key];
+    this.saveData(d);
+    this.setState({ registered: d.events });
+  }
+  addJournalEntry(text) {
+    const date = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+    const d = this.loadData(); d.journal = [{ date, text }, ...(d.journal || [])]; this.saveData(d);
+    this.setState(st => ({ journalEntries: [{ date, text }, ...st.journalEntries], journalDraft: '' }));
+  }
+  computeStats() {
+    const d = this.loadData(), one = 86400000, p = n => String(n).padStart(2, '0');
+    const dk = x => x.getFullYear() + '-' + p(x.getMonth() + 1) + '-' + p(x.getDate());
+    const days = [...new Set(d.sits.map(s => s.date))].sort();
+    const set = new Set(days);
+    let cur = new Date(); cur.setHours(0, 0, 0, 0);
+    if (!set.has(dk(cur))) cur = new Date(cur.getTime() - one);
+    let streak = 0;
+    while (set.has(dk(cur))) { streak++; cur = new Date(cur.getTime() - one); }
+    let best = 0, run = 0, prev = null;
+    for (const x of days) { const tm = new Date(x + 'T00:00:00').getTime(); run = prev !== null && tm - prev === one ? run + 1 : 1; if (run > best) best = run; prev = tm; }
+    const totalMins = d.sits.reduce((n, s) => n + (s.mins || 0), 0);
+    const last = days[days.length - 1];
+    const lastSat = last ? new Date(last + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric' }) : '';
+    return { streak, best, sessions: d.sits.length, totalMins, lastSat, daysSat: days.length, journeyDay: Math.max(1, Math.min(41, streak || 1)) };
+  }
+  componentDidMount() {
+    this.applyNumberingEpoch();
+    this.nudgeT = setTimeout(() => this.maybeNudge(), 60000);
+    try { if (localStorage.getItem('gaw_sidebar') === 'closed') this.setState({ sideOpen: false }); } catch (e) {}
+    this.onEsc = (e) => {
+      if (e.key !== 'Escape') return;
+      if (this.state.videoOpen) this.setState({ videoOpen: null });
+      else if (this.state.joinOpen) this.setState({ joinOpen: false, copyNote: '' });
+    };
+    window.addEventListener('keydown', this.onEsc);
+    this.onVis = () => {
+      if (document.hidden) return;
+      this.checkLiveReturn();
+      // the browser drops the wake lock whenever the tab is hidden — take it back
+      if (this.state.sessionOpen && !this._wake) this.keepAwake();
+    };
+    document.addEventListener('visibilitychange', this.onVis);
+    window.addEventListener('focus', this.onVis);
+    setTimeout(() => this.checkLiveReturn(), 400);
+    window.__gawPreviewTwoFa = (verify) => { const em = 'preview-2fa@example.com'; if (verify && !this.twoFaSecretFor(em)) this.twoFaSave(em, this.b32enc(crypto.getRandomValues(new Uint8Array(20)))); this.beginTwoFa({ name: 'Preview', email: em, role: 'member', provider: 'google' }); };
+    const u = this.session();
+    if (u) this.setState({ screen: 'dash', sessionUser: u, journalEntries: this.loadData().journal || [], registered: this.loadData().events || {} });
+    if (u) this.syncBackendNumber(u); // silent correction against the shared registry
+    if (u) this.cloudPull(u);
+    try { const sv = parseFloat(localStorage.getItem('gaw_vol')); if (sv >= 0 && sv <= 1) this.setState({ sndVol: sv }); } catch (e) {}
+    // A returning member on a new device has never been asked where to begin.
+    if (u) {
+      // Landing chooser removed — no first-visit prompt.
+    }
+    // app-shortcut deep links: /join?go=solo | /join?go=live
+    try {
+      const go = new URLSearchParams(location.search).get('go');
+      if (u && go) setTimeout(() => {
+        if (go === 'solo') this.startSit();
+        else if (go === 'live') this.setState({ joinOpen: true });
+        else if (['journal', 'share', 'gallery', 'discourses'].includes(go)) this.setState({ tab: go });
+      }, 300);
+    } catch (e) {}
+    // breath rhythm: 4s in, 6s out (natural exhale is longer)
+    this.clockTimer = setInterval(() => {
+      if (!this.state.sessionOpen || this.state.sessPaused) return;
+      this.setState(s => {
+        const n = s.sessionSecs + 1;
+        if (!s.goalHit && n >= s.sessGoal * 60) { this.chime(); return { sessionSecs: n, goalHit: true }; }
+        return { sessionSecs: n };
+      });
+    }, 1000);
+    // Schedule copy is derived, not stored: re-render each minute so a countdown
+    // never sits stale and "Live now" appears the minute the window opens.
+    this.scheduleTimer = setInterval(() => { if (!this.state.sessionOpen) this.forceUpdate(); }, 30000);
+  }
+  maybeNudge() {
+    if (this.state.nudged || this.state.chatOpen) return;
+    const s = this.state;
+    const onDash = this.props.startOnDashboard ? s.screen !== 'su' : s.screen === 'dash';
+    // Never interrupt a sitting, a video, a chooser, a signed-out visitor or a backgrounded tab — wait and retry.
+    if (!onDash || s.sessionOpen || s.videoOpen || s.joinOpen || s.landingOpen || s.liveBack || s.donateOpen || s.cardBig || document.hidden) { this.nudgeT = setTimeout(() => this.maybeNudge(), 20000); return; }
+    const today = new Date().toDateString();
+    try {
+      if (localStorage.getItem('gaw_guide_nudge') === today) { this.setState({ nudged: true }); return; }
+    } catch (e) {}
+    const first = this.memberNameNow().trim().split(/\s+/)[0];
+    this.setState(st => ({
+      nudged: true, chatOpen: true,
+      chatMessages: [...st.chatMessages, { from: 'bot', text: 'Still with me, ' + first + '? If anything is unclear \u2014 how to sit, when the next session begins, what the 41 days ask of you \u2014 just ask. That is exactly what I am here for.' }],
+    }));
+    try { localStorage.setItem('gaw_guide_nudge', today); } catch (e) {}
+  }
+  componentWillUnmount() { this.releaseAwake(); clearTimeout(this.nudgeT); clearTimeout(this.breathT); clearInterval(this.clockTimer); clearInterval(this.scheduleTimer); this.stopSound(); window.removeEventListener('keydown', this.onEsc); document.removeEventListener('visibilitychange', this.onVis); window.removeEventListener('focus', this.onVis); }
+  breathe() {
+    if (!this.state.sessionOpen) return;
+    const goingIn = this.state.breathPhase !== 'in';
+    this.setState({ breathPhase: goingIn ? 'in' : 'out' });
+    this.breathT = setTimeout(() => this.breathe(), goingIn ? 4000 : 6000);
+  }
+  chime() {
+    try {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
+      if (!this._bellCtx) this._bellCtx = new AC();
+      const ctx = this._bellCtx;
+      if (ctx.state === 'suspended') ctx.resume();
+      [0, 3.1].forEach(delay => {
+        const t = ctx.currentTime + delay;
+        [[1, 0.42, 7], [2.76, 0.15, 4.5], [5.4, 0.06, 2.6]].forEach(([mult, amp, dec]) => {
+          const o = ctx.createOscillator(); o.type = 'sine'; o.frequency.value = 196 * mult;
+          const g = ctx.createGain();
+          g.gain.setValueAtTime(0.0001, t);
+          g.gain.linearRampToValueAtTime(amp, t + 0.03);
+          g.gain.exponentialRampToValueAtTime(0.0001, t + dec);
+          o.connect(g); g.connect(ctx.destination);
+          o.start(t); o.stop(t + dec + 0.2);
+        });
+      });
+    } catch (e) {}
+    if (navigator.vibrate) { try { navigator.vibrate([90, 120, 90]); } catch (e) {} }
+  }
+  setGoal(mins) {
+    this.setState(st => ({ sessGoal: mins, goalHit: st.sessionSecs >= mins * 60 }));
+    try { localStorage.setItem('gaw_goal', String(mins)); } catch (e) {}
+  }
+  // Keep the screen lit while sitting — a member watching the orb never touches
+  // the screen, and a lock screen mid-sit breaks the practice and the timer.
+  async keepAwake() {
+    if (!('wakeLock' in navigator)) return;
+    try {
+      this._wake = await navigator.wakeLock.request('screen');
+      this._wake.addEventListener('release', () => { this._wake = null; });
+    } catch (e) { this._wake = null; }
+  }
+  releaseAwake() {
+    if (this._wake) { try { this._wake.release(); } catch (e) {} this._wake = null; }
+  }
+  startSit() {
+    clearTimeout(this.breathT);
+    this.keepAwake();
+    this.setState({ sessionOpen: true, sessionSecs: 0, sessPaused: false, goalHit: false, breathPhase: 'out' }, () => this.breathe());
+  }
+  endSit() {
+    clearTimeout(this.breathT);
+    this.releaseAwake();
+    const secs = this.state.sessionSecs;
+    const mins = Math.max(1, Math.round(secs / 60));
+    if (secs >= 60) {
+      const p = n => String(n).padStart(2, '0'), now = new Date();
+      const d = this.loadData();
+      d.sits.push({ date: now.getFullYear() + '-' + p(now.getMonth() + 1) + '-' + p(now.getDate()), mins, ts: now.toISOString() });
+      this.saveData(d);
+      this.setState({ sessionOpen: false, sessPaused: false, doneOpen: true, doneMins: mins + (mins === 1 ? ' minute' : ' minutes'), journalDraft: '' });
+    } else this.setState({ sessionOpen: false, sessPaused: false });
+  }
+  askBody(s, topics) {
+    const q = (s.askText || '').trim();
+    if (!q) return '';
+    const topic = (topics.find(t => t.key === (s.askTopic || 'health')) || topics[0]).label;
+    const who = this.memberNameNow ? this.memberNameNow() : '';
+    const head = [
+      'Golden Age Wisdom — question for a volunteer',
+      'Topic: ' + topic,
+      who ? 'From: ' + who : ''
+    ].filter(Boolean).join('\n');
+    return head + '\n\n' + q;
+  }
+
+  renderVals() {
+    const s = this.state;
+    const tab = s.tab;
+    const SEVA_WHATSAPP = (((window.GAW_CONFIG || {}).support || {}).web || {}).e164 || '917396119111';
+    const SEVA_EMAIL = 'info@goldenagewisdom.org';
+    const te = s.askLang === 'te';
+    const ASK_T = te ? {
+      title: 'ప్రశ్న అడగండి', sub: 'మీ సాధనలో సందేహం ఉందా? మనిషిని అడగండి.', langBtn: 'English',
+      intro: 'సాధారణ మాటల్లో మీ ప్రశ్న రాయండి. "పంపండి" నొక్కగానే WhatsApp తెరుచుకుంటుంది, మీ ప్రశ్న అప్పటికే టైప్ అయి ఉంటుంది. అక్కడ పంపండి చాలు. మా స్వచ్ఛంద సేవకుడు త్వరలో జవాబు ఇస్తారు.',
+      step1: '1. మీ ప్రశ్న దేని గురించి?', step2: '2. మీ ప్రశ్న ఇక్కడ రాయండి', step3: '3. పంపండి',
+      sendBtn: 'నా ప్రశ్న పంపండి', number: 'సహాయ బృందానికి WhatsApp లో వెళ్తుంది · కాల్: +91 7396 112 111',
+      ackLine: 'మీ ప్రశ్న అందింది అని ధృవీకరణ ఇమెయిల్ ఇక్కడికి పంపబడుతుంది:', ackBtn: 'ధృవీకరణ ఇమెయిల్ పంపండి',
+      footnote: 'స్వచ్ఛంద సేవకులు సాధకులు, వైద్యులు కాదు. అత్యవసరమైతే ముందుగా వైద్యుడిని సంప్రదించండి.', qrLink: 'లాగిన్ లేకుండా అడగాలా? QR / వాయిస్ పేజీ తెరవండి →',
+      topics: { health: 'ఆరోగ్యం & ఆహారం', kundalini: 'ధ్యానంలో అనుభవాలు', practice: 'కూర్చోవడంలో ఇబ్బంది', life: 'డబ్బు & రోజువారీ జీవితం', other: 'వేరే ఏదైనా' },
+      hint: 'మీ ప్రశ్న ఇక్కడ రాయండి. మీ ఫోన్ నంబర్ కూడా రాయండి.',
+      openNote: 'WhatsApp తెరుచుకుంటోంది. అక్కడ "పంపండి" నొక్కండి.', emptyNote: 'ముందుగా మీ ప్రశ్న రాయండి.', ackDone: 'ధృవీకరణ ఇమెయిల్ తెరుచుకుంది — అక్కడ పంపండి.'
+    } : {
+      title: 'Ask a question', sub: 'Any doubt about your practice? Ask a person.', langBtn: 'తెలుగులో చూడండి',
+      intro: 'Write your question in simple words. When you press "Send", WhatsApp opens with your question already typed. Just press send there. A volunteer will reply to you soon.',
+      step1: '1. What is your question about?', step2: '2. Write your question here', step3: '3. Send it',
+      sendBtn: 'Send my question', number: 'Goes to our support team on WhatsApp · Call: +91 7396 112 111',
+      ackLine: 'We will also send a confirmation email to', ackBtn: 'Send confirmation email',
+      footnote: 'Volunteers are seekers, not doctors. If something is urgent, see a doctor first.', qrLink: 'Ask without login — open the QR / voice page →',
+      topics: { health: 'Health & food', kundalini: 'Feelings in meditation', practice: 'Trouble sitting', life: 'Money & daily life', other: 'Something else' },
+      hint: 'Type your question here. Please also write your phone number.',
+      openNote: 'WhatsApp is opening. Press send there.', emptyNote: 'Please write your question first.', ackDone: 'Confirmation email opened — press send there.'
+    };
+    const ASK_TOPICS = ['health', 'kundalini', 'practice', 'life', 'other'].map(key => ({ key, label: ASK_T.topics[key], hint: ASK_T.hint }));
+    const askUser = this.lastUser() || {};
+    const askAckEmail = askUser.email || '';
+    const sendAskAck = () => {
+      if (!askAckEmail) return;
+      const subj = te ? 'మీ ప్రశ్న అందింది — Golden Age Wisdom' : 'We received your question — Golden Age Wisdom';
+      const body = te
+        ? 'నమస్కారం ' + (askUser.name || '') + ',\n\nమీ ప్రశ్న మాకు అందింది. ధన్యవాదాలు. మా స్వచ్ఛంద సేవకుడు వీలైనంత త్వరగా ఈ ఇమెయిల్‌కు జవాబు ఇస్తారు.\n\nGolden Age Wisdom సేవా బృందం'
+        : 'Namaste ' + (askUser.name || '') + ',\n\nWe have received your question. Thank you. A volunteer will get back to you on this email as soon as possible.\n\nGolden Age Wisdom seva team';
+      window.location.href = 'mailto:' + askAckEmail + '?cc=' + SEVA_EMAIL + '&subject=' + encodeURIComponent(subj) + '&body=' + encodeURIComponent(body);
+      this.setState({ askAckSent: true, askNote: ASK_T.ackDone });
+    };
+    const navDefs = [
+      { key: 'overview', icon: '☀', label: 'Overview' },
+      { key: 'solo', icon: '▶', label: 'Sit & Scribe' },
+      { key: 'live', icon: '◉', label: 'Join live', badge: true },
+      { key: 'journal', icon: '✎', label: 'Journal' },
+      { key: 'help', icon: '✆', label: 'Ask a question' },
+      ...(this.myRole() !== 'member' ? [{ key: 'admin', icon: '✦', label: 'Admin panel' }] : []),
+    ];
+    const mins = String(Math.floor(s.sessionSecs / 60)).padStart(2, '0');
+    const secs = String(s.sessionSecs % 60).padStart(2, '0');
+    const eventDefs = [];
+    const screen = this.props.startOnDashboard && s.screen === 'login' ? 'dash' : s.screen;
+    if (s.tab === 'guide' || s.tab === 'share') setTimeout(() => this.setState({ tab: 'overview' }), 0);
+    return {
+      memberName: this.memberNameNow(),
+      loginName: (((this.lastUser() && this.lastUser().name) || 'seeker').trim().split(/\s+/)[0]),
+      hasLastUser: !!(this.lastUser() && this.lastUser().name),
+      lastUserName: (this.lastUser() && this.lastUser().name) || '',
+      lastUserEmail: (this.lastUser() && this.lastUser().email) || '',
+      lastUserInitial: ((((this.lastUser() && this.lastUser().name) || 'M').trim()[0]) || 'M').toUpperCase(),
+      continueAsLast: () => { const u = this.lastUser(); if (u) this.setSession({ ...u, twoFa: false }); },
+      showTwoFa: screen === 'twofa',
+      twoFaEnrolling: !!s.twoFaEnrolling,
+      twoFaTitle: s.twoFaEnrolling ? 'Protect your account' : 'Enter your code',
+      twoFaBody: s.twoFaEnrolling ? 'Scan this with Google Authenticator, then enter the 6-digit code it shows. You’ll be asked for a code each time you sign in.' : 'Open Google Authenticator on your phone and enter the 6-digit code for Golden Age Wisdom.',
+      twoFaCta: s.twoFaEnrolling ? 'Verify & finish setup' : 'Verify',
+      twoFaQrEl: s.twoFaQr ? React.createElement('img', { src: s.twoFaQr, alt: 'Scan with Google Authenticator', style: { display: 'block', width: 150, height: 150, imageRendering: 'pixelated' } }) : null,
+      twoFaKeyPretty: (s.twoFaSecret || '').replace(/(.{4})/g, '$1 ').trim(),
+      twoFaCode: s.twoFaCode || '',
+      twoFaType: (e) => this.setState({ twoFaCode: e.target.value.replace(/\D/g, '').slice(0, 6), twoFaError: '' }),
+      twoFaSubmit: (e) => this.twoFaSubmit(e),
+      twoFaError: s.twoFaError || '', hasTwoFaError: !!s.twoFaError,
+      twoFaInputBorder: s.twoFaError ? 'rgba(233,161,161,0.7)' : 'rgba(201,162,74,0.35)',
+      twoFaTickOpacity: (s.twoFaTick || 0) % 2 ? 0.35 : 1,
+      twoFaCancel: () => { clearInterval(this._tfTick); this.setState({ screen: 'login', twoFaUser: null, twoFaCode: '', twoFaError: '' }); },
+      memberId: this.myMemberId(),
+      hasMemberId: !!this.myMemberId(),
+      ...(() => {
+        const st2 = this.computeStats();
+        const stages = ['First Stillness', 'Settling the Breath', 'Deepening Silence', 'Golden Awareness'];
+        const si = st2.streak >= 30 ? 3 : st2.streak >= 14 ? 2 : st2.streak >= 5 ? 1 : 0;
+        return {
+          statStreak: st2.streak, statBest: st2.best, statSessions: st2.sessions,
+          challengeLine: Math.min(41, st2.daysSat) + ' of 41 days' + (st2.daysSat >= 41 ? ' · complete 🙏' : ''),
+          challengeDots: Array.from({ length: 41 }, (_, i) => {
+            const done = i < Math.min(41, st2.daysSat);
+            return { n: i + 1, bg: done ? '#C9A24A' : 'rgba(20,36,28,0.06)', border: done ? 'rgba(201,162,74,0.6)' : 'rgba(138,111,52,0.22)' };
+          }),
+          streakUnit: st2.streak === 1 ? 'day' : 'days',
+          streakSub: st2.streak === 0
+            ? (st2.lastSat ? 'Last sat ' + st2.lastSat + ' · sit today to begin again' : 'Your first sit starts the count')
+            : 'Best: ' + st2.best + (st2.best === 1 ? ' day' : ' days'),
+          statH: Math.floor(st2.totalMins / 60), statM: st2.totalMins % 60,
+          journeyDay: st2.journeyDay,
+          journeyLine: st2.sessions === 0 ? 'Your journey begins today · Take your first sit.' : 'Day ' + st2.journeyDay + ' of your journey · ' + st2.sessions + (st2.sessions === 1 ? ' sit' : ' sits') + ' so far.',
+          stageName: stages[si], stagePct: Math.max(2, Math.round(Math.min(41, st2.streak) / 41 * 100)),
+        };
+      })(),
+      loginStars: Array.from({ length: 40 }, (_, i) => ({ x: (i * 137.508) % 100, y: (i * 61.803) % 100, s: 1 + (i % 3), o: 0.12 + ((i * 37) % 45) / 100 })),
+      loginDots: Array.from({ length: 41 }, (_, i) => {
+        const done = i < 21;
+        return { bg: done ? '#C9A24A' : 'rgba(20,36,28,0.08)', glow: done ? '0 0 8px rgba(201,162,74,0.5)' : 'none' };
+      }),
+      sideOpen: s.sideOpen,
+      sideW: s.sideOpen ? 250 : 74,
+      sideIcon: s.sideOpen ? '‹' : '›',
+      sideTitle: s.sideOpen ? 'Collapse the menu' : 'Expand the menu',
+      privacyLabel: s.sideOpen ? 'Privacy notice' : '',
+      signOutLabel: s.sideOpen ? 'Sign out' : '',
+      toggleSide: () => { const v = !s.sideOpen; try { localStorage.setItem('gaw_sidebar', v ? 'open' : 'closed'); } catch (e) {} this.setState({ sideOpen: v }); },
+      landingOpen: !!s.landingOpen,
+      landingRemember: !!s.landingRemember,
+      landingRememberIcon: s.landingRemember ? '✓' : '',
+      toggleLandingRemember: () => this.setState({ landingRemember: !s.landingRemember }),
+      closeLanding: () => this.setState({ landingOpen: false }),
+      landingCards: [
+        { key: 'overview', icon: '☀', title: 'My practice', body: 'Streak, journey day and this week at a glance.' },
+        { key: 'solo', icon: '▶', title: 'Sit & Scribe', body: 'Straight into silence, then write what arose.' },
+        { key: 'live', icon: '◉', title: 'Join live', body: 'Today\u2019s group session, in your own timezone.' },
+      ].map(c => ({ icon: c.icon, title: c.title, body: c.body, pick: () => this.chooseLanding(c.key) })),
+      consentOpen: !s.consentSeen && !(window.GAWTelemetry && window.GAWTelemetry.consentRecord()),
+      acceptCookies: () => { if (window.GAWTelemetry) { window.GAWTelemetry.setConsent(true); window.GAWTelemetry.track('Member Flow'); } this.setState({ consentSeen: true }); },
+      declineCookies: () => { if (window.GAWTelemetry) window.GAWTelemetry.setConsent(false); this.setState({ consentSeen: true }); },
+      showLogin: screen === 'login',
+      showDash: screen === 'dash',
+      signInGoogle: () => this.signInGoogle(),
+      demoBanner: !!(s.sessionUser && /demo/.test(s.sessionUser.provider || '') && !s.demoBannerDismissed),
+      dismissDemoBanner: () => this.setState({ demoBannerDismissed: true }),
+      signInMicrosoft: () => this.demoProvider('Microsoft'),
+      signInFacebook: () => this.demoProvider('Facebook'),
+      signInApple: () => this.demoProvider('Apple'),
+      signInDemo: () => this.setSession({ name: 'Ananya Rao', email: 'demo@goldenagewisdom.org', role: 'member', provider: 'demo' }),
+      oauthNote: s.oauthNote || '',
+      hasOauthNote: !!s.oauthNote,
+      signOut: () => this.clearSession(),
+      tabOverview: tab === 'overview' || tab === 'events',
+      tabJournal: tab === 'journal',
+      tabGuide: tab === 'guide',
+      videoFilters: [['all', 'All'], ['discourse', 'Discourses'], ['meditation', 'Meditation'], ['practice', 'Practices']].map(([k, label]) => {
+        const on = (s.videoFilter || 'all') === k;
+        return { label, pick: () => this.setState({ videoFilter: k }),
+          border: on ? 'rgba(201,162,74,0.75)' : 'rgba(138,111,52,0.28)',
+          bg: on ? 'rgba(201,162,74,0.16)' : '#FFFDF8',
+          color: on ? '#14241C' : '#1B3328' };
+      }),
+      videoCards: this.videoList()
+        .filter(v => (s.videoFilter || 'all') === 'all' || v.cat === (s.videoFilter || 'all'))
+        .map(v => ({ title: v.title, cat: v.catLabel, thumb: 'https://i.ytimg.com/vi/' + v.id + '/hqdefault.jpg',
+          open: () => this.setState({ videoOpen: v.id, videoTitle: v.title }) })),
+      joinOpen: !!s.joinOpen,
+      closeJoin: () => this.setState({ joinOpen: false, copyNote: '' }),
+      backdropJoin: (e) => { if (e.target === e.currentTarget) this.setState({ joinOpen: false, copyNote: '' }); },
+      sitNow: () => { this.setState({ joinOpen: false }); this.startSit(); },
+      ...(() => {
+        const li = this.liveInfo(), z = this.zoomDetails();
+        return {
+          liveLabel: li.label,
+          liveNote: li.note,
+          liveBadge: li.status === 'live' ? 'Live now' : 'Up next',
+          scheduleRows: this.scheduleRows(),
+          // Name the session the schedule actually points at — the card below does, and a
+          // hardcoded "Group session" contradicted it two windows out of three. Short forms
+          // because the pill is a single nowrap line.
+          liveCtaLabel: (() => {
+            const short = { 'Brahmamuhurtham sit': 'Dawn sit', 'Group meditation': 'Group sit', 'Wisdom sharing with Dr. Harikrishna': 'Wisdom hour' }[li.label] || li.label;
+            if (li.status === 'live') return short + ' live now';
+            return short + ' in ' + (li.note.split(' · starts in ')[1] || 'a while');
+          })(),
+          liveCtaBorder: li.status === 'live' ? 'rgba(224,132,132,0.75)' : 'rgba(201,162,74,0.45)',
+          liveCtaBg: li.status === 'live' ? 'rgba(224,132,132,0.12)' : '#FFFDF8',
+          liveCtaDot: li.status === 'live' ? '#e08484' : '#C9A24A',
+          liveCtaAnim: li.status === 'live' ? 'sndRing 2.4s ease-out infinite' : 'none',
+          localZone: this.localZone(),
+          soloEyebrow: li.status === 'live' ? "Can't join the live session?" : 'Any hour, on your own',
+          liveBadgeBg: li.status === 'live' ? 'rgba(196,64,64,0.9)' : 'rgba(201,162,74,0.16)',
+          liveBadgeColor: li.status === 'live' ? '#14241C' : '#7A5E22',
+          zoomUrl: z.url, zoomId: z.id, zoomPass: z.pass,
+          copyZoomId: () => this.copyText(z.id, 'Meeting ID'),
+          copyZoomPass: () => this.copyText(z.pass, 'Passcode'),
+          copyZoomAll: () => this.copyText('Golden Age Wisdom · live session\nZoom: ' + z.url + '\nMeeting ID: ' + z.id + '\nPasscode: ' + z.pass, 'Full invite'),
+        };
+      })(),
+      shareLink: this.referralLink(),
+      copyShareLink: () => this.copyText(this.referralLink(), 'Your invite link'),
+      copyShareText: () => this.copyText(this.shareText(), 'Your words'),
+      nativeShare: () => this.nativeShare(),
+      downloadCard: () => this.downloadCard(),
+      cardBigOpen: !!s.cardBig,
+      openCard: () => this.setState({ cardBig: true }),
+      closeCard: () => this.setState({ cardBig: false }),
+      testimonialDraft: s.testimonialDraft || '',
+      onTestimonial: (e) => this.setState({ testimonialDraft: e.target.value.slice(0, 240) }),
+      testimonialPreview: (s.testimonialDraft || '').trim() || 'Forty-one days of silence changed how I meet my own mind.',
+      testimonialCount: 240 - (s.testimonialDraft || '').length + ' left',
+      cardFontSize: (((s.testimonialDraft || '').trim() || 'Forty-one days of silence changed how I meet my own mind.').length > 150 ? '4.26cqi' : '5.37cqi'),
+      cardByline: '— ' + this.memberNameNow().trim().split(/\s+/)[0] + ' · day ' + this.computeStats().journeyDay + ' of 41',
+      socialLinks: this.socialConfig().map(x => ({ ...x, ready: !!x.url, pending: !x.url, handleText: x.url ? x.handle : x.handle + ' · link to be confirmed' })),
+      shareTargets: (() => {
+        const t = encodeURIComponent(this.shareText()), link = encodeURIComponent(this.referralLink());
+        return [
+          { label: 'WhatsApp', url: 'https://wa.me/?text=' + t },
+          { label: 'Facebook', url: 'https://www.facebook.com/sharer/sharer.php?u=' + link },
+          { label: 'X', url: 'https://twitter.com/intent/tweet?text=' + t },
+          { label: 'Email', url: 'mailto:?subject=' + encodeURIComponent('A quiet invitation') + '&body=' + t },
+        ];
+      })(),
+      copyNote: s.copyNote,
+      hasCopyNote: !!s.copyNote,
+      liveBackOpen: !!s.liveBack,
+      liveBackMins: s.liveBack ? s.liveBack.mins : 0,
+      liveBackLabel: s.liveBack ? s.liveBack.label : '',
+      liveBackHow: s.liveBack ? s.liveBack.how : '',
+      liveBackLog: () => this.confirmLiveSit(s.liveBack ? s.liveBack.mins : 0),
+      liveBackHalf: () => this.confirmLiveSit(Math.max(1, Math.round((s.liveBack ? s.liveBack.mins : 0) / 2))),
+      liveBackSkip: () => this.clearLiveReturn(),
+      ...(() => {
+        const list = this.videoList();
+        const f = list[0];
+        return {
+          featuredThumb: 'https://i.ytimg.com/vi/' + f.id + '/hqdefault.jpg',
+          featuredTitle: f.title, featuredCat: f.catLabel,
+          openFeatured: () => this.setState({ videoOpen: f.id, videoTitle: f.title }),
+          videoRest: list.slice(1).map(v => ({
+            title: v.title, cat: v.catLabel,
+            thumb: 'https://i.ytimg.com/vi/' + v.id + '/default.jpg',
+            open: () => this.setState({ videoOpen: v.id, videoTitle: v.title }),
+          })),
+        };
+      })(),
+      videoOpen: !!s.videoOpen,
+      videoSrc: s.videoOpen ? this.embedUrl(s.videoOpen) : '',
+      videoWatchUrl: s.videoOpen ? (s.videoOpen === 'LIVE' ? 'https://www.youtube.com/@GoldenAgeGurus/streams' : 'https://www.youtube.com/watch?v=' + s.videoOpen) : '',
+      // YouTube's live_stream embed answers "This video is unavailable" whenever
+      // nothing is actually broadcasting. Between sessions we say so ourselves
+      // instead of handing the member YouTube's grey error card.
+      zoomStartLine: (() => {
+        const li = this.liveInfo();
+        if (li.status === 'live') return 'Open now · in progress';
+        const at = this.localDayHint(li.startMs) + this.fmtLocal(li.startMs) + ' your time';
+        return 'Opens ' + at + ' · ' + this.awayText(li.startMs);
+      })(),
+      ytStartLine: (() => {
+        const w = this.youtubeWindow();
+        if (w.status === 'live') return 'Streaming now';
+        const at = this.localDayHint(w.startMs) + this.fmtLocal(w.startMs) + ' your time';
+        return 'Streams ' + at + ' · ' + this.awayText(w.startMs);
+      })(),
+      videoIsPlayable: !!s.videoOpen && (s.videoOpen !== 'LIVE' || this.youtubeWindow().status === 'live'),
+      videoNotLive: s.videoOpen === 'LIVE' && this.youtubeWindow().status !== 'live',
+      liveNextNote: (() => {
+        const w = this.youtubeWindow(), s2 = w.session;
+        const at = this.localDayHint(w.startMs) + this.fmtLocal(w.startMs) + ' your time · ' + this.fmtIST(s2.from) + ' IST';
+        return 'The channel streams ' + s2.label + ' — ' + at + ', starting ' + this.awayText(w.startMs) + '. The group meditation hour before it runs on Zoom only.';
+      })(),
+      sitFromVideo: () => { this.setState({ videoOpen: null }); setTimeout(() => this.startSit(), 120); },
+      watchLive: () => { const w = this.youtubeWindow(); const li = w.status === 'live' ? { status: 'live', label: w.session.label } : this.liveInfo(); if (w.status === 'live') this.markLiveStart(w.session.label, 'YouTube live'); this.setState({ joinOpen: false, videoOpen: 'LIVE', videoTitle: li.status === 'live' ? li.label + ' · live on YouTube' : 'Live on YouTube' }); },
+      openZoom: () => { const li = this.liveInfo(); this.markLiveStart(li.label, 'Zoom'); this.setState({ joinOpen: false }); },
+      videoTitle: s.videoTitle || '',
+      closeVideo: () => { this.setState({ videoOpen: null }); setTimeout(() => this.checkLiveReturn(), 200); },
+      tabShare: tab === 'share',
+      tabHelp: tab === 'help',
+      groups: [
+        { city: 'Hyderabad', initial: 'H', meets: 'Daily · 8:15 PM', sinceShort: 'Since 2019',
+          says: 'A volunteer meets first-timers at the gate — you will not walk in alone.',
+          helps: ['First-timers', 'Telugu · English'], link: 'https://chat.whatsapp.com/gaw-hyd' },
+        { city: 'Bengaluru', initial: 'B', meets: 'Daily · 8:15 PM', sinceShort: 'Since 2021',
+          says: 'Mats and shawls are kept at the back. Come straight from work.',
+          helps: ['First-timers', 'Kannada · English'], link: 'https://chat.whatsapp.com/gaw-blr' },
+        { city: 'Pune', initial: 'P', meets: 'Tue, Thu, Sat', sinceShort: 'Since 2022',
+          says: 'A living-room circle of about eleven, with tea afterwards.',
+          helps: ['Small group', 'Hindi · Marathi'], link: 'https://chat.whatsapp.com/gaw-pune' },
+        { city: 'Chennai', initial: 'C', meets: 'Daily · 8:20 PM', sinceShort: 'Since 2020',
+          says: 'Never meditated? Say so in the group and someone will sit beside you.',
+          helps: ['First-timers', 'Tamil · English'], link: 'https://chat.whatsapp.com/gaw-chn' }
+      ],
+      askTopics: ASK_TOPICS.map(t => ({
+        label: t.label,
+        border: (s.askTopic || 'health') === t.key ? 'rgba(201,162,74,0.7)' : 'rgba(138,111,52,0.25)',
+        bg: (s.askTopic || 'health') === t.key ? 'rgba(201,162,74,0.14)' : '#FFFDF8',
+        color: (s.askTopic || 'health') === t.key ? '#7A5E22' : '#1B3328',
+        pick: () => this.setState({ askTopic: t.key, askSent: false })
+      })),
+      askPlaceholder: (ASK_TOPICS.find(t => t.key === (s.askTopic || 'health')) || ASK_TOPICS[0]).hint,
+      askText: s.askText || '',
+      onAskText: e => this.setState({ askText: e.target.value, askSent: false }),
+      askSent: !!s.askSent,
+      askNote: s.askNote || '',
+      askT: ASK_T,
+      toggleAskLang: () => this.setState({ askLang: te ? 'en' : 'te' }),
+      askAckEmail, sendAskAck,
+      askAckReady: !!(s.askOk && askAckEmail),
+      askAckPending: !s.askAckSent,
+      sendAskWhatsapp: () => {
+        const body = this.askBody(s, ASK_TOPICS);
+        if (!body) { this.setState({ askSent: true, askOk: false, askNote: ASK_T.emptyNote }); return; }
+        window.open('https://wa.me/' + SEVA_WHATSAPP + '?text=' + encodeURIComponent(body), '_blank', 'noopener');
+        this.setState({ askSent: true, askOk: true, askAckSent: false, askNote: ASK_T.openNote });
+      },
+      volunteerLabel: 'Choose a team →',
+      volunteerSignup: () => { window.location.href = '/volunteer'; },
+      navItems: navDefs.map(n => ({
+        icon: n.icon, label: s.sideOpen ? n.label : '',
+        go: () => {
+          if (n.key === 'admin') { window.location.href = 'Admin Panel.dc.html'; return; }
+          if (n.key === 'solo') this.startSit();
+          else if (n.key === 'live') this.setState({ joinOpen: true });
+          else this.setState({ tab: n.key });
+        },
+        bg: tab === n.key ? 'rgba(201,162,74,0.14)' : 'transparent',
+        color: tab === n.key ? '#E8CF83' : '#D8D2C4',
+        weight: tab === n.key ? '600' : '400',
+      })),
+      ...(() => {
+        const p = n => String(n).padStart(2, '0'), dk = x => x.getFullYear() + '-' + p(x.getMonth() + 1) + '-' + p(x.getDate());
+        const sitSet = new Set(this.loadData().sits.map(x => x.date));
+        const now = new Date(); now.setHours(0, 0, 0, 0);
+        const monday = new Date(now.getTime() - ((now.getDay() + 6) % 7) * 86400000);
+        let count = 0;
+        const week = ['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((label, i) => {
+          const day = new Date(monday.getTime() + i * 86400000);
+          const done = sitSet.has(dk(day)), isToday = day.getTime() === now.getTime(), future = day.getTime() > now.getTime();
+          if (done) count++;
+          return { label, mark: done ? '✓' : (isToday ? '·' : ''), bg: done ? 'rgba(201,162,74,0.16)' : 'rgba(20,36,28,0.04)', border: done ? 'rgba(201,162,74,0.45)' : isToday ? 'rgba(201,162,74,0.3)' : 'rgba(20,36,28,0.08)', color: done ? '#7A5E22' : '#5A5546' };
+        });
+        return { week, weekCount: count };
+      })(),
+      meditations: [
+        { title: 'Root to Crown Awakening', description: 'All seven chakras · resumes at 8:40', duration: '20 min' },
+        { title: 'Breath of Stillness', description: 'Gentle breath awareness', duration: '12 min' },
+        { title: 'Silence Immersion', description: 'Unguided with soft bells', duration: '30 min' },
+      ],
+      noUpcoming: !eventDefs.some(e => new Date(e.ends).getTime() >= Date.now()),
+      events: eventDefs
+        .map((e) => ({ ...e, past: new Date(e.ends).getTime() < Date.now() }))
+        .sort((a, b) => (a.past === b.past ? new Date(a.ends) - new Date(b.ends) : a.past ? 1 : -1))
+        .map((e) => {
+        const key = e.month + '-' + e.day + '-' + e.title;
+        const reg = !!s.registered[key];
+        if (e.past) {
+          return { ...e, upcoming: false,
+            toggle: () => {}, btnLabel: 'Complete',
+            btnBg: 'transparent', btnBorder: 'rgba(138,111,52,0.25)', btnColor: '#5A5546',
+            dateBg: '#FFFDF8', dateBorder: 'rgba(20,36,28,0.08)',
+            dateColor: '#1B3328', monthColor: '#5A5546', titleColor: '#1B3328', metaColor: '#5A5546', btnCursor: 'default',
+          };
+        }
+        return { ...e, upcoming: true,
+          toggle: () => this.toggleEventRegistration(key),
+          btnLabel: reg ? '✓ Going' : 'I\u2019ll be there',
+          btnBg: reg ? 'rgba(201,162,74,0.16)' : 'transparent',
+          btnBorder: reg ? 'rgba(201,162,74,0.5)' : 'rgba(138,111,52,0.32)',
+          btnColor: reg ? '#7A5E22' : '#1B3328',
+          dateBg: 'rgba(201,162,74,0.1)', dateBorder: 'rgba(201,162,74,0.3)',
+          dateColor: '#7A5E22', monthColor: '#7A5E22', titleColor: '#F3EAD3', metaColor: '#2E3A33', btnCursor: 'pointer',
+        };
+      }),
+      journalDraft: s.journalDraft,
+      journalEmpty: !s.journalDraft.trim(),
+      journalHint: s.journalDraft.trim() ? '' : 'Write a line or two, then save.',
+      journalBtnBg: s.journalDraft.trim() ? 'linear-gradient(135deg, #E8CF83, #C9A24A 55%, #A8853A)' : 'rgba(20,36,28,0.06)',
+      journalBtnColor: s.journalDraft.trim() ? '#14241C' : '#5A5546',
+      journalBtnCursor: s.journalDraft.trim() ? 'pointer' : 'not-allowed',
+      onJournalInput: (e) => this.setState({ journalDraft: e.target.value }),
+      saveJournal: () => { const text = s.journalDraft.trim(); if (text) this.addJournalEntry(text); },
+      saveDoneJournal: () => {
+        const text = s.journalDraft.trim();
+        if (text) this.addJournalEntry(text);
+        this.setState({ doneOpen: false });
+      },
+      journalEntries: s.journalEntries,
+      chatOpen: s.chatOpen,
+      chatClosed: !s.chatOpen,
+      toggleChat: () => this.setState(st => ({ chatOpen: !st.chatOpen, nudged: true })),
+      pickRoleMember: () => this.setState({ suRole: 'member' }),
+      pickRoleVolunteer: () => this.setState({ suRole: 'volunteer' }),
+      roleMemberBg: s.suRole === 'member' ? 'rgba(201,162,74,0.18)' : 'rgba(20,36,28,0.05)',
+      roleMemberBorder: s.suRole === 'member' ? 'rgba(201,162,74,0.6)' : 'rgba(255,255,255,0.15)',
+      roleMemberColor: s.suRole === 'member' ? '#7A5E22' : '#1B3328',
+      roleVolBg: s.suRole === 'volunteer' ? 'rgba(201,162,74,0.18)' : 'rgba(20,36,28,0.05)',
+      roleVolBorder: s.suRole === 'volunteer' ? 'rgba(201,162,74,0.6)' : 'rgba(255,255,255,0.15)',
+      roleVolColor: s.suRole === 'volunteer' ? '#7A5E22' : '#1B3328',
+      syncLabel: (s.syncState === 'ok' ? '⟳ ' : s.syncState === 'busy' ? '◌ ' : '⚠ ') + (s.syncNote || 'Sync history'),
+      syncColor: s.syncState === 'ok' ? '#D8D2C4' : s.syncState === 'busy' ? '#D8D2C4' : '#E8CF83',
+      syncNow: () => this.cloudPull(this.session()),
+      donateOpen: s.donateOpen,
+      openDonate: () => this.setState({ donateOpen: true, donStatus: '' }),
+      closeDonate: () => this.setState({ donateOpen: false }),
+      donPresets: [500, 1000, 2500].map(a => ({
+        label: a.toLocaleString('en-IN'),
+        pick: () => this.setState({ donAmount: a, donCustom: '' }),
+        bg: s.donAmount === a && !s.donCustom ? 'rgba(201,162,74,0.18)' : 'rgba(20,36,28,0.05)',
+        border: s.donAmount === a && !s.donCustom ? 'rgba(201,162,74,0.6)' : 'rgba(255,255,255,0.15)',
+        color: s.donAmount === a && !s.donCustom ? '#7A5E22' : '#14241C',
+      })),
+      donCustom: s.donCustom,
+      onDonCustom: (e) => this.setState({ donCustom: e.target.value }),
+      submitDonate: () => this.submitDonate(),
+      donOpacity: s.donBusy ? 0.6 : 1,
+      donButtonLabel: s.donBusy ? 'Opening Stripe…' : 'Donate securely with Stripe',
+      donHasStatus: !!s.donStatus,
+      donStatus: s.donStatus,
+      donStatusColor: s.donOk ? '#2F6B45' : '#e0a3a3',
+      becomeVolunteer: () => { window.location.href = '/volunteer'; },
+      volLabel: s.volState === 'done' ? 'You are a volunteer ✓' : 'Volunteer with us →',
+      suName: s.suName, suEmail: s.suEmail, suHoney: s.suHoney,
+      onSuName: (e) => this.setState({ suName: e.target.value }),
+      onSuEmail: (e) => this.setState({ suEmail: e.target.value }),
+      onSuHoney: (e) => this.setState({ suHoney: e.target.value }),
+      onSuKey: (e) => { if (e.key === 'Enter') this.submitSignup(); },
+      submitSignup: () => this.submitSignup(),
+      suBusy: s.suBusy,
+      suOpacity: s.suBusy ? 0.6 : 1,
+      suButtonLabel: s.suBusy ? 'Joining…' : 'Join free',
+      suHasStatus: !!s.suStatus,
+      suStatus: s.suStatus,
+      suStatusColor: s.suOk ? '#2F6B45' : '#e0a3a3',
+      chatInput: s.chatInput,
+      onChatInput: (e) => this.setState({ chatInput: e.target.value }),
+      onChatKey: (e) => { if (e.key === 'Enter') this.sendChat(); },
+      sendChat: () => this.sendChat(),
+      chatMessages: s.chatMessages.map(m => ({
+        text: m.text,
+        align: m.from === 'user' ? 'flex-end' : 'flex-start',
+        bg: m.from === 'user' ? 'linear-gradient(135deg, #E8CF83, #C9A24A 55%, #A8853A)' : 'rgba(20,36,28,0.06)',
+        color: m.from === 'user' ? '#14241C' : '#14241C',
+      })),
+      chatChips: ['How do I meditate?', 'When is the next session?', 'What is kundalini?', 'How is my streak?'].map(label => ({ label, pick: () => this.sendChat(label) })),
+      startSession: () => this.startSit(),
+      openLiveSheet: () => this.setState({ joinOpen: true }),
+      endSession: () => { this.pickSound('off'); this.endSit(); },
+      sessPaused: !!s.sessPaused,
+      pauseLabel: s.sessPaused ? '▶  Resume' : '❙❙  Pause',
+      togglePause: () => this.setState(st => ({ sessPaused: !st.sessPaused }), () => {
+        const p = this.state.sessPaused;
+        if (this._el) { try { p ? this._el.pause() : this._el.play(); } catch (e) {} }
+        if (p) clearTimeout(this.breathT); else this.breathe();
+      }),
+      sessionOpen: s.sessionOpen,
+      breathScale: s.breathPhase === 'in' ? 1.16 : 0.8,
+      breathSecs: s.breathPhase === 'in' ? 4 : 6,
+      breathLabel: s.sessPaused ? 'Held' : (s.goalHit ? 'Your sit is complete.' : (s.breathPhase === 'in' ? 'Breathe in…' : 'Let go…')),
+      goalHit: !!s.goalHit,
+      goalText: s.goalHit ? 'goal ' + s.sessGoal + ' min · reached' : 'goal ' + String(s.sessGoal).padStart(2, '0') + ':00',
+      goalColor: s.goalHit ? '#2F6B45' : '#1B3328',
+      goalDoneChip: s.sessGoal + ' minutes complete',
+      ringColor: s.goalHit ? 'rgba(47,107,69,0.8)' : 'rgba(201,162,74,0.6)',
+      guidance: s.goalHit && !s.sessPaused ? 'The bell has sounded. Sit on as long as you like, or close the sit below.' : [
+        'Settle into your seat — let the body be still.',
+        'Rest your attention where the breath touches the nostrils.',
+        'Thoughts will come. Watch them pass like clouds.',
+        'There is nothing to achieve. Only this breath.',
+        'If the mind wanders, gently return — that is the practice.',
+        'Sink beneath the breath, into the silence that holds it.',
+      ].map((g, i) => (s.sessPaused && i === 5) ? 'Your timer is held. Step away — the minutes are safe.' : g)[s.sessPaused ? 5 : Math.floor(s.sessionSecs / 45) % 6],
+      progOffset: Math.round(955 * (1 - Math.min(s.sessionSecs / (s.sessGoal * 60), 1))),
+      goalClock: String(s.sessGoal).padStart(2, '0') + ':00',
+      goalChips: [10, 15, 20, 30, 45, 60].map(m => ({
+        label: String(m), pick: () => this.setGoal(m),
+        border: m === s.sessGoal ? 'rgba(201,162,74,0.7)' : 'rgba(138,111,52,0.28)',
+        bg: m === s.sessGoal ? 'rgba(201,162,74,0.18)' : 'rgba(20,36,28,0.04)',
+        color: m === s.sessGoal ? '#F3EAD3' : '#2E3A33',
+        weight: m === s.sessGoal ? 600 : 400,
+      })),
+      sndPlaying: !!s.sndPlaying,
+      sndIdle: !s.sndPlaying,
+      sndName: (this.soundList().find(x => x.key === s.sndKey) || { label: 'Pure silence' }).label,
+      sndStatus: s.sndLoading ? 'Preparing…' : (s.sndPlaying ? 'Now sounding' : 'Sound · tap to listen'),
+      sndTitle: s.sndPlaying ? 'Pause the sound' : 'Play the sound',
+      sndBorder: s.sndPlaying ? 'rgba(201,162,74,0.7)' : 'rgba(255,255,255,0.16)',
+      sndBg: s.sndPlaying ? 'rgba(201,162,74,0.13)' : 'rgba(20,36,28,0.04)',
+      sndRingAnim: s.sndPlaying ? 'sndRing 2.6s ease-out infinite' : 'none',
+      sndVolPct: Math.round(s.sndVol * 100),
+      onSndVol: (e) => this.setVolume(parseInt(e.target.value, 10) / 100),
+      toggleSound: () => this.pickSound(s.sndPlaying ? 'off' : (s.sndKey !== 'off' ? s.sndKey : 'om')),
+      soundChips: this.soundList().map(o => {
+        const on = o.key === s.sndKey;
+        return { label: o.label, glyph: o.glyph, pick: () => this.pickSound(o.key),
+          border: on ? 'rgba(201,162,74,0.75)' : 'rgba(138,111,52,0.28)',
+          bg: on ? 'rgba(201,162,74,0.16)' : '#FFFDF8',
+          color: on ? '#14241C' : '#1B3328' };
+      }),
+      doneOpen: !!s.doneOpen,
+      doneMins: s.doneMins || '1 minute',
+      closeDone: () => this.setState({ doneOpen: false }),
+      sessionClock: mins + ':' + secs,
+    };
+  }
+}
+</script>
+</body>
+</html>
