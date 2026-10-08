@@ -1,0 +1,173 @@
+/** Copy for the Ask flow — from design_handoff_ask_support (Ask.dc.html → T, Member Flow.dc.html → ASK_T). */
+
+/** Public /ask page: page languages, with the Speak-in voice locale each one preselects. */
+export const PAGE_LANGS = [
+  { code: "en", label: "English", voice: "en-IN" },
+  { code: "te", label: "తెలుగు", voice: "te-IN" },
+  { code: "kn", label: "ಕನ್ನಡ", voice: "kn-IN" },
+];
+
+export const VOICE_LANGS = [
+  { code: "en-IN", label: "English" },
+  { code: "te-IN", label: "తెలుగు" },
+  { code: "kn-IN", label: "ಕನ್ನಡ" },
+  { code: "hi-IN", label: "हिन्दी" },
+  { code: "ta-IN", label: "தமிழ்" },
+  { code: "ml-IN", label: "മലയാളം" },
+  { code: "mr-IN", label: "मराठी" },
+];
+
+/** `{primary}` is replaced with the published support number. */
+export const ASK_PAGE_T = {
+  en: {
+    title: "Ask a question",
+    intro:
+      "No login needed. Type your question, or press the mic and speak. Then press Send — WhatsApp opens with your message ready. Our support team will reply there.",
+    step1: "1. Your question",
+    step2: "2. Send it",
+    speakIn: "Speak in:",
+    signedInAs: "Signed in as",
+    ackPromise: "you will get a confirmation email.",
+    ackSending: "Sending a confirmation email to",
+    ackSent: "Confirmation sent to",
+    hint: "Type here, or press the mic and speak.",
+    mic: "Speak your question",
+    micStop: "Stop · listening…",
+    sendBtn: "Send on WhatsApp",
+    number: "Goes to our support team on WhatsApp · Call or message: {primary}",
+    qrTitle: "Share this page",
+    qrBody: "Anyone can scan this code to ask a question — no account needed.",
+    qrPoster: "Print a QR poster",
+    qrZoom: "Zoom slide",
+    footnote: "Our volunteers are seekers, not doctors. If something is urgent, see a doctor first.",
+    empty: "Please write or speak your question first.",
+    opening: "WhatsApp is opening. Press send there.",
+    noVoice: "Voice typing works best in Chrome on a phone.",
+    voiceErr: "Could not hear you. Please try again or type.",
+  },
+  te: {
+    title: "ప్రశ్న అడగండి",
+    intro:
+      'లాగిన్ అవసరం లేదు. మీ ప్రశ్న టైప్ చేయండి, లేదా మైక్ నొక్కి మాట్లాడండి. తర్వాత "పంపండి" నొక్కండి — WhatsApp తెరుచుకుంటుంది, మీ సందేశం సిద్ధంగా ఉంటుంది. మా బృందం అక్కడే జవాబు ఇస్తుంది.',
+    step1: "1. మీ ప్రశ్న",
+    step2: "2. పంపండి",
+    speakIn: "ఈ భాషలో మాట్లాడండి:",
+    signedInAs: "లాగిన్:",
+    ackPromise: "మీకు ధృవీకరణ ఇమెయిల్ వస్తుంది.",
+    ackSending: "ధృవీకరణ ఇమెయిల్ ఇక్కడికి పంపబడుతుంది:",
+    ackSent: "ధృవీకరణ ఇమెయిల్ పంపబడింది:",
+    hint: "ఇక్కడ టైప్ చేయండి, లేదా మైక్ నొక్కి మాట్లాడండి.",
+    mic: "మాట్లాడి ప్రశ్న చెప్పండి",
+    micStop: "ఆపండి · వింటోంది…",
+    sendBtn: "WhatsApp లో పంపండి",
+    number: "మా సహాయ బృందానికి WhatsApp లో వెళ్తుంది · కాల్ / మెసేజ్: {primary}",
+    qrTitle: "ఈ పేజీని పంచుకోండి",
+    qrBody: "ఎవరైనా ఈ కోడ్ స్కాన్ చేసి ప్రశ్న అడగవచ్చు — ఖాతా అవసరం లేదు.",
+    qrPoster: "QR పోస్టర్ ప్రింట్ చేయండి",
+    qrZoom: "Zoom slide",
+    footnote: "మా స్వచ్ఛంద సేవకులు సాధకులు, వైద్యులు కాదు. అత్యవసరమైతే ముందుగా వైద్యుడిని కలవండి.",
+    empty: "ముందుగా మీ ప్రశ్న రాయండి లేదా చెప్పండి.",
+    opening: "WhatsApp తెరుచుకుంటోంది. అక్కడ పంపండి.",
+    noVoice: "వాయిస్ టైపింగ్ ఫోన్‌లో Chrome లో బాగా పనిచేస్తుంది.",
+    voiceErr: "వినిపించలేదు. మళ్ళీ ప్రయత్నించండి లేదా టైప్ చేయండి.",
+  },
+  kn: {
+    title: "ಪ್ರಶ್ನೆ ಕೇಳಿ",
+    intro:
+      'ಲಾಗಿನ್ ಅಗತ್ಯವಿಲ್ಲ. ನಿಮ್ಮ ಪ್ರಶ್ನೆಯನ್ನು ಟೈಪ್ ಮಾಡಿ, ಅಥವಾ ಮೈಕ್ ಒತ್ತಿ ಮಾತನಾಡಿ. ನಂತರ "ಕಳುಹಿಸಿ" ಒತ್ತಿ — WhatsApp ತೆರೆಯುತ್ತದೆ, ನಿಮ್ಮ ಸಂದೇಶ ಸಿದ್ಧವಾಗಿರುತ್ತದೆ. ನಮ್ಮ ತಂಡ ಅಲ್ಲಿಯೇ ಉತ್ತರಿಸುತ್ತದೆ.',
+    step1: "1. ನಿಮ್ಮ ಪ್ರಶ್ನೆ",
+    step2: "2. ಕಳುಹಿಸಿ",
+    speakIn: "ಈ ಭಾಷೆಯಲ್ಲಿ ಮಾತನಾಡಿ:",
+    signedInAs: "ಲಾಗಿನ್:",
+    ackPromise: "ನಿಮಗೆ ದೃಢೀಕರಣ ಇಮೇಲ್ ಬರುತ್ತದೆ.",
+    ackSending: "ದೃಢೀಕರಣ ಇಮೇಲ್ ಇಲ್ಲಿಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ:",
+    ackSent: "ದೃಢೀಕರಣ ಇಮೇಲ್ ಕಳುಹಿಸಲಾಗಿದೆ:",
+    hint: "ಇಲ್ಲಿ ಟೈಪ್ ಮಾಡಿ, ಅಥವಾ ಮೈಕ್ ಒತ್ತಿ ಮಾತನಾಡಿ.",
+    mic: "ಮಾತನಾಡಿ ಪ್ರಶ್ನೆ ಹೇಳಿ",
+    micStop: "ನಿಲ್ಲಿಸಿ · ಕೇಳುತ್ತಿದೆ…",
+    sendBtn: "WhatsApp ನಲ್ಲಿ ಕಳುಹಿಸಿ",
+    number: "ನಮ್ಮ ಸಹಾಯ ತಂಡಕ್ಕೆ WhatsApp ನಲ್ಲಿ ಹೋಗುತ್ತದೆ · ಕರೆ / ಸಂದೇಶ: {primary}",
+    qrTitle: "ಈ ಪುಟವನ್ನು ಹಂಚಿಕೊಳ್ಳಿ",
+    qrBody: "ಯಾರಾದರೂ ಈ ಕೋಡ್ ಸ್ಕ್ಯಾನ್ ಮಾಡಿ ಪ್ರಶ್ನೆ ಕೇಳಬಹುದು — ಖಾತೆ ಅಗತ್ಯವಿಲ್ಲ.",
+    qrPoster: "QR ಪೋಸ್ಟರ್ ಮುದ್ರಿಸಿ",
+    qrZoom: "Zoom slide",
+    footnote: "ನಮ್ಮ ಸ್ವಯಂಸೇವಕರು ಸಾಧಕರು, ವೈದ್ಯರಲ್ಲ. ತುರ್ತು ಇದ್ದರೆ ಮೊದಲು ವೈದ್ಯರನ್ನು ಭೇಟಿಯಾಗಿ.",
+    empty: "ಮೊದಲು ನಿಮ್ಮ ಪ್ರಶ್ನೆ ಬರೆಯಿರಿ ಅಥವಾ ಹೇಳಿ.",
+    opening: "WhatsApp ತೆರೆಯುತ್ತಿದೆ. ಅಲ್ಲಿ ಕಳುಹಿಸಿ.",
+    noVoice: "ಧ್ವನಿ ಟೈಪಿಂಗ್ ಫೋನ್‌ನಲ್ಲಿ Chrome ನಲ್ಲಿ ಚೆನ್ನಾಗಿ ಕೆಲಸ ಮಾಡುತ್ತದೆ.",
+    voiceErr: "ಕೇಳಿಸಲಿಲ್ಲ. ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ ಅಥವಾ ಟೈಪ್ ಮಾಡಿ.",
+  },
+};
+
+/** Member dashboard "Ask a question" tab (EN / TE toggle). Topic `category` maps onto ContactSubmission::CATEGORIES. */
+export const ASK_TOPICS = [
+  { key: "health", category: "health" },
+  { key: "kundalini", category: "kundalini" },
+  { key: "practice", category: "meditation" },
+  { key: "life", category: "general" },
+  { key: "other", category: "general" },
+];
+
+export const MEMBER_ASK_T = {
+  en: {
+    title: "Ask a question",
+    sub: "Any doubt about your practice? Ask a person.",
+    langBtn: "తెలుగులో చూడండి",
+    intro:
+      'Write your question in simple words. When you press "Send", WhatsApp opens with your question already typed. Just press send there. A volunteer will reply to you soon.',
+    step1: "1. What is your question about?",
+    step2: "2. Write your question here",
+    step3: "3. Send it",
+    sendBtn: "Send my question",
+    number: "Goes to our support team on WhatsApp · Call: {primary}",
+    ackSending: "Sending a confirmation email to",
+    ackSent: "Confirmation sent to",
+    footnote: "Volunteers are seekers, not doctors. If something is urgent, see a doctor first.",
+    qrLink: "Ask without login — open the QR / voice page →",
+    topics: {
+      health: "Health & food",
+      kundalini: "Feelings in meditation",
+      practice: "Trouble sitting",
+      life: "Money & daily life",
+      other: "Something else",
+    },
+    hint: "Type your question here. Please also write your phone number.",
+    openNote: "WhatsApp is opening. Press send there.",
+    emptyNote: "Please write your question first.",
+  },
+  te: {
+    title: "ప్రశ్న అడగండి",
+    sub: "మీ సాధనలో సందేహం ఉందా? మనిషిని అడగండి.",
+    langBtn: "English",
+    intro:
+      'సాధారణ మాటల్లో మీ ప్రశ్న రాయండి. "పంపండి" నొక్కగానే WhatsApp తెరుచుకుంటుంది, మీ ప్రశ్న అప్పటికే టైప్ అయి ఉంటుంది. అక్కడ పంపండి చాలు. మా స్వచ్ఛంద సేవకుడు త్వరలో జవాబు ఇస్తారు.',
+    step1: "1. మీ ప్రశ్న దేని గురించి?",
+    step2: "2. మీ ప్రశ్న ఇక్కడ రాయండి",
+    step3: "3. పంపండి",
+    sendBtn: "నా ప్రశ్న పంపండి",
+    number: "సహాయ బృందానికి WhatsApp లో వెళ్తుంది · కాల్: {primary}",
+    ackSending: "మీ ప్రశ్న అందింది అని ధృవీకరణ ఇమెయిల్ ఇక్కడికి పంపబడుతుంది:",
+    ackSent: "ధృవీకరణ ఇమెయిల్ పంపబడింది:",
+    footnote: "స్వచ్ఛంద సేవకులు సాధకులు, వైద్యులు కాదు. అత్యవసరమైతే ముందుగా వైద్యుడిని సంప్రదించండి.",
+    qrLink: "లాగిన్ లేకుండా అడగాలా? QR / వాయిస్ పేజీ తెరవండి →",
+    topics: {
+      health: "ఆరోగ్యం & ఆహారం",
+      kundalini: "ధ్యానంలో అనుభవాలు",
+      practice: "కూర్చోవడంలో ఇబ్బంది",
+      life: "డబ్బు & రోజువారీ జీవితం",
+      other: "వేరే ఏదైనా",
+    },
+    hint: "మీ ప్రశ్న ఇక్కడ రాయండి. మీ ఫోన్ నంబర్ కూడా రాయండి.",
+    openNote: 'WhatsApp తెరుచుకుంటోంది. అక్కడ "పంపండి" నొక్కండి.',
+    emptyNote: "ముందుగా మీ ప్రశ్న రాయండి.",
+  },
+};
+
+/** Poster / Zoom slide. */
+export const QR_PROMO = {
+  eyebrow: "Golden Age Wisdom",
+  titleLines: ["Have a question?", "Scan and ask."],
+  posterBody: "Type it or just speak it. It goes straight to our support team on WhatsApp. No account, no sign-up.",
+  zoomBody: "Type it or speak it. It goes straight to our support team on WhatsApp. No account needed.",
+  regional: ["ప్రశ్న ఉందా? స్కాన్ చేసి అడగండి.", "ಪ್ರಶ್ನೆ ಇದೆಯೇ? ಸ್ಕ್ಯಾನ್ ಮಾಡಿ ಕೇಳಿ."],
+};

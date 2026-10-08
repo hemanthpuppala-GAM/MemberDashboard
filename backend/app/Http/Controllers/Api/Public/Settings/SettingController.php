@@ -35,6 +35,9 @@ class SettingController extends Controller
         // Computed, not the raw list — the allowlist itself stays admin-only.
         $data['maintenance.bypass'] = $this->ipBypassesMaintenance($request, $flat['maintenance.allowed_ips'] ?? '');
 
+        $data['support.primary'] = preg_replace('/\D/', '', (string) config('services.support.primary'));
+        $data['support.web'] = preg_replace('/\D/', '', (string) config('services.support.web'));
+
         return response()->json($data);
     }
 

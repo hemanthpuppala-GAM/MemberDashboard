@@ -5,6 +5,9 @@ import RegisterPage from "./pages/RegisterPage";
 import AuthCallbackPage from "./pages/AuthCallbackPage";
 import AdminApp from "./admin/AdminApp";
 import UserApp from "./user/UserApp";
+import AskPage from "./pages/AskPage";
+import AskPosterPage from "./pages/AskPosterPage";
+import AskZoomPage from "./pages/AskZoomPage";
 import MaintenanceGate from "./components/MaintenanceGate";
 import { MemberAuthProvider, useMemberAuth } from "./auth/MemberAuthContext";
 import { LanguageProvider } from "./lib/LanguageContext";
@@ -38,6 +41,11 @@ function App() {
             <Route path="/join" element={<JoinPage />} />
             <Route path="/register/:slug" element={<RegisterPage />} />
             <Route path="/auth/callback" element={<AuthCallbackPage />} />
+
+            {/* Ask a question — QR target, no login. Poster / Zoom slide carry the QR. */}
+            <Route path="/ask" element={<AskPage />} />
+            <Route path="/ask/poster" element={<AskPosterPage />} />
+            <Route path="/ask/zoom" element={<AskZoomPage />} />
 
             <Route
               path="/dashboard/*"

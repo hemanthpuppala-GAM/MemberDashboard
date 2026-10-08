@@ -14,7 +14,7 @@ class ContactSubmission extends Model
 
     public const CATEGORIES = ['meditation', 'kundalini', 'health', 'general'];
 
-    public const SOURCES = ['website', 'member_portal'];
+    public const SOURCES = ['website', 'member_portal', 'qr_web'];
 
     public function assignee(): BelongsTo
     {
