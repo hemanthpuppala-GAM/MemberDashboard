@@ -2,7 +2,7 @@ import {
   LayoutDashboard, FileText, Image, Inbox, UsersRound, UserCog, ShieldCheck,
   Megaphone, Radio, QrCode, BarChart3, Globe, Settings, Files, Phone, Landmark,
   Music2, MessageSquareQuote, HeartHandshake, ListChecks, CalendarClock, Timer,
-  ClipboardList,
+  ClipboardList, PanelsTopLeft,
 } from "lucide-react";
 
 /**
@@ -18,6 +18,7 @@ export const NAV = [
   {
     type: "group", key: "cms", label: "CMS", icon: FileText,
     items: [
+      { to: "/admin/content", label: "Site content", icon: PanelsTopLeft, permission: "cms.view" },
       { to: "/admin/cms/pages", label: "Pages", icon: Files, permission: "cms.view" },
       { to: "/admin/cms/media", label: "Media", icon: Image, permission: "cms.view" },
       { to: "/admin/cms/music", label: "Music", icon: Music2, permission: "music.view" },
@@ -61,6 +62,8 @@ export const NAV = [
 
 export const BREADCRUMB_RULES = [
   { pattern: /^\/admin\/?$/, crumbs: () => ["Dashboard"] },
+  { pattern: /^\/admin\/content\/([^/]+)\/?$/, crumbs: (m) => ["CMS", "Site content", m[1].charAt(0).toUpperCase() + m[1].slice(1)] },
+  { pattern: /^\/admin\/content\/?$/, crumbs: () => ["CMS", "Site content"] },
   { pattern: /^\/admin\/cms\/pages\/new\/?$/, crumbs: () => ["CMS", "Pages", "New page"] },
   { pattern: /^\/admin\/cms\/pages\/([^/]+)\/sections\/([^/]+)\/?$/, crumbs: (m) => ["CMS", "Pages", m[1], "Section"] },
   { pattern: /^\/admin\/cms\/pages\/([^/]+)\/?$/, crumbs: (m) => ["CMS", "Pages", m[1]] },

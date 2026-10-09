@@ -211,7 +211,7 @@ function ListEditor({ id, field, value, onChange, ctx }) {
 
 /* ---------- dispatcher ---------- */
 
-export function isFullWidth(field) {
+function isFullWidth(field) {
   return field.wide || ["list", "heading", "object", "image", "pairs"].includes(field.type);
 }
 
