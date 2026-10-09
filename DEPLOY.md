@@ -137,6 +137,14 @@ Queue: with `QUEUE_CONNECTION=database`, add a cPanel **Cron Job** every minute:
 `cd ~/public_html/goldenagewisdom.org/backend && php artisan schedule:run >> /dev/null 2>&1`
 and `php artisan queue:work --stop-when-empty` on the same schedule.
 
+**Database backups.** GoDaddy keeps no automatic MySQL backups. The scheduler runs
+`php artisan db:backup` daily at 03:30 (server time): a gzip'd `mysqldump` into
+`backend/storage/app/backups/`, newest 14 kept. It only runs if the `schedule:run` cron above
+exists — add one per backend (staging: `cd ~/public_html/goldenagewisdom.org/staging/backend && php artisan schedule:run >> /dev/null 2>&1`).
+`storage/` is not web-reachable. Run once by hand to test: `php artisan db:backup`.
+The nightly *Backup live site* workflow in `goldenagewisdom-redesign` also copies these dumps
+off the server (encrypted). Restore: `gunzip -c <file>.sql.gz | mysql -u USER -p DBNAME`.
+
 ## 7. Smoke test after every upload
 
 Staging URL prefix: `https://goldenagewisdom.org/staging/goldenage`
