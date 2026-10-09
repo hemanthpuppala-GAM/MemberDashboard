@@ -1,21 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
 import { siteAsset } from "../siteAssets";
-import { computeSits, sitsSummary } from "./sits";
 
 const FADE = (a, b) => `linear-gradient(90deg,transparent,#000 ${a}%,#000 ${b}%,transparent)`;
-
-/** Live schedule from content.sessions, re-computed every 30s (as the design's _tick). */
-export function useSits(sessions) {
-  const [now, setNow] = useState(() => Date.now());
-  useEffect(() => {
-    const t = setInterval(() => setNow(Date.now()), 30000);
-    return () => clearInterval(t);
-  }, []);
-  return useMemo(() => {
-    const sits = computeSits(sessions, now);
-    return { sits, loop: sits.length ? sits.concat(sits) : [], ...sitsSummary(sits) };
-  }, [sessions, now]);
-}
 
 /** Desktop footer band "Meditations around the world" (#world-sits). */
 export function WorldSitsFooter({ c, s }) {
@@ -37,7 +22,7 @@ export function WorldSitsFooter({ c, s }) {
           </span>
         </div>
       </div>
-      <div style={{ flex: 1, minWidth: 0, overflow: "hidden", WebkitMaskImage: FADE(5, 95), maskImage: FADE(5, 95) }}>
+      <div className="home-marquee-wrap" style={{ flex: 1, minWidth: 0, overflow: "hidden", WebkitMaskImage: FADE(5, 95), maskImage: FADE(5, 95) }}>
         <ul className="home-marquee" style={{ listStyle: "none", margin: 0, padding: "2px 0", display: "flex", gap: 10, width: "max-content" }}>
           {s.loop.map((x, i) => (
             <li
@@ -96,7 +81,7 @@ export function PhoneSitsBand({ c, s, phone, withAnchor }) {
           <span style={{ fontSize: 11, fontWeight: 600, color: "#3A3128", whiteSpace: "nowrap" }}>{s.statusShort}</span>
         </span>
       </div>
-      <div style={{ overflow: "hidden", WebkitMaskImage: FADE(6, 94), maskImage: FADE(6, 94) }}>
+      <div className="home-marquee-wrap" style={{ overflow: "hidden", WebkitMaskImage: FADE(6, 94), maskImage: FADE(6, 94) }}>
         <div className="home-marquee" style={{ display: "flex", gap: 8, width: "max-content", padding: "0 4px", animationDuration: "40s" }}>
           {s.loop.map((x, i) => (
             <span

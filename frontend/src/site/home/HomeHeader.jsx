@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { PageLinks, MemberPill, MenuButton, useMemberBadge, GUTTER } from "../SiteChrome";
+import { PageLinks, MemberPill, MenuButton } from "../SiteChrome";
+import { useMemberBadge } from "../useMemberBadge";
+import { GUTTER } from "../sitePages";
 import { SITE_PAGES, UTILITY_LINKS } from "../sitePages";
 import { siteAsset } from "../siteAssets";
 

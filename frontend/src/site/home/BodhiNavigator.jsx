@@ -1,5 +1,5 @@
 import { siteAsset } from "../siteAssets";
-import { CHAPTER_HASHES } from "./ChaptersSheet";
+import { CHAPTER_HASHES } from "./homeData";
 
 const NUMS = ["I", "II", "III", "IV", "V", "VI"];
 /** Node centres in % of the 1277/835 frame (design: chapterNodes P[]). */
@@ -11,17 +11,6 @@ const POS = [
   [46.2, 16.8],
   [66.7, 27.5],
 ];
-
-export function chapterData(question) {
-  return [
-    { label: "Rituals", kicker: "Small rituals", title: "Feeling better begins with being present.", cta: "Open Rituals" },
-    { label: "Daily pause", kicker: "Your daily pause", title: "30 minutes. Every day. Just for you.", cta: "Open Daily pause" },
-    { label: "Nourish", kicker: "Nourish your body", title: "Eat well. Slow down. Savor life.", cta: "Open Nourish" },
-    { label: "One minute", kicker: "A moment, right here", title: "Your next breath is a new beginning.", cta: "Start a one-minute pause" },
-    { label: "Reflect", kicker: "Meet yourself with curiosity", title: question, cta: "Take a moment to reflect" },
-    { label: "New here?", kicker: "A few things to know", title: "New here? You’re welcome.", cta: "Open New here?" },
-  ];
-}
 
 /**
  * Bodhi-tree chapter navigator: six leaf-pills on the tree art. Hover / focus

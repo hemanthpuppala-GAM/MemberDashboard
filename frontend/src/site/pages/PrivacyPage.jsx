@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { useMemberBadge } from "../SiteChrome";
+import { useMemberBadge } from "../useMemberBadge";
 import { siteAsset } from "../siteAssets";
 import { OFFICIAL_EMAIL } from "../sitePages";
 import "./privacy.css";

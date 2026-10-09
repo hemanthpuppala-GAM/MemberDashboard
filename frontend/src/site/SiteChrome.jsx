@@ -1,13 +1,12 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { useMemberAuth } from "../auth/MemberAuthContext";
-import { SITE_PAGES, UTILITY_LINKS, YOUTUBE_URL } from "./sitePages";
+import { GUTTER, SITE_PAGES, UTILITY_LINKS, YOUTUBE_URL } from "./sitePages";
+import { useMemberBadge } from "./useMemberBadge";
 import { siteAsset } from "./siteAssets";
 import { useViewportWidth } from "./useViewport";
 import { useIsSiteAdmin } from "./useSiteAdmin";
 import "./site.css";
 
-export const GUTTER = "clamp(16px,5vw,72px)";
 const CAPS = { textTransform: "uppercase", whiteSpace: "nowrap" };
 
 /** Outer wrapper for every public page: fonts, cream background, scoped CSS. */
@@ -31,14 +30,6 @@ function useScrollToHash() {
     const t = setTimeout(() => document.getElementById(decodeURIComponent(hash.slice(1)))?.scrollIntoView({ behavior: "smooth", block: "start" }), 120);
     return () => clearTimeout(t);
   }, [pathname, hash]);
-}
-
-/** Signed-in member (from auth, not localStorage) → first name + initial. */
-export function useMemberBadge() {
-  const { user } = useMemberAuth();
-  const name = user?.name || user?.email || "";
-  const first = name.split(/[\s@]/)[0] || "Member";
-  return { isMember: !!user, first, initial: (first[0] || "M").toUpperCase() };
 }
 
 /** Full-width dark band above the header: Member support · Volunteer · Privacy. ≥900px only. */

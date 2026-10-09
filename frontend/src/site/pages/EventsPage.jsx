@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { SitePage, SiteHeader, Breadcrumb, SiteFooter, AdminEditLink, useMemberBadge } from "../SiteChrome";
+import { SitePage, SiteHeader, Breadcrumb, SiteFooter, AdminEditLink } from "../SiteChrome";
+import { useMemberBadge } from "../useMemberBadge";
 import { useSiteContent } from "../useSiteContent";
 import { useViewportWidth } from "../useViewport";
 import { YOUTUBE_URL } from "../sitePages";

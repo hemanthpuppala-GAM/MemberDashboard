@@ -1,25 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { siteAsset } from "../siteAssets";
+import { CHAPTER_HASHES, FAQS } from "./homeData";
 
-export const CHAPTER_HASHES = ["rituals", "daily-pause", "nourish", "one-minute", "reflect", "new-here"];
 const CHAPTER_LABELS = ["Rituals", "Daily pause", "Nourish", "One minute", "Reflect", "New here?"];
 const CHAPTER_NOW = ["Small rituals", "Daily pause", "Nourish", "One minute", "Reflect", "New here?"];
-
-export const QUESTIONS = [
-  "What makes you feel most like yourself?",
-  "What are you ready to let go of?",
-  "When did you last feel truly rested?",
-  "Who would you be without the hurry?",
-  "What restores you — and how often do you allow it?",
-];
-
-export const FAQS = [
-  { q: "Do I need meditation experience?", a: "No. Every sit is guided from the first breath. Beginners and long-time practitioners sit together." },
-  { q: "Is the daily program really free?", a: "Yes — always. There is no fee, no upsell and no membership wall. We ask for nothing but a better world." },
-  { q: "What if my mind keeps wandering?", a: "That is the practice. Noticing the wander and gently returning is the whole exercise — not a failure of it." },
-  { q: "Do I have to attend every day?", a: "Come when you can. Daily is the invitation, not a rule; 41 consecutive days is simply where most people notice the change." },
-];
 
 const RITUALS = [
   { num: "01", kicker: "Mind", hue: "#A8403F", title: "Make room for stillness", body: "Give your thoughts a little space. Meditation is a practice of returning to the moment, one breath at a time.", cta: "Try a moment of calm", ch: 3 },

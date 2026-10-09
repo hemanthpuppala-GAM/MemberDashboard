@@ -1,3 +1,5 @@
+import { useEffect, useMemo, useState } from "react";
+
 /**
  * Daily group-sit schedule maths, ported from Home Bodhi Tree v2.dc.html
  * (tzParts / windowFor / sits / countdown). Each session is a daily window in
@@ -105,4 +107,17 @@ export function sitsSummary(sits) {
     dotGlow: live.length ? "0 0 0 3px rgba(201,162,74,.25)" : "none",
     dotAnim: live.length ? "home-pulse 2.4s ease-out infinite" : "none",
   };
+}
+
+/** Live schedule from content.sessions, re-computed every 30s (as the design's _tick). */
+export function useSits(sessions) {
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    const t = setInterval(() => setNow(Date.now()), 30000);
+    return () => clearInterval(t);
+  }, []);
+  return useMemo(() => {
+    const sits = computeSits(sessions, now);
+    return { sits, loop: sits.length ? sits.concat(sits) : [], ...sitsSummary(sits) };
+  }, [sessions, now]);
 }

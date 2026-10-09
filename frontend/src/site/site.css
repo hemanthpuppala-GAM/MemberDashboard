@@ -34,6 +34,14 @@
 .gaw-site *::after {
   box-sizing: border-box;
 }
+/* The app's base layer forces h1–h3 to the old theme's ink + display font;
+   the designs let headings inherit from their section (light text on dark panels). */
+.gaw-site h1,
+.gaw-site h2,
+.gaw-site h3 {
+  color: inherit;
+  font-family: inherit;
+}
 .gaw-site a {
   color: var(--gold-text);
   text-decoration: none;

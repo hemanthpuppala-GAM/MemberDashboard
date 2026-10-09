@@ -21,3 +21,6 @@ export const EDITABLE_PAGES = ["home", "about", "mission", "meditation", "wisdom
 
 export const OFFICIAL_EMAIL = "goldenageguruteachings@gmail.com";
 export const YOUTUBE_URL = "https://www.youtube.com/@GoldenAgeGurus";
+
+/** Side gutter used by the header / utility row. */
+export const GUTTER = "clamp(16px,5vw,72px)";

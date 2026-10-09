@@ -1,5 +1,14 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import HomePage from "./pages/HomePage";
+import SiteHomePage from "./site/pages/HomePage";
+import AboutPage from "./site/pages/AboutPage";
+import MissionPage from "./site/pages/MissionPage";
+import MeditationPage from "./site/pages/MeditationPage";
+import WisdomPage from "./site/pages/WisdomPage";
+import WellnessPage from "./site/pages/WellnessPage";
+import EventsPage from "./site/pages/EventsPage";
+import VolunteerPage from "./site/pages/VolunteerPage";
+import PrivacyPage from "./site/pages/PrivacyPage";
 import JoinPage from "./pages/JoinPage";
 import RegisterPage from "./pages/RegisterPage";
 import AuthCallbackPage from "./pages/AuthCallbackPage";
@@ -56,15 +65,29 @@ function App() {
               }
             />
 
-            {/* Public site: "/" is the hub, "/:slug" a section (/wisdom, /meditation, …) or a CMS page */}
-            <Route
-              path="/"
-              element={
-                <MaintenanceGate>
-                  <HomePage />
-                </MaintenanceGate>
-              }
-            />
+            {/* Public site (design_handoff_home_bodhi_tree): Bodhi Tree home + sub-pages. */}
+            {[
+              ["/", SiteHomePage],
+              ["/about", AboutPage],
+              ["/mission", MissionPage],
+              ["/meditation", MeditationPage],
+              ["/wisdom", WisdomPage],
+              ["/wellness", WellnessPage],
+              ["/events", EventsPage],
+              ["/volunteer", VolunteerPage],
+              ["/privacy", PrivacyPage],
+            ].map(([path, Page]) => (
+              <Route
+                key={path}
+                path={path}
+                element={
+                  <MaintenanceGate>
+                    <Page />
+                  </MaintenanceGate>
+                }
+              />
+            ))}
+            {/* Older sections (/contact, /donate) and CMS pages keep the previous public layout. */}
             <Route
               path="/:slug"
               element={
