@@ -18,7 +18,7 @@ commit: 804ed3c (Ask handoff implemented by Claude Code; design mirrored)
 | /ask | Ask.dc.html | frontend/src (ask route), backend contact API |
 | Member dashboard → Ask tab | Member Flow.dc.html | frontend/src/user |
 | /ask/poster, /ask/zoom | QR Ask Poster.dc.html, QR Ask Zoom.dc.html | frontend/src |
-| / (home) | Home Bodhi Tree v2.dc.html | 🟡 not built |
-| /about … /events | About/Mission/Meditation/Wisdom/Wellness/Events.dc.html | 🟡 not built |
-| /volunteer, /privacy | Volunteer.dc.html, Privacy.dc.html | 🟡 not built |
-| /admin/content/* | Admin *.dc.html | 🟡 not built |
+| / (home) | Home Bodhi Tree v2.dc.html | ✅ frontend/src/site (admin: frontend/src/admin/pages/site) |
+| /about … /events | About/Mission/Meditation/Wisdom/Wellness/Events.dc.html | ✅ frontend/src/site (admin: frontend/src/admin/pages/site) |
+| /volunteer, /privacy | Volunteer.dc.html, Privacy.dc.html | ✅ frontend/src/site (admin: frontend/src/admin/pages/site) |
+| /admin/content/* | Admin *.dc.html | ✅ frontend/src/site (admin: frontend/src/admin/pages/site) |
