@@ -239,6 +239,21 @@
     }
   }
 
+  /* Ask flow: Manrope for Latin, Noto for the Telugu / Kannada copy (consistent on print + PNG export). */
+  .ask-font {
+    font-family: "Manrope", "Noto Sans Telugu", "Noto Sans Kannada", sans-serif;
+  }
+
+  /* Ask page mic while listening */
+  @keyframes micPulse {
+    0% {
+      box-shadow: 0 0 0 0 rgba(168, 64, 63, 0.45);
+    }
+    100% {
+      box-shadow: 0 0 0 14px rgba(168, 64, 63, 0);
+    }
+  }
+
   @keyframes marquee {
     from {
       transform: translateX(0);

@@ -1,5 +1,11 @@
 name: Build deploy zips
 
+# Push to main  -> build + auto-deploy to STAGING over FTPS.
+# Run workflow  -> choose staging or production (production is manual only).
+# Deploy steps are skipped until the FTP_SERVER / FTP_USERNAME / FTP_PASSWORD
+# repo secrets exist. Optional repo variables: FTP_ROOT (default
+# public_html/goldenagewisdom.org/), FTP_PROTOCOL (default ftps).
+
 on:
   push:
     branches: [main]
@@ -11,6 +17,15 @@ on:
         options: [staging, production]
         default: staging
 
+concurrency:
+  group: deploy-${{ github.event.inputs.target || 'staging' }}
+  cancel-in-progress: false
+
+env:
+  TARGET: ${{ github.event.inputs.target || 'staging' }}
+  FTP_SERVER: ${{ secrets.FTP_SERVER }}
+  FTP_ROOT: ${{ vars.FTP_ROOT || 'public_html/goldenagewisdom.org/' }}
+
 jobs:
   frontend:
     runs-on: ubuntu-latest
@@ -21,10 +36,9 @@ jobs:
       - name: Configure target
         working-directory: frontend
         run: |
-          TARGET="${{ github.event.inputs.target || 'staging' }}"
           if [ "$TARGET" = "production" ]; then
             echo "VITE_API_URL=https://goldenagewisdom.org/backend/api/v1" > .env.production
-            sed -i "s#base: '/staging/goldenage/'#base: '/'#" vite.config.js
+            sed -i -E "s#base: '[^']*'#base: '/'#" vite.config.js
           else
             echo "VITE_API_URL=https://goldenagewisdom.org/staging/backend/api/v1" > .env.production
           fi
@@ -39,6 +53,23 @@ jobs:
           name: frontend-${{ github.event.inputs.target || 'staging' }}
           path: frontend/dist
           include-hidden-files: true
+      - name: Resolve server folder
+        if: env.FTP_SERVER != ''
+        working-directory: frontend
+        run: |
+          # Upload to the folder the build was made for (vite `base`).
+          BASE=$(grep -oE "base: '[^']*'" vite.config.js | sed -E "s/base: '(.*)'/\1/")
+          echo "SERVER_DIR=${FTP_ROOT%/}/${BASE#/}" >> "$GITHUB_ENV"
+      - name: Deploy frontend to cPanel (${{ env.TARGET }})
+        if: env.FTP_SERVER != ''
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ${{ vars.FTP_PROTOCOL || 'ftps' }}
+          local-dir: frontend/dist/
+          server-dir: ${{ env.SERVER_DIR }}
 
   backend:
     runs-on: ubuntu-latest
@@ -56,3 +87,28 @@ jobs:
           name: backend
           path: backend
           include-hidden-files: true
+      - name: Resolve server folder
+        if: env.FTP_SERVER != ''
+        run: |
+          if [ "$TARGET" = "production" ]; then SUB=backend/; else SUB=staging/backend/; fi
+          echo "SERVER_DIR=${FTP_ROOT%/}/$SUB" >> "$GITHUB_ENV"
+      - name: Deploy backend to cPanel (${{ env.TARGET }})
+        if: env.FTP_SERVER != ''
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ${{ vars.FTP_PROTOCOL || 'ftps' }}
+          local-dir: backend/
+          server-dir: ${{ env.SERVER_DIR }}
+          # Never touch the server's .env or runtime state.
+          exclude: |
+            **/.git*
+            **/.git*/**
+            .env
+            storage/logs/**
+            storage/framework/cache/**
+            storage/framework/sessions/**
+            storage/framework/views/**
+            storage/app/**

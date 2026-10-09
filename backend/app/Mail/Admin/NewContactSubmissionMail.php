@@ -32,7 +32,11 @@ class NewContactSubmissionMail extends Mailable
             'Email' => $s->email,
             'Phone' => $s->phone,
             'Category' => $s->category,
-            'Source' => $s->source === 'member_portal' ? 'Member portal' : 'Website',
+            'Source' => match ($s->source) {
+                'member_portal' => 'Member portal',
+                'qr_web' => 'Ask page (QR / web)',
+                default => 'Website',
+            },
             'Message' => $s->message,
             'Submitted' => $s->created_at?->format('d M Y, H:i'),
         ]));

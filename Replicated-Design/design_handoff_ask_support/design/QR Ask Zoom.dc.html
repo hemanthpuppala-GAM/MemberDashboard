@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;700&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="./gaw-config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+<script src="./gaw-qr.js"></script>
+<style>
+  html, body { margin: 0; padding: 0; background: #0E1A14; }
+  body { font-family: 'Manrope', sans-serif; color: #F3EAD3; -webkit-font-smoothing: antialiased; }
+  a { color: #E8CF83; text-decoration: none; } a:hover { color: #FFFDF8; }
+</style>
+</helmet>
+
+<div style="display: flex; flex-direction: column; align-items: center; gap: 18px; padding: 24px; min-height: 100vh; box-sizing: border-box">
+  <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 10px; font-size: 13px; color: #D8D2C4">
+    <span>Zoom slide · 1920 × 1080</span>
+    <button onClick="{{ downloadPng }}" style="min-height: 40px; padding: 8px 18px; border-radius: 999px; border: 1px solid rgba(232,207,131,0.5); background: none; color: #E8CF83; font-family: 'Manrope', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer">{{ dlLabel }}</button>
+    <a href="QR Ask Poster.dc.html" style="font-size: 13px; text-decoration: underline; text-underline-offset: 3px">Print poster (Letter) →</a>
+  </div>
+
+  <div style="width: 100%; max-width: 1920px; height: {{ wrapH }}; position: relative; overflow: hidden">
+  <div id="zoom-slide" style="width: 1920px; height: 1080px; transform: scale({{ scale }}); transform-origin: top left; box-sizing: border-box; padding: 96px 120px; background: #14241C; display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 96px; position: relative; overflow: hidden">
+    <div style="position: absolute; inset: 0; background: radial-gradient(ellipse at 30% 50%, rgba(201,162,74,0.12), transparent 60%)"></div>
+    <div style="position: relative; display: flex; flex-direction: column; gap: 34px">
+      <div style="display: flex; align-items: center; gap: 22px">
+        <img src="assets/logo-coin-tight.png" alt="Golden Age Wisdom" style="width: 112px; height: 112px; border-radius: 50%; box-shadow: 0 10px 30px rgba(0,0,0,0.5)">
+        <span style="font-size: 20px; letter-spacing: 0.3em; text-transform: uppercase; color: #E8CF83">Golden Age Wisdom</span>
+      </div>
+      <h1 style="font-family: 'Cormorant Garamond', serif; font-weight: 700; font-size: 104px; line-height: 1; margin: 0; color: #FFFDF8">Have a question?<br>Scan and ask.</h1>
+      <p style="margin: 0; max-width: 760px; font-size: 30px; line-height: 1.5; color: #D8D2C4">Type it or speak it. It goes straight to our support team on WhatsApp. No account needed.</p>
+      <div style="display: flex; flex-direction: column; gap: 6px; font-size: 30px; line-height: 1.3; color: #E8CF83">
+        <span>ప్రశ్న ఉందా? స్కాన్ చేసి అడగండి.</span>
+        <span>ಪ್ರಶ್ನೆ ಇದೆಯೇ? ಸ್ಕ್ಯಾನ್ ಮಾಡಿ ಕೇಳಿ.</span>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 4px; font-size: 24px; color: #D8D2C4">
+        <span>goldenagewisdom.org/ask</span>
+        <span>Call or WhatsApp +91 7396 112 111 · +91 7396 119 111</span>
+      </div>
+    </div>
+    <div style="position: relative; padding: 32px; border-radius: 48px; background: #FFFDF8; border: 6px solid #B8923E; box-shadow: 0 0 0 18px rgba(232,207,131,0.1), 0 30px 70px rgba(0,0,0,0.5)">
+      <img src="{{ qrSrc }}" alt="Scan to ask Golden Age Wisdom" style="width: 640px; height: 640px; display: block; border-radius: 24px">
+    </div>
+  </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { qrSrc: '', dl: '', scale: 1 };
+  fit = () => { const w = Math.min(1920, (document.documentElement.clientWidth || 1920) - 48); this.setState({ scale: Math.max(0.1, w / 1920) }); };
+  URL = 'https://goldenagewisdom.org/ask';
+  componentDidMount() { this.buildQR(0); this.fit(); window.addEventListener('resize', this.fit); }
+  componentWillUnmount() { window.removeEventListener('resize', this.fit); }
+  buildQR(tries) {
+    if (!window.gawBrandedQR || !window.qrcode) { if (tries < 20) setTimeout(() => this.buildQR(tries + 1), 300); return; }
+    window.gawBrandedQR(this.URL, 1280, 'assets/logo-coin-tight.png', src => this.setState({ qrSrc: src }));
+  }
+  async downloadPng() {
+    const el = document.getElementById('zoom-slide');
+    if (!el) return;
+    this.setState({ dl: 'Preparing…' });
+    try {
+      if (!window.htmlToImage) await new Promise((ok, err) => { const s = document.createElement('script'); s.src = 'https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.min.js'; s.onload = ok; s.onerror = err; document.head.appendChild(s); });
+      const prev = el.style.transform; el.style.transform = 'none';
+      let url;
+      try { url = await window.htmlToImage.toPng(el, { pixelRatio: 1, width: 1920, height: 1080, cacheBust: true }); }
+      finally { el.style.transform = prev; }
+      const a = document.createElement('a'); a.href = url; a.download = 'golden-age-ask-qr-zoom-1920x1080.png'; a.click();
+      this.setState({ dl: '' });
+    } catch (e) { this.setState({ dl: 'Download failed — use a screenshot instead' }); }
+  }
+  renderVals() {
+    return {
+      qrSrc: this.state.qrSrc || 'https://api.qrserver.com/v1/create-qr-code/?size=640x640&color=14241c&bgcolor=fffdf8&data=' + encodeURIComponent(this.URL),
+      downloadPng: () => this.downloadPng(),
+      scale: this.state.scale, wrapH: Math.round(1080 * this.state.scale) + 'px',
+      dlLabel: this.state.dl || 'Download PNG for Zoom'
+    };
+  }
+}
+</script>
+</body>
+</html>

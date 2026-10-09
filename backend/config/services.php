@@ -62,6 +62,14 @@ return [
         'redirect' => env('FACEBOOK_REDIRECT_URI'),
     ],
 
+    // Ask-a-question routing. primary = published call/message line; web = receives every
+    // website/QR WhatsApp send. Digits only (E.164 without '+').
+    'support' => [
+        'primary' => env('SUPPORT_PRIMARY', '917396112111'),
+        'web' => env('SUPPORT_WEB', '917396119111'),
+        'cc_email' => env('SUPPORT_CC_EMAIL', 'info@goldenagewisdom.org'),
+    ],
+
     'apple' => [
         'client_id' => env('APPLE_CLIENT_ID'),
         'client_secret' => env('APPLE_CLIENT_SECRET'),

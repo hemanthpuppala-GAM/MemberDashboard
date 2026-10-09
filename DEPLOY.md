@@ -104,6 +104,19 @@ Zip everything in `backend/` **except** `.env`, `node_modules/`, `storage/logs/*
 
 `.github/workflows/build.yml` builds both zips on every push to `main` (and on demand via *Actions → Build → Run workflow*, where you choose **staging** or **production**). Download the artefacts from the workflow run and follow §3. Nobody needs Node or Composer locally.
 
+**Auto-upload (FTPS).** Once these repo secrets exist (*Settings → Secrets and variables → Actions*), the same workflow also uploads the build straight to cPanel — no zip/extract step:
+
+| Secret | Value |
+|---|---|
+| `FTP_SERVER` | `ftp.goldenagewisdom.org` (or the host shown in cPanel → FTP Accounts) |
+| `FTP_USERNAME` / `FTP_PASSWORD` | the cPanel FTP login |
+
+- Push to `main` → deploys to **staging** (frontend to the folder in `vite.config.js` `base`, backend to `staging/backend/`).
+- *Run workflow* → **production** → deploys to the live root and `backend/`. Production is never automatic.
+- The server's `.env`, `storage/logs`, sessions/cache and `storage/app` are never overwritten. Uploads are incremental (only changed files).
+- Still manual after a backend deploy: `php artisan migrate --force` and the cache commands from §3 in cPanel Terminal.
+- Optional repo variables: `FTP_ROOT` (default `public_html/goldenagewisdom.org/` — set if the FTP account starts somewhere other than the home folder), `FTP_PROTOCOL` (`ftps` default; `ftp` if FTPS fails).
+
 ## 6. Backend `.env` checklist (staging → production differences)
 
 | Key | Staging | Production |
