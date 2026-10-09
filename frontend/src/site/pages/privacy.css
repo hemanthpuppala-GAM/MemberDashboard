@@ -1,0 +1,41 @@
+/* Privacy.dc.html — standalone dark page (Marcellus + Outfit). Scoped to .gaw-privacy. */
+.gaw-privacy {
+  font-family: "Outfit", sans-serif;
+  color: #efe9dc;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.gaw-privacy *,
+.gaw-privacy *::before,
+.gaw-privacy *::after {
+  box-sizing: border-box;
+}
+.gaw-privacy a {
+  color: #d5b77c;
+  text-decoration: none;
+}
+.gaw-privacy a:hover {
+  color: #e6d3a8;
+}
+.gaw-privacy :focus-visible {
+  outline: 2px solid #e6d3a8;
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+.gaw-privacy button,
+.gaw-privacy input,
+.gaw-privacy textarea,
+.gaw-privacy select {
+  font-family: inherit;
+}
+@media (prefers-reduced-motion: reduce) {
+  .gaw-privacy *,
+  .gaw-privacy *::before,
+  .gaw-privacy *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

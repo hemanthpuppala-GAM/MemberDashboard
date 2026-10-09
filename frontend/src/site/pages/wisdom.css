@@ -1,0 +1,27 @@
+/* Wisdom.dc.html — hover states + coherent-wave keyframes. (Reduced motion: site.css stops animation.) */
+.gaw-site .wisdom-card {
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  transition: border-color 0.2s;
+}
+.gaw-site .wisdom-card:hover {
+  border-color: #c9a24a;
+}
+
+.gaw-site a.wisdom-film-btn {
+  border: 1px solid #14241c;
+  color: #14241c;
+  transition: background 0.2s, color 0.2s;
+}
+.gaw-site a.wisdom-film-btn:hover {
+  background: #14241c;
+  color: #f6f1e6;
+}
+
+@keyframes wisdom-wave {
+  from {
+    stroke-dashoffset: 0;
+  }
+  to {
+    stroke-dashoffset: -520;
+  }
+}
