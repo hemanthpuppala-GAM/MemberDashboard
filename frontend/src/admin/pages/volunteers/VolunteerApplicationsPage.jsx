@@ -68,14 +68,19 @@ export default function VolunteerApplicationsPage() {
   }, [pagination.pageIndex, pagination.pageSize, search, categoryFilter, statusFilter]);
 
   const categoryName = (id) => categories.find((c) => c.id === id)?.name;
+  const teamNames = (a) => {
+    const names = (a.teams ?? []).map((slug) => categories.find((c) => c.slug === slug)?.name ?? slug);
+    return names.length ? names.join(", ") : a.category?.name ?? categoryName(a.category_id) ?? "—";
+  };
 
   const columns = useMemo(
     () => [
       { accessorKey: "name", header: "Name", cell: ({ getValue }) => <span className="font-semibold text-[var(--a-text-primary)]">{getValue()}</span> },
       { accessorKey: "email", header: "Email", cell: ({ getValue }) => <span className="text-[var(--a-text-muted)]">{getValue()}</span> },
       { accessorKey: "phone", header: "Mobile", cell: ({ getValue }) => getValue() || "—" },
-      { id: "category", header: "Category", accessorFn: (a) => a.category?.name ?? categoryName(a.category_id) ?? "—", cell: ({ getValue }) => getValue() },
-      { accessorKey: "notes", header: "Notes", enableSorting: false, cell: ({ getValue }) => <span className="line-clamp-1 max-w-[220px] text-[var(--a-text-muted)]">{getValue() || "—"}</span> },
+      { id: "teams", header: "Teams", accessorFn: teamNames, cell: ({ getValue }) => <span className="line-clamp-1 max-w-[220px]">{getValue()}</span> },
+      { accessorKey: "occupation", header: "Occupation", cell: ({ getValue }) => getValue() || "—" },
+      { accessorKey: "city", header: "City", cell: ({ getValue }) => getValue() || "—" },
       { accessorKey: "created_at", header: "Submitted", cell: ({ getValue }) => new Date(getValue()).toLocaleDateString() },
       { accessorKey: "status", header: "Status", cell: ({ getValue }) => <StatusBadge status={getValue()} /> },
     ],
@@ -86,7 +91,7 @@ export default function VolunteerApplicationsPage() {
   const toolbar = (
     <>
       <Select value={categoryFilter} onChange={(e) => handleFilterChange(setCategoryFilter)(e.target.value)} className="w-auto!">
-        <option value="">All categories</option>
+        <option value="">All teams</option>
         {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
       </Select>
       <Select value={statusFilter} onChange={(e) => handleFilterChange(setStatusFilter)(e.target.value)} className="w-auto!">
@@ -152,9 +157,24 @@ export default function VolunteerApplicationsPage() {
           <div className="flex flex-col gap-5">
             <div className="flex flex-wrap items-center gap-2">
               <StatusBadge status={active.status} />
-              <span className="text-[12px] text-[var(--a-text-muted)]">{active.category?.name ?? categoryName(active.category_id) ?? "—"}</span>
+              {active.member_id && <span className="text-[12px] font-semibold text-[var(--a-text-primary)]">{active.member_id}</span>}
               <span className="text-[12px] text-[var(--a-text-faint)]">· {new Date(active.created_at).toLocaleString()}</span>
             </div>
+
+            <dl className="grid grid-cols-1 gap-x-6 gap-y-3 text-[13px] sm:grid-cols-2">
+              {[
+                ["Teams", teamNames(active)],
+                ["Availability", active.availability],
+                ["Occupation", active.occupation],
+                ["City", active.city],
+                ["Language", active.lang],
+              ].map(([label, value]) => (
+                <div key={label}>
+                  <dt className="text-[11.5px] font-semibold tracking-wide text-[var(--a-text-faint)] uppercase">{label}</dt>
+                  <dd className="mt-0.5 text-[var(--a-text-primary)]">{value || "—"}</dd>
+                </div>
+              ))}
+            </dl>
 
             <p className="rounded-lg bg-[var(--a-bg-surface-2)] p-3.5 text-[13.5px] leading-relaxed text-[var(--a-text-primary)]">
               {active.notes || "No additional notes."}

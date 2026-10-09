@@ -6,13 +6,13 @@ import Button from "../../ui/Button";
 import IconButton from "../../ui/IconButton";
 import Modal from "../../ui/Modal";
 import ConfirmModal from "../../ui/ConfirmModal";
-import Field, { TextInput } from "../../ui/Field";
+import Field, { TextArea, TextInput } from "../../ui/Field";
 import Toggle from "../../ui/Toggle";
 import EmptyState from "../../ui/EmptyState";
 import { api } from "../../../lib/api";
 import { usePermissions } from "../../usePermissions";
 
-const EMPTY = { name: "", is_active: true };
+const EMPTY = { name: "", description: "", is_active: true };
 
 export default function VolunteerCategoriesPage() {
   const { can } = usePermissions();
@@ -37,7 +37,7 @@ export default function VolunteerCategoriesPage() {
   const sorted = useMemo(() => [...categories].sort((a, b) => a.sort_order - b.sort_order), [categories]);
 
   const openNew = () => { setForm(EMPTY); setEditing({}); };
-  const openEdit = (c) => { setForm({ name: c.name, is_active: c.is_active }); setEditing(c); };
+  const openEdit = (c) => { setForm({ name: c.name, description: c.description ?? "", is_active: c.is_active }); setEditing(c); };
 
   const save = async () => {
     if (!form.name.trim()) return;
@@ -59,7 +59,7 @@ export default function VolunteerCategoriesPage() {
   const toggleActive = async (c, v) => {
     setCategories((prev) => prev.map((x) => (x.id === c.id ? { ...x, is_active: v } : x)));
     try {
-      await api.updateVolunteerCategory(c.id, { name: c.name, is_active: v });
+      await api.updateVolunteerCategory(c.id, { name: c.name, description: c.description, is_active: v });
     } catch (err) {
       toast.error(err.message ?? "Update failed");
       await loadCategories();
@@ -98,7 +98,7 @@ export default function VolunteerCategoriesPage() {
         <div>
           <h1 className="text-[24px] font-bold text-[var(--a-text-primary)]">Volunteer categories</h1>
           <p className="mt-1 text-[13.5px] text-[var(--a-text-muted)]">
-            The options shown in the "category" dropdown on the public volunteer form. Toggle active without deleting, reorder how they appear.
+            The teams shown on the public volunteer form — visitors can pick several. Toggle active without deleting, reorder how they appear.
           </p>
         </div>
         <Button as="button" icon={Plus} onClick={openNew} disabled={loading || !canCreate} title={canCreate ? undefined : "You don't have permission to add categories"}>Add category</Button>
@@ -139,6 +139,9 @@ export default function VolunteerCategoriesPage() {
         <div className="flex flex-col gap-4">
           <Field label="Name" required hint='Shown to visitors, e.g. "Event Support"'>
             <TextInput value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} />
+          </Field>
+          <Field label="Description" hint="One line under the team name on the volunteer form">
+            <TextArea rows={2} value={form.description} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} />
           </Field>
           <Toggle checked={form.is_active} onChange={(v) => setForm((f) => ({ ...f, is_active: v }))} label="Active" description="Turn off to hide from the public form without losing the entry" />
         </div>

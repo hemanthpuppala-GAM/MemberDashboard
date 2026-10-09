@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Admin\People;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\People\VolunteerApplicationUpdateRequest;
+use App\Models\Content\VolunteerCategory;
 use App\Models\People\VolunteerApplication;
 use Illuminate\Http\Request;
 
@@ -12,7 +13,7 @@ class VolunteerApplicationController extends Controller
     public function index(Request $request)
     {
         $query = VolunteerApplication::query()
-            ->select(['id', 'name', 'email', 'phone', 'category_id', 'notes', 'status', 'created_at'])
+            ->select(['id', 'name', 'email', 'phone', 'occupation', 'city', 'lang', 'category_id', 'teams', 'availability', 'member_num', 'notes', 'status', 'created_at'])
             ->with('category')
             ->latest();
 
@@ -20,7 +21,10 @@ class VolunteerApplicationController extends Controller
             $query->where('status', $status);
         }
         if ($categoryId = $request->query('category_id')) {
-            $query->where('category_id', $categoryId);
+            // Match applications that picked this team anywhere in their list.
+            $slug = VolunteerCategory::whereKey($categoryId)->value('slug');
+            $query->where(fn ($q) => $q->where('category_id', $categoryId)
+                ->when($slug, fn ($q) => $q->orWhereJsonContains('teams', $slug)));
         }
         if ($search = $request->query('search')) {
             $query->where(fn ($q) => $q->where('name', 'like', "{$search}%")->orWhere('email', 'like', "{$search}%"));
