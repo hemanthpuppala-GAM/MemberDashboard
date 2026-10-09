@@ -3,6 +3,7 @@
 namespace App\Mail\Admin;
 
 use App\Mail\Admin\Concerns\BuildsNotificationHtml;
+use App\Models\Content\VolunteerCategory;
 use App\Models\People\VolunteerApplication;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
@@ -31,7 +32,11 @@ class NewVolunteerApplicationMail extends Mailable
             'Name' => $a->name,
             'Email' => $a->email,
             'Phone' => $a->phone,
-            'Category' => $a->category?->name,
+            'Occupation' => $a->occupation,
+            'City' => $a->city,
+            'Language' => $a->lang,
+            'Teams' => VolunteerCategory::whereIn('slug', $a->teams ?? [])->pluck('name')->implode(', ') ?: $a->category?->name,
+            'Availability' => $a->availability,
             'Notes' => $a->notes,
             'Submitted' => $a->created_at?->format('d M Y, H:i'),
         ]));
