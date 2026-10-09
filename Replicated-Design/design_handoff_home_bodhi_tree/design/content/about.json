@@ -1,0 +1,24 @@
+{
+  "eyebrow": "About",
+  "title": "Dr. Hari Krishna —",
+  "titleAccent": "where science meets spirit",
+  "intro": "A medical professional and spiritual teacher, Dr. Hari Krishna founded the Golden Age Spiritual Movement to make meditation logical, practical and free for all — guiding a global community of seekers toward conscious living and the coming golden age.",
+  "photo": "",
+  "photoCaption": "Founder · Golden Age Spiritual Movement",
+  "badge1": "MD, Anaesthesiology",
+  "badge2": "25 years of practice",
+  "strengths": [
+    { "glyph": "✦", "title": "Education", "body": "A qualified medical doctor — MD in Anaesthesiology — bringing scientific clarity from biology, psychology and physiology to every teaching." },
+    { "glyph": "☾", "title": "25 years of meditation", "body": "Over 25 years of dedicated practice and deep study of consciousness — from Anapanasati breath awareness to the science of prana and the energy body." },
+    { "glyph": "༄", "title": "Kundalini-awakened guru", "body": "A guide who has walked the path — demystifying kundalini and guiding real awakening journeys with patience, compassion and direct experience." }
+  ],
+  "quotesKicker": "What members say",
+  "quotes": [
+    { "text": "“A doctor in a white coat heals the body; a spiritual teacher heals the soul.”", "name": "Manohar Gnani" },
+    { "text": "“Spiritual knowledge + scientific knowledge + simplicity + compassion + thirst for human evolution = Dr. Hari Krishna sir”", "name": "Syamala Gowri" },
+    { "text": "“He is a modern Guru for people who want to grow spiritually.”", "name": "Premalatha" },
+    { "text": "“He is a torch bearer to many in spirituality.”", "name": "Kalyani" }
+  ],
+  "footerTitle": "Sit with us — free, every day.",
+  "footerSub": "Guided live on YouTube, Monday to Saturday. No experience needed."
+}

@@ -1,0 +1,41 @@
+{
+  "eyebrow": "Wisdom",
+  "title": "Ancient truths,",
+  "titleAccent": "scientific clarity",
+  "cards": [
+    { "glyph": "𑀰", "title": "Living Upanishads", "body": "Aham Brahmasmi and Tat Tvam Asi taught as living truths — ancient wisdom made practical for modern minds." },
+    { "glyph": "⚛", "title": "Science meets spirit", "body": "Meditation, prana and energy explained through biology, psychology and physiology — logic and self-inquiry, never blind belief." },
+    { "glyph": "༄", "title": "Demystifying kundalini", "body": "Genuine awakening cannot be forced — it unfolds naturally through meditation, inner purification and sustained practice." },
+    { "glyph": "✦", "title": "True markers of growth", "body": "Less fear, anger and anxiety; more compassion, awareness and wisdom — real change, not mystical display." }
+  ],
+  "archKicker": "The Architecture of Reality",
+  "archTitle": "You are an electromagnetic broadcast",
+  "archSub": "The heart generates a magnetic field ~100× stronger than the brain's — measurable up to 15 feet around the body. What you feel, you transmit.",
+  "staticLabel": "Static noise · stress",
+  "staticTag": "cortisol · adrenaline",
+  "staticBody": "Fear and hurry make the heart rhythm jagged and the brain scattered — an incoherent signal that broadcasts, and attracts, more static.",
+  "coherentLabel": "Coherence · meditation",
+  "coherentTag": "oxytocin · DHEA",
+  "coherentBody": "A quiet heart broadcasts a smooth, organised wave. Like a tuning fork, a coherent field sets the space around it humming in sympathy.",
+  "principles": [
+    { "glyph": "◉", "title": "The observer", "body": "Attention collapses possibility into experience — what you steadily watch, you make real." },
+    { "glyph": "∞", "title": "Entanglement", "body": "Your field is never isolated — influence travels between hearts without physical contact." },
+    { "glyph": "♒", "title": "Resonance", "body": "A coherent field attracts matching people, opportunities and events — like answers like." }
+  ],
+  "protocolKicker": "The Coherence Protocol · daily",
+  "protocol": [
+    { "n": "01", "title": "Morning coherence", "body": "Before opening your eyes: 10 minutes of slow 5-second rhythmic breathing — set the day's frequency first." },
+    { "n": "02", "title": "Scan & interrupt", "body": "Catch static in real time. On tension, breathe 5-5-7 — the longer exhale calms the nervous system out of survival mode." },
+    { "n": "03", "title": "Feel it done", "body": "The field responds to feeling, not thought — gratitude in advance broadcasts the signal of a life already fulfilled." }
+  ],
+  "quotes": [
+    { "text": "“He explains spiritual principles in a simple, logical and scientific way.”", "name": "Sreenivas Kumar G." },
+    { "text": "“Incredibly knowledgeable — a walking encyclopedia, with answers to even the most profound spiritual questions.”", "name": "Kavitha Reddy" }
+  ],
+  "filmLabel": "Watch the intro film",
+  "filmHref": "https://www.youtube.com/@GoldenAgeGurus",
+  "cta": "Join the live sessions — free",
+  "ctaHref": "Member Flow.dc.html",
+  "footerTitle": "Sit with us — free, every day.",
+  "footerSub": "Guided live on YouTube, Monday to Saturday. No experience needed."
+}

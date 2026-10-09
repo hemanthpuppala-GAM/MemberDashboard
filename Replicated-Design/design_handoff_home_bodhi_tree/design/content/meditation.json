@@ -1,0 +1,52 @@
+{
+  "eyebrow": "The Path · Meditation 101",
+  "title": "Explained simply —",
+  "titleAccent": "and scientifically",
+  "sub": "You don't do meditation. You sit, you surrender, and it happens.",
+  "photo": "",
+  "photoCaption": "The posture — nothing more than this",
+  "howKicker": "How to meditate",
+  "steps": [
+    { "n": "I", "title": "Sit with the hands joined", "body": "Settle into any comfortable seat and rest your hands together in your lap, fingers gently interlaced — that is what closes the circuit." },
+    { "n": "II", "title": "Close the eyes", "body": "Nothing to look at. The world can wait an hour." },
+    { "n": "III", "title": "Watch the breath", "body": "Don’t control it. Just notice it arriving and leaving." },
+    { "n": "IV", "title": "Let the thoughts flow", "body": "They are traffic, not enemies. Watching them is the practice." },
+    { "n": "V", "title": "Surrender and observe", "body": "Surrender means: I am nothing. Let the universe — nature, God, whichever word is yours — deal with it. Stop trying to meditate and allow it to happen to you." }
+  ],
+  "howClose": "That's the whole method. Nothing to buy, nothing to master.",
+  "answers": [
+    { "label": "Best time", "answer": "Sunrise", "detail": "Brahmamuhurtham is finest — but no hour is forbidden. The one you keep is the right one." },
+    { "label": "How long", "answer": "It happens, you don’t do it", "detail": "Beginners: start with 30 minutes, or an hour if it comes easily. Some sit 1–2 hours; some drop deep in minutes. Comparison is a thief of joy." },
+    { "label": "The goal", "answer": "There isn’t one", "detail": "Keep sitting. Life reorders itself — physically, emotionally, spiritually. Try it and watch." }
+  ],
+  "scienceKicker": "The science, simply",
+  "scienceTitle": "The field closes into a torus around you",
+  "scienceBody": "Sit still with the legs crossed — palms open on the knees, or the hands joined together in the lap — and the body's field closes on itself: lines of energy leave the crown, arc wide around you, and return through the base of the spine — the same shape a magnet draws in iron filings. Inside that loop the work is not yours to do. Healing settles, energy rises, the chakras open in their own order. You only have to stop interfering.",
+  "recKicker": "Dr. Hari Krishna recommends",
+  "recTitle": "Simply sit and watch the breath",
+  "recBody": "No technique to learn, no counting, no force — and by far the most efficient way. Surrender, and let whichever breath wants to happen, happen by itself.",
+  "techKicker": "Other techniques people use",
+  "techniques": ["Soham", "Kundalini breathing", "Anapanasati", "Kumbhaka", "Bhramari"],
+  "techNote": "Some use these as a catalyst into a deeper state. They are optional — the sitting is not.",
+  "bodyLead": "And the body?",
+  "bodyText": "Most disease sits at the mitochondrial level. Restored prana reaches the cell and heals upward — cellular, bodily, psychic, emotional.",
+  "bodyCta": "Detox diet →",
+  "bodyHref": "Wellness.dc.html#detox",
+  "pathLabel": "Where are you on the path?",
+  "simpleLabel": "New to this",
+  "deepLabel": "Seasoned meditator",
+  "simpleLead": "As Dr. HariKrishna says —",
+  "simpleQuote": "“Gammuga kurcho”",
+  "simpleTail": "means simply sit, quietly.",
+  "deepCards": [
+    { "glyph": "༄", "title": "What kundalini is", "body": "An infinite energy that rises and aligns every chakra, moving like a serpent — cleansing the nadis, healing at each level. Scientifically: cosmic energy raising your frequency once you are connected. Emotionally: fear, shame and guilt giving way to bliss." },
+    { "glyph": "✦", "title": "Karmas, visions, openings", "body": "Third-eye visions, past-life glimpses, awakenings — all part of the terrain. They come and they go. The real beauty is transformation: wisdom that stays after the vision fades." },
+    { "glyph": "◎", "title": "Where the energy comes from", "body": "Some use a pyramid as a conductor. Some sit in groups, where consciousness pools higher. Some connect straight to the universe and give energy away like transformers. Guided meditation is another door." },
+    { "glyph": "☀", "title": "The ultimate truth", "body": "It depends on what you seek — joy for one, wisdom for another, self-discovery for the next. Come to know yourself through your own journey. See you on the other side, friend." }
+  ],
+  "deepClose": "Letters, shapes, numbers, colours behind the eyes? Enough reading, friend — time to meditate.",
+  "cta": "Take the 41-day challenge",
+  "ctaHref": "Member Flow.dc.html",
+  "footerTitle": "Sit with us — free, every day.",
+  "footerSub": "Guided live on YouTube, Monday to Saturday. No experience needed."
+}

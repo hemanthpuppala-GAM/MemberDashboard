@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,400&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="./pwa-v2.js"></script>
+<style>
+html,body{margin:0;background:#F3EAD3;font-family:'Manrope',sans-serif;color:#14241C;-webkit-font-smoothing:antialiased;overflow-x:hidden;-webkit-tap-highlight-color:transparent;padding-bottom:env(safe-area-inset-bottom)}
+a{color:#7A5E22;text-decoration:none}a:hover{color:#14241C}
+a:focus-visible{outline:2px solid #C9A24A;outline-offset:4px;border-radius:999px}
+::selection{background:#E8CF83;color:#12201A}
+@keyframes rise{from{opacity:0;translate:0 14px}to{opacity:1;translate:0 0}}
+@keyframes heartbeat{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(201,162,74,.6)}70%{box-shadow:0 0 0 8px rgba(201,162,74,0)}100%{box-shadow:0 0 0 0 rgba(201,162,74,0)}}
+@media (prefers-reduced-motion:reduce){[data-heartbeat],[data-live]{animation:none !important}}
+</style>
+</helmet>
+
+<main style="min-height:100dvh;display:flex;flex-direction:column;background:#F3EAD3">
+  <nav aria-label="Utility" style="position:relative;z-index:5;box-sizing:border-box;width:100%;display:{{ navDisplay }};align-items:center;justify-content:flex-end;gap:22px;padding:2px clamp(16px,5vw,72px) 0;padding-top:calc(2px + env(safe-area-inset-top));background:#14241C;border-bottom:1px solid rgba(232,207,131,.12)"><a href="Ask.dc.html" style="display:inline-flex;align-items:center;min-height:32px;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:rgba(246,241,230,.66);font-weight:600;white-space:nowrap;transition:color .2s" style-hover="color:#E8CF83">Member support</a><a href="Volunteer.dc.html" style="display:inline-flex;align-items:center;min-height:32px;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:rgba(246,241,230,.66);font-weight:600;white-space:nowrap;transition:color .2s" style-hover="color:#E8CF83">Volunteer</a><a href="Privacy.dc.html" style="display:inline-flex;align-items:center;min-height:32px;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:rgba(246,241,230,.66);font-weight:600;white-space:nowrap;transition:color .2s" style-hover="color:#E8CF83">Privacy</a></nav>
+  <header style="position:relative;z-index:5;box-sizing:border-box;width:100%;display:flex;flex-wrap:{{ headerWrap }};align-items:center;justify-content:space-between;gap:12px 24px;padding:12px clamp(16px,5vw,72px);padding-top:calc(12px + env(safe-area-inset-top));background:linear-gradient(180deg,#14241C 0%,#1B3328 100%)">
+    <a href="Home Bodhi Tree v2.dc.html" style="display:flex;align-items:center;gap:14px;color:#F6F1E6;min-width:0">
+      <span data-heartbeat="" style="position:relative;flex:none;display:block;width:48px;height:48px;border-radius:50%;overflow:hidden;background:#0E1A14;box-shadow:0 0 0 2px #1B3328,0 0 0 3px #C9A24A,0 10px 24px -10px rgba(0,0,0,.6);animation:heartbeat 8s 1.4s cubic-bezier(.45,0,.55,1) infinite"><img src="assets/logo-original.jpg" alt="Golden Age Wisdom emblem" style="display:block;width:100%;height:100%;object-fit:cover;transform:scale(1.26)"></span>
+      <span style="font-family:'Cormorant Garamond',serif;font-weight:500;font-size:clamp(12px,3.4vw,20px);letter-spacing:clamp(.1em,.5vw,.18em);text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Golden Age Wisdom</span>
+    </a>
+    <nav aria-label="Pages" style="display:{{ navDisplay }};flex-wrap:wrap;align-items:center;gap:6px clamp(10px,1.6vw,28px);min-width:0">
+      <sc-for list="{{ subPages }}" as="sp" hint-placeholder-count="7">
+        <a href="{{ sp.href }}" style="display:inline-flex;align-items:center;min-height:44px;font-size:11.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:{{ sp.color }};border-bottom:{{ sp.border }};white-space:nowrap;transition:color .2s" style-hover="color:#E8CF83">{{ sp.label }}</a>
+      </sc-for>
+    </nav>
+    <div style="display:flex;align-items:center;gap:10px">
+      
+      <sc-if value="{{ isMember }}" hint-placeholder-val="{{ false }}"><a href="Member Flow.dc.html" title="Open my dashboard" style="display:{{ joinDisplay }};align-items:center;gap:10px;height:44px;padding:0 18px 0 6px;border-radius:999px;border:1px solid rgba(201,162,74,.6);background:rgba(246,241,230,.06);color:#F6F1E6;font-size:11.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;white-space:nowrap;transition:background .2s" style-hover="background:rgba(246,241,230,.12)"><span style="width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#E8CF83,#C9A24A);color:#14241C;font-family:'Cormorant Garamond',serif;font-weight:700;font-size:16px">{{ memberInitial }}</span>{{ memberFirst }}</a></sc-if>
+      <sc-if value="{{ isGuest }}" hint-placeholder-val="{{ true }}"><a href="Member Flow.dc.html" style="display:{{ joinDisplay }};align-items:center;gap:10px;height:44px;padding:0 20px;border-radius:999px;background:linear-gradient(90deg,#E8CF83,#C9A24A);color:#14241C;font-size:11.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;white-space:nowrap;box-shadow:0 8px 20px -10px rgba(201,162,74,.7);transition:transform .2s" style-hover="transform:translateY(-1px)">Join free</a></sc-if>
+      <button onClick="{{ toggleMenu }}" aria-label="{{ menuLabel }}" aria-expanded="{{ menuOpen }}" style="display:{{ menuBtnDisplay }};align-items:center;justify-content:center;width:44px;height:44px;border-radius:50%;border:1px solid rgba(246,241,230,.35);background:rgba(246,241,230,.06);color:#F6F1E6;font:inherit;cursor:pointer"><span aria-hidden="true" style="display:flex;flex-direction:column;gap:5px;width:18px"><span style="height:1.5px;background:currentColor;transform:{{ bar1 }};transition:transform .25s"></span><span style="height:1.5px;background:currentColor;opacity:{{ bar2 }};transition:opacity .2s"></span><span style="height:1.5px;background:currentColor;transform:{{ bar3 }};transition:transform .25s"></span></span></button>
+    </div>
+  </header>
+  <sc-if value="{{ menuOpen }}" hint-placeholder-val="{{ false }}">
+  <nav aria-label="Pages" style="position:relative;z-index:6;display:flex;flex-direction:column;padding:6px clamp(12px,3vw,24px) 14px;background:#1B3328;border-top:1px solid rgba(246,241,230,.1);animation:rise .25s both">
+    <sc-for list="{{ subPages }}" as="sp" hint-placeholder-count="7">
+      <a href="{{ sp.href }}" style="display:flex;align-items:center;justify-content:space-between;min-height:50px;padding:0 10px;border-bottom:1px solid rgba(246,241,230,.08);font-size:13px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:{{ sp.color }}">{{ sp.label }}<span aria-hidden="true" style="width:6px;height:6px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(-45deg);opacity:.6"></span></a>
+    </sc-for>
+    <a href="Member Flow.dc.html" onClick="{{ toggleMenu }}" style="display:flex;align-items:center;justify-content:center;margin-top:12px;height:48px;border-radius:999px;background:linear-gradient(90deg,#E8CF83,#C9A24A);color:#14241C;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase">{{ menuJoinLabel }}</a>
+  </nav>
+  </sc-if>
+
+  <nav aria-label="Breadcrumb" style="display:flex;align-items:center;gap:10px;padding:18px clamp(20px,5vw,72px) 0;font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#7A5E22;animation:rise .7s both">
+    <a href="Home Bodhi Tree v2.dc.html" style="color:#7A5E22" style-hover="color:#14241C">Home</a>
+    <span aria-hidden="true" style="width:14px;height:1px;background:#C9A24A"></span>
+    <span style="color:#3A3128">Events</span>
+  </nav>
+
+  <section style="flex:1;box-sizing:border-box;display:flex;flex-direction:column;gap:clamp(22px,3.5vh,36px);padding:clamp(24px,4vh,48px) clamp(20px,5vw,72px) clamp(40px,6vh,72px);max-width:1240px;width:100%;margin:0 auto">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center">
+      <span style="display:inline-flex;align-items:center;gap:10px;font-size:11px;font-weight:700;letter-spacing:.3em;text-transform:uppercase;color:#7A5E22;animation:rise .9s both"><span aria-hidden="true" style="width:6px;height:6px;border-radius:50%;background:#C9A24A"></span>{{ eyebrow }}</span>
+      <h1 title="Admin: title + accent" style="outline:{{ adminOutline }};outline-offset:8px;margin:0;font-family:'Cormorant Garamond',serif;font-weight:500;font-size:clamp(34px,4.4vw,64px);line-height:1.02;letter-spacing:-.015em;text-wrap:balance;color:#12201A;max-width:20ch;animation:rise .9s .1s both">{{ title }} <em style="color:#8A6F34">{{ titleAccent }}</em></h1>
+      <p style="margin:0;max-width:48ch;font-size:clamp(15px,1.15vw,18px);line-height:1.55;color:#3A3128;animation:rise .9s .2s both">{{ sub }}</p>
+      <span style="display:inline-flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:4px 8px;padding:7px 14px;border-radius:999px;border:1px solid rgba(138,111,52,.4);font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#7A5E22;text-align:center;animation:rise .9s .25s both"><span aria-hidden="true" style="width:7px;height:7px;border-radius:50%;background:#C9A24A"></span><span>Your time zone</span><span style="color:#3A3128">{{ tzLabel }}</span></span>
+    </div>
+
+    <div style="display:grid;grid-template-columns:{{ twoCols }};gap:18px;align-items:start;animation:rise .9s .3s both">
+      <div style="display:flex;flex-direction:column;gap:18px">
+        <article title="Admin: India sessions" style="outline:{{ adminOutline }};outline-offset:8px;display:flex;flex-direction:column;gap:12px;padding:clamp(20px,2.4vw,28px);border-radius:24px;background:rgba(255,253,248,.55);border:1px solid rgba(255,255,255,.7);box-shadow:0 1px 0 rgba(255,255,255,.8) inset,0 18px 40px -18px rgba(60,42,16,.3)">
+          <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap">
+            <h2 style="margin:0;font-family:'Cormorant Garamond',serif;font-weight:500;font-size:26px;line-height:1.1;color:#12201A">{{ indiaKicker }}</h2>
+            <span style="font-size:10.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#7A5E22;white-space:nowrap">{{ indiaNote }}</span>
+          </div>
+          <sc-for list="{{ india }}" as="s" hint-placeholder-count="5">
+            <div style="display:grid;grid-template-columns:96px minmax(0,1fr);align-items:center;gap:14px;padding:12px 14px;border-radius:18px;background:rgba(255,253,248,.7);border:1px solid {{ s.border }};transition:border-color .2s" style-hover="border-color:#C9A24A">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 4px;border-radius:14px;background:{{ s.timeBg }};border:1px solid rgba(201,162,74,.4)">
+                <span style="font-family:'Cormorant Garamond',serif;font-weight:500;font-size:15px;line-height:1.2;color:{{ s.timeFg }};text-align:center">{{ s.range }}</span>
+                <span style="font-size:9.5px;font-weight:700;letter-spacing:.16em;color:{{ s.zoneFg }}">{{ s.zone }}</span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:2px;min-width:0">
+                <span style="display:flex;align-items:center;gap:8px;font-weight:600;font-size:15px;color:#12201A"><sc-if value="{{ s.live }}" hint-placeholder-val="{{ false }}"><span data-live="" aria-label="Live now" style="width:8px;height:8px;border-radius:50%;background:#C9A24A;animation:pulse 1.6s infinite"></span></sc-if>{{ s.title }}</span>
+                <span style="font-size:12.5px;line-height:1.45;color:#5A4E3C">{{ s.desc }}</span>
+                <sc-if value="{{ s.showLocal }}" hint-placeholder-val="{{ false }}"><span style="font-size:11.5px;font-weight:600;color:#7A5E22">✦ {{ s.local }} your time</span></sc-if>
+              </div>
+            </div>
+          </sc-for>
+        </article>
+
+        <article title="Admin: USA & UK sessions" style="outline:{{ adminOutline }};outline-offset:8px;display:flex;flex-direction:column;gap:12px;padding:clamp(20px,2.4vw,28px);border-radius:24px;background:rgba(255,253,248,.55);border:1px solid rgba(255,255,255,.7);box-shadow:0 1px 0 rgba(255,255,255,.8) inset,0 18px 40px -18px rgba(60,42,16,.3)">
+          <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap">
+            <h2 style="margin:0;font-family:'Cormorant Garamond',serif;font-weight:500;font-size:26px;line-height:1.1;color:#12201A">{{ abroadKicker }}</h2>
+            <span style="font-size:10.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#7A5E22;white-space:nowrap">{{ abroadNote }}</span>
+          </div>
+          <sc-for list="{{ abroad }}" as="s" hint-placeholder-count="4">
+            <div style="display:grid;grid-template-columns:96px minmax(0,1fr);align-items:center;gap:14px;padding:12px 14px;border-radius:18px;background:rgba(255,253,248,.7);border:1px solid {{ s.border }};transition:border-color .2s" style-hover="border-color:#C9A24A">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 4px;border-radius:14px;background:{{ s.timeBg }};border:1px solid rgba(201,162,74,.4)">
+                <span style="font-family:'Cormorant Garamond',serif;font-weight:500;font-size:15px;line-height:1.2;color:{{ s.timeFg }};text-align:center">{{ s.range }}</span>
+                <span style="font-size:9.5px;font-weight:700;letter-spacing:.16em;color:{{ s.zoneFg }}">{{ s.zone }}</span>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:2px;min-width:0">
+                <span style="display:flex;align-items:center;gap:8px;font-weight:600;font-size:15px;color:#12201A"><sc-if value="{{ s.live }}" hint-placeholder-val="{{ false }}"><span data-live="" aria-label="Live now" style="width:8px;height:8px;border-radius:50%;background:#C9A24A;animation:pulse 1.6s infinite"></span></sc-if>{{ s.title }}</span>
+                <span style="font-size:12.5px;line-height:1.45;color:#5A4E3C">{{ s.desc }}</span>
+                <sc-if value="{{ s.showLocal }}" hint-placeholder-val="{{ false }}"><span style="font-size:11.5px;font-weight:600;color:#7A5E22">✦ {{ s.local }} your time</span></sc-if>
+              </div>
+            </div>
+          </sc-for>
+        </article>
+
+        <a href="{{ watchHref }}" target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:center;height:50px;padding:0 24px;border-radius:999px;background:linear-gradient(90deg,#E8CF83,#C9A24A);color:#14241C;font-size:12.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;text-align:center;box-shadow:0 12px 30px -10px rgba(201,162,74,.7);transition:transform .2s" style-hover="transform:translateY(-1px)">{{ watchLabel }}</a>
+
+        <div title="Admin: Zoom circle" style="outline:{{ adminOutline }};outline-offset:8px;display:grid;grid-template-columns:38px minmax(0,1fr) auto;align-items:center;gap:13px;padding:14px 16px;border-radius:18px;border:1px dashed rgba(201,162,74,.6);background:rgba(232,207,131,.14)">
+          <span aria-hidden="true" style="width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#14241C"><svg viewBox="0 0 24 24" style="width:15px;height:15px;display:block"><rect x="5" y="11" width="14" height="9" rx="2.5" fill="none" stroke="#E8CF83" stroke-width="1.6"></rect><path d="M8 11V8a4 4 0 0 1 8 0v3" fill="none" stroke="#E8CF83" stroke-width="1.6"></path></svg></span>
+          <span style="display:flex;flex-direction:column;gap:2px;min-width:0"><span style="font-weight:600;font-size:14px;color:#12201A">{{ zoomTitle }}</span><span style="font-size:12.5px;line-height:1.45;color:#5A4E3C">{{ zoomBody }}</span></span>
+          <a href="{{ zoomHref }}" style="font-size:12.5px;font-weight:600;white-space:nowrap">{{ zoomCta }}</a>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:18px">
+        <article title="Admin: upcoming gatherings" style="outline:{{ adminOutline }};outline-offset:8px;display:flex;flex-direction:column;gap:14px;padding:clamp(22px,2.6vw,30px);border-radius:24px;background:linear-gradient(170deg,#1B3328 0%,#14241C 100%);color:#F6F1E6;box-shadow:0 30px 60px -30px rgba(20,14,6,.6)">
+          <h2 style="margin:0;font-family:'Cormorant Garamond',serif;font-weight:500;font-size:26px;line-height:1.1;color:#E8CF83">{{ upcomingTitle }}</h2>
+          <sc-if value="{{ noUpcoming }}" hint-placeholder-val="{{ true }}"><p style="margin:0;font-size:14px;line-height:1.6;color:rgba(246,241,230,.78);text-wrap:pretty">{{ upcomingEmpty }}</p></sc-if>
+          <sc-for list="{{ upcoming }}" as="e" hint-placeholder-count="0">
+            <div style="display:grid;grid-template-columns:56px minmax(0,1fr);gap:16px;padding:12px 0;border-bottom:1px solid rgba(246,241,230,.1)">
+              <span style="display:flex;flex-direction:column;align-items:center;padding:7px 0;border-radius:14px;background:rgba(232,207,131,.14);border:1px solid rgba(201,162,74,.5)"><span style="font-family:'Cormorant Garamond',serif;font-size:22px;line-height:1.1;color:#E8CF83">{{ e.day }}</span><span style="font-size:10.5px;font-weight:700;letter-spacing:.1em;color:#C9A24A">{{ e.month }}</span></span>
+              <span style="display:flex;flex-direction:column;gap:3px"><span style="font-weight:600;font-size:15px;color:#F6F1E6">{{ e.title }}</span><span style="font-size:13px;line-height:1.45;color:rgba(246,241,230,.72)">{{ e.meta }}</span></span>
+            </div>
+          </sc-for>
+          <a href="{{ registerHref }}" style="font-size:13.5px;font-weight:600;color:#E8CF83" style-hover="color:#F6F1E6">{{ registerLabel }}</a>
+        </article>
+
+        <article title="Admin: past gatherings" style="outline:{{ adminOutline }};outline-offset:8px;display:flex;flex-direction:column;gap:12px;padding:clamp(20px,2.4vw,28px);border-radius:24px;background:rgba(255,253,248,.55);border:1px solid rgba(255,255,255,.7);box-shadow:0 1px 0 rgba(255,255,255,.8) inset,0 18px 40px -18px rgba(60,42,16,.3)">
+          <h2 style="margin:0;font-family:'Cormorant Garamond',serif;font-weight:500;font-size:22px;line-height:1.1;color:#12201A">{{ pastTitle }}</h2>
+          <sc-for list="{{ past }}" as="p" hint-placeholder-count="1">
+            <div style="display:grid;grid-template-columns:56px minmax(0,1fr) auto;align-items:center;gap:14px;padding:10px 0;border-bottom:1px solid rgba(138,111,52,.15)">
+              <span style="display:flex;flex-direction:column;align-items:center;padding:7px 0;border-radius:14px;background:rgba(232,207,131,.25);border:1px solid rgba(201,162,74,.4)"><span style="font-family:'Cormorant Garamond',serif;font-size:20px;line-height:1.1;color:#12201A">{{ p.day }}</span><span style="font-size:10px;font-weight:700;letter-spacing:.1em;color:#7A5E22">{{ p.month }}</span></span>
+              <span style="display:flex;flex-direction:column;gap:2px;min-width:0"><span style="font-weight:600;font-size:14.5px;color:#12201A">{{ p.title }}</span><span style="font-size:12.5px;line-height:1.45;color:#5A4E3C">{{ p.meta }}</span></span>
+              <span style="font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#7A5E22;white-space:nowrap">Complete</span>
+            </div>
+          </sc-for>
+        </article>
+
+        <div title="Admin: testimonials" style="outline:{{ adminOutline }};outline-offset:8px;display:flex;flex-direction:column;gap:8px">
+          <sc-for list="{{ quotes }}" as="t" hint-placeholder-count="2">
+            <blockquote style="margin:0;padding:12px 16px;border-radius:14px;background:rgba(232,207,131,.22);border:1px solid rgba(201,162,74,.4);font-size:13px;line-height:1.5;font-style:italic;color:#3A3128">{{ t.text }} <span style="font-style:normal;font-size:10.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#7A5E22">— {{ t.name }}, via NeoSouth</span></blockquote>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <aside aria-label="Admin-editable regions" style="display:{{ adminLegendDisplay }};position:fixed;right:18px;bottom:96px;z-index:50;flex-direction:column;gap:6px;max-width:260px;padding:14px 16px;border-radius:16px;background:#14241C;color:#F6F1E6;box-shadow:0 18px 40px -16px rgba(0,0,0,.5);font-size:12px;line-height:1.45">
+    <span style="font-size:10.5px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:#E8CF83">Admin can change</span>
+    <span>Dashed gold outlines mark editable regions:</span>
+    <span>· Title, accent &amp; sub-line</span>
+    <span>· India sessions (add / remove / times)</span>
+    <span>· USA &amp; UK sessions</span>
+    <span>· Zoom circle, YouTube link</span>
+    <span>· Upcoming &amp; past gatherings</span>
+    <span>· Testimonials &amp; footer</span>
+    <a href="Admin Events.dc.html" style="margin-top:6px;color:#E8CF83;font-weight:600">Open Events editor →</a>
+  </aside>
+
+  <footer id="join" style="box-sizing:border-box;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:18px 32px;padding:28px clamp(20px,5vw,72px);background:linear-gradient(180deg,#1B3328 0%,#14241C 100%);color:#F6F1E6">
+    <div style="display:flex;flex-direction:column;gap:6px;min-width:0">
+      <span style="font-family:'Cormorant Garamond',serif;font-size:clamp(22px,2.2vw,32px);line-height:1.1">{{ footerTitle }}</span>
+      <span style="font-size:12.5px;color:rgba(246,241,230,.72)">{{ footerSub }}</span>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;align-items:center;gap:14px">
+      <a href="https://www.youtube.com/@GoldenAgeGurus" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:10px;height:44px;padding:0 20px;border-radius:999px;border:1px solid rgba(246,241,230,.4);color:#F6F1E6;font-size:11.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;white-space:nowrap;transition:background .2s,color .2s" style-hover="background:#F6F1E6;color:#14241C">Watch live</a>
+      <a href="Member Flow.dc.html" style="display:inline-flex;align-items:center;height:44px;padding:0 22px;border-radius:999px;background:linear-gradient(90deg,#E8CF83,#C9A24A);color:#14241C;font-size:11.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;white-space:nowrap;transition:transform .2s" style-hover="transform:translateY(-1px)">Join free</a>
+    </div>
+  </footer>
+</main>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;adminHints&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Admin&quot;}}">
+class Component extends DCLogic {
+  static KEY = 'gaw:events-content:v1';
+  static DEFAULTS = { eyebrow: 'Events', title: 'Daily live sessions', titleAccent: '& gatherings', sub: '', indiaKicker: 'India · IST', indiaNote: 'Every day · including Sunday', sessionsIndia: [], abroadKicker: 'USA & UK', abroadNote: 'Local time · every day', sessionsAbroad: [], watchLabel: '▶ Watch live on YouTube — free, worldwide', watchHref: 'https://youtube.com/@goldenagegurus', zoomTitle: 'Zoom circle — members only', zoomBody: '', zoomCta: 'Sign in →', zoomHref: 'Member Flow.dc.html', upcomingTitle: 'Upcoming gatherings', upcomingEmpty: '', upcoming: [], pastTitle: 'Past gatherings', past: [], registerLabel: 'Register as a member →', registerHref: 'Member Flow.dc.html', quotes: [], footerTitle: 'Sit with us — free, every day.', footerSub: '' };
+  state = { menu: false, w: typeof window !== 'undefined' ? window.innerWidth : 1440, content: Component.DEFAULTS, now: Date.now() };
+  loadContent() {
+    const apply = (base) => { let c = base; try { const o = localStorage.getItem(Component.KEY); if (o) c = { ...base, ...JSON.parse(o) }; } catch {} this.setState({ content: c }); };
+    fetch('content/events.json?v=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => apply({ ...Component.DEFAULTS, ...j })).catch(() => apply(Component.DEFAULTS));
+  }
+  componentDidMount() { this.loadContent(); this._r = () => this.setState({ w: window.innerWidth }); window.addEventListener('resize', this._r); this._st = (e) => { if (e.key === Component.KEY) this.loadContent(); }; window.addEventListener('storage', this._st); this._t = setInterval(() => this.setState({ now: Date.now() }), 30000); }
+  componentWillUnmount() { window.removeEventListener('resize', this._r); window.removeEventListener('storage', this._st); clearInterval(this._t); }
+  // minutes-since-midnight of `hhmm` in zone `tz`, expressed in the visitor's local clock, for today
+  localOf(hhmm, tz) {
+    const [h, m] = hhmm.split(':').map(Number), now = new Date(this.state.now);
+    const parts = new Intl.DateTimeFormat('en-US', { timeZone: tz, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false }).formatToParts(now).reduce((a, p) => (a[p.type] = p.value, a), {});
+    // epoch of "today h:m in tz": take tz-now, shift by (target - tz-now minutes)
+    const tzNowMin = (+parts.hour % 24) * 60 + +parts.minute, delta = (h * 60 + m) - tzNowMin;
+    return new Date(now.getTime() + delta * 60000);
+  }
+  fmt(d) { return d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }); }
+  fmtIn(hhmm) { const [h, m] = hhmm.split(':').map(Number); const hr = h % 12 || 12; return hr + ':' + String(m).padStart(2, '0') + (h < 12 ? ' AM' : ' PM'); }
+  memberVals() {
+    let m = null; try { m = JSON.parse(localStorage.getItem('gaw_session') || 'null'); } catch (e) {}
+    const name = (m && (m.name || m.displayName || m.email || '')) || '', first = name.split(/[\s@]/)[0] || 'Member';
+    return { isMember: !!m, isGuest: !m, memberFirst: first, memberInitial: (first[0] || 'M').toUpperCase(), menuJoinLabel: m ? 'My dashboard · ' + first : 'Join free' };
+  }
+
+  renderVals() {
+    const w = this.state.w, desk = w >= 900, c = this.state.content, now = this.state.now;
+    let tz = 'UTC'; try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone; } catch {}
+    const pages = [['About', 'About.dc.html'], ['Mission', 'Mission.dc.html'], ['Teachings', '#teachings'], ['Meditation', 'Meditation.dc.html'], ['Wisdom', 'Wisdom.dc.html'], ['Wellness', 'Wellness.dc.html'], ['Events', 'Events.dc.html']];
+    const build = (s, zoneTz, zone) => {
+      const a = this.localOf(s.start, zoneTz), b = this.localOf(s.end, zoneTz), live = now >= a.getTime() && now <= b.getTime(), showLocal = tz !== zoneTz;
+      return { ...s, zone, range: this.fmtIn(s.start) + ' – ' + this.fmtIn(s.end), live, showLocal, local: this.fmt(a) + ' – ' + this.fmt(b),
+        border: live ? '#C9A24A' : 'rgba(138,111,52,.2)', timeBg: live ? '#14241C' : 'rgba(232,207,131,.25)', timeFg: live ? '#E8CF83' : '#12201A', zoneFg: live ? '#C9A24A' : '#7A5E22' };
+    };
+    return {
+      ...this.memberVals(),
+      ...c, tzLabel: tz.replace(/_/g, ' '),
+      india: (c.sessionsIndia || []).map(s => build(s, 'Asia/Kolkata', 'IST')),
+      abroad: (c.sessionsAbroad || []).map(s => build(s, s.tz || 'UTC', s.zone || '')),
+      noUpcoming: !(c.upcoming || []).length,
+      adminOutline: this.props.adminHints ? '2px dashed #C9A24A' : 'none', adminLegendDisplay: this.props.adminHints ? 'flex' : 'none',
+      navDisplay: w >= 900 ? 'flex' : 'none', headerWrap: w >= 900 ? 'wrap' : 'nowrap', menuBtnDisplay: w >= 900 ? 'none' : 'inline-flex', joinDisplay: w >= 480 ? 'inline-flex' : 'none', menuOpen: w < 900 && this.state.menu, menuLabel: this.state.menu ? 'Close menu' : 'Open menu',
+      bar1: this.state.menu ? 'translateY(6.5px) rotate(45deg)' : 'none', bar2: this.state.menu ? 0 : 1, bar3: this.state.menu ? 'translateY(-6.5px) rotate(-45deg)' : 'none', toggleMenu: () => this.setState(s => ({ menu: !s.menu })),
+      subPages: pages.map(([label, href]) => ({ label, href, color: label === 'Events' ? '#E8CF83' : 'rgba(246,241,230,.74)', border: label === 'Events' ? '1px solid #C9A24A' : '1px solid transparent' })),
+      twoCols: desk ? 'minmax(0,1.15fr) minmax(300px,.85fr)' : '1fr'
+    };
+  }
+}
+</script>
+</body>
+</html>

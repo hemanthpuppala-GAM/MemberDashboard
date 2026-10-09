@@ -56,6 +56,8 @@ use App\Http\Controllers\Api\Public\Cms\PageController;
 use App\Http\Controllers\Api\Practitioner\PractitionerController;
 use App\Http\Controllers\Api\Public\Settings\SettingController;
 use App\Http\Controllers\Api\Public\Content\TestimonialController;
+use App\Http\Controllers\Api\Public\Site\SiteContentController;
+use App\Http\Controllers\Api\Admin\Site\SiteContentController as AdminSiteContentController;
 use App\Services\Auth\OAuthService;
 use Illuminate\Support\Facades\Route;
 
@@ -67,6 +69,9 @@ Route::prefix('v1')->group(function () {
     // BACKEND_DB_API_PLAN.md for why both exist for now.
     Route::get('/content', [ContentController::class, 'index']);
     Route::get('/content/{slug}', [ContentController::class, 'show']);
+
+    // Public site pages (home, about, …): published JSON copy, defaults ship with the frontend.
+    Route::get('/site-content/{page}', [SiteContentController::class, 'show']);
 
     Route::get('/pages', [PageController::class, 'index']);
     Route::get('/pages/{slug}', [PageController::class, 'show']);
@@ -135,6 +140,12 @@ Route::prefix('v1')->group(function () {
         // ---- Legacy flat content blocks ----
         Route::middleware('permission:cms.view')->get('/content', [AdminContentController::class, 'index']);
         Route::middleware('permission:cms.edit')->put('/content/{slug}', [AdminContentController::class, 'update']);
+
+        // ---- Site content (public page copy, one JSON document per page) ----
+        Route::middleware('permission:cms.view')->get('/site-content', [AdminSiteContentController::class, 'index']);
+        Route::middleware('permission:cms.view')->get('/site-content/{page}', [AdminSiteContentController::class, 'show']);
+        Route::middleware('permission:cms.edit')->put('/site-content/{page}', [AdminSiteContentController::class, 'update']);
+        Route::middleware('permission:cms.edit')->delete('/site-content/{page}', [AdminSiteContentController::class, 'destroy']);
 
         // ---- CMS: Pages / Sections / Content ----
         Route::middleware('permission:cms.view')->group(function () {

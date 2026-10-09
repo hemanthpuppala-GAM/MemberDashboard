@@ -67,7 +67,7 @@ return [
     'support' => [
         'primary' => env('SUPPORT_PRIMARY', '917396112111'),
         'web' => env('SUPPORT_WEB', '917396119111'),
-        'cc_email' => env('SUPPORT_CC_EMAIL', 'info@goldenagewisdom.org'),
+        'cc_email' => env('SUPPORT_CC_EMAIL', 'goldenageguruteachings@gmail.com'),
     ],
 
     'apple' => [

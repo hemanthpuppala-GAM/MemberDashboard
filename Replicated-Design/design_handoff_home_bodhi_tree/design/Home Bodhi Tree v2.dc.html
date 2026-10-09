@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,400&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="./pwa-v2.js"></script>
+<style>
+html,body{margin:0;background:#F3EAD3;font-family:'Manrope',sans-serif;color:#14241C;-webkit-font-smoothing:antialiased;overflow-x:hidden;-webkit-tap-highlight-color:transparent}
+a{color:#7A5E22;text-decoration:none}a:hover{color:#14241C}
+a:focus-visible{outline:2px solid #C9A24A;outline-offset:4px;border-radius:999px}
+::selection{background:#E8CF83;color:#12201A}
+@keyframes breathe{0%,100%{transform:scale(.965)}50%{transform:scale(1.035)}}
+@keyframes coin-glow{0%,100%{box-shadow:0 18px 44px rgba(60,42,16,.35),0 0 36px rgba(201,162,74,.45),0 0 0 3px #12201A}50%{box-shadow:0 18px 44px rgba(60,42,16,.35),0 0 90px rgba(201,162,74,.7),0 0 0 3px #12201A}}
+@keyframes yantra-draw{from{stroke-dashoffset:1200}to{stroke-dashoffset:0}}
+@keyframes seed-draw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+@keyframes mote{0%{opacity:0}10%{opacity:1}90%{opacity:1}100%{opacity:0}}
+@keyframes ring-bloom{0%,100%{opacity:.35;transform:translate(-50%,-50%) scale(1)}50%{opacity:1;transform:translate(-50%,-50%) scale(1.06)}}
+@keyframes seed-breathe{0%,100%{opacity:.55;transform:translate(-50%,-50%) rotate(0deg) scale(.98)}50%{opacity:.95;transform:translate(-50%,-50%) rotate(180deg) scale(1.02)}}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes orbit{from{transform:translate(-50%,-50%) rotate(0deg)}to{transform:translate(-50%,-50%) rotate(360deg)}}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(201,162,74,.6)}70%{box-shadow:0 0 0 8px rgba(201,162,74,0)}100%{box-shadow:0 0 0 0 rgba(201,162,74,0)}}
+@keyframes inhale{0%{transform:scale(.72);opacity:.75}40%{transform:scale(1);opacity:1}60%{transform:scale(1);opacity:1}100%{transform:scale(.72);opacity:.75}}
+@keyframes orbit-path{from{offset-distance:0%}to{offset-distance:100%}}
+@keyframes sheet{from{opacity:0;transform:translateY(6vh)}to{opacity:1;transform:none}}
+@keyframes rise{from{opacity:0;translate:0 14px}to{opacity:1;translate:0 0}}
+@keyframes sunspin{from{rotate:0deg}to{rotate:360deg}}
+@keyframes ripple{0%{transform:scale(1);opacity:0}15%{opacity:.5}100%{transform:scale(1.7);opacity:0}}
+@media (prefers-reduced-motion:reduce){[data-ripple]{animation:none !important;opacity:0 !important}}
+@keyframes heartbeat{0%,100%{transform:scale(.97)}50%{transform:scale(1.04)}}
+@media (prefers-reduced-motion:reduce){[data-heartbeat]{animation:none !important}}
+@keyframes chakra{0%,100%{opacity:.2;transform:translate(-50%,-50%) scale(.75)}50%{opacity:1;transform:translate(-50%,-50%) scale(1.2)}}
+@media (prefers-reduced-motion:reduce){[data-chakra]{animation:none !important;opacity:.6 !important}}
+@keyframes globe-spin{from{background-position:0 0,0 0}to{background-position:44px 0,0 0}}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@keyframes node-in{from{opacity:0;transform:translate(-50%,-50%) scale(.6)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+<script src="./image-slot.js"></script>
+</helmet>
+
+<main style="position:relative;min-height:100dvh;height:{{ mainH }};overflow:{{ mainOverflow }};background:#F3EAD3;display:flex;flex-direction:column">
+  <!-- Night base + portrait -->
+  <div aria-hidden="true" style="position:absolute;inset:0;background:#F7F1E3"></div>
+  <div style="position:{{ photoLayerPos }};inset:0;left:{{ photoLeft }};order:{{ photoOrder }};flex:{{ photoFlex }};min-height:{{ photoMinH }};overflow:hidden">
+    <sc-if value="{{ phone }}" hint-placeholder-val="{{ false }}">{{ heroImgPhoneEl }}</sc-if>
+  </div>
+
+  <nav aria-label="Utility" style="position:relative;z-index:5;order:0;box-sizing:border-box;width:100%;display:{{ topUtilDisplay }};align-items:center;justify-content:flex-end;gap:22px;padding:2px clamp(16px,5vw,72px) 0;background:#14241C;border-bottom:1px solid rgba(232,207,131,.12)"><a href="Ask.dc.html" style="display:inline-flex;align-items:center;min-height:32px;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:rgba(246,241,230,.66);font-weight:600;white-space:nowrap;transition:color .2s" style-hover="color:#E8CF83">Member support</a><a href="Volunteer.dc.html" style="display:inline-flex;align-items:center;min-height:32px;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:rgba(246,241,230,.66);font-weight:600;white-space:nowrap;transition:color .2s" style-hover="color:#E8CF83">Volunteer</a><a href="Privacy.dc.html" style="display:inline-flex;align-items:center;min-height:32px;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:rgba(246,241,230,.66);font-weight:600;white-space:nowrap;transition:color .2s" style-hover="color:#E8CF83">Privacy</a></nav>
+  <header ref="{{ headerRef }}" style="position:relative;z-index:5;order:0;box-sizing:border-box;width:100%;display:flex;flex-wrap:{{ headerWrap }};align-items:center;justify-content:space-between;gap:{{ headerGap }};padding:{{ headerPad }};background:{{ headerBand }}">
+    <a href="#top" style="display:flex;align-items:center;gap:14px;color:#F6F1E6;min-width:0;flex:{{ brandFlex }}">
+      <sc-if value="{{ logoHeaderLeft }}" hint-placeholder-val="{{ true }}"><span data-heartbeat="" title="Admin: logo artwork" style="outline:{{ adminOutline }};outline-offset:6px;position:relative;flex:none;display:block;width:{{ logoSize }};height:{{ logoSize }};border-radius:50%;overflow:hidden;background:#0E1A14;box-shadow:0 0 0 2px #1B3328,0 0 0 3px #C9A24A,0 10px 24px -10px rgba(0,0,0,.6);animation:heartbeat 8s 1.4s cubic-bezier(.45,0,.55,1) infinite;transform-origin:50% 50%"><img src="assets/logo-original.jpg" alt="Golden Age Wisdom emblem" style="display:block;width:100%;height:100%;object-fit:cover;transform:scale(1.26)"></span></sc-if>
+      <span style="font-family:'Cormorant Garamond',serif;font-weight:500;font-size:{{ wordmarkSize }};letter-spacing:{{ wordmarkLs }};text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Golden Age Wisdom</span>
+    </a>
+    <nav aria-label="Pages" style="display:{{ pagesNavDisplay }};flex:0 1 auto;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px clamp(10px,1.6vw,28px);min-width:0">
+      <sc-for list="{{ subPages }}" as="sp" hint-placeholder-count="7">
+        <a href="{{ sp.href }}" style="display:inline-flex;align-items:center;min-height:44px;font-size:11.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:rgba(246,241,230,.74);border-bottom:1px solid transparent;white-space:nowrap;transition:color .2s" style-hover="color:#E8CF83">{{ sp.label }}</a>
+      </sc-for>
+    </nav>
+    <nav aria-label="Utility" style="flex:none;display:flex;align-items:center;gap:10px">
+      <sc-if value="{{ showUtility }}" hint-placeholder-val="{{ true }}">
+        <a href="Ask.dc.html" style="display:inline-flex;align-items:center;min-height:36px;font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:rgba(246,241,230,.74);font-weight:600;transition:color .2s" style-hover="color:#E8CF83">Member support</a>
+        <span style="position:relative;display:inline-flex" onMouseEnter="{{ volOpen }}" onMouseLeave="{{ volClose }}">
+          <a href="Volunteer.dc.html" onFocus="{{ volOpen }}" onBlur="{{ volClose }}" style="display:inline-flex;align-items:center;min-height:36px;font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:rgba(246,241,230,.74);font-weight:600;transition:color .2s" style-hover="color:#E8CF83">Volunteer</a>
+          <span role="tooltip" style="position:absolute;left:50%;top:100%;transform:translateX(-50%);padding-top:14px;display:{{ volPopDisplay }};z-index:20;animation:rise .3s both">
+            <span style="display:flex;flex-direction:column;gap:6px;width:260px;padding:16px 18px;border-radius:18px;background:linear-gradient(160deg,#FFFDF8 0%,#F3EAD3 100%);box-shadow:0 1px 0 rgba(255,255,255,.9) inset,0 -1px 0 rgba(138,111,52,.25) inset,0 18px 34px -10px rgba(60,42,16,.45);text-transform:none;letter-spacing:0">
+              <span style="font-size:11px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:#7A5E22">{{ volunteerHintTitle }}</span>
+              <span style="font-size:13px;line-height:1.5;color:#3A3128;font-weight:400">{{ volunteerHint }}</span>
+            </span>
+          </span>
+        </span>
+        <a href="Privacy.dc.html" style="display:inline-flex;align-items:center;min-height:36px;font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:rgba(246,241,230,.74);font-weight:600;transition:color .2s" style-hover="color:#E8CF83">Privacy</a>
+      </sc-if>
+      <span style="position:relative;display:inline-flex" onMouseEnter="{{ qrOpen }}" onMouseLeave="{{ qrClose }}">
+        <sc-if value="{{ isMember }}" hint-placeholder-val="{{ false }}"><a href="Member Flow.dc.html" title="Open my dashboard" style="display:inline-flex;align-items:center;gap:10px;height:{{ pillH }};padding:0 18px 0 6px;border-radius:999px;border:1px solid rgba(201,162,74,.6);background:rgba(246,241,230,.06);color:#F6F1E6;font-size:11.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;white-space:nowrap;transition:background .2s" style-hover="background:rgba(246,241,230,.12)"><span style="width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#E8CF83,#C9A24A);color:#14241C;font-family:'Cormorant Garamond',serif;font-weight:700;font-size:16px">{{ memberInitial }}</span>{{ memberFirst }}</a></sc-if>
+        <sc-if value="{{ isGuest }}" hint-placeholder-val="{{ true }}"><a href="Member Flow.dc.html" onClick="{{ qrToggle }}" aria-haspopup="true" aria-expanded="{{ qrShown }}" style="display:inline-flex;align-items:center;gap:10px;height:{{ pillH }};padding:{{ joinPad }};border-radius:999px;background:linear-gradient(90deg,#E8CF83,#C9A24A);color:#14241C;font-size:11.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;white-space:nowrap;box-shadow:0 8px 20px -10px rgba(201,162,74,.7);transition:transform .2s,box-shadow .2s" style-hover="transform:translateY(-1px);box-shadow:0 12px 26px -10px rgba(201,162,74,.9)">{{ headerJoinLabel }}<span aria-hidden="true" style="width:5px;height:5px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(45deg) translateY(-2px);opacity:.7"></span></a></sc-if>
+        <span style="position:absolute;right:0;top:100%;padding-top:12px;display:{{ qrPopDisplayGuest }};z-index:20;animation:rise .35s both">
+        <a href="#join" style="display:flex;align-items:center;gap:14px;padding:10px 18px 10px 10px;border-radius:22px;background:linear-gradient(160deg,#FFFDF8 0%,#F3EAD3 100%);box-shadow:0 1px 0 rgba(255,255,255,.9) inset,0 -1px 0 rgba(138,111,52,.25) inset,0 18px 34px -10px rgba(60,42,16,.45),0 6px 12px rgba(60,42,16,.12);transition:transform .3s cubic-bezier(.2,.8,.2,1),box-shadow .3s" style-hover="transform:translateY(-2px);box-shadow:0 1px 0 rgba(255,255,255,.9) inset,0 -1px 0 rgba(138,111,52,.25) inset,0 26px 44px -12px rgba(60,42,16,.5),0 8px 16px rgba(60,42,16,.14)">
+      <span style="position:relative;flex:none;width:74px;height:74px;display:flex;align-items:center;justify-content:center">
+        <span aria-hidden="true" style="position:absolute;inset:0;border-radius:14px;background:linear-gradient(135deg,#E8CF83,#C9A24A 45%,#8A6F34)"></span>
+        <span aria-hidden="true" style="position:absolute;inset:1.5px;border-radius:12.5px;background:#FCFAF5"></span>
+        <img src="assets/qr-join.svg" alt="QR code for members" style="position:relative;width:60px;height:60px;display:block">
+        <span aria-hidden="true" style="position:absolute;left:50%;top:50%;width:18px;height:18px;transform:translate(-50%,-50%);border-radius:50%;overflow:hidden;background:#0E1A14;box-shadow:0 0 0 2px #FCFAF5,0 0 0 2.5px #C9A24A"><img src="assets/logo-coin-tight.png" alt="" style="display:block;width:100%;height:100%;object-fit:cover"></span>
+      </span>
+      <span style="display:flex;flex-direction:column;gap:3px"><span style="font-size:11px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:#7A5E22">{{ qrEyebrow }}</span><span style="font-size:12px;font-weight:500;color:#3A3128">{{ qrSub }}</span></span>
+    </a>
+        </span>
+      </span>
+    </nav>
+    <sc-if value="{{ logoHeaderCenter }}" hint-placeholder-val="{{ false }}"><a href="#top" aria-label="Golden Age Wisdom — home" style="position:absolute;left:50%;top:calc(100% - {{ sealDip }});transform:translateX(-50%);z-index:8;display:block;pointer-events:auto"><span data-heartbeat="" title="Admin: logo artwork" style="outline:{{ adminOutline }};outline-offset:6px;position:relative;flex:none;display:block;width:{{ sealSize }};height:{{ sealSize }};border-radius:50%;overflow:hidden;background:#0E1A14;box-shadow:0 0 0 2px #1B3328,0 0 0 3px #C9A24A,0 10px 24px -10px rgba(0,0,0,.6);animation:heartbeat 8s 1.4s cubic-bezier(.45,0,.55,1) infinite;transform-origin:50% 50%;box-shadow:0 0 0 4px #F3EAD3,0 0 0 5px #C9A24A,0 18px 40px -16px rgba(20,14,6,.55)"><img src="assets/logo-original.jpg" alt="Golden Age Wisdom emblem" style="display:block;width:100%;height:100%;object-fit:cover;transform:scale(1.26)"></span></a></sc-if>
+    <button onClick="{{ toggleMenu }}" aria-label="{{ menuLabel }}" aria-expanded="{{ menuOpen }}" style="display:{{ menuBtnDisplay }};flex:none;align-items:center;justify-content:center;width:44px;height:44px;border-radius:50%;border:1px solid rgba(246,241,230,.35);background:rgba(246,241,230,.06);color:#F6F1E6;font:inherit;cursor:pointer"><span aria-hidden="true" style="display:flex;flex-direction:column;gap:5px;width:18px"><span style="height:1.5px;background:currentColor;transform:{{ bar1 }};transition:transform .25s"></span><span style="height:1.5px;background:currentColor;opacity:{{ bar2 }};transition:opacity .2s"></span><span style="height:1.5px;background:currentColor;transform:{{ bar3 }};transition:transform .25s"></span></span></button>
+    <sc-if value="{{ menuOpen }}" hint-placeholder-val="{{ false }}">
+    <nav aria-label="Pages" style="order:3;width:100%;display:flex;flex-direction:column;padding:6px 0 10px;border-top:1px solid rgba(246,241,230,.1);animation:rise .25s both">
+      <sc-for list="{{ subPages }}" as="sp" hint-placeholder-count="7">
+        <a href="{{ sp.href }}" style="display:flex;align-items:center;justify-content:space-between;min-height:50px;padding:0 6px;border-bottom:1px solid rgba(246,241,230,.08);font-size:13px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:rgba(246,241,230,.85)">{{ sp.label }}<span aria-hidden="true" style="width:6px;height:6px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(-45deg);opacity:.6"></span></a>
+      </sc-for>
+      <span style="display:flex;flex-wrap:wrap;gap:4px 18px;padding:12px 6px 0">
+        <a href="Ask.dc.html" style="display:inline-flex;align-items:center;min-height:40px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:rgba(246,241,230,.6);font-weight:600">{{ supportLabel }}</a>
+        <a href="Volunteer.dc.html" style="display:inline-flex;align-items:center;min-height:40px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:rgba(246,241,230,.6);font-weight:600">{{ volunteerNavLabel }}</a>
+        <a href="Privacy.dc.html" style="display:inline-flex;align-items:center;min-height:40px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:rgba(246,241,230,.6);font-weight:600">{{ privacyLabel }}</a>
+      </span>
+    </nav>
+    </sc-if>
+    <div style="display:{{ subNavDisplay }};order:3;width:100%;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+      <span style="display:{{ subPagesDisplay }};align-items:center;flex-wrap:wrap;gap:4px 12px">
+        <sc-for list="{{ subPages }}" as="sp" hint-placeholder-count="7">
+          <a href="{{ sp.href }}" style="display:inline-flex;align-items:center;min-height:32px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:rgba(246,241,230,.74);font-weight:600;white-space:nowrap" style-hover="color:#12201A">{{ sp.label }}</a>
+        </sc-for>
+      </span>
+      <span style="display:flex;align-items:center;gap:14px">
+        <a href="Ask.dc.html" style="display:inline-flex;align-items:center;min-height:32px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:rgba(246,241,230,.74);font-weight:600;white-space:nowrap" style-hover="color:#12201A">{{ supportLabel }}</a>
+        <a href="Volunteer.dc.html" style="display:inline-flex;align-items:center;min-height:32px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:rgba(246,241,230,.74);font-weight:600;white-space:nowrap" style-hover="color:#12201A">{{ volunteerNavLabel }}</a>
+        <a href="Privacy.dc.html" style="display:inline-flex;align-items:center;min-height:32px;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:rgba(246,241,230,.74);font-weight:600;white-space:nowrap" style-hover="color:#12201A">{{ privacyLabel }}</a>
+      </span>
+    </div>
+  </header>
+
+  <!-- Copy -->
+  <div id="top" style="position:relative;z-index:5;order:1;box-sizing:border-box;display:flex;flex-direction:column;align-items:{{ copyAlign }};gap:clamp(10px,1.8vh,16px);width:{{ copyW }};padding:{{ copyPad }};text-align:{{ copyText }};background:{{ ivoryBand }}">
+    <sc-if value="{{ logoHero }}" hint-placeholder-val="{{ false }}">
+    <div aria-label="Golden Age Wisdom emblem" style="position:absolute;right:calc(100% - 100vw + clamp(24px,5vw,72px));bottom:70px;display:flex;align-items:flex-end;justify-content:center;pointer-events:none">
+    <span style="position:relative;display:block;width:{{ medSize }};aspect-ratio:1;pointer-events:auto">
+    <svg aria-hidden="true" viewBox="-150 -150 300 300" style="position:absolute;inset:-25%;width:150%;height:150%;overflow:visible;pointer-events:none;animation:rise 1.1s .3s both"><defs><radialGradient id="sunglow" cx="50%" cy="50%" r="50%"><stop offset=".60" stop-color="#E8CF83" stop-opacity=".55"></stop><stop offset=".78" stop-color="#E8CF83" stop-opacity=".12"></stop><stop offset="1" stop-color="#E8CF83" stop-opacity="0"></stop></radialGradient><radialGradient id="rayfade" cx="50%" cy="50%" r="50%"><stop offset=".62" stop-color="#C9A24A" stop-opacity=".9"></stop><stop offset=".86" stop-color="#C9A24A" stop-opacity=".25"></stop><stop offset="1" stop-color="#C9A24A" stop-opacity="0"></stop></radialGradient></defs><g style="transform-origin:0 0;animation:sunspin 360s linear infinite"><path d="{{ sunRays }}" fill="none" stroke="url(#rayfade)" stroke-width=".7" stroke-linecap="round"></path></g></svg>
+    <span data-ripple="" aria-hidden="true" style="position:absolute;inset:0;border-radius:50%;border:1.5px solid rgba(201,162,74,.75);animation:ripple 8s 1.4s ease-out infinite;pointer-events:none"></span><span data-ripple="" aria-hidden="true" style="position:absolute;inset:0;border-radius:50%;border:1px solid rgba(201,162,74,.55);animation:ripple 8s 2.6s ease-out infinite;pointer-events:none"></span><a href="#meditate-now" aria-label="Mass Meditation — join the daily group meditation" data-heartbeat="" title="Admin: logo artwork" style="outline:{{ adminOutline }};outline-offset:10px;position:relative;display:block;width:100%;aspect-ratio:1;border-radius:50%;overflow:hidden;background:#0E1A14;box-shadow:0 40px 90px -30px rgba(20,14,6,.6),0 0 0 4px #F3EAD3,0 0 0 5px #C9A24A,0 0 60px rgba(201,162,74,.25);pointer-events:auto;animation:rise 1.1s .3s both,heartbeat 8s 1.4s cubic-bezier(.45,0,.55,1) infinite;transform-origin:50% 50%">
+      <img src="assets/logo-original.jpg" alt="" style="display:block;width:100%;height:100%;object-fit:cover;transform:scale(1.26)">
+      <span aria-hidden="true" style="position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 34% 28%,rgba(255,255,255,.08) 0%,rgba(255,255,255,0) 30%),radial-gradient(ellipse 70% 22% at 50% 86%,rgba(255,236,170,.22),rgba(255,236,170,0) 70%)"></span>
+    </a>
+    </span>
+    </div>
+    </sc-if>
+    <span style="display:inline-flex;align-items:center;gap:10px;font-size:11px;font-weight:700;letter-spacing:.3em;text-transform:uppercase;color:#7A5E22;animation:rise .9s both"><span aria-hidden="true" style="width:6px;height:6px;border-radius:50%;background:#C9A24A"></span>Free meditation · every day</span>
+    <h1 title="Admin: headline + accent" style="outline:{{ adminOutline }};outline-offset:8px;margin:0;font-family:'Cormorant Garamond',serif;font-weight:500;font-size:{{ h1Size }};line-height:1;letter-spacing:-.015em;text-wrap:balance;max-width:{{ h1Max }};white-space:{{ h1Wrap }};color:#12201A;text-shadow:none;animation:rise .9s .1s both">{{ headline }} <em style="color:#8A6F34">{{ headlineAccent }}</em></h1>
+    <p title="Admin: subline" style="outline:{{ adminOutline }};outline-offset:6px;margin:0;font-size:{{ sublineFs }};font-weight:400;line-height:1.45;color:#3A3128;text-wrap:pretty;max-width:{{ subMax }};white-space:{{ sublineWrap }};animation:rise .9s .25s both">{{ subline }}</p>
+    <div style="display:flex;flex-wrap:{{ ctaWrap }};justify-content:{{ ctaJustify }};align-items:center;gap:{{ ctaGapX }};margin-top:{{ ctaGap }};animation:rise .9s .4s both">
+            <a href="#film" onClick="{{ openFilm }}" style="cursor:pointer;display:inline-flex;align-items:center;gap:10px;height:{{ ctaH }};padding:{{ secPad }};border-radius:999px;border:{{ secBorder }};background:{{ secBg }};backdrop-filter:{{ secBlur }};-webkit-backdrop-filter:{{ secBlur }};box-shadow:{{ secShadow }};font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#12201A;white-space:nowrap;width:{{ secW }};flex:{{ secFlex }};min-width:0;justify-content:center;box-sizing:border-box;order:{{ secOrder }};transition:background .2s,color .2s" style-hover="color:#8A6F34;background:transparent"><span aria-hidden="true" style="display:inline-block;width:0;height:0;border-left:7px solid currentColor;border-top:4.5px solid transparent;border-bottom:4.5px solid transparent"></span>{{ watchLabel }}</a>
+      <a href="#world-sits" style="display:{{ deskCtaDisplay }};align-items:center;gap:12px;height:48px;padding:0 22px 0 16px;border-radius:999px;background:linear-gradient(90deg,#E8CF83,#C9A24A);border:1px solid rgba(255,255,255,.5);box-shadow:0 1px 0 rgba(255,255,255,.6) inset,0 12px 30px -10px rgba(201,162,74,.7);color:#14241C;white-space:nowrap;transition:transform .2s" style-hover="transform:translateY(-1px)"><span aria-hidden="true" style="width:9px;height:9px;border-radius:50%;background:{{ heroDot }};box-shadow:{{ heroDotGlow }};animation:{{ heroDotAnim }}"></span><span style="display:flex;flex-direction:column;gap:1px;text-align:left"><span style="font-size:10px;font-weight:800;letter-spacing:.22em;text-transform:uppercase;color:#5A3C0E">{{ heroSitsKicker }}</span><span style="font-size:12.5px;font-weight:700;letter-spacing:.02em;color:#14241C">{{ heroSitsLine }}</span></span></a>
+    </div>
+    
+  </div>
+  <div style="display:{{ phoneSitsDisplay }};order:1;position:relative;z-index:5;flex:none;flex-direction:column;padding:0 0 12px;overflow:hidden;background:{{ ivoryBand }}">
+    <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:4px 12px;padding:2px 22px 10px"><span style="display:flex;align-items:center;gap:10px;min-width:0"><span aria-hidden="true" style="flex:none;width:18px;height:1px;background:#C9A24A"></span><span style="font-size:11px;font-weight:700;letter-spacing:{{ sitsKickerLs }};text-transform:uppercase;color:#7A5E22;white-space:nowrap">{{ phoneJoinLabel }}</span></span><span style="display:flex;align-items:center;gap:6px;flex:none"><span aria-hidden="true" style="width:7px;height:7px;border-radius:50%;background:{{ heroDot }};box-shadow:{{ heroDotGlow }};animation:{{ heroDotAnim }}"></span><span style="font-size:11px;font-weight:600;color:#3A3128;white-space:nowrap">{{ sitsStatusShort }}</span></span></div>
+    <div style="overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent)"><div style="display:flex;gap:8px;width:max-content;padding:0 4px;animation:marquee 40s linear infinite" style-hover="animation-play-state:paused" style-active="animation-play-state:paused">
+    <sc-for list="{{ sitsLoop }}" as="s" hint-placeholder-count="6">
+      <span style="flex:none;display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;background:rgba(255,253,248,.45);border:1px solid rgba(255,255,255,.7);box-shadow:0 1px 0 rgba(255,255,255,.8) inset,0 8px 20px -10px rgba(60,42,16,.3)"><span style="width:7px;height:7px;border-radius:50%;background:{{ s.dotBg }}"></span><span style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#3A3128">{{ s.name }}</span><span style="font-size:12px;font-weight:600;color:#14241C;white-space:nowrap">{{ s.local }}</span><span style="font-size:10.5px;font-weight:600;color:{{ s.stateColor }};white-space:nowrap">{{ s.state }}</span></span>
+    </sc-for>
+    </div></div>
+  </div>
+
+  <sc-if value="{{ filmOpen }}" hint-placeholder-val="{{ false }}">
+  <div id="film" role="dialog" aria-modal="true" aria-label="Intro film" onClick="{{ closeFilm }}" style="position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;padding:clamp(12px,3vw,40px);background:rgba(10,18,14,.9);backdrop-filter:blur(10px);animation:rise .3s both">
+    <div onClick="{{ stopProp }}" style="position:relative;width:min(1100px,100%);aspect-ratio:16/9;border-radius:18px;overflow:hidden;background:#000;box-shadow:0 0 0 1px rgba(201,162,74,.5),0 40px 90px -30px rgba(0,0,0,.8)">
+      {{ filmPlayer }}
+      <sc-if value="{{ filmMuted }}" hint-placeholder-val="{{ false }}"><button onClick="{{ unmuteFilm }}" style="position:absolute;left:50%;bottom:72px;transform:translateX(-50%);display:inline-flex;align-items:center;gap:10px;height:44px;padding:0 20px;border-radius:999px;border:1px solid rgba(201,162,74,.7);background:rgba(20,36,28,.85);color:#E8CF83;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;font-family:inherit;box-shadow:0 12px 30px -10px rgba(0,0,0,.6)" style-hover="background:#14241C">🔊 Tap for sound</button></sc-if>
+      <button onClick="{{ closeFilm }}" aria-label="Close film" style="position:absolute;top:12px;right:12px;width:40px;height:40px;border-radius:50%;border:1px solid rgba(201,162,74,.6);background:rgba(20,36,28,.7);color:#E8CF83;font-size:18px;line-height:1;cursor:pointer;font-family:inherit" style-hover="background:#14241C">×</button>
+    </div>
+  </div>
+  </sc-if>
+  <aside aria-label="Admin-editable regions" style="display:{{ adminLegendDisplay }};position:fixed;right:18px;bottom:96px;z-index:50;flex-direction:column;gap:6px;max-width:260px;padding:14px 16px;border-radius:16px;background:#14241C;color:#F6F1E6;box-shadow:0 18px 40px -16px rgba(0,0,0,.5);font-size:12px;line-height:1.45">
+    <span style="font-size:10.5px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:#E8CF83">Admin can change</span>
+    <span>Dashed gold outlines mark editable regions:</span>
+    <span>· Headline, accent &amp; subline</span>
+    <span>· Session times (pill + ticker)</span>
+    <span>· Hero photo &amp; caption</span>
+    <span>· Upcoming event card</span>
+    <span>· Testimonials</span>
+    <span>· Intro film (video file)</span>
+    <span>· Zoom ID / passcode</span>
+    <span>· Logo artwork, leaf labels &amp; links</span>
+  </aside>
+  <!-- Wheel -->
+  <div style="position:relative;z-index:6;order:3;box-sizing:border-box;flex:{{ wheelFlex }};min-height:0;display:flex;flex-direction:{{ wheelDir }};align-items:{{ wheelRowAlign }};justify-content:{{ wheelJustify }};gap:{{ wheelRowGap }};width:{{ wheelW }};padding:{{ wheelPad }};background:{{ ivoryBand }};border-top:{{ wheelBorder }}">
+    <div style="display:flex;flex-direction:column;align-items:{{ wheelAlign }};flex:none;min-width:0;max-width:100%">
+    <sc-if value="{{ showTiles }}" hint-placeholder-val="{{ false }}">
+      <nav aria-label="Explore Golden Age Wisdom" style="box-sizing:border-box;width:100%;padding:0 22px;display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <sc-for list="{{ nodes }}" as="n" hint-placeholder-count="3">
+          <a href="{{ n.href }}" style="display:flex;align-items:center;gap:12px;min-height:{{ tileH }};padding:10px 12px 10px 10px;border-radius:16px;background:rgba(255,253,248,.42);backdrop-filter:blur(18px) saturate(1.3);-webkit-backdrop-filter:blur(18px) saturate(1.3);border:1px solid rgba(255,255,255,.65);box-shadow:0 1px 0 rgba(255,255,255,.8) inset,0 -1px 0 rgba(138,111,52,.18) inset,0 12px 30px -8px rgba(60,42,16,.28),0 2px 6px rgba(60,42,16,.06);color:#12201A;transition:background .2s,color .2s,border-color .2s" style-hover="background:#12201A;color:#F6F1E6;border-color:#12201A">
+            <span style="flex:none;display:flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:50%;background:{{ n.chip }};color:{{ n.deepHue }}"><span style="display:flex;width:24px;height:24px">{{ n.tileIcon }}</span></span>
+            <span style="display:flex;flex-direction:column;gap:2px;min-width:0;flex:1"><span style="font-size:14px;font-weight:700;letter-spacing:.01em;line-height:1.2;color:inherit">{{ n.kicker }}</span><span style="font-size:11.5px;font-weight:500;line-height:1.3;color:#6B5E48;display:{{ descDisplay }}">{{ n.desc }}</span></span>
+            <span aria-hidden="true" style="flex:none;width:7px;height:7px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(-45deg);opacity:.5"></span>
+          </a>
+        </sc-for>
+      </nav>
+    </sc-if>
+    
+    <nav aria-label="Explore Golden Age Wisdom" style="position:relative;width:{{ treeW }};max-width:100%;aspect-ratio:1277/835;flex:none;margin:{{ wheelMargin }};overflow:hidden;container-type:inline-size">
+      <img src="assets/bodhi-tree.png" alt="" style="position:absolute;left:0;top:-10.78%;width:100%;height:auto;display:block;mix-blend-mode:multiply;pointer-events:none;user-select:none">
+      <sc-for list="{{ chapterNodes }}" as="k" hint-placeholder-count="6">
+        <a href="{{ k.href }}" data-i="{{ k.ch }}" aria-label="{{ k.label }}" aria-current="{{ k.current }}" onClick="{{ k.onClick }}" onMouseEnter="{{ k.onEnter }}" onFocus="{{ k.onEnter }}" style="position:absolute;left:{{ k.left }};top:{{ k.top }};transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.4cqw;min-width:15cqw;min-height:max(44px,9cqw);padding:1.2cqw 2cqw;box-sizing:border-box;border-radius:999px;background:{{ k.pillBg }};color:{{ k.pillColor }};box-shadow:{{ k.pillShadow }};outline:1.5px solid {{ k.ringBorder }};outline-offset:-1.5px;opacity:{{ k.ringOpacity }};backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);text-decoration:none;text-align:center;white-space:nowrap;font-size:clamp(8px,1.55cqw,11px);font-weight:700;letter-spacing:.2em;text-transform:uppercase;line-height:1.25;transition:background .45s,color .45s,box-shadow .45s,transform .45s cubic-bezier(.2,.8,.2,1)" style-hover="transform:translate(-50%,-50%) scale(1.06)"><span style="font-family:'Cormorant Garamond',serif;font-size:clamp(10px,2cqw,14px);font-weight:500;letter-spacing:.12em;line-height:1;opacity:.85">{{ k.num }}</span>{{ k.label }}</a>
+      </sc-for>
+    </nav>
+    <div aria-live="polite" style="display:flex;flex-direction:column;align-items:{{ captionAlign }};text-align:{{ captionText }};gap:6px;margin:{{ captionMargin }};width:{{ treeW }};max-width:100%;min-height:118px;box-sizing:border-box;padding:14px 20px 0;border-top:1px solid rgba(201,162,74,.35)">
+      <span style="display:flex;align-items:center;gap:10px;font-size:11px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:#7A5E22"><span style="font-family:'Cormorant Garamond',serif;font-size:14px;font-weight:500;letter-spacing:.12em">{{ activeNum }}</span>{{ activeKicker }}</span>
+      <span style="font-family:'Cormorant Garamond',serif;font-weight:500;font-size:clamp(20px,1.7vw,28px);line-height:1.15;color:#14241C;text-wrap:balance;max-width:520px">{{ activeTitle }}</span>
+      <a href="{{ activeHref }}" style="display:inline-flex;align-items:center;gap:8px;margin-top:2px;font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#7A5E22;text-decoration:none" style-hover="color:#1F3D2B">{{ activeCta }} <span aria-hidden="true" style="letter-spacing:0">→</span></a>
+    </div>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;flex:0 0 auto;min-width:0;width:{{ cardsW }};align-self:stretch;margin:{{ cardsMargin }}">
+    <div style="display:grid;grid-template-columns:{{ cardsCols }};grid-template-rows:{{ cardsRows }};gap:12px;width:100%;flex:1 1 auto;min-height:0">
+      <a href="#meditate" title="Admin: hero photo + caption" style="outline:{{ adminOutline }};outline-offset:4px;position:relative;display:block;aspect-ratio:{{ photoRatio }};min-height:0;overflow:hidden;border-radius:22px;background:#14241C;box-shadow:0 1px 0 rgba(255,255,255,.6) inset,0 24px 50px -22px rgba(60,42,16,.5);animation:rise .9s .4s both">{{ heroImgEl }}<span style="position:absolute;left:0;right:0;bottom:0;padding:14px 16px;background:linear-gradient(180deg,rgba(20,36,28,0),rgba(20,36,28,.75));font-size:11px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:#E8CF83">{{ heroCaption }}</span></a>
+      <a href="{{ eventHref }}" title="Admin: upcoming event (kicker, title, text, link)" style="outline:{{ adminOutline }};outline-offset:4px;position:relative;min-height:0;display:flex;flex-direction:column;justify-content:center;gap:8px;overflow:hidden;padding:clamp(12px,1.2vw,20px) clamp(14px,1.4vw,24px);border-radius:22px;background:rgba(255,253,248,.55);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.7);color:#14241C;box-shadow:0 1px 0 rgba(255,255,255,.8) inset,0 20px 40px -14px rgba(60,42,16,.22);animation:rise .9s .7s both" style-hover="border-color:rgba(201,162,74,.6)">
+      <span style="font-size:11px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:#7A5E22">{{ eventKicker }}</span>
+      <span style="font-family:'Cormorant Garamond',serif;font-weight:500;font-size:clamp(18px,1.5vw,26px);line-height:1.1;text-wrap:balance">{{ eventTitle }}</span>
+      <span style="font-size:clamp(12px,.95vw,14px);line-height:1.4;color:#3A3128">{{ eventSub }}</span>
+      <span style="display:inline-flex;align-items:center;gap:8px;margin-top:4px;font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#7A5E22">{{ eventCta }} <span aria-hidden="true" style="letter-spacing:0">→</span></span>
+    </a>
+      <a href="#testimonials" title="Admin: testimonials list" style="outline:{{ adminOutline }};outline-offset:4px;position:relative;min-height:0;display:flex;flex-direction:column;justify-content:center;gap:8px;overflow:hidden;padding:clamp(12px,1.2vw,20px) clamp(14px,1.4vw,24px);border-radius:22px;background:#14241C;color:#F6F1E6;box-shadow:0 1px 0 rgba(255,255,255,.1) inset,0 24px 50px -22px rgba(60,42,16,.5);animation:rise .9s .8s both" style-hover="background:#1F3A2E">
+        <span aria-hidden="true" style="position:absolute;right:-12%;top:-18%;width:60%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,rgba(232,207,131,.28),rgba(232,207,131,0) 70%)"></span>
+        <span style="font-size:11px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:#E8CF83">{{ testiKicker }}</span>
+        <span aria-hidden="true" style="font-family:'Cormorant Garamond',serif;font-size:40px;line-height:.6;color:#C9A24A">“</span>
+        <span key="{{ testiKey }}" style="display:flex;flex-direction:column;gap:8px;min-height:7.2em;animation:rise .7s both"><span style="font-family:'Cormorant Garamond',serif;font-weight:500;font-size:clamp(16px,1.3vw,22px);line-height:1.15;text-wrap:pretty">{{ testiQuote }}</span>
+        <span style="font-size:11px;font-weight:600;letter-spacing:.08em;color:rgba(246,241,230,.75)">— {{ testiName }}</span></span>
+        <span style="display:inline-flex;align-items:center;gap:8px;margin-top:4px;font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#E8CF83">{{ testiCta }} <span aria-hidden="true" style="letter-spacing:0">→</span></span>
+      </a>
+      <a href="#film" onClick="{{ openFilm }}" title="Admin: intro video file" style="outline:{{ adminOutline }};outline-offset:4px;position:relative;display:flex;flex-direction:column;justify-content:flex-end;gap:8px;overflow:hidden;padding:clamp(12px,1.2vw,20px) clamp(14px,1.4vw,24px);border-radius:22px;background:linear-gradient(160deg,#E9EEDF 0%,#D6DEC8 100%);border:1px solid rgba(255,255,255,.7);color:#14241C;box-shadow:0 1px 0 rgba(255,255,255,.8) inset,0 20px 40px -14px rgba(31,61,43,.22);animation:rise .9s .9s both;cursor:pointer" style-hover="border-color:rgba(201,162,74,.6)">
+        <span aria-hidden="true" style="position:absolute;left:50%;top:38%;width:56px;height:56px;transform:translate(-50%,-50%);border-radius:50%;background:#14241C;box-shadow:0 0 0 8px rgba(20,36,28,.08),0 12px 24px -8px rgba(20,36,28,.5)"><span style="position:absolute;left:55%;top:50%;transform:translate(-50%,-50%);width:0;height:0;border-left:16px solid #E8CF83;border-top:10px solid transparent;border-bottom:10px solid transparent"></span></span>
+        <span style="font-size:11px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:#1F3D2B">Two minutes</span>
+        <span style="font-family:'Cormorant Garamond',serif;font-weight:500;font-size:clamp(18px,1.5vw,26px);line-height:1.1;text-wrap:balance">Watch the intro</span>
+        <span style="font-size:clamp(12px,.95vw,14px);line-height:1.4;color:#3A3128">What a session feels like, before you join one.</span>
+      </a>
+    </div>
+    </div>
+  </div>
+
+  <sc-if value="{{ showBase }}" hint-placeholder-val="{{ true }}">
+  <footer id="world-sits" aria-label="Meditations around the world" style="position:relative;z-index:6;order:4;box-sizing:border-box;width:100%;display:flex;align-items:center;gap:clamp(16px,2vw,28px);padding:12px clamp(24px,5vw,72px) 10px;border-top:1px solid rgba(232,207,131,.18);background:linear-gradient(180deg,#1B3328 0%,#14241C 100%);box-shadow:0 1px 0 rgba(255,255,255,.05) inset">
+    <div style="display:flex;align-items:center;gap:14px;flex:none">
+      <span aria-hidden="true" style="position:relative;flex:none;width:56px;height:56px;border-radius:50%;overflow:hidden;background:#12201A;box-shadow:0 0 0 1.5px #C9A24A"><img src="assets/globe-meditator.png" alt="" style="display:block;width:100%;height:100%;object-fit:cover"></span>
+      <div style="display:flex;flex-direction:column;gap:3px;min-width:150px">
+      <span style="font-size:11px;font-weight:700;letter-spacing:.3em;text-transform:uppercase;color:#E8CF83">{{ sitsTitle }}</span>
+      <span style="font-size:12.5px;color:rgba(246,241,230,.75);white-space:nowrap">{{ sitsStatus }}</span>
+      </div>
+    </div>
+    <div style="flex:1;min-width:0;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 5%,#000 95%,transparent);mask-image:linear-gradient(90deg,transparent,#000 5%,#000 95%,transparent)">
+    <ul title="Admin: session times per region" style="outline:{{ adminOutline }};outline-offset:2px;border-radius:14px;list-style:none;margin:0;padding:2px 0;display:flex;gap:10px;width:max-content;animation:marquee 48s linear infinite" style-hover="animation-play-state:paused">
+      <sc-for list="{{ sitsLoop }}" as="s" hint-placeholder-count="10">
+        <li style="flex:none;display:flex;align-items:center;gap:12px;padding:8px 14px 8px 10px;border-radius:14px;background:{{ s.tileBg }};border:1px solid rgba(255,255,255,.1);box-shadow:0 1px 0 rgba(255,255,255,.06) inset;transition:transform .2s" style-hover="transform:translateY(-1px)">
+          <span aria-hidden="true" style="width:8px;height:8px;border-radius:50%;background:{{ s.dotBg }};box-shadow:{{ s.dotGlow }}"></span>
+          <span style="display:flex;flex-direction:column;gap:1px">
+            <span style="font-size:10.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:{{ s.nameColor }}">{{ s.name }}</span>
+            <span style="font-size:13px;font-weight:600;color:#F6F1E6;white-space:nowrap">{{ s.local }} <span style="font-weight:400;color:rgba(246,241,230,.55)">· {{ s.home }}</span></span>
+          </span>
+          <span style="font-size:10.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:{{ s.stateColor }};white-space:nowrap;padding-left:10px;border-left:1px solid rgba(232,207,131,.25)">{{ s.state }}</span>
+        </li>
+      </sc-for>
+    </ul>
+    </div>
+    <a href="{{ zoomHref }}" target="_blank" rel="noopener" title="Admin: Zoom ID + passcode" style="outline:{{ adminOutline }};outline-offset:4px;flex:none;display:inline-flex;align-items:center;gap:10px;height:40px;padding:0 18px 0 14px;border-radius:999px;background:linear-gradient(90deg,#E8CF83,#C9A24A);color:#14241C;font-size:11.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;white-space:nowrap;box-shadow:0 8px 22px -8px rgba(201,162,74,.6);transition:transform .2s" style-hover="transform:translateY(-1px)"><span aria-hidden="true" style="width:8px;height:8px;border-radius:50%;background:#14241C;box-shadow:0 0 0 3px rgba(20,36,28,.18)"></span><span style="display:flex;flex-direction:column;gap:1px;text-align:left"><span>Join on Zoom</span><span style="font-size:10px;font-weight:600;letter-spacing:.08em;color:#3E2E0E">ID {{ zoomId }} · Passcode {{ zoomPass }}</span></span></a>
+  </footer>
+  </sc-if>
+
+</main>
+
+<div id="chapters" role="dialog" aria-modal="true" aria-label="Chapter" data-screen-label="Chapters" style="position:fixed;inset:0;z-index:150;display:{{ chaptersDisplay }};flex-direction:column;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;background:#F3EAD3;box-shadow:0 -30px 80px rgba(20,14,6,.35);animation:sheet .45s cubic-bezier(.2,.8,.2,1) both">
+  <div style="position:sticky;top:0;z-index:6;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px clamp(16px,4vw,48px);padding-top:calc(10px + env(safe-area-inset-top));background:rgba(243,234,211,.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid rgba(138,111,52,.2)">
+    <span aria-hidden="true" style="width:44px;height:44px;flex:none"></span>
+    <span style="display:flex;align-items:center;gap:10px;min-width:0;font-size:11px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:#7A5E22;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"><span aria-hidden="true" style="width:6px;height:6px;border-radius:50%;background:#C9A24A"></span>{{ chapterNow }}</span>
+    <button onClick="{{ closeChapters }}" aria-label="Close" style="width:44px;height:44px;border-radius:50%;border:1px solid rgba(138,111,52,.4);background:transparent;color:#14241C;font:inherit;font-size:18px;line-height:1;cursor:pointer;transition:background .2s,color .2s" style-hover="background:#14241C;color:#F6F1E6">×</button>
+  </div>
+  <div style="flex:1;display:flex;flex-direction:column">
+<section id="rituals" data-chapter="0" data-screen-label="Small rituals" style="flex:1;flex-direction:column;justify-content:center;display:{{ ch0 }};box-sizing:border-box;align-content:center;position:relative;background:#F3EAD3;padding:clamp(24px,4vh,64px) clamp(24px,6vw,96px)">
+  <div style="max-width:1200px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:clamp(32px,5vw,80px);align-items:end">
+    <div style="display:flex;flex-direction:column;gap:18px">
+      <span style="display:flex;align-items:center;gap:12px;font-size:11px;font-weight:700;letter-spacing:.26em;text-transform:uppercase;color:#7A5E22"><span aria-hidden="true" style="width:28px;height:1px;background:#C9A24A"></span>Small rituals. Meaningful change.</span>
+      <h2 style="margin:0;font-family:'Cormorant Garamond',serif;font-weight:400;font-size:clamp(34px,4.6vw,64px);line-height:1.02;letter-spacing:-.01em;text-wrap:balance">Feeling better begins <em style="font-style:italic;color:#7A5E22">with being present.</em></h2>
+    </div>
+    <p style="margin:0;max-width:44ch;font-size:clamp(15px,1.15vw,18px);line-height:1.6;color:#3A3128;text-wrap:pretty">You don’t need to change everything to reconnect with yourself. A quiet moment, a nourishing meal, an honest reflection. Begin with the small things, and let them become your way of life.</p>
+  </div>
+  <div style="max-width:1200px;margin:clamp(28px,4vh,56px) auto 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1px;background:rgba(138,111,52,.25);border-top:1px solid rgba(138,111,52,.25);border-bottom:1px solid rgba(138,111,52,.25)">
+    <sc-for list="{{ rituals }}" as="r" hint-placeholder-count="3">
+      <a href="{{ r.href }}" data-i="{{ r.ch }}" onClick="{{ goChapterLink }}" style="display:flex;flex-direction:column;gap:14px;padding:clamp(24px,2.6vw,40px) clamp(20px,2vw,32px);background:#F3EAD3;color:#14241C;transition:background .3s" style-hover="background:#FFFDF8">
+        <span style="display:flex;align-items:center;gap:10px;font-size:11px;font-weight:700;letter-spacing:.24em;text-transform:uppercase;color:#7A5E22"><span aria-hidden="true" style="width:7px;height:7px;border-radius:50%;background:{{ r.hue }}"></span>{{ r.num }} / {{ r.kicker }}</span>
+        <span style="font-family:'Cormorant Garamond',serif;font-weight:500;font-size:clamp(24px,2.1vw,32px);line-height:1.1">{{ r.title }}</span>
+        <span style="font-size:14.5px;line-height:1.55;color:#3A3128;text-wrap:pretty">{{ r.body }}</span>
+        <span style="margin-top:auto;padding-top:8px;font-size:11px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:#7A5E22">{{ r.cta }} ↗</span>
+      </a>
+    </sc-for>
+  </div>
+</section>
+
+<section id="daily-pause" data-chapter="1" data-screen-label="Daily pause" style="flex:1;flex-direction:column;justify-content:center;display:{{ ch1 }};box-sizing:border-box;align-content:center;position:relative;background:#14241C;color:#F6F1E6;padding:clamp(24px,4vh,64px) clamp(24px,6vw,96px);overflow:hidden">
+  <span aria-hidden="true" style="position:absolute;right:-10%;top:-30%;width:min(60vw,700px);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,rgba(232,207,131,.22),rgba(232,207,131,0) 70%)"></span>
+  <div style="position:relative;max-width:1200px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:clamp(40px,6vw,96px);align-items:center">
+    <div style="display:flex;flex-direction:column;gap:22px">
+      <span style="display:flex;align-items:center;gap:12px;font-size:11px;font-weight:700;letter-spacing:.26em;text-transform:uppercase;color:#E8CF83"><span aria-hidden="true" style="width:28px;height:1px;background:#E8CF83"></span>Your daily pause</span>
+      <h2 style="margin:0;font-family:'Cormorant Garamond',serif;font-weight:400;font-size:clamp(40px,5.4vw,84px);line-height:.98;letter-spacing:-.01em">30 minutes.<br>Every day.<br><em style="font-style:italic;color:#E8CF83">Just for you.</em></h2>
+      <p style="margin:0;max-width:46ch;font-size:clamp(15px,1.15vw,18px);line-height:1.6;color:rgba(246,241,230,.8);text-wrap:pretty">A free meditation program to help you build a gentle, consistent practice. Come as you are — no experience, special equipment, or perfect mindset needed.</p>
+      <div style="display:flex;flex-wrap:wrap;align-items:center;gap:16px 24px;margin-top:6px">
+        <a href="#join" style="display:inline-flex;align-items:center;height:50px;padding:0 26px;border-radius:999px;background:linear-gradient(90deg,#E8CF83,#C9A24A);color:#14241C;font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;box-shadow:0 14px 30px -12px rgba(201,162,74,.7)" style-hover="color:#14241C;filter:brightness(1.05)">Join the free program</a>
+        <span style="font-size:12.5px;color:rgba(246,241,230,.65)">Always free · Beginner-friendly · A fresh start every day</span>
+      </div>
+    </div>
+    <ol style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column">
+      <sc-for list="{{ steps }}" as="st" hint-placeholder-count="3">
+        <li style="display:grid;grid-template-columns:72px 1fr;gap:20px;padding:clamp(18px,2vw,28px) 0;border-top:1px solid rgba(232,207,131,.22)">
+          <span style="font-family:'Cormorant Garamond',serif;font-size:clamp(28px,2.6vw,40px);line-height:1;color:#E8CF83">{{ st.min }}<span style="font-size:.4em;letter-spacing:.1em;margin-left:4px;font-family:'Manrope',sans-serif;font-weight:600">MIN</span></span>
+          <span style="display:flex;flex-direction:column;gap:6px"><span style="font-size:16px;font-weight:600">{{ st.title }}</span><span style="font-size:14px;line-height:1.5;color:rgba(246,241,230,.7)">{{ st.body }}</span></span>
+        </li>
+      </sc-for>
+      <li style="display:flex;flex-wrap:wrap;gap:8px;padding-top:22px;border-top:1px solid rgba(232,207,131,.22)">
+        <span style="padding:7px 12px;border-radius:999px;border:1px solid rgba(232,207,131,.4);font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#E8CF83">Every day</span>
+        <span style="padding:7px 12px;border-radius:999px;border:1px solid rgba(232,207,131,.4);font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#E8CF83">30 minutes</span>
+        <span style="padding:7px 12px;border-radius:999px;border:1px solid rgba(232,207,131,.4);font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#E8CF83">All levels</span>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<section id="nourish" data-chapter="2" data-screen-label="Nourish" style="flex:1;flex-direction:column;justify-content:center;display:{{ ch2 }};box-sizing:border-box;align-content:center;background:#F3EAD3;padding:clamp(24px,4vh,64px) clamp(24px,6vw,96px)">
+  <div style="max-width:1200px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:clamp(32px,5vw,80px);align-items:center">
+    <div style="position:relative;aspect-ratio:4/5;max-height:min(620px,calc(100dvh - 300px));margin:0 auto;border-radius:28px;overflow:hidden;background:#14241C;box-shadow:0 30px 60px -30px rgba(60,42,16,.5)"><img src="assets/pillars/wellness-600x720.webp" alt="Colourful bowl of grains, greens and vegetables" style="display:block;width:100%;height:100%;object-fit:cover"><span style="position:absolute;left:20px;bottom:18px;font-size:11px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:#E8CF83">Good food. Full attention.</span></div>
+    <div style="display:flex;flex-direction:column;gap:22px">
+      <span style="display:flex;align-items:center;gap:12px;font-size:11px;font-weight:700;letter-spacing:.26em;text-transform:uppercase;color:#7A5E22"><span aria-hidden="true" style="width:28px;height:1px;background:#C9A24A"></span>Nourish your body</span>
+      <h2 style="margin:0;font-family:'Cormorant Garamond',serif;font-weight:400;font-size:clamp(30px,4.2vw,68px);line-height:.98;letter-spacing:-.01em">Eat well. Slow down.<br><em style="font-style:italic;color:#7A5E22">Savor life.</em></h2>
+      <p style="margin:0;max-width:46ch;font-size:clamp(15px,1.15vw,18px);line-height:1.6;color:#3A3128;text-wrap:pretty">Good food is more than what’s on your plate. It’s the way you choose, prepare and enjoy it. Make your next meal a small act of care.</p>
+      <ul style="list-style:none;margin:6px 0 0;padding:0;display:flex;flex-direction:column">
+        <sc-for list="{{ eating }}" as="e" hint-placeholder-count="3">
+          <li style="display:grid;grid-template-columns:28px 1fr;gap:14px;padding:16px 0;border-top:1px solid rgba(138,111,52,.25);font-size:15px;line-height:1.5;color:#3A3128"><span aria-hidden="true" style="margin-top:7px;width:8px;height:8px;border-radius:50%;background:{{ e.hue }}"></span><span><strong style="font-weight:600;color:#14241C">{{ e.lead }}</strong> {{ e.text }}</span></li>
+        </sc-for>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="one-minute" data-chapter="3" data-screen-label="One minute" style="flex:1;flex-direction:column;justify-content:center;display:{{ ch3 }};box-sizing:border-box;align-content:center;background:#EDE2C6;padding:clamp(24px,4vh,64px) clamp(24px,6vw,96px);text-align:center">
+  <div style="max-width:720px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:22px">
+    <span style="font-size:11px;font-weight:700;letter-spacing:.26em;text-transform:uppercase;color:#7A5E22">A moment, right here</span>
+    <h2 style="margin:0;font-family:'Cormorant Garamond',serif;font-weight:400;font-size:clamp(34px,4.6vw,64px);line-height:1.02;text-wrap:balance">Your next breath <em style="font-style:italic;color:#7A5E22">is a new beginning.</em></h2>
+    <p style="margin:0;max-width:46ch;font-size:clamp(15px,1.1vw,17px);line-height:1.6;color:#3A3128">Settle into a comfortable position. Breathe naturally, or follow this gentle rhythm if it feels comfortable.</p>
+    <div style="position:relative;width:min(clamp(160px,26vw,260px),calc(100dvh - 430px));min-width:120px;aspect-ratio:1;margin:12px 0 4px;display:flex;align-items:center;justify-content:center">
+      <span aria-hidden="true" style="position:absolute;inset:0;border-radius:50%;border:1px dashed rgba(138,111,52,.5)"></span>
+      <span aria-hidden="true" style="position:absolute;inset:12%;border-radius:50%;background:radial-gradient(circle,rgba(232,207,131,.9),rgba(201,162,74,.55) 60%,rgba(201,162,74,.15) 100%);animation:{{ breathAnim }};transform-origin:center"></span>
+      <span style="position:relative;font-family:'Cormorant Garamond',serif;font-size:clamp(22px,2.4vw,32px);color:#14241C">{{ breathLabel }}</span>
+    </div>
+    <button onClick="{{ toggleBreath }}" style="display:inline-flex;align-items:center;height:48px;padding:0 24px;border-radius:999px;border:1px solid #14241C;background:{{ breathBtnBg }};color:{{ breathBtnFg }};font:inherit;font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;cursor:pointer;transition:background .25s,color .25s">{{ breathBtn }}</button>
+    <span style="font-size:12.5px;color:#6B5E48">Keep your breath comfortable. You can stop at any time.</span>
+  </div>
+</section>
+
+<section id="reflect" data-chapter="4" data-screen-label="Reflect" style="flex:1;flex-direction:column;justify-content:center;display:{{ ch4 }};box-sizing:border-box;align-content:center;background:#F3EAD3;padding:clamp(24px,4vh,64px) clamp(24px,6vw,96px)">
+  <div style="max-width:960px;margin:0 auto;display:flex;flex-direction:column;gap:22px">
+    <span style="display:flex;align-items:center;gap:12px;font-size:11px;font-weight:700;letter-spacing:.26em;text-transform:uppercase;color:#7A5E22"><span aria-hidden="true" style="width:28px;height:1px;background:#C9A24A"></span>Meet yourself with curiosity</span>
+    <h2 style="margin:0;font-family:'Cormorant Garamond',serif;font-weight:400;font-size:clamp(36px,5.2vw,80px);line-height:1;letter-spacing:-.01em;text-wrap:balance;min-height:2em">{{ question }}</h2>
+    <p style="margin:0;font-size:clamp(15px,1.1vw,17px);line-height:1.6;color:#3A3128">No right answer. No need to rush. Let the question sit with you.</p>
+    <button onClick="{{ nextQuestion }}" style="align-self:flex-start;background:none;border:none;padding:8px 0;font:inherit;font-size:11px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:#7A5E22;cursor:pointer;border-bottom:1px solid #C9A24A">Explore another question ↻</button>
+  </div>
+</section>
+
+<section id="new-here" data-chapter="5" data-screen-label="FAQ" style="flex:1;flex-direction:column;justify-content:center;display:{{ ch5 }};box-sizing:border-box;align-content:center;background:#F3EAD3;padding:clamp(24px,4vh,64px) clamp(24px,6vw,96px)">
+  <div style="max-width:960px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:clamp(32px,5vw,80px)">
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <span style="font-size:11px;font-weight:700;letter-spacing:.26em;text-transform:uppercase;color:#7A5E22">A few things to know</span>
+      <h2 style="margin:0;font-family:'Cormorant Garamond',serif;font-weight:400;font-size:clamp(32px,4vw,56px);line-height:1.02">New here?<br><em style="font-style:italic;color:#7A5E22">You’re welcome.</em></h2>
+    </div>
+    <div style="display:flex;flex-direction:column">
+      <sc-for list="{{ faqs }}" as="q" hint-placeholder-count="4">
+        <div style="border-top:1px solid rgba(138,111,52,.3)">
+          <button data-i="{{ $index }}" onClick="{{ toggleFaq }}" aria-expanded="{{ q.open }}" style="width:100%;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:20px 0;background:none;border:none;font:inherit;text-align:left;font-family:'Cormorant Garamond',serif;font-size:clamp(20px,1.8vw,26px);color:#14241C;cursor:pointer">{{ q.q }}<span aria-hidden="true" style="flex:none;width:28px;height:28px;border-radius:50%;border:1px solid rgba(138,111,52,.5);display:flex;align-items:center;justify-content:center;font-family:'Manrope',sans-serif;font-size:16px;color:#7A5E22;transform:{{ q.rot }};transition:transform .3s">+</span></button>
+          <p style="display:{{ q.display }};margin:0 0 22px;max-width:52ch;font-size:15px;line-height:1.6;color:#3A3128">{{ q.a }}</p>
+        </div>
+      </sc-for>
+      <div style="border-top:1px solid rgba(138,111,52,.3)"></div>
+    </div>
+  </div>
+</section>
+  </div>
+  <nav aria-label="Chapters" style="position:relative;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px clamp(24px,6vw,96px);background:rgba(243,234,211,.9);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-top:1px solid rgba(138,111,52,.25)">
+    <div style="display:flex;align-items:center;gap:6px 18px;flex-wrap:wrap;min-width:0">
+      <sc-for list="{{ chapters }}" as="c" hint-placeholder-count="6">
+        <button data-i="{{ $index }}" onClick="{{ goChapter }}" aria-current="{{ c.current }}" style="display:flex;align-items:center;gap:8px;background:none;border:none;padding:6px 0;font:inherit;font-size:10.5px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:{{ c.color }};cursor:pointer;border-bottom:1px solid {{ c.line }}"><span aria-hidden="true" style="width:6px;height:6px;border-radius:50%;background:{{ c.dot }}"></span><span style="flex:1;flex-direction:column;justify-content:center;display:{{ chapterLabelDisplay }}">{{ c.label }}</span></button>
+      </sc-for>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;flex:none">
+      <button onClick="{{ closeChapters }}" style="display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 16px 0 12px;margin-right:8px;border-radius:999px;border:1px solid rgba(138,111,52,.45);background:transparent;color:#14241C;font:inherit;font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;cursor:pointer;transition:background .2s,color .2s" style-hover="background:#14241C;color:#F6F1E6"><span aria-hidden="true" style="font-size:14px;line-height:1;letter-spacing:0">⌂</span>Home</button>
+      <button onClick="{{ prevChapter }}" aria-label="Previous" style="width:44px;height:44px;border-radius:50%;border:1px solid rgba(138,111,52,.45);background:transparent;color:#14241C;font:inherit;font-size:16px;cursor:pointer" style-hover="border-color:#14241C">←</button>
+      <button onClick="{{ nextChapter }}" style="display:inline-flex;align-items:center;gap:10px;height:44px;padding:0 20px;border-radius:999px;border:none;background:#14241C;color:#F6F1E6;font:inherit;font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;cursor:pointer" style-hover="background:#1F3A2E">{{ nextLabel }} <span aria-hidden="true" style="letter-spacing:0">→</span></button>
+    </div>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"logoPlacement":{"editor":"enum","default":"header-left","options":["header-left","header-center","hero-right"],"tsType":"string","section":"Logo"},"adminHints":{"editor":"boolean","default":false,"tsType":"boolean","section":"Admin"}}'>
+class Component extends DCLogic {
+  static VOICES = [
+    { text: 'A doctor in a white coat heals the body; a spiritual teacher heals the soul.', name: 'Manohar Gnani' },
+    { text: 'He explains spiritual principles in a simple, logical and scientific way.', name: 'Sreenivas Kumar G.' },
+    { text: 'My thoughts really changed after listening to Hari sir — and I started doing meditation.', name: 'Vamshi' },
+    { text: 'Now I know what inner peace is, and how to attain it.', name: 'Jyothi Gunda' },
+    { text: 'After knowing him I have not only improved my health but also my thinking towards my life.', name: 'Sheela Shivraman' },
+    { text: 'His teachings have helped me navigate daily stress with a calm and grounded spirit.', name: 'Hem' },
+    { text: 'Incredibly knowledgeable — a walking encyclopedia, with answers to even the most profound spiritual questions.', name: 'Kavitha Reddy' },
+    { text: 'I have attended a few of his sessions — fantastic, and free of cost.', name: 'Swathi G' },
+    { text: 'He is a modern Guru for people who want to grow spiritually.', name: 'Premalatha' },
+    { text: 'The Golden Age movement will definitely attract more youth towards meditation.', name: 'Aruna Chatla' },
+    { text: 'He is a torch bearer to many in spirituality.', name: 'Kalyani' } ];
+  static DEFAULTS = { tagline: 'A spiritual movement', headline: 'Never meditated?', headlineAccent: 'Perfect. Start here.', subline: 'Free guided meditation, every day. No experience needed — just sit, breathe, and feel the difference in one session.', _v2: true, joinLabel: 'Join as member', supportLabel: 'Member support', volunteerNavLabel: 'Join as volunteer', volunteerHintTitle: 'Give a little time', volunteerHint: 'Host a local sit, welcome newcomers on Zoom, translate talks, or help with events. A few hours a month, wherever you are.', phoneJoinLabel: "Join today's sit", watchLabel: 'Watch the intro', sitsTitle: 'Sits around the world', qrEyebrow: 'Members', qrSub: 'Scan to join the group', volunteerLabel: 'Volunteer', zoom: { id: '817 8362 7692', passcode: '11111', url: 'https://zoom.us/j/81783627692?pwd=11111' }, sessions: [
+    { name: 'World Peace Meditation', start: '20:30', end: '21:00', tz: 'Asia/Kolkata', zone: 'IST' },
+    { name: 'USA · Central', start: '04:10', end: '05:10', tz: 'America/Chicago', zone: 'CT' },
+    { name: 'USA · Eastern', start: '05:10', end: '06:10', tz: 'America/New_York', zone: 'ET' },
+    { name: 'USA · Pacific', start: '04:10', end: '05:10', tz: 'America/Los_Angeles', zone: 'PT' },
+    { name: 'UK', start: '04:00', end: '05:00', tz: 'Europe/London', zone: 'UK' } ],
+    heroImage: '', heroImage2: '', heroCaption: 'Dr Hari Krishna, MD', heroCaption2: 'Sit anywhere. Sit daily.',
+    promoKicker: 'Free · worldwide · daily Zoom sessions', promoTitle: 'Sit with us for 41 days and see the change.', promoBody: 'Free guided Zoom sessions every day, at different times around the world. Come as you are — join any sit.', promoCta: 'Join a sit',
+    rulesKicker: 'Five golden rules · for a healthy life and oneness',
+    rule1: 'Sit in silence every day.', rule2: 'Eat prana — fresh, vegetarian food.', rule3: 'Greet the rising sun.', rule4: 'Drink clean, alkaline water.', rule5: 'Walk barefoot on the earth.',
+    testiKicker: 'What members say', testiQuote: 'After 41 days of sitting, the anxiety that ran my mornings simply stopped.', testiName: 'Priya, Hyderabad', testiCta: 'More stories', freeKicker: 'Always free', freeLine: 'We ask for nothing — only a better world.',
+    subPages: [{ label: 'About', href: 'About.dc.html' }, { label: 'Mission', href: 'Mission.dc.html' }, { label: 'Teachings', href: '#teachings' }, { label: 'Meditation', href: 'Meditation.dc.html' }, { label: 'Wisdom', href: 'Wisdom.dc.html' }, { label: 'Wellness', href: 'Wellness.dc.html' }, { label: 'Events', href: 'Events.dc.html' }],
+    eventKicker: 'Upcoming', eventTitle: 'Announce your next event here', eventSub: 'City retreat, talk or group sit — date, place and a line about it.', eventCta: 'See all events', eventHref: '#events',
+    tipSunGazing: 'A few minutes facing the rising sun, eyes soft, fills the body with light-energy and resets the sleep rhythm.',
+    tipAlkaline: 'Clean, mineral-rich water keeps the blood gently alkaline — easing fatigue, acidity and foggy thinking.',
+    tipEarthing: 'Bare feet on grass or soil for twenty minutes discharges stress and grounds a scattered mind.' };
+  static KEY = 'gaw:home-content:v3';
+  static QUESTIONS = ['What makes you feel most like yourself?', 'What are you ready to let go of?', 'When did you last feel truly rested?', 'Who would you be without the hurry?', 'What restores you — and how often do you allow it?'];
+  static FAQS = [
+    { q: 'Do I need meditation experience?', a: 'No. Every sit is guided from the first breath. Beginners and long-time practitioners sit together.' },
+    { q: 'Is the daily program really free?', a: 'Yes — always. There is no fee, no upsell and no membership wall. We ask for nothing but a better world.' },
+    { q: 'What if my mind keeps wandering?', a: 'That is the practice. Noticing the wander and gently returning is the whole exercise — not a failure of it.' },
+    { q: 'Do I have to attend every day?', a: 'Come when you can. Daily is the invitation, not a rule; 41 consecutive days is simply where most people notice the change.' } ];
+  state = { hh: 0, vi: 0, angle: -30, dragging: false, lastTouch: 0, tilt: [0, 0], w: typeof window !== 'undefined' ? window.innerWidth : 1440, h: typeof window !== 'undefined' ? window.innerHeight : 900, content: Component.DEFAULTS, now: Date.now(), qr: false, vol: false, hov: null, film: false, menu: false, chOpen: false, filmMuted: true, breathing: false, breathLeft: 60, qi: 0, faq: -1, ch: 0 };
+  loadContent() {
+    const apply = (base) => { let c = base; try { const o = localStorage.getItem(Component.KEY); if (o) c = { ...base, ...JSON.parse(o) }; } catch {} this.setState({ content: c, now: Date.now() }); };
+    fetch('content/home.json?v=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => apply({ ...Component.DEFAULTS, ...j })).catch(() => apply(Component.DEFAULTS));
+  }
+  componentDidMount() {
+    this.loadContent();
+    this._voice = setInterval(() => this.setState(s => ({ vi: (s.vi + 1) % Component.VOICES.length })), 7000);
+    
+    this._tick = setInterval(() => { this.setState({ now: Date.now() }); this._r(); }, 30000);
+    this._st = (e) => { if (e.key === Component.KEY) this.loadContent(); };
+    window.addEventListener('storage', this._st);
+    this._r = () => { const hh = this._hdr && this._hdr.current ? this._hdr.current.offsetHeight : 0; if (hh && hh !== this.state.hh) this.setState({ hh }); const w = window.innerWidth || document.documentElement.clientWidth, h = window.innerHeight || document.documentElement.clientHeight; if (w !== this.state.w || h !== this.state.h) this.setState({ w, h }); };
+    window.addEventListener('resize', this._r); this._r();
+    requestAnimationFrame(this._r); setTimeout(this._r, 250); setTimeout(this._r, 1000);
+    if (typeof ResizeObserver !== 'undefined') { this._ro = new ResizeObserver(this._r); this._ro.observe(document.documentElement); this._ro.observe(document.body); }
+    this._poll = setInterval(this._r, 400); setTimeout(() => clearInterval(this._poll), 10000);
+    this._esc = (e) => { if (e.key !== 'Escape') return; if (this.state.film) this.setState({ film: false }); else if (this.state.chOpen) this.setState({ chOpen: false }); }; window.addEventListener('keydown', this._esc);
+    window.addEventListener('pageshow', this._r); document.addEventListener('visibilitychange', this._r);
+    this._hash = () => { const i = Component.HASHES.indexOf(location.hash.replace('#', '')); if (i >= 0) { this.rotateTo(i); this.setChapter(i); } }; window.addEventListener('hashchange', this._hash); this._hash();
+  }
+  static HASHES = ['rituals', 'daily-pause', 'nourish', 'one-minute', 'reflect', 'new-here'];
+  componentWillUnmount() { window.removeEventListener('keydown', this._esc); clearInterval(this._voice); clearInterval(this._idle); clearInterval(this._poll); window.removeEventListener('pageshow', this._r); document.removeEventListener('visibilitychange', this._r); window.removeEventListener('resize', this._r); window.removeEventListener('storage', this._st); clearInterval(this._tick); if (this._ro) this._ro.disconnect(); }
+  tzParts(d, tz) {
+    const p = {}; new Intl.DateTimeFormat('en-US', { timeZone: tz, hourCycle: 'h23', year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric' }).formatToParts(d).forEach(x => { if (x.type !== 'literal') p[x.type] = +x.value; });
+    if (p.hour === 24) p.hour = 0;
+    return p;
+  }
+  windowFor(sess, now) {
+    try {
+      const d = new Date(now), p = this.tzParts(d, sess.tz);
+      const off = Date.UTC(p.year, p.month - 1, p.day, p.hour, p.minute) - Math.floor(now / 60000) * 60000;
+      const [sh, sm] = sess.start.split(':').map(Number), [eh, em] = sess.end.split(':').map(Number);
+      let start = Date.UTC(p.year, p.month - 1, p.day, sh, sm) - off, end = Date.UTC(p.year, p.month - 1, p.day, eh, em) - off;
+      if (end <= start) end += 864e5;
+      if (now > end) { start += 864e5; end += 864e5; }
+      return { start, end, live: now >= start && now <= end };
+    } catch { return null; }
+  }
+  fmtLocal(t) { return new Date(t).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }); }
+  fmtIn(sess, t) { return new Date(t).toLocaleTimeString('en-US', { timeZone: sess.tz, hour: 'numeric', minute: '2-digit' }) + ' ' + sess.zone; }
+  localZone() { try { return new Date().toLocaleTimeString([], { timeZoneName: 'short' }).split(' ').pop(); } catch { return ''; } }
+  countdown(ms) { const m = Math.max(0, Math.round(ms / 60000)), h = Math.floor(m / 60), mm = m % 60; return h ? h + 'h ' + mm + 'm' : mm + 'm'; }
+  sits() {
+    const now = this.state.now, c = this.state.content, viewerTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const list = (c.sessions || []).map(s => {
+      const w = this.windowFor(s, now); if (!w) return null;
+      const same = viewerTz === s.tz, loc = new Date(w.start);
+      const local = this.fmtLocal(w.start) + (same ? '' : ' ' + this.localZone());
+      return { ...s, ...w, local, home: this.fmtIn(s, w.start), until: w.start - now,
+        state: w.live ? 'Live now' : 'in ' + this.countdown(w.start - now),
+        stateColor: w.live ? '#E8CF83' : 'rgba(246,241,230,.6)', nameColor: w.live ? '#E8CF83' : 'rgba(246,241,230,.78)',
+        dotBg: w.live ? '#E8CF83' : 'rgba(246,241,230,.35)', dotGlow: w.live ? '0 0 0 3px rgba(201,162,74,.25)' : 'none',
+        tileBg: w.live ? 'rgba(232,207,131,.16)' : 'rgba(255,255,255,.05)',
+        arcLeft: ((loc.getHours() * 60 + loc.getMinutes()) / 1440 * 100).toFixed(2) + '%' };
+    }).filter(Boolean);
+    return list.sort((a, b) => (b.live - a.live) || (a.until - b.until));
+  }
+  setChapter(i) {
+    this.setState({ ch: i, faq: -1, chOpen: true });
+    try { history.replaceState(null, '', '#' + (Component.HASHES[i] || '')); } catch (_) {}
+    requestAnimationFrame(() => { const el = document.getElementById('chapters'); if (el) { el.scrollTop = 0; const btn = el.querySelector('button'); if (btn) btn.focus({ preventScroll: true }); } });
+  }
+  meditator() {
+    if (this._med) return this._med;
+    const e = React.createElement, s = { fill: 'none', stroke: 'url(#chakra-stroke)', strokeWidth: 2.2, strokeLinecap: 'round', strokeLinejoin: 'round' };
+    const stops = ['#c9a6f0', '#9d8fe0', '#7fb0e0', '#8fd0a0', '#e6c96a', '#eda06a', '#e08a8a'].map((c, i) => e('stop', { key: i, offset: (i / 6 * 100) + '%', stopColor: c }));
+    this._med = e('svg', { viewBox: '0 0 100 100', style: { width: '100%', height: '100%', overflow: 'visible' }, 'aria-hidden': true },
+      e('defs', null, e('linearGradient', { id: 'chakra-stroke', x1: 0, y1: 0, x2: 0, y2: 1 }, stops)),
+      e('circle', { ...s, cx: 50, cy: 17, r: 8.5 }),
+      e('path', { ...s, d: 'M39 33 Q50 28 61 33 L66 60 Q50 65 34 60 Z' }),
+      e('path', { ...s, d: 'M39 33 Q26 46 38 63' }), e('path', { ...s, d: 'M61 33 Q74 46 62 63' }),
+      e('ellipse', { ...s, cx: 50, cy: 65, rx: 7, ry: 3.6 }),
+      e('path', { ...s, d: 'M34 60 Q12 66 13 79 Q30 88 50 86 Q70 88 87 79 Q88 66 66 60' }),
+      e('path', { ...s, d: 'M39 85 Q50 73 61 85' }),
+      e('path', { ...s, strokeDasharray: '2 4', strokeWidth: 1.4, d: 'M18 93 Q50 99 82 93' }));
+    return this._med;
+  }
+  spokes() {
+    if (this._spokes) return this._spokes;
+    const e = React.createElement, R = 142, els = [];
+    els.push(e('circle', { key: 'o', cx: 0, cy: 0, r: 112, fill: 'none', stroke: 'rgba(138,111,52,.3)', strokeWidth: .8 }));
+    els.push(e('circle', { key: 'o2', cx: 0, cy: 0, r: 138, fill: 'none', stroke: 'rgba(138,111,52,.14)', strokeWidth: .6, strokeDasharray: '1 5' }));
+    for (let i = 0; i < 6; i++) {
+      const t = (30 + i * 60 - 90) * Math.PI / 180, c = Math.cos(t), s = Math.sin(t);
+      els.push(e('line', { key: 'l' + i, x1: (c * 60).toFixed(2), y1: (s * 60).toFixed(2), x2: (c * 86).toFixed(2), y2: (s * 86).toFixed(2), stroke: 'rgba(138,111,52,.4)', strokeWidth: .8 }));
+      els.push(e('circle', { key: 'b' + i, cx: (c * 138).toFixed(2), cy: (s * 138).toFixed(2), r: 1.8, fill: '#C9A24A' }));
+      const t2 = (60 + i * 60 - 90) * Math.PI / 180;
+      els.push(e('circle', { key: 'm' + i, cx: (Math.cos(t2) * 112).toFixed(2), cy: (Math.sin(t2) * 112).toFixed(2), r: 1.2, fill: 'rgba(138,111,52,.6)' }));
+    }
+    this._spokes = e('svg', { viewBox: '-142 -142 284 284', style: { width: '100%', height: '100%', overflow: 'visible' } }, ...els);
+    return this._spokes;
+  }
+  seed() {
+    if (this._seed) return this._seed;
+    const e = React.createElement, r = 36, cs = [e('circle', { key: 'c', cx: 0, cy: 0, r })];
+    for (let a = 0; a < 6; a++) { const t = a * Math.PI / 3; cs.push(e('circle', { key: 'p' + a, cx: +(r * Math.cos(t)).toFixed(2), cy: +(r * Math.sin(t)).toFixed(2), r })); }
+    this._seed = e('svg', { viewBox: '-100 -100 200 200', style: { width: '100%', height: '100%', overflow: 'visible', filter: 'drop-shadow(0 0 2px rgba(255,240,200,.9)) drop-shadow(0 0 6px rgba(226,188,94,.35))' } },
+      e('g', { fill: 'none', stroke: '#C9A24A', strokeWidth: 1.2, strokeOpacity: .85, pathLength: 1, strokeDasharray: 1, style: { animation: 'seed-draw 4.5s cubic-bezier(.4,0,.2,1) .6s both' } }, e('circle', { key: 'o', cx: 0, cy: 0, r: 2 * r + 4, strokeWidth: 2.2 }), ...cs));
+    return this._seed;
+  }
+  net() {
+    if (this._net) return this._net;
+    const e = React.createElement, K = .42, CY = 60, sag = (r) => r < 240 ? 70 * Math.pow((240 - r) / 150, 2) : 0;
+    const ringPt = (r, a) => { const t = a * Math.PI / 180; return [r * Math.cos(t), CY + sag(r) + K * r * Math.sin(t)]; };
+    const rings = [], spokes = [];
+    for (let r = 90; r <= 340; r += 25) {
+      const d = Array.from({ length: 73 }, (_, i) => ringPt(r, i * 5)).map((p, i) => (i ? 'L' : 'M') + p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join('') + 'Z';
+      rings.push(e('path', { key: 'r' + r, d, fill: 'none', stroke: r < 240 ? 'rgba(138,111,52,.55)' : 'rgba(138,111,52,.38)', strokeWidth: r === 340 ? 1.3 : .9 }));
+    }
+    for (let a = 0; a < 360; a += 15) {
+      const d = Array.from({ length: 26 }, (_, i) => ringPt(90 + i * 10, a)).map((p, i) => (i ? 'L' : 'M') + p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join('');
+      spokes.push(e('path', { key: 's' + a, d, fill: 'none', stroke: 'rgba(138,111,52,.4)', strokeWidth: .8 }));
+    }
+    this._net = e('svg', { viewBox: '-350 -350 700 700', style: { width: '100%', height: '100%', overflow: 'visible' } },
+      e('defs', null, e('radialGradient', { id: 'net-fade', cx: '50%', cy: '58%', r: '50%' }, e('stop', { offset: '55%', stopColor: '#fff', stopOpacity: 1 }), e('stop', { offset: '100%', stopColor: '#fff', stopOpacity: 0 })), e('mask', { id: 'net-mask' }, e('rect', { x: -350, y: -350, width: 700, height: 700, fill: 'url(#net-fade)' }))),
+      e('g', { mask: 'url(#net-mask)' }, ...spokes, ...rings));
+    return this._net;
+  }
+  meridians() {
+    if (this._mer) return this._mer;
+    const e = React.createElement, s = { fill: 'none', stroke: 'rgba(232,207,131,.35)', strokeWidth: .7 };
+    const kids = [];
+    [12, 24, 36, 44].forEach(rx => kids.push(e('ellipse', { key: 'm' + rx, cx: 50, cy: 50, rx, ry: 48, ...s })));
+    [-30, -15, 0, 15, 30].forEach(dy => { const r = Math.sqrt(48 * 48 - dy * dy); kids.push(e('ellipse', { key: 'p' + dy, cx: 50, cy: 50 + dy, rx: r, ry: r * .22, ...s })); });
+    this._mer = e('svg', { viewBox: '0 0 100 100', style: { width: '100%', height: '100%', borderRadius: '50%' } }, ...kids);
+    return this._mer;
+  }
+  sunflower() {
+    if (this._sun) return this._sun;
+    const e = React.createElement;
+    const hues = ['#C9333A', '#E8782A', '#E5B824', '#3A9D5C', '#2F8FD6', '#4A5BC0', '#8E4FC9'];
+    const petal = (r0, r1, w, key, fill, stroke, op) => e('path', { key, d: `M0 ${-r0} C ${w} ${-r0 - (r1 - r0) * .3}, ${w} ${-r1 + (r1 - r0) * .25}, 0 ${-r1} C ${-w} ${-r1 + (r1 - r0) * .25}, ${-w} ${-r0 - (r1 - r0) * .3}, 0 ${-r0} Z`, fill, fillOpacity: op, stroke, strokeWidth: .8, strokeLinejoin: 'round' });
+    const grads = [];
+    const ring = (n, r0, r1, w, offset, op, key) => Array.from({ length: n }, (_, i) => {
+      const h = (i * 360 / n + 350) % 360, id = `sg-${key}${i}`;
+      grads.push(e('linearGradient', { key: id, id, x1: 0, y1: 1, x2: 0, y2: 0 },
+        e('stop', { offset: '0%', stopColor: `hsl(${h} 78% 42%)`, stopOpacity: op + .35 }),
+        e('stop', { offset: '55%', stopColor: `hsl(${h} 85% 62%)`, stopOpacity: op + .1 }),
+        e('stop', { offset: '100%', stopColor: `hsl(${h} 90% 88%)`, stopOpacity: Math.max(op - .15, .08) })));
+      return e('g', { key: key + i, transform: `rotate(${offset + i * 360 / n})` },
+        petal(r0, r1, w, 'p', `url(#${id})`, `hsl(${h} 45% 48% / .45)`, 1),
+        e('path', { key: 'v', d: `M0 ${-r0 - 4} L0 ${-r1 + 8}`, fill: 'none', stroke: 'rgba(255,253,248,.7)', strokeWidth: .6 }),
+        e('ellipse', { key: 'hl', cx: -w * .3, cy: -(r0 + (r1 - r0) * .62), rx: w * .22, ry: (r1 - r0) * .16, fill: 'rgba(255,255,255,.45)' }));
+    });
+    const seeds = []; const golden = 137.508;
+    for (let i = 0; i < 90; i++) { const r = 62 - 3.4 * Math.sqrt(i); const a = i * golden * Math.PI / 180; seeds.push(e('circle', { key: 's' + i, cx: r * Math.cos(a), cy: r * Math.sin(a), r: 1.1, fill: 'rgba(138,111,52,.35)' })); }
+    const puff = []; for (let i = 0; i < 160; i++) { const a = i * golden * Math.PI / 180; const r = 74 + 14 * Math.sqrt(i / 160) + ((i * 7) % 5) * .9; puff.push(e('circle', { key: 'pf' + i, cx: r * Math.cos(a), cy: r * Math.sin(a), r: 2.8 + ((i * 3) % 4) * .8, fill: i % 3 ? '#F2C94C' : '#E5A82A', fillOpacity: .85 })); }
+    const back = ring(28, 82, 124, 9, 360 / 56, .32, 'b'), front = ring(28, 86, 116, 8, 0, .55, 'f');
+    this._sun = e('svg', { viewBox: '-125 -125 250 250', 'aria-hidden': true, style: { width: '100%', height: '100%', display: 'block', overflow: 'visible', animation: 'spin 240s linear infinite reverse' } },
+      e('defs', { key: 'd' }, ...grads, e('radialGradient', { id: 'halo' }, e('stop', { offset: '55%', stopColor: '#F2C94C', stopOpacity: .28 }), e('stop', { offset: '100%', stopColor: '#F2C94C', stopOpacity: 0 })), e('radialGradient', { id: 'sunpuff' }, e('stop', { offset: '70%', stopColor: '#F6D56A', stopOpacity: 1 }), e('stop', { offset: '88%', stopColor: '#F2C94C', stopOpacity: .85 }), e('stop', { offset: '100%', stopColor: '#F2C94C', stopOpacity: 0 })), e('filter', { id: 'fuzz', x: '-20%', y: '-20%', width: '140%', height: '140%' }, e('feGaussianBlur', { stdDeviation: 1.6 }))),
+      e('circle', { key: 'halo', r: 125, fill: 'url(#halo)' }),
+      ...back,
+      ...front,
+      e('circle', { key: 'glow', r: 94, fill: 'url(#sunpuff)' }),
+      e('g', { key: 'puff', filter: 'url(#fuzz)' }, ...puff),
+      e('circle', { key: 'rim', r: 90, fill: 'none', stroke: 'rgba(138,111,52,.35)', strokeWidth: .8 }));
+    return this._sun;
+  }
+  glyph(kind, hue) {
+    const e = React.createElement, c = 22;
+    const petals = (n, o = {}) => { const { cy = 6.4, rx = 3.1, ry = 6.2, angles = null } = o; const list = angles || Array.from({ length: n }, (_, i) => i * 360 / n); return list.map((a, i) => e('g', { key: 'p' + i, transform: `rotate(${a} ${c} ${c})` }, e('ellipse', { cx: c, cy, rx, ry, fill: 'none', stroke: hue, strokeWidth: 1.1 }))); };
+    const circle = (r, key) => e('circle', { key, cx: c, cy: c, r, fill: 'none', stroke: hue, strokeWidth: 1.2 });
+    const triDown = (r, key) => e('path', { key, d: `M${(c - r * 0.866).toFixed(1)} ${(c - r / 2).toFixed(1)} L${(c + r * 0.866).toFixed(1)} ${(c - r / 2).toFixed(1)} L${c} ${(c + r).toFixed(1)} Z`, fill: 'none', stroke: hue, strokeWidth: 1.2, strokeLinejoin: 'round' });
+    let kids;
+    if (kind === 'muladhara') kids = [...petals(4, { rx: 4, ry: 6.8, cy: 6.8 }), circle(12.6, 'c'), e('rect', { key: 'sq', x: c - 7.6, y: c - 7.6, width: 15.2, height: 15.2, fill: 'none', stroke: hue, strokeWidth: 1.1 }), triDown(5.6, 't')];
+    else if (kind === 'svadhisthana') kids = [...petals(6), circle(12.6, 'c'), e('path', { key: 'cr', d: `M${c - 6.4} ${c + 0.5} a6.4 6.4 0 0 0 12.8 0`, fill: 'none', stroke: hue, strokeWidth: 1.2, strokeLinecap: 'round' }), circle(3.4, 'c2')];
+    else if (kind === 'manipura') kids = [...petals(10, { rx: 2.9, ry: 5.9 }), circle(12.6, 'c'), triDown(7.8, 't')];
+    else if (kind === 'vishuddha') kids = [...petals(16, { rx: 2.4, ry: 5.6, cy: 6.2 }), circle(12.6, 'c'), triDown(7.8, 't'), circle(4.2, 'c2')];
+    else if (kind === 'ajna') kids = [...petals(2, { rx: 3.6, ry: 6.6, cy: 7, angles: [90, 270] }), circle(12.6, 'c'), triDown(7, 't')];
+    else kids = [...petals(20, { rx: 2.2, ry: 5.8, cy: 6.2 }), circle(12.6, 'c'), circle(4.6, 'c2')];
+    return e('svg', { viewBox: '0 0 44 44', 'aria-hidden': true, style: { width: '100%', height: '100%', display: 'block', overflow: 'visible' } }, kids);
+  }
+  sessionTime(sits) {
+    const s = (this.state.content.sessions || [])[0]; if (!s) return '';
+    const w = sits.find(x => x.name === s.name); if (!w) return '';
+    return Intl.DateTimeFormat().resolvedOptions().timeZone === s.tz ? 'Daily at ' + w.home : 'Daily at ' + w.local + ' · ' + w.home;
+  }
+  openChapter(i) { this.setChapter(i); }
+  activeIndex() { return ((Math.round((-this.state.angle - 30) / 60) % 6) + 6) % 6; }
+  rotateTo(i) {
+    const cur = this.state.angle, target0 = -30 - i * 60;
+    let d = ((target0 - cur) % 360 + 540) % 360 - 180;
+    this.setState({ angle: cur + d, dragging: false });
+  }
+  ptrAngle(e) { const r = e.currentTarget.getBoundingClientRect(); return Math.atan2(e.clientY - (r.top + r.height / 2), e.clientX - (r.left + r.width / 2)) * 180 / Math.PI; }
+  dialDown(e) { if (e.button && e.button !== 0) return; this._drag = { a0: this.ptrAngle(e), ang0: this.state.angle, moved: 0 }; this.setState({ dragging: true, lastTouch: Date.now() }); }
+  dialMove(e) {
+    const r = e.currentTarget.getBoundingClientRect(), nx = (e.clientX - r.left) / r.width - .5, ny = (e.clientY - r.top) / r.height - .5;
+    const tilt = [Math.max(-10, Math.min(10, -ny * 16)), Math.max(-10, Math.min(10, nx * 16))];
+    if (this._drag) { const a = this.ptrAngle(e); let d = a - this._drag.a0; d = ((d + 540) % 360) - 180; this._drag.moved = Math.max(this._drag.moved, Math.abs(d)); this.setState({ angle: this._drag.ang0 + d, tilt, lastTouch: Date.now() }); }
+    else this.setState({ tilt });
+  }
+  dialUp() { if (!this._drag) return; const moved = this._drag.moved; this._drag = null; this._suppress = moved > 3; this.rotateTo(this.activeIndex()); setTimeout(() => { this._suppress = false; }, 50); }
+  dialLeave() { this.dialUp(); this.setState({ tilt: [0, 0] }); }
+  dialWheel(e) { const now = Date.now(); if (now - (this._wheelAt || 0) < 500) return; this._wheelAt = now; this.setState({ lastTouch: now }); this.rotateTo(this.activeIndex() + (e.deltaY > 0 ? 1 : -1)); }
+  memberVals() {
+    let s = null; try { s = JSON.parse(localStorage.getItem('gaw_session') || 'null'); } catch (e) {}
+    const name = (s && (s.name || s.displayName || s.email || '')) || '', first = name.split(/[\s@]/)[0] || 'Member';
+    return { isMember: !!s, isGuest: !s, memberFirst: first, memberInitial: (first[0] || 'M').toUpperCase(), menuJoinLabel: s ? 'My dashboard · ' + first : null };
+  }
+  renderVals() {
+    const w = this.state.w, h = this.state.h, desk = w >= 700 && w >= h * 1.05, phone = w < 640, big = desk && w >= 1280 && h >= 820;
+    const c0 = { ...Component.DEFAULTS, ...this.state.content }, hov = this.state.hov, logoPlace = this.props.logoPlacement ?? 'header-left';
+    const gutPx = Math.min(72, Math.max(24, w * .05)), hh = Math.max(this.state.hh || 0, 64);
+    const medPx = Math.max(160, Math.min(290, w * .16)); const colGap = 48; let treePx = Math.max(380, Math.min((w - 2 * gutPx - colGap) * .56, (h - hh - 640) * (1277 / 835), 900)); let cardsPx = Math.max(320, w - 2 * gutPx - treePx - colGap);
+    const data = [
+      { kicker: 'Meditation', desc: 'Quiet the restless mind', kind: 'muladhara', hue: '#e08a8a', deep: '#A8403F', line: 'Quiet the suffering mind.', body: 'Anxiety, restlessness, sleepless nights — the mind runs without pause. Twenty minutes of daily sitting steadies the breath, calms the nervous system and returns you to peace.', href: '#meditate', deg: 180, core: true, sketch: true },
+      { kicker: 'Wisdom', desc: 'Answers to “who am I?”', kind: 'ajna', hue: '#9d8fe0', deep: '#5B4BA8', line: 'Who am I?', body: 'Beneath name, body and role there is one awareness in all beings. The teachings open the experience of oneness — and answer the oldest question.', href: '#wisdom', deg: 145, core: true },
+      { kicker: 'Wellness', desc: 'Prana food, clear thought', kind: 'svadhisthana', hue: '#eda06a', deep: '#B5652A', line: 'Eat prana. Think clearly.', body: 'Fresh vegetarian food carries prana, life-energy. It lightens the body and sharpens thought — the simplest tool most of us leave out of our day.', href: '#wellness', deg: 215, core: true }
+    ];
+    const nodes = data.map((n, i) => {
+      const rad = n.deg * Math.PI / 180, sx = Math.sin(rad), cy = Math.cos(rad);
+      const sizeK = n.core ? .245 : .185, half = sizeK / 2;
+      const center = Math.abs(sx) < .1, right = sx > .1, up = cy > .01, down = cy < -.01;
+      const R = 'var(--yr)';
+      const f = (k) => `calc(${R} * ${k.toFixed(3)})`;
+      return { ...n,
+        left: `calc(50% + ${f(1.1 * sx)})`, top: `calc(50% + ${f(.17 - .42 * 1.1 * cy)})`, orbitDelay: (-((n.deg - 90 + 360) % 360) / 360 * 360).toFixed(1) + 's',
+        size: f(sizeK), ring: 'rgba(201,162,74,.7)', glow: 'rgba(201,162,74,.25)',
+        delay: (1.4 + i * .18).toFixed(2) + 's', icon: this.glyph(n.kind, '#E8CF83'), tileIcon: this.glyph(n.kind, n.deep), deepHue: n.deep, chip: n.deep + '1F',
+        z: hov === n.kicker ? 20 : 1, tipDisplay: hov === n.kicker ? 'flex' : 'none', tipSketch: n.sketch && hov === n.kicker ? this.meditator() : null, tipSketchDisplay: n.sketch ? 'flex' : 'none',
+        tLeft: center ? '50%' : '18px', tRight: 'auto', tTop: center && down ? '18px' : center ? 'auto' : '18px', tBottom: center && up ? '18px' : 'auto', tShift: center ? 'translateX(-50%)' : 'none',
+        showLine: false, showCard: false, sketchEl: n.sketch && big ? this.meditator() : null, sketchDisplay: n.sketch && big ? 'flex' : 'none',
+        lRadius: '999px', lWidth: 'max-content', lDir: 'column', lGap: '0', sketchDisplay: 'none', sketchEl: null,
+        lLeft: center ? '50%' : right ? '16px' : 'auto',
+        lRight: center ? 'auto' : right ? 'auto' : '16px',
+        lTop: center ? (down ? '14px' : 'auto') : (big ? '0' : '-18px'),
+        lBottom: center ? (up ? '14px' : 'auto') : 'auto',
+        lMax: center ? 'none' : f(.58),
+        lAlign: center ? 'center' : right ? 'left' : 'right', lItems: center ? 'center' : right ? 'flex-start' : 'flex-end',
+        lShift: center ? 'translateX(-50%)' : (big ? 'translateY(-50%)' : 'none') };
+    });
+    const chapterData = [
+      { label: 'Rituals', kicker: 'Small rituals', title: 'Feeling better begins with being present.', body: 'You don’t need to change everything to reconnect with yourself. Begin with the small things.', items: ['Mind — make room for stillness', 'Body — nourish with intention', 'Self — get to know you'], cta: 'Open Rituals', href: '#rituals', ch: 0 },
+      { label: 'Daily pause', kicker: 'Your daily pause', title: '30 minutes. Every day. Just for you.', body: 'A free program to build a gentle, consistent practice. No experience needed.', items: ['05 min — arrive & settle', '20 min — guided meditation', '05 min — reflect & reconnect'], cta: 'Open Daily pause', href: '#daily-pause', ch: 1 },
+      { label: 'Nourish', kicker: 'Nourish your body', title: 'Eat well. Slow down. Savor life.', body: 'Good food is more than what’s on your plate — it’s how you choose, prepare and enjoy it.', items: ['Bring colour to your plate', 'Give your meal your attention', 'Listen with kindness'], cta: 'Open Nourish', href: '#nourish', ch: 2 },
+      { label: 'One minute', kicker: 'A moment, right here', title: 'Your next breath is a new beginning.', body: 'Settle in, breathe naturally, and follow a gentle sixty-second rhythm.', items: [], cta: 'Start a one-minute pause', href: '#one-minute', ch: 3 },
+      { label: 'Reflect', kicker: 'Meet yourself with curiosity', title: Component.QUESTIONS[this.state.qi % Component.QUESTIONS.length], body: 'No right answer. No need to rush. Let the question sit with you.', items: [], cta: 'Take a moment to reflect', href: '#reflect', ch: 4 },
+      { label: 'New here?', kicker: 'A few things to know', title: 'New here? You’re welcome.', body: 'Everything is guided, always free, and open to every level.', items: Component.FAQS.map(q => q.q), cta: 'Open New here?', href: '#new-here', ch: 5 } ];
+    const chapterNodes = chapterData.map((k, i) => {
+      const P = [[81.8, 63.5], [61.9, 62.3], [21.5, 61.1], [27.6, 29.9], [46.2, 16.8], [66.7, 27.5]][i], sx = (P[0] - 50) / 50, cy = (40 - P[1]) / 40, right = sx > 0, up = cy > 0, key = 'ch' + i, topArc = false;
+      return { ...k, key, left: P[0] + '%', top: P[1] + '%', onEnter: () => { if (this.activeIndex() !== i) { this.setState({ lastTouch: Date.now() }); this.rotateTo(i); } },
+        pillShadow: '0 0 1.4cqw 1cqw #FBF6EA', onClick: (e) => { e.preventDefault(); if (this._suppress) return; this.setState({ lastTouch: Date.now() }); this.rotateTo(i); this.openChapter(i); },
+        current: this.activeIndex() === i ? 'true' : 'false', ringBorder: this.activeIndex() === i ? '#C9A24A' : 'rgba(201,162,74,.55)', ringBg: this.activeIndex() === i ? 'radial-gradient(circle,rgba(255,253,248,.85) 0%,rgba(243,234,211,.4) 60%,rgba(243,234,211,0) 72%)' : 'transparent', ringOpacity: 1,
+        pillBg: this.activeIndex() === i ? '#14241C' : '#FBF6EA', pillColor: this.activeIndex() === i ? '#E8CF83' : '#7A5E22', bloomDelay: '0s', num: ['I','II','III','IV','V','VI'][i],
+        z: hov === key ? 20 : 1, tipDisplay: 'none', itemsDisplay: k.items.length ? 'flex' : 'none',
+        tLeft: right ? 'auto' : 'calc(var(--yr) * .62)', tRight: right ? 'calc(var(--yr) * .62)' : 'auto', tTop: Math.abs(cy) < .1 ? '50%' : up ? '-8px' : 'auto', tBottom: Math.abs(cy) < .1 ? 'auto' : up ? 'auto' : '-8px', tShift: Math.abs(cy) < .1 ? 'translateY(-50%)' : 'none',
+        lLeft: topArc ? '50%' : right ? '14px' : 'auto', lRight: topArc ? 'auto' : right ? 'auto' : '14px', lTop: topArc ? 'auto' : '0', lBottom: topArc ? '12px' : 'auto', lShift: topArc ? 'translateX(-50%)' : 'translateY(-50%)' };
+    });
+    const c = this.state.content, sits = this.sits(), live = sits.filter(x => x.live), next = sits.find(x => !x.live);
+    const nowD = new Date(this.state.now);
+    return {
+      ...this.memberVals(),
+      supportLabel: c.supportLabel, volunteerNavLabel: c.volunteerNavLabel, volunteerHintTitle: c.volunteerHintTitle, volunteerHint: c.volunteerHint,
+      volPopDisplay: this.state.vol ? 'block' : 'none', volOpen: () => this.setState({ vol: true }), volClose: () => this.setState({ vol: false }), tagline: c.tagline, headline: c.headline, headlineAccent: c.headlineAccent, subline: Component.DEFAULTS.subline, joinLabel: c.joinLabel, phoneJoinLabel: c.phoneJoinLabel, watchLabel: c.watchLabel, sitsTitle: c.sitsTitle, qrEyebrow: c.qrEyebrow, qrSub: c.qrSub, volunteerLabel: c.volunteerLabel,
+      zoomId: (c.zoom && c.zoom.id) || '', zoomPass: (c.zoom && c.zoom.passcode) || '', zoomHref: (c.zoom && c.zoom.url) || '#',
+      sits, sitsLoop: sits.length ? sits.concat(sits.map(x => ({ ...x }))) : [], nowLeft: ((nowD.getHours() * 60 + nowD.getMinutes()) / 1440 * 100).toFixed(2) + '%',
+      sitsStatus: live.length ? (live.length === 1 ? live[0].name + ' is live now' : live.length + ' groups live now') : next ? 'Next group meditation in ' + this.countdown(next.until) : 'Daily, in five time zones',
+      heroSitsKicker: live.length ? 'Group meditation live now' : 'Next group meditation', heroSitsLine: live.length ? live[0].name + ' · ' + live[0].home : next ? next.name + ' · ' + next.local + ' · in ' + this.countdown(next.until) : 'Sits around the world',
+      sitsKickerLs: phone ? '.1em' : '.22em', sitsStatusShort: live.length ? (live[0].name + ' · live now') : next ? 'Next in ' + this.countdown(next.until) : 'Daily · 5 time zones', heroDot: live.length ? '#C9A24A' : '#12201A', heroDotGlow: live.length ? '0 0 0 3px rgba(201,162,74,.25)' : 'none', heroDotAnim: live.length ? 'pulse 2.4s ease-out infinite' : 'none',
+      phoneSitsDisplay: desk ? 'none' : 'flex',
+      qrShown: this.state.qr, qrPopDisplay: this.state.qr ? 'block' : 'none', qrPopDisplayGuest: (this.state.qr && !this.memberVals().isMember) ? 'block' : 'none',
+      qrOpen: () => this.setState({ qr: true }), qrClose: () => this.setState({ qr: false }), qrToggle: (e) => { e.preventDefault(); this.setState(st => ({ qr: !st.qr })); },
+      sessionTime: this.sessionTime(sits),
+      phone: !desk, orbsDisplay: desk ? 'block' : 'none', showUtility: false,
+      photoFilter: 'none', net: this.net(), seed: this.seed(), spokes: this.spokes(),
+      hoverIn: (e) => this.setState({ hov: e.currentTarget.dataset.k }), hoverOut: () => this.setState({ hov: null }),
+      sunRays: (this._sun = this._sun || (() => { const N = 120, parts = []; for (let i = 0; i < N; i++) { const a = i * 2 * Math.PI / N, r0 = 106, r1 = i % 10 === 0 ? 148 : i % 5 === 0 ? 136 : i % 2 === 0 ? 124 : 116; const p = (ang, r) => (Math.cos(ang) * r).toFixed(1) + ' ' + (Math.sin(ang) * r).toFixed(1); parts.push('M' + p(a, r0) + 'L' + p(a, r1)); } return parts.join(''); })()),
+      showGrid: desk && w >= 1100, wheelDir: desk ? 'row' : 'column', wheelRowAlign: desk ? 'stretch' : 'center', wheelJustify: 'flex-start', wheelRowGap: desk ? colGap + 'px' : '18px', wheelW: desk ? '100%' : '100%', cardsW: desk ? cardsPx + 'px' : 'calc(100% - 44px)', cardsCols: desk ? '1fr 1fr' : 'repeat(auto-fit,minmax(160px,1fr))', cardsRows: desk ? '1fr 1fr' : 'auto', photoRatio: desk ? 'auto' : '5/4', cardsSelf: desk ? 'flex-start' : 'center', cardsMargin: desk ? '0' : '0 auto 16px', headerRef: (this._hdr = this._hdr || React.createRef()), gridTop: (Math.max(this.state.hh || 0, 64) + 14) + 'px', gridBottom: '56%', gridW: 'max(400px,min(calc(46% - clamp(24px,5vw,72px)),calc(100vw - 620px - clamp(24px,5vw,72px))))',
+      showRules: false, gridRows: 'auto', photoArea: '1 / 1', eventArea: '1 / 2', rulesArea: '1 / 2', promoBodyDisplay: h >= 820 ? 'block' : 'none',
+      heroImage: (c0.heroImage && c0.heroImage.trim()) || 'assets/hari-stream-forest.png', heroImgPhoneEl: React.createElement('img', { src: (c0.heroImage && c0.heroImage.trim()) || 'assets/hari-stream-forest.png', alt: 'Dr Hari Krishna', style: { position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: desk ? '50% 0%' : '50% 42%' } }), heroImgEl: React.createElement('img', { src: (c0.heroImage && c0.heroImage.trim()) || 'assets/hari-stream-forest.png', alt: 'Dr Hari Krishna', style: { display: 'block', width: '100%', height: '100%', objectFit: 'cover', objectPosition: '72% 40%' } }), heroImage2: (c0.heroImage2 && c0.heroImage2.trim()) || 'assets/pillars/meditation-600x720.webp',
+      filmOpen: this.state.film, filmPlayer: this.state.film ? React.createElement('video', { key: 'film', src: (c0.filmSrc && c0.filmSrc.trim()) || 'assets/peace-film.mp4', controls: true, autoPlay: true, playsInline: true, muted: this.state.filmMuted, preload: 'auto', ref: (el) => { this._vid = el; if (el && !el._armed) { el._armed = true; el.muted = true; el.play().catch(() => {}); setTimeout(() => { if (el.currentTime === 0 && !el.paused) { el.currentTime = 0.05; el.play().catch(() => {}); } }, 600); } }, style: { position: 'absolute', inset: 0, width: '100%', height: '100%', display: 'block', background: '#000' } }) : null,
+      openFilm: (e) => { e.preventDefault(); this.setState({ film: true, filmMuted: true }); }, filmMuted: this.state.film && this.state.filmMuted, unmuteFilm: (e) => { e.stopPropagation(); const v = this._vid; if (v) { v.muted = false; v.play().catch(() => {}); } this.setState({ filmMuted: false }); }, closeFilm: () => this.setState({ film: false }), stopProp: (e) => e.stopPropagation(),
+      heroCaption: c0.heroCaption, heroCaption2: c0.heroCaption2, promoKicker: c0.promoKicker, promoTitle: c0.promoTitle, promoBody: c0.promoBody, promoCta: c0.promoCta,
+      ...Object.fromEntries([0, 1, 2, 3, 4, 5].map(i => ['ch' + i, this.state.ch === i ? 'flex' : 'none'])),
+      chapters: ['Rituals', 'Daily pause', 'Nourish', 'One minute', 'Reflect', 'New here?'].map((label, i) => { const on = this.state.ch === i; return { label, current: on ? 'step' : 'false', color: on ? '#14241C' : '#7A5E22', dot: on ? '#C9A24A' : 'rgba(138,111,52,.35)', line: on ? '#C9A24A' : 'transparent' }; }),
+      chaptersDisplay: this.state.chOpen ? 'flex' : 'none', chapterNow: ['Small rituals', 'Daily pause', 'Nourish', 'One minute', 'Reflect', 'New here?'][this.state.ch] || '', closeChapters: () => this.setState({ chOpen: false }),
+      chapterLabelDisplay: w >= 900 ? 'inline' : 'none', nextLabel: this.state.ch >= 5 ? 'Back to start' : 'Next',
+      goChapter: (e) => this.setChapter(+e.currentTarget.dataset.i), goChapterLink: (e) => { e.preventDefault(); this.setChapter(+e.currentTarget.dataset.i); }, nextChapter: () => this.setChapter((this.state.ch + 1) % 6), prevChapter: () => this.setChapter((this.state.ch + 5) % 6),
+      rituals: [
+        { num: '01', kicker: 'Mind', hue: '#A8403F', title: 'Make room for stillness', body: 'Give your thoughts a little space. Meditation is a practice of returning to the moment, one breath at a time.', cta: 'Try a moment of calm', href: '#one-minute', ch: 3 },
+        { num: '02', kicker: 'Body', hue: '#B5652A', title: 'Nourish with intention', body: 'Enjoy food that brings colour to your plate and care to your day. Slow down and savour what’s in front of you.', cta: 'Discover mindful eating', href: '#wellness', ch: 2 },
+        { num: '03', kicker: 'Self', hue: '#5B4BA8', title: 'Get to know you', body: 'Notice what matters to you, what restores you, and what you’re ready to let go of. Curiosity is a lovely place to start.', cta: 'Take a moment to reflect', href: '#reflect', ch: 4 } ],
+      steps: [ { min: '05', title: 'Arrive & settle', body: 'Find a comfortable seat and ease into the moment.' }, { min: '20', title: 'Guided meditation', body: 'Practice attention, awareness and gentle breathing.' }, { min: '05', title: 'Reflect & reconnect', body: 'Carry one quiet intention into the rest of your day.' } ],
+      eating: [ { hue: '#8fd0a0', lead: 'Bring colour to your plate.', text: 'Explore fresh vegetables, whole grains and foods you enjoy.' }, { hue: '#e6c96a', lead: 'Give your meal your attention.', text: 'Put your phone aside and notice taste, texture and aroma.' }, { hue: '#eda06a', lead: 'Listen with kindness.', text: 'Notice your hunger and fullness without rules or judgment.' } ],
+      breathAnim: this.state.breathing ? 'inhale 8s ease-in-out infinite' : 'none', breathLabel: this.state.breathing ? (this.state.breathLeft + 's') : 'Just be.',
+      breathBtn: this.state.breathing ? 'Stop' : 'Start a one-minute pause', breathBtnBg: this.state.breathing ? 'transparent' : '#14241C', breathBtnFg: this.state.breathing ? '#14241C' : '#F6F1E6',
+      toggleBreath: () => { if (this.state.breathing) { clearInterval(this._bt); this.setState({ breathing: false }); return; } this.setState({ breathing: true, breathLeft: 60 }); this._bt = setInterval(() => this.setState(s => s.breathLeft <= 1 ? (clearInterval(this._bt), { breathing: false, breathLeft: 60 }) : { breathLeft: s.breathLeft - 1 }), 1000); },
+      question: Component.QUESTIONS[this.state.qi % Component.QUESTIONS.length], nextQuestion: () => this.setState(s => ({ qi: s.qi + 1 })),
+      faqs: Component.FAQS.map((q, i) => ({ ...q, open: this.state.faq === i, display: this.state.faq === i ? 'block' : 'none', rot: this.state.faq === i ? 'rotate(45deg)' : 'none' })),
+      toggleFaq: (e) => { const i = +e.currentTarget.dataset.i; this.setState(s => ({ faq: s.faq === i ? -1 : i })); },
+      subPages: Component.DEFAULTS.subPages, indexMt: desk ? '22px' : '10px',
+      testiKicker: c0.testiKicker || Component.DEFAULTS.testiKicker, testiQuote: Component.VOICES[this.state.vi].text, testiName: Component.VOICES[this.state.vi].name + ', via NeoSouth', testiKey: 'v' + this.state.vi, testiCta: c0.testiCta || Component.DEFAULTS.testiCta, rulesKicker: c0.rulesKicker, freeKicker: c0.freeKicker, freeLine: c0.freeLine,
+      rules: ['I', 'II', 'III', 'IV', 'V'].map((n, i) => ({ n, text: c0['rule' + (i + 1)] })).filter(r => r.text),
+      eventKicker: c0.eventKicker, eventTitle: c0.eventTitle, eventSub: c0.eventSub, eventCta: c0.eventCta, eventHref: c0.eventHref || '#events',
+      photoMask: desk ? 'linear-gradient(90deg,transparent 0%,rgba(0,0,0,.35) 12%,#000 32%,#000 100%)' : 'none', taglineDisplay: 'none', pagesNavDisplay: desk && w >= 900 ? 'flex' : 'none', subMax: desk ? '40ch' : 'none',
+      ivoryBand: desk ? 'transparent' : 'rgba(243,234,211,.92)',
+      headerBand: desk ? 'linear-gradient(180deg,#14241C 0%,#1B3328 100%)' : '#14241C',
+      logoHeaderLeft: logoPlace === 'header-left', logoHeaderCenter: logoPlace === 'header-center' && desk, logoHero: logoPlace === 'hero-right' && desk && w >= 1100, sealSize: w >= 1280 ? '92px' : '76px', sealDip: w >= 1480 ? '36px' : '14px',
+      medSize: medPx + 'px', colJustify: 'flex-start', adminOutline: this.props.adminHints ? '2px dashed #C9A24A' : 'none', adminLegendDisplay: this.props.adminHints && desk ? 'flex' : 'none',
+      wordmarkSize: desk ? 'clamp(12px,3.4vw,20px)' : 'clamp(11px,3vw,13px)', wordmarkLs: desk ? 'clamp(.1em,.5vw,.18em)' : '.1em', logoSize: desk ? '48px' : '36px', subPagesDisplay: 'none',
+      utilPad: w >= 1480 ? '4px 6px 4px 18px' : '4px', utilGap: desk ? 'clamp(14px,2vw,28px)' : '8px', brandFlex: desk ? 'none' : '1 1 0', subNavDisplay: 'none', menuBtnDisplay: desk && w >= 900 ? 'none' : 'inline-flex', menuOpen: (!desk || w < 900) && this.state.menu, menuLabel: this.state.menu ? 'Close menu' : 'Open menu', bar1: this.state.menu ? 'translateY(6.5px) rotate(45deg)' : 'none', bar2: this.state.menu ? 0 : 1, bar3: this.state.menu ? 'translateY(-6.5px) rotate(-45deg)' : 'none', toggleMenu: () => this.setState(st => ({ menu: !st.menu })), headerGap: desk ? '12px 24px' : '4px 16px', headerWrap: 'wrap', headerPad: desk ? '12px clamp(16px,5vw,72px)' : '10px 22px 4px', joinPad: desk ? '0 18px' : '0 14px', headerJoinLabel: phone ? (c.joinShortLabel || 'Join') : c.joinLabel, privacyLabel: c.privacyLabel || 'Privacy',
+      photoMinH: desk ? '0' : '150px',
+      photoLayerPos: desk ? 'absolute' : 'relative', photoOrder: desk ? '0' : '2', photoFlex: desk ? 'none' : '1 1 0',
+      topWash: desk ? 'radial-gradient(ellipse 42% 38% at 62% 18%,rgba(232,207,131,.34),rgba(232,207,131,0) 70%),linear-gradient(180deg,rgba(243,234,211,.55) 0%,rgba(243,234,211,0) 18%)' : 'none',
+      copyAlign: 'flex-start', copyText: 'left', gutter: desk ? 'clamp(24px,5vw,72px)' : '22px',
+      copyPad: desk ? 'clamp(8px,2vh,28px) clamp(24px,5vw,72px) 0' : '0 22px 12px',
+      h1Size: desk ? 'clamp(34px,min(3.9vw,7.5dvh),64px)' : 'clamp(26px,7.4vw,34px)',
+      ctaJustify: 'flex-start', ctaGap: desk ? '8px' : '4px', ctaGapX: desk ? '24px' : '10px', ctaWrap: 'nowrap', ctaH: desk ? '48px' : '44px', secW: 'auto', secFlex: desk ? 'none' : '0 0 auto', secPad: desk ? '0 4px' : '0 12px', secBorder: desk ? 'none' : '1px solid rgba(255,255,255,.7)', secBg: desk ? 'transparent' : 'rgba(255,253,248,.45)', secBlur: desk ? 'none' : 'blur(16px) saturate(1.3)', secShadow: desk ? 'none' : '0 1px 0 rgba(255,255,255,.8) inset,0 10px 24px -8px rgba(60,42,16,.25)', secOrder: '2', pillH: '44px',
+      phoneCtaDisplay: desk ? 'none' : 'flex', deskCtaDisplay: desk ? 'inline-flex' : 'none',
+      wheelFlex: desk ? '1' : '0 0 auto', wheelPad: desk ? 'clamp(24px,5vh,56px) clamp(24px,5vw,72px) 24px' : '4px 0 10px',
+      wheelBorder: 'none',
+      wheelDisplay: 'block', showTiles: false, wheelAlign: desk ? 'flex-start' : 'center',
+      mainH: (desk && h < 900) || !desk ? 'auto' : '100dvh', mainOverflow: (desk && h < 900) || !desk ? 'visible' : 'hidden', wheelMinH: '0', sublineFs: desk ? 'clamp(15px,1.2vw,18px)' : 'clamp(11.5px,3.2vw,14px)', sublineWrap: 'normal',
+      wheelMargin: desk ? '0' : '0 auto',
+      labelFs: desk ? 'clamp(11px,calc(var(--yr) * .05),13px)' : '11px', labelLs: desk ? '.3em' : '.1em', labelPad: desk ? '8px 14px' : '11px 10px', labelMinH: desk ? '0' : '44px', tileH: h >= 760 ? '64px' : '56px', descDisplay: h >= 700 ? 'block' : 'none',
+      wheelMb: desk ? 'calc(var(--yr) * .4)' : 'calc(var(--yr) * .22)',
+      showQr: w >= 1024 && h >= 760, topUtilDisplay: desk && w >= 900 ? 'flex' : 'none', showBase: desk && h >= 620,
+      h1Max: desk ? '14ch' : 'none', h1Wrap: 'normal',
+      photoPos: desk ? '50% 0%' : '50% 42%', photoLeft: desk ? '46%' : '0', photoFit: 'cover',
+      sideWash: desk
+        ? 'linear-gradient(90deg,#F3EAD3 0%,rgba(243,234,211,.7) 10%,rgba(243,234,211,0) 30%)'
+        : 'none',
+      copyW: desk ? '50%' : '100%',
+      yr: desk ? 'clamp(96px,min(calc((50vw - 200px) * .36),calc((100dvh - 520px) * .3)),170px)' : 'clamp(80px,12.5vw,110px)',
+      nodes, chapterNodes, chapterNodesDisplay: 'block', orbitState: hov ? 'paused' : 'running',
+      angleDeg: this.state.angle + 'deg', negAngleDeg: (-this.state.angle) + 'deg', dialTransition: this.state.dragging ? 'none' : 'transform .9s cubic-bezier(.2,.8,.2,1)', dialCursor: this.state.dragging ? 'grabbing' : 'grab', pillTransition: this.state.dragging ? 'transform 0s' : 'transform .9s cubic-bezier(.2,.8,.2,1)',
+      tiltX: this.state.tilt[0].toFixed(1) + 'deg', tiltY: this.state.tilt[1].toFixed(1) + 'deg',
+      dialDown: (e) => this.dialDown(e), dialMove: (e) => this.dialMove(e), dialUp: () => this.dialUp(), dialLeave: () => this.dialLeave(), dialWheel: (e) => this.dialWheel(e),
+      activeKey: 'a' + this.activeIndex(), activeNum: ['I','II','III','IV','V','VI'][this.activeIndex()], activeKicker: chapterData[this.activeIndex()].kicker, activeTitle: chapterData[this.activeIndex()].title, activeHref: chapterData[this.activeIndex()].href, activeCta: chapterData[this.activeIndex()].cta,
+      captionAlign: desk ? 'flex-start' : 'center', captionText: desk ? 'left' : 'center', captionMargin: desk ? '6px 0 0 0' : '8px auto 0', dialHint: 'Pick a leaf. Try one minute.', treeW: desk ? treePx + 'px' : '100%', pillMinW: desk ? '112px' : '92px', pillFs: desk ? 'clamp(9px,.7vw,11px)' : '9px', pillNumFs: desk ? '13px' : '12px'
+    };
+  }
+}
+</script>
+</body>
+</html>
