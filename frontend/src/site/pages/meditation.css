@@ -1,0 +1,35 @@
+/* /meditation — hover states + keyframes from Meditation.dc.html */
+
+@keyframes gaw-med-torus {
+  0%,
+  100% {
+    transform: scale(0.96);
+    opacity: 0.75;
+  }
+  50% {
+    transform: scale(1.04);
+    opacity: 1;
+  }
+}
+.gaw-site .gaw-med-torus {
+  animation: gaw-med-torus 9s ease-in-out infinite;
+}
+
+/* "Detox diet →" outline pill */
+.gaw-site a.gaw-med-outline {
+  border: 1px solid #14241c;
+  color: #14241c;
+  transition: background 0.2s, color 0.2s;
+}
+.gaw-site a.gaw-med-outline:hover {
+  background: #14241c;
+  color: #f6f1e6;
+}
+
+/* New to this / Seasoned meditator tabs */
+.gaw-site .gaw-med-tab {
+  border: 0;
+  font: inherit;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}

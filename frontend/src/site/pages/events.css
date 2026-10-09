@@ -1,0 +1,32 @@
+/* /events — hover states + keyframes from Events.dc.html */
+
+@keyframes gaw-ev-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(201, 162, 74, 0.6);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(201, 162, 74, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(201, 162, 74, 0);
+  }
+}
+.gaw-site .gaw-ev-live {
+  animation: gaw-ev-pulse 1.6s infinite;
+}
+
+/* Session rows: border turns gold on hover */
+.gaw-site .gaw-ev-row {
+  transition: border-color 0.2s;
+}
+.gaw-site .gaw-ev-row:hover {
+  border-color: #c9a24a !important;
+}
+
+/* "Register as a member →" on the dark upcoming card */
+.gaw-site a.gaw-ev-register {
+  color: #e8cf83;
+}
+.gaw-site a.gaw-ev-register:hover {
+  color: #f6f1e6;
+}

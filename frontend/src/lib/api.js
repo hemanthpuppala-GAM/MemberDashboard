@@ -115,6 +115,11 @@ export const api = {
   sectionContent: (sectionId) => apiFetch(`/admin/sections/${sectionId}/content`),
   updateSectionContent: (sectionId, payload) => apiFetch(`/admin/sections/${sectionId}/content`, { method: "PUT", body: payload }),
 
+  siteContentList: () => apiFetch("/admin/site-content"),
+  siteContent: (page) => apiFetch(`/admin/site-content/${page}`),
+  saveSiteContent: (page, data) => apiFetch(`/admin/site-content/${page}`, { method: "PUT", body: { data } }),
+  resetSiteContent: (page) => apiFetch(`/admin/site-content/${page}`, { method: "DELETE" }),
+
   media: () => apiFetch("/admin/media"),
   uploadMedia: (formData) => apiUpload("/admin/media", formData),
   updateMedia: (id, payload) => apiFetch(`/admin/media/${id}`, { method: "PUT", body: payload }),
