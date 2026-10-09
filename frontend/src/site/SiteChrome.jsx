@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { useMemberAuth } from "../auth/MemberAuthContext";
 import { SITE_PAGES, UTILITY_LINKS, YOUTUBE_URL } from "./sitePages";
 import { siteAsset } from "./siteAssets";
@@ -12,11 +12,25 @@ const CAPS = { textTransform: "uppercase", whiteSpace: "nowrap" };
 
 /** Outer wrapper for every public page: fonts, cream background, scoped CSS. */
 export function SitePage({ children, style }) {
+  useScrollToHash();
   return (
     <div className="gaw-site" style={{ display: "flex", flexDirection: "column", ...style }}>
       {children}
     </div>
   );
+}
+
+/** Links like /wellness#detox: scroll to the anchor once the page has rendered (react-router doesn't). */
+function useScrollToHash() {
+  const { pathname, hash } = useLocation();
+  useEffect(() => {
+    if (!hash) {
+      window.scrollTo({ top: 0 });
+      return undefined;
+    }
+    const t = setTimeout(() => document.getElementById(decodeURIComponent(hash.slice(1)))?.scrollIntoView({ behavior: "smooth", block: "start" }), 120);
+    return () => clearTimeout(t);
+  }, [pathname, hash]);
 }
 
 /** Signed-in member (from auth, not localStorage) → first name + initial. */
