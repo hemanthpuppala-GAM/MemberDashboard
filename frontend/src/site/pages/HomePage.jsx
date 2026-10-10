@@ -108,6 +108,10 @@ export default function HomePage() {
   const tablet = !desk && w >= 700; // iPad portrait: stacked like phones, but sized up
   const headerRef = useRef(null);
   const hh = Math.max(useElementHeight(headerRef), 64);
+  const heroRef = useRef(null);
+  const footRef = useRef(null);
+  const heroH = useElementHeight(heroRef);
+  const footH = useElementHeight(footRef);
 
   const [active, setActive] = useState(0);
   const [ch, setCh] = useState(0);
@@ -175,7 +179,13 @@ export default function HomePage() {
   const gutPx = Math.min(72, Math.max(24, w * 0.05));
   const treePx = Math.max(380, Math.min((w - 2 * gutPx - 48) * 0.56, (h - hh - 640) * (1277 / 835), 900));
   const cardsPx = Math.max(320, w - 2 * gutPx - treePx - 48);
-  const fullHeight = desk && h >= 900;
+  const fitColW = (w - 2 * gutPx - 48) / 2;
+  const fitTreeH = h - hh - (w >= 1200 ? 34 : 0) - (heroH || 300) - (footH || 80) - 28;
+  const fitTreePx = Math.max(240, Math.min(fitColW - 200, fitTreeH * (1277 / 835)));
+  // Desktop / landscape tablet: the whole home page fits one screen. Hero copy + tree in the left
+  // column, the four cards fill the right column (where the hero emblem used to be), footer at the bottom.
+  const fit = w >= 1024 && w >= h * 1.15 && h >= 560;
+  const fullHeight = fit || (desk && h >= 900);
   const ivory = desk ? "transparent" : "rgba(243,234,211,.92)";
   const heroImage = siteAsset((c.heroImage && c.heroImage.trim()) || "assets/hari-stream-forest.png");
   const filmSrc = (c.filmSrc && c.filmSrc.trim()) || "assets/peace-film.mp4";
@@ -187,7 +197,18 @@ export default function HomePage() {
 
   return (
     <SitePage>
-      <main style={{ position: "relative", minHeight: "100dvh", height: fullHeight ? "100dvh" : "auto", overflow: fullHeight ? "hidden" : "visible", background: "#F3EAD3", display: "flex", flexDirection: "column" }}>
+      <main
+        style={{
+          position: "relative",
+          minHeight: "100dvh",
+          height: fullHeight ? "100dvh" : "auto",
+          overflow: fullHeight ? "hidden" : "visible",
+          background: "#F3EAD3",
+          ...(fit
+            ? { display: "grid", gridTemplateColumns: "minmax(0,1fr) minmax(0,1fr)", gridTemplateRows: "auto auto minmax(0,1fr) auto", columnGap: 48, padding: 0 }
+            : { display: "flex", flexDirection: "column" }),
+        }}
+      >
         <div aria-hidden="true" style={{ position: "absolute", inset: 0, background: "#F7F1E3" }} />
 
         <HomeHeader c={c} vp={{ w, h, desk, phone }} headerRef={headerRef} />
@@ -195,7 +216,8 @@ export default function HomePage() {
         {/* Hero copy */}
         <div
           id="top"
-          style={{ position: "relative", zIndex: 5, order: 1, display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "clamp(10px,1.8vh,16px)", width: desk ? "50%" : "100%", padding: desk ? "clamp(8px,2vh,28px) clamp(24px,5vw,72px) 0" : tablet ? "20px clamp(32px,6vw,56px) 16px" : "0 22px 12px", textAlign: "left", background: ivory }}
+          ref={heroRef}
+          style={{ ...(fit ? { gridColumn: 1, gridRow: 2, paddingRight: 0 } : {}), position: "relative", zIndex: 5, order: 1, display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "clamp(10px,1.8vh,16px)", width: fit ? "auto" : desk ? "50%" : "100%", padding: desk ? "clamp(8px,2vh,28px) clamp(24px,5vw,72px) 0" : tablet ? "20px clamp(32px,6vw,56px) 16px" : "0 22px 12px", textAlign: "left", background: ivory }}
         >
 
           <span style={{ display: "inline-flex", alignItems: "center", gap: 10, fontSize: 11, fontWeight: 700, letterSpacing: ".3em", textTransform: "uppercase", color: "#7A5E22", animation: "gaw-rise .9s both" }}>
@@ -273,13 +295,14 @@ export default function HomePage() {
             padding: desk ? "clamp(24px,5vh,56px) clamp(24px,5vw,72px) 24px" : "4px 0 10px",
             background: ivory,
             scrollMarginTop: 12,
+            ...(fit ? { display: "contents" } : {}),
           }}
         >
-          <div style={{ display: "flex", flexDirection: "column", alignItems: desk ? "flex-start" : "center", flex: "none", minWidth: 0, maxWidth: "100%", width: desk ? undefined : "100%" }}>
-            <BodhiNavigator active={active} chapters={chapters} desk={desk} treeW={desk ? `${treePx}px` : tablet ? "min(100%, 640px)" : "100%"} onActive={setActive} onOpen={openChapter} />
+          <div style={{ display: "flex", flexDirection: "column", alignItems: desk ? "flex-start" : "center", flex: "none", minWidth: 0, maxWidth: "100%", width: desk ? undefined : "100%", ...(fit ? { gridColumn: 1, gridRow: 3, position: "relative", zIndex: 6, padding: `12px 0 12px ${gutPx}px`, minHeight: 0, overflow: "hidden", flexDirection: "row", alignItems: "center", gap: 0 } : {}) }}>
+            <BodhiNavigator active={active} chapters={chapters} desk={desk} treeW={fit ? `${fitTreePx}px` : desk ? `${treePx}px` : tablet ? "min(100%, 640px)" : "100%"} onActive={setActive} onOpen={openChapter} side={fit} />
           </div>
 
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "stretch", justifyContent: "flex-start", flex: "0 0 auto", minWidth: 0, width: desk ? cardsPx : tablet ? "min(calc(100% - 64px), 760px)" : "calc(100% - 44px)", alignSelf: desk ? "stretch" : "center", margin: desk ? 0 : "0 auto 16px" }}>
+          <div style={{ ...(fit ? { gridColumn: 2, gridRow: "2 / 4", position: "relative", zIndex: 6, padding: `clamp(12px,2.2vh,28px) ${gutPx}px 16px 0`, minHeight: 0 } : {}), display: "flex", flexDirection: "column", alignItems: "stretch", justifyContent: "flex-start", flex: "0 0 auto", minWidth: 0, width: fit ? "auto" : desk ? cardsPx : tablet ? "min(calc(100% - 64px), 760px)" : "calc(100% - 44px)", alignSelf: desk ? "stretch" : "center", margin: desk ? 0 : "0 auto 16px" }}>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(2,minmax(0,1fr))", gridTemplateRows: desk ? "1fr 1fr" : "auto", gap: 12, width: "100%", flex: "1 1 auto", minHeight: 0 }}>
               <Link
                 to="/meditation"
@@ -338,7 +361,9 @@ export default function HomePage() {
           </div>
         </div>
 
-        <WorldSitsFooter c={c} s={sits} compact={!desk} />
+        <div ref={footRef} style={fit ? { gridColumn: "1 / -1", gridRow: 4 } : { order: 4 }}>
+          <WorldSitsFooter c={c} s={sits} compact={!desk} />
+        </div>
       </main>
 
       {film && <FilmOverlay src={filmSrc} onClose={() => setFilm(false)} />}

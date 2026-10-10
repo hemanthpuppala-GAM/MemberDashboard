@@ -204,3 +204,9 @@
     overflow-x: auto !important;
   }
 }
+
+/* One-screen desktop layout: the header spans both grid columns. */
+.gaw-site main > .gaw-sticky-head {
+  grid-column: 1 / -1;
+  grid-row: 1;
+}

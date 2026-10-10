@@ -16,7 +16,7 @@ const POS = [
  * Bodhi-tree chapter navigator: six leaf-pills on the tree art. Hover / focus
  * makes a chapter active (caption below updates); click opens it.
  */
-export default function BodhiNavigator({ active, chapters, desk, treeW, onActive, onOpen }) {
+export default function BodhiNavigator({ active, chapters, desk, treeW, onActive, onOpen, side = false }) {
   const cur = chapters[active];
   const open = (i) => (e) => {
     e.preventDefault();
@@ -82,7 +82,11 @@ export default function BodhiNavigator({ active, chapters, desk, treeW, onActive
       </nav>
       <div
         aria-live="polite"
-        style={{ display: "flex", flexDirection: "column", alignItems: desk ? "flex-start" : "center", textAlign: desk ? "left" : "center", gap: 6, margin: desk ? "6px 0 0 0" : "8px auto 0", width: treeW, maxWidth: "100%", minHeight: 118, padding: "14px 20px 0", borderTop: "1px solid rgba(201,162,74,.35)" }}
+        style={
+          side
+            ? { display: "flex", flexDirection: "column", alignItems: "flex-start", textAlign: "left", gap: 6, flex: "1 1 0", minWidth: 180, alignSelf: "center", padding: "4px 0 4px 22px", borderLeft: "1px solid rgba(201,162,74,.35)" }
+            : { display: "flex", flexDirection: "column", alignItems: desk ? "flex-start" : "center", textAlign: desk ? "left" : "center", gap: 6, margin: desk ? "6px 0 0 0" : "8px auto 0", width: treeW, maxWidth: "100%", minHeight: 118, padding: "14px 20px 0", borderTop: "1px solid rgba(201,162,74,.35)" }
+        }
       >
         <span style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 11, fontWeight: 700, letterSpacing: ".22em", textTransform: "uppercase", color: "#7A5E22" }}>
           <span style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 14, fontWeight: 500, letterSpacing: ".12em" }}>{NUMS[active]}</span>
