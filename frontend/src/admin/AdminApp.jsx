@@ -35,6 +35,7 @@ import MemberProfilePage from "./pages/people/MemberProfilePage";
 import MemberJourneyPage from "./pages/people/MemberJourneyPage";
 import UsersListPage from "./pages/people/UsersListPage";
 import RolesPage from "./pages/people/RolesPage";
+import SupportTeamPage from "./pages/people/SupportTeamPage";
 
 import AnnouncementsPage from "./pages/engage/AnnouncementsPage";
 import BroadcastsPage from "./pages/engage/BroadcastsPage";
@@ -88,6 +89,7 @@ export default function AdminApp() {
                 <Route path="members/:id/journey" element={guarded("members.view", <MemberJourneyPage />)} />
                 <Route path="users" element={guarded("users.view", <UsersListPage />)} />
                 <Route path="roles" element={guarded("roles.view", <RolesPage />)} />
+                <Route path="support-team" element={guarded("members.view", <SupportTeamPage />)} />
 
                 <Route path="announcements" element={guarded("announcements.view", <AnnouncementsPage />)} />
                 <Route path="broadcasts" element={guarded("broadcast.view", <BroadcastsPage />)} />

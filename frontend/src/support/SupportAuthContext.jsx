@@ -19,6 +19,22 @@ import {
  */
 const SupportAuthContext = createContext(null);
 
+/** Validate the stored token(s): core support token first, then the member (Google) token. */
+async function resolveAgent() {
+  // A 401 clears the token that failed (see supportApi), so this loop ends.
+  while (currentTokenKind()) {
+    try {
+      const { agent } = await supportApi.me();
+      return { status: "in", agent };
+    } catch (err) {
+      if (err.status === 401) continue;
+      if (err.status === 403 && currentTokenKind() === "member") return { status: "forbidden" };
+      return { status: "signedOut", notice: err.status === 403 ? "" : err.message };
+    }
+  }
+  return { status: "signedOut" };
+}
+
 export function SupportAuthProvider({ children }) {
   const memberAuth = useMemberAuth();
   const [status, setStatus] = useState(() => (currentTokenKind() ? "checking" : "signedOut"));
@@ -26,34 +42,17 @@ export function SupportAuthProvider({ children }) {
   const [notice, setNotice] = useState("");
 
   const check = useCallback(async () => {
-    if (!currentTokenKind()) {
-      setStatus("signedOut");
-      return;
-    }
-    setStatus("checking");
-    try {
-      const { agent: a } = await supportApi.me();
-      setAgent(a);
-      setStatus("in");
-    } catch (err) {
-      if (err.status === 403 && currentTokenKind() === "member") {
-        setStatus("forbidden");
-      } else if (err.status === 401 && currentTokenKind()) {
-        // The core token expired; a member token may still get a volunteer in.
-        check();
-      } else if (err.status === 401 || err.status === 403) {
-        setStatus("signedOut");
-      } else {
-        setNotice(err.message);
-        setStatus("signedOut");
-      }
-    }
+    if (currentTokenKind()) setStatus("checking");
+    const result = await resolveAgent();
+    setAgent(result.agent ?? null);
+    if (result.notice) setNotice(result.notice);
+    setStatus(result.status);
   }, []);
 
   useEffect(() => {
     // Member auth (Google) also validates its token on load; wait for it to settle first.
     if (memberAuth.loading) return;
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- one-off token validation on mount
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- one-off token validation on load
     check();
   }, [memberAuth.loading, check]);
 

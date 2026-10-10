@@ -2,7 +2,7 @@ import {
   LayoutDashboard, FileText, Image, Inbox, UsersRound, UserCog, ShieldCheck,
   Megaphone, Radio, QrCode, BarChart3, Globe, Settings, Files, Phone, Landmark,
   Music2, MessageSquareQuote, HeartHandshake, ListChecks, CalendarClock, Timer,
-  ClipboardList, PanelsTopLeft,
+  ClipboardList, PanelsTopLeft, Headset,
 } from "lucide-react";
 
 /**
@@ -36,6 +36,7 @@ export const NAV = [
       { to: "/admin/members", label: "Members", icon: UsersRound, permission: "members.view" },
       { to: "/admin/users", label: "Users", icon: UserCog, permission: "users.view" },
       { to: "/admin/roles", label: "Roles", icon: ShieldCheck, permission: "roles.view" },
+      { to: "/admin/support-team", label: "Support team", icon: Headset, permission: "members.view" },
     ],
   },
   {
@@ -81,6 +82,7 @@ export const BREADCRUMB_RULES = [
   { pattern: /^\/admin\/members\/?$/, crumbs: () => ["People", "Members"] },
   { pattern: /^\/admin\/users\/?$/, crumbs: () => ["People", "Users"] },
   { pattern: /^\/admin\/roles\/?$/, crumbs: () => ["People", "Roles"] },
+  { pattern: /^\/admin\/support-team\/?$/, crumbs: () => ["People", "Support team"] },
   { pattern: /^\/admin\/announcements\/?$/, crumbs: () => ["Engage", "Announcements"] },
   { pattern: /^\/admin\/broadcasts\/?$/, crumbs: () => ["Engage", "Broadcasts"] },
   { pattern: /^\/admin\/qr-codes\/?$/, crumbs: () => ["Engage", "QR Codes"] },
