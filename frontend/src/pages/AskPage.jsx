@@ -108,11 +108,11 @@ export default function AskPage() {
 
   return (
     <div className="min-h-dvh bg-[#F3EAD3] ask-font font-medium text-[#1B3328] antialiased">
-      <div className="mx-auto flex w-full max-w-[560px] flex-col gap-[22px] px-[18px] pt-7 pb-12">
+      <div className="mx-auto flex w-full max-w-[560px] flex-col gap-4 px-[18px] pt-4 pb-12 lg:max-w-[1040px] lg:gap-5 lg:pt-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <Link to="/" className="flex items-center gap-2.5">
             <img src={logo} alt="" className="h-10 w-10 rounded-full" />
-            <span className="font-headline text-[18px] font-bold text-[#14241C]">Golden Age Wisdom</span>
+            <span className="hidden font-headline text-[18px] font-bold text-[#14241C] min-[420px]:inline">Golden Age Wisdom</span>
           </Link>
           <div className="flex gap-1.5">
             {PAGE_LANGS.map((l) => (
@@ -135,15 +135,17 @@ export default function AskPage() {
         )}
 
         <div>
-          <h1 className="m-0 font-headline text-[40px] leading-[1.05] font-bold text-[#14241C]">{t.title}</h1>
-          <p className="mt-2 mb-0 text-[15px] leading-[1.6] text-[#2E3A33]">{t.intro}</p>
+          <h1 className="m-0 font-headline text-[32px] leading-[1.05] font-bold text-[#14241C] lg:text-[40px]">{t.title}</h1>
+          <p className="mt-1.5 mb-0 text-[14px] leading-[1.5] text-[#2E3A33] lg:text-[15px] [@media(max-height:700px)]:text-[13px]">{t.introShort}</p>
         </div>
 
-        {/* Voice first: the big mic sits above the fold on every device, with a nudge for first-timers. */}
+        {/* Everything needed to ask fits on one screen: voice + question side by side on wide screens, stacked and compact on phones. */}
+        <div className="flex flex-col gap-4 lg:grid lg:grid-cols-2 lg:items-stretch lg:gap-5">
+        {/* Voice first: the big mic, with a nudge for first-timers. */}
         {voice.supported ? (
-          <div className="flex flex-col gap-2.5 rounded-[22px] border border-[rgba(201,162,74,0.45)] bg-[#FFFDF8] p-3.5 shadow-[0_10px_28px_-16px_rgba(60,42,16,0.45)]">
+          <div className="flex flex-col gap-2 rounded-[22px] border border-[rgba(201,162,74,0.45)] bg-[#FFFDF8] p-3.5 shadow-[0_10px_28px_-16px_rgba(60,42,16,0.45)]">
             {!voice.listening && !voice.error && !text && (
-              <span className="inline-flex items-center gap-2 self-start rounded-full bg-[rgba(201,162,74,0.18)] px-3 py-1.5 text-[13px] font-semibold text-[#7A5E22]">
+              <span className="inline-flex items-center gap-2 self-start rounded-full bg-[rgba(201,162,74,0.18)] px-3 py-1 text-[12.5px] font-semibold text-[#7A5E22]">
                 <span aria-hidden="true">✨</span>
                 {t.micHint}
               </span>
@@ -152,7 +154,7 @@ export default function AskPage() {
               type="button"
               onClick={voice.toggle}
               aria-pressed={voice.listening}
-              className={`inline-flex min-h-[56px] w-full cursor-pointer items-center justify-center gap-3 rounded-full px-5 text-[17px] font-bold transition-colors ${
+              className={`inline-flex min-h-[52px] w-full cursor-pointer items-center justify-center gap-3 rounded-full px-5 text-[17px] font-bold transition-colors ${
                 voice.listening
                   ? "animate-[micPulse_1.2s_ease-out_infinite] bg-[#A8403F] text-white"
                   : `bg-[#14241C] text-[#F6F1E6] hover:bg-[#1B3328] ${!text && !voice.error ? "animate-[micPulse_2.4s_ease-out_infinite]" : ""}`
@@ -183,7 +185,8 @@ export default function AskPage() {
           <p className="m-0 rounded-[14px] bg-[rgba(201,162,74,0.12)] px-3.5 py-2.5 text-[13px] text-[#5A5546]">{t.noVoice}</p>
         )}
 
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-3 lg:min-h-0">
+        <div className="flex flex-col gap-1.5 lg:flex-1">
           <StepLabel>{t.step1}</StepLabel>
           <textarea
             value={text}
@@ -192,15 +195,15 @@ export default function AskPage() {
               setNote("");
             }}
             placeholder={t.hint}
-            rows={4}
+            rows={3}
             aria-label={t.step1}
-            className={`${textareaClass} text-[16px]`}
+            className={`${textareaClass} text-[16px] lg:min-h-0 lg:flex-1 [@media(max-height:700px)]:h-[76px]`}
           />
         </div>
 
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-1.5">
           <StepLabel>{t.step2}</StepLabel>
-          <button type="button" onClick={send} className={`${primaryButtonClass} w-full p-4 text-[16px]`}>
+          <button type="button" onClick={send} className={`${primaryButtonClass} w-full px-4 py-3.5 text-[16px]`}>
             {t.sendBtn}
           </button>
           <span className="text-center text-[12.5px] text-[#2E3A33]">{fill(t.number, { primary: support.primaryDisplay })}</span>
@@ -211,6 +214,8 @@ export default function AskPage() {
               Track your question →
             </Link>
           )}
+        </div>
+        </div>
         </div>
 
         <div className="flex flex-wrap items-center gap-4 rounded-[20px] border border-[rgba(201,162,74,0.3)] bg-[#FFFDF8] p-[18px]">

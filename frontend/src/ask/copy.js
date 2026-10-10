@@ -23,6 +23,7 @@ export const ASK_PAGE_T = {
     title: "Ask a question",
     intro:
       "No login needed. Type your question, or press the mic and speak. Then press Send — WhatsApp opens with your message ready. Our support team will reply there.",
+    introShort: "No login needed. Speak or type your question, then send it on WhatsApp — our team replies there.",
     step1: "1. Your question",
     step2: "2. Send it",
     speakIn: "Speak in:",
@@ -57,6 +58,7 @@ export const ASK_PAGE_T = {
     title: "ప్రశ్న అడగండి",
     intro:
       'లాగిన్ అవసరం లేదు. మీ ప్రశ్న టైప్ చేయండి, లేదా మైక్ నొక్కి మాట్లాడండి. తర్వాత "పంపండి" నొక్కండి — WhatsApp తెరుచుకుంటుంది, మీ సందేశం సిద్ధంగా ఉంటుంది. మా బృందం అక్కడే జవాబు ఇస్తుంది.',
+    introShort: "లాగిన్ అవసరం లేదు. మీ ప్రశ్నను మాట్లాడండి లేదా టైప్ చేయండి, తర్వాత WhatsAppలో పంపండి — మా బృందం అక్కడే జవాబు ఇస్తుంది.",
     step1: "1. మీ ప్రశ్న",
     step2: "2. పంపండి",
     speakIn: "ఈ భాషలో మాట్లాడండి:",
@@ -91,6 +93,7 @@ export const ASK_PAGE_T = {
     title: "ಪ್ರಶ್ನೆ ಕೇಳಿ",
     intro:
       'ಲಾಗಿನ್ ಅಗತ್ಯವಿಲ್ಲ. ನಿಮ್ಮ ಪ್ರಶ್ನೆಯನ್ನು ಟೈಪ್ ಮಾಡಿ, ಅಥವಾ ಮೈಕ್ ಒತ್ತಿ ಮಾತನಾಡಿ. ನಂತರ "ಕಳುಹಿಸಿ" ಒತ್ತಿ — WhatsApp ತೆರೆಯುತ್ತದೆ, ನಿಮ್ಮ ಸಂದೇಶ ಸಿದ್ಧವಾಗಿರುತ್ತದೆ. ನಮ್ಮ ತಂಡ ಅಲ್ಲಿಯೇ ಉತ್ತರಿಸುತ್ತದೆ.',
+    introShort: "ಲಾಗಿನ್ ಬೇಕಿಲ್ಲ. ನಿಮ್ಮ ಪ್ರಶ್ನೆಯನ್ನು ಮಾತನಾಡಿ ಅಥವಾ ಟೈಪ್ ಮಾಡಿ, ನಂತರ WhatsApp ನಲ್ಲಿ ಕಳುಹಿಸಿ — ನಮ್ಮ ತಂಡ ಅಲ್ಲೇ ಉತ್ತರಿಸುತ್ತದೆ.",
     step1: "1. ನಿಮ್ಮ ಪ್ರಶ್ನೆ",
     step2: "2. ಕಳುಹಿಸಿ",
     speakIn: "ಈ ಭಾಷೆಯಲ್ಲಿ ಮಾತನಾಡಿ:",
