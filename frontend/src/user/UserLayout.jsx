@@ -4,6 +4,7 @@ import { Menu } from "lucide-react";
 import Sidebar from "./layout/Sidebar";
 import { NAV } from "./layout/navConfig";
 import { ActiveSitProvider } from "./ActiveSitContext";
+import BroadcastManager from "../components/layout/BroadcastManager";
 
 export default function UserLayout() {
   const { pathname } = useLocation();
@@ -40,6 +41,9 @@ export default function UserLayout() {
             </button>
             <h1 className="font-display text-[18px] text-[var(--color-ink)]">{current?.label ?? "Dashboard"}</h1>
           </header>
+
+          {/* Admin → Broadcasts targeted at "dashboard" (or all pages): banner docks under the title bar, popups float. */}
+          <BroadcastManager view="dashboard" />
 
           <main className="min-h-0 flex-1 overflow-y-auto px-4 py-5 sm:px-7 sm:py-7">
             <div key={pathname} className="mx-auto w-full max-w-5xl animate-[viewIn_0.4s_ease]">

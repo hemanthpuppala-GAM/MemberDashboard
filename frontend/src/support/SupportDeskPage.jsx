@@ -46,7 +46,7 @@ function useDebounced(value, ms) {
 }
 
 function Desk() {
-  const { agent, logout } = useSupportAuth();
+  const { agent, logout, tokenKind } = useSupportAuth();
   const navigate = useNavigate();
   const match = useMatch("/support/ticket/:id");
   const selectedId = match?.params.id ?? null;
@@ -86,6 +86,7 @@ function Desk() {
     <>
       <DeskHeader
         agent={agent}
+        viaAdmin={tokenKind === "admin"}
         onLogCall={() => setLogging(true)}
         loggingOut={loggingOut}
         onLogout={async () => {

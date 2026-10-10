@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import {
   ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell, AreaChart, Area,
@@ -10,18 +11,39 @@ import Button from "../ui/Button";
 import Tabs from "../ui/Tabs";
 import DataTable from "../ui/DataTable";
 import { api, downloadAuthed } from "../../lib/api";
+import { sourceLabel, statusLabel } from "../../support/format";
 
 const PIE_COLORS = ["var(--a-accent)", "var(--a-focus)", "var(--a-success)", "var(--a-warning)"];
 const TOOLTIP_STYLE = { background: "var(--a-bg-surface)", border: "1px solid var(--a-border)", borderRadius: 8, fontSize: 12.5 };
 const axisProps = { tick: { fill: "var(--a-text-muted)", fontSize: 12 }, axisLine: false, tickLine: false };
 
 const toEntries = (obj, keyName, valueName = "count") => Object.entries(obj ?? {}).map(([k, v]) => ({ [keyName]: k, [valueName]: v }));
+const labelled = (obj, label) => toEntries(obj, "key").map((row) => ({ ...row, name: label(row.key) }));
+
+/** Horizontal bar breakdown (name → count), same look as "Members per practitioner". */
+function BreakdownBars({ data, empty = "Nothing recorded yet." }) {
+  if (!data.length) return <p className="py-4 text-[13.5px] text-[var(--a-text-muted)]">{empty}</p>;
+  return (
+    <div style={{ height: Math.max(160, data.length * 40 + 40) }}>
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart data={data} layout="vertical">
+          <CartesianGrid strokeDasharray="3 3" stroke="var(--a-border)" horizontal={false} />
+          <XAxis type="number" allowDecimals={false} {...axisProps} />
+          <YAxis type="category" dataKey="name" {...axisProps} width={130} />
+          <Tooltip cursor={{ fill: "var(--a-bg-surface-2)" }} contentStyle={TOOLTIP_STYLE} />
+          <Bar dataKey="count" fill="var(--a-accent)" radius={[0, 6, 6, 0]} />
+        </BarChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
 
 export default function ReportsPage() {
   const [tab, setTab] = useState("overview");
   const [overview, setOverview] = useState(null);
   const [membersReport, setMembersReport] = useState(null);
   const [activityLog, setActivityLog] = useState([]);
+  const [queriesReport, setQueriesReport] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -33,6 +55,8 @@ export default function ReportsPage() {
       })
       .catch((err) => toast.error(err.message ?? "Failed to load reports"))
       .finally(() => setLoading(false));
+    // Queries + support desk breakdowns: optional, so a failure here doesn't blank the page.
+    api.reportsQueries().then(setQueriesReport).catch(() => {});
   }, []);
 
   const activityColumns = [
@@ -51,6 +75,9 @@ export default function ReportsPage() {
 
   const submissionsByCategory = toEntries(overview.by_category, "category");
   const statusBreakdown = toEntries(membersReport.status_breakdown, "status");
+  const queriesByStatus = labelled(queriesReport?.by_status, (s) => String(s).replace(/_/g, " ").replace(/^./, (c) => c.toUpperCase()));
+  const ticketsBySource = labelled(queriesReport?.tickets_by_source, sourceLabel);
+  const ticketsByStatus = labelled(queriesReport?.tickets_by_status, statusLabel);
 
   return (
     <div className="flex flex-col gap-6">
@@ -100,6 +127,25 @@ export default function ReportsPage() {
               </ResponsiveContainer>
             </div>
           </Card>
+
+          {queriesReport && (
+            <>
+              <Card title="Queries by status" description="Website, Ask page and member-dashboard questions">
+                <BreakdownBars data={queriesByStatus} />
+              </Card>
+              <Card title="Support tickets by status" description="Everything on the support desk">
+                <BreakdownBars data={ticketsByStatus} />
+              </Card>
+              <Card
+                title="Support tickets by source"
+                description="Queries plus logged calls, WhatsApp chats and volunteer sign-ups"
+                className="lg:col-span-2"
+                actions={<Link to="/support" className="text-[12.5px] font-semibold text-[var(--a-accent)] hover:underline">Open support desk</Link>}
+              >
+                <BreakdownBars data={ticketsBySource} />
+              </Card>
+            </>
+          )}
         </div>
       )}
 

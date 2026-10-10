@@ -1,0 +1,12 @@
+/* /donate — hover / focus states the inline styles can't express. */
+.gaw-site .don-copy {
+  border: 1px solid rgba(138, 111, 52, 0.45);
+  background: rgba(255, 253, 248, 0.8);
+  color: #7a5e22;
+  font-family: inherit;
+  transition: background 0.2s, color 0.2s;
+}
+.gaw-site .don-copy:hover {
+  background: #14241c;
+  color: #e8cf83;
+}

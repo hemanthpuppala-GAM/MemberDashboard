@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
-import { Inbox, ArchiveIcon, UserCheck } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Inbox, ArchiveIcon, UserCheck, Headset, ArrowUpRight } from "lucide-react";
 import Card from "../../ui/Card";
 import DataTable from "../../ui/DataTable";
 import Modal from "../../ui/Modal";
@@ -10,8 +11,34 @@ import { StatusBadge } from "../../ui/Badge";
 import { api } from "../../../lib/api";
 import { CATEGORIES, CATEGORY_LABELS } from "../../mock/mockData";
 import { usePermissions } from "../../usePermissions";
+import { statusLabel } from "../../../support/format";
 
 const STATUSES = ["new", "assigned", "in_progress", "resolved", "archived"];
+
+/** The same question on the support desk: "Support desk: T-0012 · Being handled · 3 replies · ★4". */
+function TicketRow({ ticket }) {
+  const replies = ticket.comments_count ?? 0;
+  const bits = [
+    ticket.ref ?? `#${ticket.id}`,
+    statusLabel(ticket.status),
+    `${replies} ${replies === 1 ? "reply" : "replies"}`,
+    ticket.rating ? `★${ticket.rating}` : null,
+  ].filter(Boolean);
+  return (
+    <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 rounded-lg border border-[var(--a-border)] px-3.5 py-2.5">
+      <Headset size={15} className="shrink-0 text-[var(--a-accent)]" />
+      <span className="min-w-0 flex-1 text-[13px] text-[var(--a-text-primary)]">
+        <span className="font-semibold">Support desk:</span> {bits.join(" · ")}
+      </span>
+      <Link
+        to={`/support/ticket/${ticket.id}`}
+        className="inline-flex items-center gap-1 text-[12.5px] font-semibold text-[var(--a-accent)] hover:underline"
+      >
+        Open in support desk <ArrowUpRight size={13} />
+      </Link>
+    </div>
+  );
+}
 
 export default function QueryInboxPage() {
   const { can } = usePermissions();
@@ -73,6 +100,25 @@ export default function QueryInboxPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pagination.pageIndex, pagination.pageSize, search, categoryFilter, statusFilter, assignedFilter]);
 
+  // The list row has no desk link; the detail endpoint adds `ticket` (the same question on the support desk).
+  const loadDetail = (id) =>
+    api
+      .query(id)
+      .then((detail) => setActive((prev) => (prev?.id === detail.id ? { ...prev, ...detail } : prev)))
+      .catch(() => {});
+
+  const openQuery = (q) => {
+    setActive(q);
+    loadDetail(q.id);
+  };
+
+  // Status/assignee changes sync to the desk ticket; keep its row and refresh it.
+  const applyUpdate = (updated) => {
+    setActive((prev) => ({ ...updated, ticket: prev?.ticket }));
+    setQueries((prev) => prev.map((q) => (q.id === updated.id ? updated : q)));
+    loadDetail(updated.id);
+  };
+
   const practitionerName = (id) => practitioners.find((p) => p.id === id)?.name;
 
   const columns = useMemo(
@@ -111,8 +157,7 @@ export default function QueryInboxPage() {
     const practitionerId = value ? Number(value) : null;
     try {
       const updated = await api.assignQuery(active.id, practitionerId);
-      setActive(updated);
-      setQueries((prev) => prev.map((q) => (q.id === updated.id ? updated : q)));
+      applyUpdate(updated);
       toast.success(practitionerId ? "Assigned" : "Unassigned");
     } catch (err) {
       toast.error(err.message ?? "Assign failed");
@@ -122,8 +167,7 @@ export default function QueryInboxPage() {
   const setStatus = async (status) => {
     try {
       const updated = await api.updateQueryStatus(active.id, status);
-      setActive(updated);
-      setQueries((prev) => prev.map((q) => (q.id === updated.id ? updated : q)));
+      applyUpdate(updated);
     } catch (err) {
       toast.error(err.message ?? "Update failed");
     }
@@ -156,6 +200,11 @@ export default function QueryInboxPage() {
       <div>
         <h1 className="text-[24px] font-bold text-[var(--a-text-primary)]">Query inbox</h1>
         <p className="mt-1 text-[13.5px] text-[var(--a-text-muted)]">Every contact-form submission from the website.</p>
+        <p className="mt-1 text-[12.5px] text-[var(--a-text-muted)]">
+          Each query is also a ticket on the{" "}
+          <Link to="/support" className="font-semibold text-[var(--a-accent)] hover:underline">support desk</Link>
+          {" "}— status and assignee stay in sync both ways.
+        </p>
       </div>
 
       <Card padded={false}>
@@ -165,7 +214,7 @@ export default function QueryInboxPage() {
             data={queries}
             searchPlaceholder="Search queries..."
             toolbar={toolbar}
-            onRowClick={setActive}
+            onRowClick={openQuery}
             emptyIcon={Inbox}
             emptyTitle={loading ? "Loading…" : "Inbox is empty"}
             manual
@@ -189,6 +238,8 @@ export default function QueryInboxPage() {
             </div>
 
             <p className="rounded-lg bg-[var(--a-bg-surface-2)] p-3.5 text-[13.5px] leading-relaxed text-[var(--a-text-primary)]">{active.message}</p>
+
+            {active.ticket && <TicketRow ticket={active.ticket} />}
 
             <div className="grid gap-4 sm:grid-cols-2">
               <Field label="Assign to">

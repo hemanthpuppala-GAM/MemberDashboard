@@ -1,9 +1,11 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useMemberAuth } from "../auth/MemberAuthContext";
-import { getLastMember, getMemberToken, oauthRedirectUrl } from "../lib/memberAuth";
+import { getLastMember, oauthRedirectUrl } from "../lib/memberAuth";
 import {
+  adminTokenRefused,
   currentTokenKind,
-  getSupportToken,
+  hasAdminToken,
   rememberReturnToDesk,
   setSupportToken,
   setUnauthorizedHandler,
@@ -19,24 +21,34 @@ import {
  */
 const SupportAuthContext = createContext(null);
 
-/** Validate the stored token(s): core support token first, then the member (Google) token. */
+const ADMIN_REFUSED_NOTICE =
+  "Your admin sign-in can't open the desk (it needs access to Queries). Sign in below, or ask an admin to add Queries to your role.";
+
+/** Validate the stored token(s): core support token first, then the admin token, then the member (Google) token. */
 async function resolveAgent() {
-  // A 401 clears the token that failed (see supportApi), so this loop ends.
+  // A 401 clears a support/member token; a refused admin token is skipped (never deleted) — see supportApi. So this loop ends.
+  let adminRefused = false;
   while (currentTokenKind()) {
+    const kind = currentTokenKind();
     try {
       const { agent } = await supportApi.me();
       return { status: "in", agent };
     } catch (err) {
+      if (kind === "admin" && (err.status === 401 || err.status === 403)) {
+        adminRefused = err.status === 403;
+        continue;
+      }
       if (err.status === 401) continue;
-      if (err.status === 403 && currentTokenKind() === "member") return { status: "forbidden" };
+      if (err.status === 403 && kind === "member") return { status: "forbidden" };
       return { status: "signedOut", notice: err.status === 403 ? "" : err.message };
     }
   }
-  return { status: "signedOut" };
+  return { status: "signedOut", notice: adminRefused ? ADMIN_REFUSED_NOTICE : "" };
 }
 
 export function SupportAuthProvider({ children }) {
   const memberAuth = useMemberAuth();
+  const navigate = useNavigate();
   const [status, setStatus] = useState(() => (currentTokenKind() ? "checking" : "signedOut"));
   const [agent, setAgent] = useState(null);
   const [notice, setNotice] = useState("");
@@ -61,14 +73,16 @@ export function SupportAuthProvider({ children }) {
     if (status !== "in") return undefined;
     setUnauthorizedHandler((err) => {
       setAgent(null);
-      if (err.status === 403 && currentTokenKind() === "member") setStatus("forbidden");
+      // The admin token was turned away (now skipped): try whatever sign-in is left (support / Google).
+      if (err.tokenKind === "admin") check();
+      else if (err.status === 403 && err.tokenKind === "member") setStatus("forbidden");
       else {
         setNotice(err.status === 401 ? "Your session ended. Please sign in again." : err.message);
         setStatus("signedOut");
       }
     });
     return () => setUnauthorizedHandler(null);
-  }, [status]);
+  }, [status, check]);
 
   const loginCore = useCallback(async (phone, pin) => {
     const { token, agent: a } = await supportApi.login(phone, pin);
@@ -93,6 +107,10 @@ export function SupportAuthProvider({ children }) {
         /* clear locally anyway */
       }
       setSupportToken(null);
+    } else if (kind === "admin") {
+      // Admin staff: just leave the desk. The admin sign-in belongs to the admin panel; keep it.
+      navigate("/admin");
+      return;
     } else if (kind === "member") {
       // Volunteers share a device often: sign the Google account out too.
       await memberLogout();
@@ -100,7 +118,7 @@ export function SupportAuthProvider({ children }) {
     setAgent(null);
     setNotice("");
     setStatus("signedOut");
-  }, [memberLogout]);
+  }, [memberLogout, navigate]);
 
   const value = useMemo(
     () => ({
@@ -108,7 +126,9 @@ export function SupportAuthProvider({ children }) {
       agent,
       notice,
       setNotice,
-      tokenKind: getSupportToken() ? "support" : getMemberToken() ? "member" : null,
+      tokenKind: currentTokenKind(),
+      hasAdminSession: hasAdminToken(),
+      adminRefused: adminTokenRefused(),
       memberEmail: memberAuth.user?.email ?? getLastMember()?.email ?? null,
       hasMemberSession: !!memberAuth.user,
       loginCore,

@@ -19,7 +19,7 @@ export const SOURCE_LABELS = {
   other: "Other",
 };
 
-export const KIND_LABELS = { core: "Core team", volunteer: "Volunteer" };
+export const KIND_LABELS = { core: "Core team", volunteer: "Volunteer", staff: "Staff" };
 
 export const statusLabel = (s) => STATUS_LABELS[s] ?? s;
 export const sourceLabel = (s) => SOURCE_LABELS[s] ?? s;

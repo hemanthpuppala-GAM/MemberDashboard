@@ -12,6 +12,13 @@ import ImageField from "../../ui/ImageField";
 import MediaPickerModal from "../../ui/MediaPickerModal";
 import { StatusBadge } from "../../ui/Badge";
 import { api } from "../../../lib/api";
+
+/** Site areas that aren't CMS pages but can show broadcasts (keys the site sends to /broadcasts/active). */
+const FIXED_TARGETS = [
+  { slug: "home", title: "Home" },
+  { slug: "privacy", title: "Privacy" },
+  { slug: "dashboard", title: "Member dashboard" },
+];
 import { usePermissions } from "../../usePermissions";
 
 const TYPES = [
@@ -194,9 +201,9 @@ export default function BroadcastsPage() {
               <Field label="CTA label" hint="Leave both blank to hide the button"><TextInput value={form.cta_label} onChange={(e) => setForm((f) => ({ ...f, cta_label: e.target.value }))} /></Field>
               <Field label="CTA URL" hint="Required if CTA label is set"><TextInput value={form.cta_url} onChange={(e) => setForm((f) => ({ ...f, cta_url: e.target.value }))} /></Field>
             </div>
-            <Field label="Target pages">
+            <Field label="Target pages" hint="None selected = every page, including the member dashboard">
               <div className="flex flex-wrap gap-1.5">
-                {pages.map((p) => (
+                {[...FIXED_TARGETS, ...pages.filter((p) => !FIXED_TARGETS.some((f) => f.slug === p.slug))].map((p) => (
                   <button
                     key={p.slug}
                     type="button"

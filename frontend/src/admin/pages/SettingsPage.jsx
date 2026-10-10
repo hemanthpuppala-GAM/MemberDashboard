@@ -15,6 +15,7 @@ import { COLOR_PRESETS, FONT_OPTIONS, TEXT_SIZES, getPresetTokens } from "../the
 const TABS = [
   { key: "general", label: "General" },
   { key: "social", label: "Social & Contact" },
+  { key: "support", label: "Support & Zoom" },
   { key: "banner", label: "Live Session Banner" },
   { key: "maintenance", label: "Maintenance" },
   { key: "appearance", label: "Appearance" },
@@ -34,15 +35,16 @@ function decodeBooleans(settings) {
   return next;
 }
 
-function GroupForm({ group, fields, values, onChange, areas = [], disabled = false }) {
+/** `fields` rows are [key, label, hint?, placeholder?]. */
+function GroupForm({ group, fields, values = {}, onChange, areas = [], disabled = false }) {
   return (
     <div className="grid gap-5 sm:grid-cols-2">
-      {fields.map(([key, label]) => (
-        <Field key={key} label={label} className={areas.includes(key) ? "sm:col-span-2" : ""}>
+      {fields.map(([key, label, hint, placeholder]) => (
+        <Field key={key} label={label} hint={hint} className={areas.includes(key) ? "sm:col-span-2" : ""}>
           {areas.includes(key) ? (
-            <TextArea rows={2} value={values[key] ?? ""} onChange={(e) => onChange(group, { [key]: e.target.value })} disabled={disabled} />
+            <TextArea rows={2} value={values[key] ?? ""} onChange={(e) => onChange(group, { [key]: e.target.value })} placeholder={placeholder} disabled={disabled} />
           ) : (
-            <TextInput value={values[key] ?? ""} onChange={(e) => onChange(group, { [key]: e.target.value })} disabled={disabled} />
+            <TextInput value={values[key] ?? ""} onChange={(e) => onChange(group, { [key]: e.target.value })} placeholder={placeholder} disabled={disabled} />
           )}
         </Field>
       ))}
@@ -78,7 +80,7 @@ export default function SettingsPage() {
   const save = async (group, label) => {
     setSaving(true);
     try {
-      const updated = await api.updateSettings({ [group]: settings[group] });
+      const updated = await api.updateSettings({ [group]: settings[group] ?? {} });
       setSettings((prev) => ({ ...prev, ...decodeBooleans(updated) }));
       toast.success(`${label} saved`);
     } catch (err) {
@@ -148,6 +150,40 @@ export default function SettingsPage() {
           />
           <Button as="button" size="sm" className="mt-5" onClick={() => save("social", "Social & contact settings")} disabled={saving || !canEdit} title={canEdit ? undefined : "You don't have permission to edit settings"}>Save</Button>
         </Card>
+      )}
+
+      {tab === "support" && (
+        <>
+          <Card title="Support numbers" description="The member support lines on the website, the Ask page and the support desk.">
+            <GroupForm
+              group="support"
+              values={settings.support}
+              onChange={updateGroup}
+              fields={[
+                ["primary", "Support phone (calls & WhatsApp)", "Shown on the website and support desk. Leave blank to use the server default.", "+91 …"],
+                ["web", "Web support number", "Shown on the website and support desk. Leave blank to use the server default.", "+91 …"],
+              ]}
+              disabled={!canEdit}
+            />
+            <Button as="button" size="sm" className="mt-5" onClick={() => save("support", "Support numbers")} disabled={saving || !canEdit} title={canEdit ? undefined : "You don't have permission to edit settings"}>Save</Button>
+          </Card>
+
+          <Card title="Zoom room" description="The room the daily group sits use. A live session without its own join link opens this room.">
+            <GroupForm
+              group="zoom"
+              values={settings.zoom}
+              onChange={updateGroup}
+              areas={["url"]}
+              fields={[
+                ["url", "Zoom link", "Paste the full invite link from Zoom.", "https://zoom.us/j/…"],
+                ["meetingId", "Meeting ID", "Shown beside the link for people joining from the Zoom app."],
+                ["passcode", "Passcode", "Leave blank if the room has no passcode."],
+              ]}
+              disabled={!canEdit}
+            />
+            <Button as="button" size="sm" className="mt-5" onClick={() => save("zoom", "Zoom settings")} disabled={saving || !canEdit} title={canEdit ? undefined : "You don't have permission to edit settings"}>Save</Button>
+          </Card>
+        </>
       )}
 
       {tab === "banner" && (

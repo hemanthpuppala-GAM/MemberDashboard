@@ -110,4 +110,23 @@ class AdminSiteLinkTest extends TestCase
         $this->assertGreaterThanOrEqual(12, DB::table('testimonials')->where('status', 'published')->where('is_featured', true)->count());
         $this->getJson('/api/v1/testimonials/featured')->assertOk()->assertJsonFragment(['name' => 'Kalyani']);
     }
+
+    public function test_toggling_an_agent_keeps_phone_and_email(): void
+    {
+        Sanctum::actingAs($this->admin(), [], 'sanctum');
+        $a = SupportAgent::create(['kind' => 'volunteer', 'name' => 'Seva', 'email' => 'seva@example.com', 'phone' => '919000000002']);
+
+        $this->putJson("/api/v1/admin/support-agents/{$a->id}", ['is_active' => false])->assertOk();
+        $a->refresh();
+        $this->assertFalse($a->is_active);
+        $this->assertSame('seva@example.com', $a->email);
+        $this->assertSame('919000000002', $a->phone);
+    }
+
+    public function test_live_session_accepts_legacy_browser_zone_names(): void
+    {
+        Sanctum::actingAs($this->admin(), [], 'sanctum');
+        $this->postJson('/api/v1/admin/events', ['title' => 'Evening sit', 'starts_at' => '2026-10-12T13:30:00Z', 'recurrence' => 'daily', 'timezone' => 'Asia/Calcutta'])->assertCreated();
+        $this->assertSame('Asia/Kolkata', Event::sole()->timezone);
+    }
 }

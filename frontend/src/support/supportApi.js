@@ -1,8 +1,11 @@
 /**
  * Support desk API client. Core support signs in with phone + PIN and gets its own token
- * ("gaw_support_token"); volunteers reuse their member (Google) token. Support token wins.
+ * ("gaw_support_token"); admin-panel staff reuse their admin token ("gaw_admin_token", needs
+ * members.view on the backend); volunteers reuse their member (Google) token.
+ * Priority: support → admin → member.
  */
 import { getMemberToken, setMemberToken } from "../lib/memberAuth";
+import { getToken as getAdminToken } from "../lib/api";
 
 const API_URL = import.meta.env.VITE_API_URL ?? "https://goldenagewisdom.org/staging/backend/api/v1";
 const SUPPORT_TOKEN_KEY = "gaw_support_token";
@@ -25,9 +28,41 @@ export function setSupportToken(token) {
   }
 }
 
-/** Which token the desk is using right now: "support" (core), "member" (volunteer) or null. */
+/**
+ * The desk never deletes the admin token (it belongs to the admin panel). When the backend turns
+ * it away (401/403), it is skipped for this page load instead. Keyed by value, so signing in to
+ * the admin panel again with a different account brings it back.
+ */
+let skippedAdminToken = null;
+
+/** A usable admin token, or null (none stored, or turned away by the desk already). */
+function usableAdminToken() {
+  try {
+    const token = getAdminToken();
+    return token && token !== skippedAdminToken ? token : null;
+  } catch {
+    return null; // storage blocked
+  }
+}
+
+export function hasAdminToken() {
+  return !!usableAdminToken();
+}
+
+/** An admin token is stored but the desk turned it away (no Queries access, or expired). */
+export function adminTokenRefused() {
+  try {
+    const token = getAdminToken();
+    return !!token && token === skippedAdminToken;
+  } catch {
+    return false;
+  }
+}
+
+/** Which token the desk is using right now: "support" (core), "admin" (staff), "member" (volunteer) or null. */
 export function currentTokenKind() {
   if (getSupportToken()) return "support";
+  if (usableAdminToken()) return "admin";
   if (getMemberToken()) return "member";
   return null;
 }
@@ -62,7 +97,8 @@ async function supportFetch(path, { method = "GET", body, auth = true, token } =
   const headers = { Accept: "application/json" };
   if (body !== undefined) headers["Content-Type"] = "application/json";
   const kind = auth ? (token ? "explicit" : currentTokenKind()) : null;
-  const bearer = token ?? (kind === "support" ? getSupportToken() : kind === "member" ? getMemberToken() : null);
+  const bearer =
+    token ?? (kind === "support" ? getSupportToken() : kind === "admin" ? usableAdminToken() : kind === "member" ? getMemberToken() : null);
   if (bearer) headers.Authorization = `Bearer ${bearer}`;
 
   let res;
@@ -85,7 +121,10 @@ async function supportFetch(path, { method = "GET", body, auth = true, token } =
       if (kind === "support") setSupportToken(null);
       else if (kind === "member") setMemberToken(null);
     }
+    // Admin token: never cleared here (the admin panel owns it) — just stop using it on the desk.
+    if (auth && kind === "admin" && (res.status === 401 || res.status === 403)) skippedAdminToken = bearer;
     const err = new SupportApiError(firstMessage(data) ?? `Something went wrong (${res.status}).`, res.status, data?.errors);
+    err.tokenKind = kind;
     if (auth && (res.status === 401 || res.status === 403) && onUnauthorized) onUnauthorized(err);
     throw err;
   }

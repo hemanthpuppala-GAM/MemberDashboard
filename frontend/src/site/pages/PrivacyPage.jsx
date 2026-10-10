@@ -3,6 +3,9 @@ import { Link } from "react-router-dom";
 import { useMemberBadge } from "../useMemberBadge";
 import { siteAsset } from "../siteAssets";
 import { OFFICIAL_EMAIL } from "../sitePages";
+import { useSiteSettings } from "../usePublicData";
+import { displayNumber } from "../../ask/support";
+import BroadcastManager from "../../components/layout/BroadcastManager";
 import "./privacy.css";
 
 /* Privacy.dc.html uses its own dark, standalone layout (Marcellus + Outfit, brand row) —
@@ -85,6 +88,10 @@ const PILL_BTN = { display: "inline-flex", alignItems: "center", justifyContent:
 export default function PrivacyPage() {
   const { isMember } = useMemberBadge();
   const [consent, setConsent] = useState(readConsent);
+  const settings = useSiteSettings();
+  // Support lines come from admin Settings (server falls back to .env) — never bundled.
+  const primary = String(settings?.["support.primary"] || "").replace(/\D/g, "");
+  const web = String(settings?.["support.web"] || "").replace(/\D/g, "");
 
   useEffect(() => {
     const prev = document.title;
@@ -166,6 +173,22 @@ export default function PrivacyPage() {
           <span style={{ fontSize: 13.5, fontWeight: 300, color: "#b9b1a0" }}>
             Questions, corrections or a request to delete your data — write to <a href={`mailto:${OFFICIAL_EMAIL}?subject=Privacy%20request`}>{OFFICIAL_EMAIL}</a> and a volunteer will answer.
           </span>
+          {(primary || web) && (
+            <span style={{ fontSize: 13, fontWeight: 300, color: "#9a927f" }}>
+              Member support:{" "}
+              {primary && (
+                <a href={`tel:+${primary}`} style={{ whiteSpace: "nowrap" }}>
+                  call {displayNumber(primary)}
+                </a>
+              )}
+              {primary && web && " · "}
+              {web && (
+                <a href={`https://wa.me/${web}`} target="_blank" rel="noopener noreferrer" style={{ whiteSpace: "nowrap" }}>
+                  WhatsApp {displayNumber(web)}
+                </a>
+              )}
+            </span>
+          )}
           <div style={{ display: "flex", gap: 16, flexWrap: "wrap", fontSize: 13 }}>
             <Link to="/" style={{ display: "inline-flex", alignItems: "center", minHeight: 44 }}>
               ← Back to Golden Age Wisdom
@@ -176,6 +199,7 @@ export default function PrivacyPage() {
           </div>
         </footer>
       </main>
+      <BroadcastManager view="privacy" site />
     </div>
   );
 }

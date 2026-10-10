@@ -9,6 +9,7 @@ import WellnessPage from "./site/pages/WellnessPage";
 import EventsPage from "./site/pages/EventsPage";
 import VolunteerPage from "./site/pages/VolunteerPage";
 import PrivacyPage from "./site/pages/PrivacyPage";
+import DonatePage from "./site/pages/DonatePage";
 import JoinPage from "./pages/JoinPage";
 import RegisterPage from "./pages/RegisterPage";
 import AuthCallbackPage from "./pages/AuthCallbackPage";
@@ -85,6 +86,7 @@ function App() {
               ["/events", EventsPage],
               ["/volunteer", VolunteerPage],
               ["/privacy", PrivacyPage],
+              ["/donate", DonatePage],
             ].map(([path, Page]) => (
               <Route
                 key={path}
@@ -96,7 +98,7 @@ function App() {
                 }
               />
             ))}
-            {/* Older sections (/contact, /donate) and CMS pages keep the previous public layout. */}
+            {/* Older sections (/contact) and CMS pages keep the previous public layout. */}
             <Route
               path="/:slug"
               element={
