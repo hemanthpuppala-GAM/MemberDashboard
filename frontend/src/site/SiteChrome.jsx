@@ -4,7 +4,7 @@ import { GUTTER, NAV_INLINE_MIN, SITE_PAGES, UTILITY_LINKS, YOUTUBE_URL } from "
 import { useMemberBadge } from "./useMemberBadge";
 import { siteAsset } from "./siteAssets";
 import { useViewportWidth } from "./useViewport";
-import { useIsSiteAdmin } from "./useSiteAdmin";
+import { useSiteEditMode } from "./useSiteAdmin";
 import "./site.css";
 
 const CAPS = { textTransform: "uppercase", whiteSpace: "nowrap" };
@@ -315,16 +315,27 @@ export function SiteFooter({ title, sub, children }) {
   );
 }
 
-/** Floating "Edit this page" link, visible only when an admin session exists. */
+/** Floating "Edit this page" shortcut — only in edit mode (opened from Admin → Site content). */
 export function AdminEditLink({ page }) {
-  const isAdmin = useIsSiteAdmin();
-  if (!isAdmin) return null;
+  const { show, exit } = useSiteEditMode();
+  if (!show) return null;
   return (
-    <Link
-      to={`/admin/content/${page}`}
-      style={{ position: "fixed", right: 18, bottom: 18, zIndex: 50, display: "inline-flex", alignItems: "center", gap: 8, height: 40, padding: "0 16px", borderRadius: 999, background: "#14241C", color: "#E8CF83", fontSize: 11, fontWeight: 700, letterSpacing: ".14em", textTransform: "uppercase", boxShadow: "0 12px 30px -12px rgba(0,0,0,.5)" }}
-    >
-      ✎ Edit this page
-    </Link>
+    <div style={{ position: "fixed", right: 18, bottom: 96, zIndex: 50, display: "inline-flex", alignItems: "center", borderRadius: 999, background: "#14241C", boxShadow: "0 12px 30px -12px rgba(0,0,0,.5)" }}>
+      <Link
+        to={`/admin/content/${page}`}
+        style={{ display: "inline-flex", alignItems: "center", gap: 8, height: 44, padding: "0 6px 0 16px", color: "#E8CF83", fontSize: 11, fontWeight: 700, letterSpacing: ".14em", textTransform: "uppercase" }}
+      >
+        ✎ Edit this page
+      </Link>
+      <button
+        type="button"
+        onClick={exit}
+        aria-label="Hide the edit shortcut"
+        title="Hide (leave edit mode)"
+        style={{ width: 44, height: 44, border: 0, background: "transparent", color: "rgba(246,241,230,.7)", fontSize: 18, cursor: "pointer", borderRadius: 999 }}
+      >
+        ×
+      </button>
+    </div>
   );
 }

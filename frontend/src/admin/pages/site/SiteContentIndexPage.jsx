@@ -65,7 +65,7 @@ export default function SiteContentIndexPage() {
               </p>
               <div className="mt-auto flex flex-wrap items-center gap-2 pt-1">
                 <Button as={Link} to={`/admin/content/${page}`} size="sm" icon={Pencil}>Edit</Button>
-                <Button as={Link} to={schema.publicPath} target="_blank" rel="noopener noreferrer" size="sm" variant="ghost" icon={ExternalLink}>
+                <Button as={Link} to={`${schema.publicPath}${schema.publicPath.includes("?") ? "&" : "?"}edit=1`} target="_blank" rel="noopener noreferrer" size="sm" variant="ghost" icon={ExternalLink}>
                   View page
                 </Button>
               </div>

@@ -209,7 +209,7 @@ function Editor({ page, schema }) {
             <h1 className="mt-1 text-[24px] font-bold text-[var(--a-text-primary)]">{schema.title}</h1>
             <p className="mt-1 text-[13.5px] text-[var(--a-text-muted)]">
               {schema.intro}{" "}
-              <Link to={schema.publicPath} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 font-semibold text-[var(--a-accent)] hover:underline">
+              <Link to={`${schema.publicPath}${schema.publicPath.includes("?") ? "&" : "?"}edit=1`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 font-semibold text-[var(--a-accent)] hover:underline">
                 Open the {schema.label} page <ExternalLink size={13} />
               </Link>
             </p>
