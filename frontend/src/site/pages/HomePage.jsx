@@ -105,6 +105,7 @@ export default function HomePage() {
   const { w, h } = useViewportSize();
   const desk = w >= 700 && w >= h * 1.05;
   const phone = w < 640;
+  const tablet = !desk && w >= 700; // iPad portrait: stacked like phones, but sized up
   const headerRef = useRef(null);
   const hh = Math.max(useElementHeight(headerRef), 64);
 
@@ -194,7 +195,7 @@ export default function HomePage() {
         {/* Hero copy */}
         <div
           id="top"
-          style={{ position: "relative", zIndex: 5, order: 1, display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "clamp(10px,1.8vh,16px)", width: desk ? "50%" : "100%", padding: desk ? "clamp(8px,2vh,28px) clamp(24px,5vw,72px) 0" : "0 22px 12px", textAlign: "left", background: ivory }}
+          style={{ position: "relative", zIndex: 5, order: 1, display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "clamp(10px,1.8vh,16px)", width: desk ? "50%" : "100%", padding: desk ? "clamp(8px,2vh,28px) clamp(24px,5vw,72px) 0" : tablet ? "20px clamp(32px,6vw,56px) 16px" : "0 22px 12px", textAlign: "left", background: ivory }}
         >
 
           <span style={{ display: "inline-flex", alignItems: "center", gap: 10, fontSize: 11, fontWeight: 700, letterSpacing: ".3em", textTransform: "uppercase", color: "#7A5E22", animation: "gaw-rise .9s both" }}>
@@ -203,11 +204,11 @@ export default function HomePage() {
           </span>
           <h1
             className="serif"
-            style={{ margin: 0, fontWeight: 500, fontSize: desk ? "clamp(34px,min(3.9vw,7.5dvh),64px)" : "clamp(26px,7.4vw,34px)", lineHeight: 1, letterSpacing: "-.015em", textWrap: "balance", maxWidth: desk ? "14ch" : "none", color: "#12201A", animation: "gaw-rise .9s .1s both" }}
+            style={{ margin: 0, fontWeight: 500, fontSize: desk ? "clamp(34px,min(3.9vw,7.5dvh),64px)" : tablet ? "clamp(40px,5.6vw,56px)" : "clamp(26px,7.4vw,34px)", lineHeight: 1, letterSpacing: "-.015em", textWrap: "balance", maxWidth: desk ? "14ch" : "none", color: "#12201A", animation: "gaw-rise .9s .1s both" }}
           >
             {c.headline} <em style={{ color: "#8A6F34" }}>{c.headlineAccent}</em>
           </h1>
-          <p style={{ margin: 0, fontSize: desk ? "clamp(15px,1.2vw,18px)" : "clamp(11.5px,3.2vw,14px)", fontWeight: 400, lineHeight: 1.45, color: "#3A3128", textWrap: "pretty", maxWidth: desk ? "40ch" : "none", animation: "gaw-rise .9s .25s both" }}>{c.subline}</p>
+          <p style={{ margin: 0, fontSize: desk ? "clamp(15px,1.2vw,18px)" : tablet ? 17 : "clamp(11.5px,3.2vw,14px)", fontWeight: 400, lineHeight: 1.45, color: "#3A3128", textWrap: "pretty", maxWidth: desk || tablet ? "48ch" : "none", animation: "gaw-rise .9s .25s both" }}>{c.subline}</p>
           <div style={{ display: "flex", flexWrap: desk ? "nowrap" : "wrap", justifyContent: "flex-start", alignItems: "center", gap: desk ? 24 : 10, marginTop: desk ? 8 : 4, animation: "gaw-rise .9s .4s both" }}>
             <a
               href="#film"
@@ -275,11 +276,11 @@ export default function HomePage() {
           }}
         >
           <div style={{ display: "flex", flexDirection: "column", alignItems: desk ? "flex-start" : "center", flex: "none", minWidth: 0, maxWidth: "100%", width: desk ? undefined : "100%" }}>
-            <BodhiNavigator active={active} chapters={chapters} desk={desk} treeW={desk ? `${treePx}px` : "100%"} onActive={setActive} onOpen={openChapter} />
+            <BodhiNavigator active={active} chapters={chapters} desk={desk} treeW={desk ? `${treePx}px` : tablet ? "min(100%, 640px)" : "100%"} onActive={setActive} onOpen={openChapter} />
           </div>
 
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "stretch", justifyContent: "flex-start", flex: "0 0 auto", minWidth: 0, width: desk ? cardsPx : "calc(100% - 44px)", alignSelf: desk ? "stretch" : "center", margin: desk ? 0 : "0 auto 16px" }}>
-            <div style={{ display: "grid", gridTemplateColumns: desk ? "1fr 1fr" : "repeat(auto-fit,minmax(160px,1fr))", gridTemplateRows: desk ? "1fr 1fr" : "auto", gap: 12, width: "100%", flex: "1 1 auto", minHeight: 0 }}>
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "stretch", justifyContent: "flex-start", flex: "0 0 auto", minWidth: 0, width: desk ? cardsPx : tablet ? "min(calc(100% - 64px), 760px)" : "calc(100% - 44px)", alignSelf: desk ? "stretch" : "center", margin: desk ? 0 : "0 auto 16px" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(2,minmax(0,1fr))", gridTemplateRows: desk ? "1fr 1fr" : "auto", gap: 12, width: "100%", flex: "1 1 auto", minHeight: 0 }}>
               <Link
                 to="/meditation"
                 style={{ position: "relative", display: "block", aspectRatio: desk ? "auto" : "5/4", minHeight: desk ? 160 : 0, overflow: "hidden", borderRadius: 22, background: "#14241C", boxShadow: "0 1px 0 rgba(255,255,255,.6) inset,0 24px 50px -22px rgba(60,42,16,.5)", animation: "gaw-rise .9s .4s both" }}

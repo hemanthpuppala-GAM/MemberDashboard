@@ -24,3 +24,6 @@ export const YOUTUBE_URL = "https://www.youtube.com/@GoldenAgeGurus";
 
 /** Side gutter used by the header / utility row. */
 export const GUTTER = "clamp(16px,5vw,72px)";
+
+/** Width at which the 7 page links fit inline in the header (else they move into the menu). */
+export const NAV_INLINE_MIN = 1200;

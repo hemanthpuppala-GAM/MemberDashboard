@@ -2,8 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { PageLinks, MemberPill, MenuButton } from "../SiteChrome";
 import { useMemberBadge } from "../useMemberBadge";
-import { GUTTER } from "../sitePages";
-import { SITE_PAGES, UTILITY_LINKS } from "../sitePages";
+import { GUTTER, NAV_INLINE_MIN, SITE_PAGES, UTILITY_LINKS } from "../sitePages";
 import { siteAsset } from "../siteAssets";
 
 const CAPS = { textTransform: "uppercase", whiteSpace: "nowrap" };
@@ -115,7 +114,8 @@ function JoinPill({ c, phone, desk }) {
 /** Home's header variant (design: <header ref=headerRef> in Home Bodhi Tree v2.dc.html). */
 export default function HomeHeader({ c, vp, headerRef }) {
   const { w, desk, phone } = vp;
-  const wide = desk && w >= 900;
+  const wide = w >= NAV_INLINE_MIN; // page links inline only where they fit; tablets use the menu
+  const big = desk || w >= 700; // tablet portrait gets the desktop-size brand and spacing
   const [menu, setMenu] = useState(false);
   const menuOpen = !wide && menu;
   const close = () => setMenu(false);
@@ -135,20 +135,20 @@ export default function HomeHeader({ c, vp, headerRef }) {
           flexWrap: "wrap",
           alignItems: "center",
           justifyContent: "space-between",
-          gap: desk ? "12px 24px" : "4px 16px",
-          padding: desk ? `12px ${GUTTER}` : "10px 22px 4px",
-          paddingTop: wide ? 12 : `calc(${desk ? 12 : 10}px + env(safe-area-inset-top))`,
-          background: desk ? "linear-gradient(180deg,#14241C 0%,#1B3328 100%)" : "#14241C",
+          gap: big ? "12px 24px" : "4px 16px",
+          padding: big ? `12px ${GUTTER}` : "10px 22px 4px",
+          paddingTop: wide ? 12 : `calc(${big ? 12 : 10}px + env(safe-area-inset-top))`,
+          background: big ? "linear-gradient(180deg,#14241C 0%,#1B3328 100%)" : "#14241C",
         }}
       >
-        <Link to="/" className="gaw-brand" style={{ display: "flex", alignItems: "center", gap: 14, minWidth: 0, flex: desk ? "none" : "1 1 0" }}>
+        <Link to="/" className="gaw-brand" style={{ display: "flex", alignItems: "center", gap: 14, minWidth: 0, flex: big ? "none" : "1 1 0" }}>
           <span
             style={{
               position: "relative",
               flex: "none",
               display: "block",
-              width: desk ? 48 : 36,
-              height: desk ? 48 : 36,
+              width: big ? 48 : 36,
+              height: big ? 48 : 36,
               borderRadius: "50%",
               overflow: "hidden",
               background: "#0E1A14",
@@ -160,7 +160,7 @@ export default function HomeHeader({ c, vp, headerRef }) {
           </span>
           <span
             className="serif"
-            style={{ fontWeight: 500, fontSize: desk ? "clamp(12px,3.4vw,20px)" : "clamp(11px,3vw,13px)", letterSpacing: desk ? "clamp(.1em,.5vw,.18em)" : ".1em", textTransform: "uppercase", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}
+            style={{ fontWeight: 500, fontSize: big ? "clamp(12px,3.4vw,20px)" : "clamp(11px,3vw,13px)", letterSpacing: big ? "clamp(.1em,.5vw,.18em)" : ".1em", textTransform: "uppercase", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}
           >
             Golden Age Wisdom
           </span>
@@ -168,8 +168,8 @@ export default function HomeHeader({ c, vp, headerRef }) {
 
         {wide && <PageLinks style={{ flex: "0 1 auto", justifyContent: "center" }} />}
 
-        <div style={{ flex: "none", display: "flex", alignItems: "center", gap: 10 }}>
-          <JoinPill c={c} phone={phone} desk={desk} />
+        <div style={{ flex: "none", display: "flex", alignItems: "center", gap: 10, marginLeft: wide ? 0 : "auto" }}>
+          <JoinPill c={c} phone={phone} desk={big} />
         </div>
 
         {!wide && <MenuButton open={menu} onClick={() => setMenu((v) => !v)} />}
