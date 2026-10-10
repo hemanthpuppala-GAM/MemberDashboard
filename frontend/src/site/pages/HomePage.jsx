@@ -183,12 +183,20 @@ export default function HomePage() {
   const gutPx = Math.min(72, Math.max(24, w * 0.05));
   const treePx = Math.max(380, Math.min((w - 2 * gutPx - 48) * 0.56, (h - hh - 640) * (1277 / 835), 900));
   const cardsPx = Math.max(320, w - 2 * gutPx - treePx - 48);
-  const fitColW = (w - 2 * gutPx - 48) / 2;
+  // Wide, short screens (e.g. 1900×860): give the hero column a little more width and put the
+  // meditation pill + Watch link beside the headline, so the height they used goes to the tree.
+  const fitOn = w >= 1024 && w >= h * 1.15 && h >= 560;
+  const headPx = 6.9 * Math.max(34, Math.min(w * 0.039, h * 0.075, 64)); // two-line headline width
+  const wideFit = fitOn && (w - 2 * gutPx - 48) * (1.2 / 2.2) - gutPx >= headPx + 40 + 280;
+  // Shorter screens without that room: the pill moves up beside the kicker line and the hero's
+  // Watch link is dropped (the "Watch the intro" card on the right is the same thing).
+  const fitColW = (w - 2 * gutPx - 48) * (wideFit ? 1.2 / 2.2 : 0.5);
+  const tightFit = fitOn && !wideFit && h < 800 && fitColW - gutPx >= 520; // kicker + pill side by side
   const fitTreeH = h - hh - (w >= 1200 ? 34 : 0) - (heroH || 300) - (footH || 80) - 28;
   const fitTreePx = Math.max(240, Math.min(fitColW - 200, fitTreeH * (1277 / 835)));
   // Desktop / landscape tablet: the whole home page fits one screen. Hero copy + tree in the left
   // column, the four cards fill the right column (where the hero emblem used to be), footer at the bottom.
-  const fit = w >= 1024 && w >= h * 1.15 && h >= 560;
+  const fit = fitOn;
   const fullHeight = fit || (desk && h >= 900);
   const ivory = desk ? "transparent" : "rgba(243,234,211,.92)";
   const heroImage = siteAsset((c.heroImage && c.heroImage.trim()) || "assets/hari-stream-forest.png");
@@ -209,7 +217,7 @@ export default function HomePage() {
           overflow: fullHeight ? "hidden" : "visible",
           background: "#F3EAD3",
           ...(fit
-            ? { display: "grid", gridTemplateColumns: "minmax(0,1fr) minmax(0,1fr)", gridTemplateRows: "auto auto minmax(0,1fr) auto", columnGap: 48, padding: 0 }
+            ? { display: "grid", gridTemplateColumns: wideFit ? "minmax(0,1.2fr) minmax(0,1fr)" : "minmax(0,1fr) minmax(0,1fr)", gridTemplateRows: "auto auto minmax(0,1fr) auto", columnGap: 48, padding: 0 }
             : { display: "flex", flexDirection: "column" }),
         }}
       >
@@ -221,21 +229,21 @@ export default function HomePage() {
         <div
           id="top"
           ref={heroRef}
-          style={{ ...(fit ? { gridColumn: 1, gridRow: 2, paddingRight: 0 } : {}), position: "relative", zIndex: 5, order: 1, display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "clamp(10px,1.8vh,16px)", width: fit ? "auto" : desk ? "50%" : "100%", padding: desk ? "clamp(8px,2vh,28px) clamp(24px,5vw,72px) 0" : tablet ? "20px clamp(32px,6vw,56px) 16px" : "0 22px 12px", textAlign: "left", background: ivory }}
+          style={{ ...(fit ? { gridColumn: 1, gridRow: 2, paddingRight: 0 } : {}), position: "relative", zIndex: 5, order: 1, display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "clamp(10px,1.8vh,16px)", ...(wideFit || tightFit ? { display: "grid", gridTemplateColumns: "auto auto", gridTemplateAreas: wideFit ? '"k k" "h c" "p p"' : '"k c" "h h" "p p"', justifyContent: "start", alignItems: "center", columnGap: wideFit ? 40 : 24 } : {}), width: fit ? "auto" : desk ? "50%" : "100%", padding: desk ? "clamp(8px,2vh,28px) clamp(24px,5vw,72px) 0" : tablet ? "20px clamp(32px,6vw,56px) 16px" : "0 22px 12px", textAlign: "left", background: ivory }}
         >
 
-          <span style={{ display: "inline-flex", alignItems: "center", gap: 10, fontSize: 11, fontWeight: 700, letterSpacing: ".3em", textTransform: "uppercase", color: "#7A5E22", animation: "gaw-rise .9s both" }}>
+          <span style={{ display: "inline-flex", alignItems: "center", gap: 10, fontSize: 11, fontWeight: 700, letterSpacing: ".3em", textTransform: "uppercase", color: "#7A5E22", animation: "gaw-rise .9s both", gridArea: "k", whiteSpace: "nowrap" }}>
             <span aria-hidden="true" style={{ width: 6, height: 6, borderRadius: "50%", background: "#C9A24A" }} />
             Free meditation · every day
           </span>
           <h1
             className="serif"
-            style={{ margin: 0, fontWeight: 500, fontSize: desk ? "clamp(34px,min(3.9vw,7.5dvh),64px)" : tablet ? "clamp(40px,5.6vw,56px)" : "clamp(26px,7.4vw,34px)", lineHeight: 1, letterSpacing: "-.015em", textWrap: "balance", maxWidth: desk ? "14ch" : "none", color: "#12201A", animation: "gaw-rise .9s .1s both" }}
+            style={{ margin: 0, fontWeight: 500, fontSize: desk ? "clamp(34px,min(3.9vw,7.5dvh),64px)" : tablet ? "clamp(40px,5.6vw,56px)" : "clamp(26px,7.4vw,34px)", lineHeight: 1, letterSpacing: "-.015em", textWrap: "balance", maxWidth: desk ? "14ch" : "none", color: "#12201A", animation: "gaw-rise .9s .1s both", gridArea: "h" }}
           >
             {c.headline} <em style={{ color: "#8A6F34" }}>{c.headlineAccent}</em>
           </h1>
-          <p style={{ margin: 0, fontSize: desk ? "clamp(15px,1.2vw,18px)" : tablet ? 17 : "clamp(11.5px,3.2vw,14px)", fontWeight: 400, lineHeight: 1.45, color: "#3A3128", textWrap: "pretty", maxWidth: desk || tablet ? "48ch" : "none", animation: "gaw-rise .9s .25s both" }}>{c.subline}</p>
-          <div style={{ display: "flex", flexWrap: desk ? "nowrap" : "wrap", justifyContent: "flex-start", alignItems: "center", gap: desk ? 24 : 10, marginTop: desk ? 8 : 4, animation: "gaw-rise .9s .4s both" }}>
+          <p style={{ margin: 0, fontSize: desk ? "clamp(15px,1.2vw,18px)" : tablet ? 17 : "clamp(11.5px,3.2vw,14px)", fontWeight: 400, lineHeight: 1.45, color: "#3A3128", textWrap: "pretty", maxWidth: desk || tablet ? "48ch" : "none", animation: "gaw-rise .9s .25s both", gridArea: "p" }}>{c.subline}</p>
+          <div style={{ display: "flex", flexWrap: desk ? "nowrap" : "wrap", justifyContent: "flex-start", alignItems: "center", gap: desk ? 24 : 10, marginTop: desk ? 8 : 4, animation: "gaw-rise .9s .4s both", ...(wideFit ? { gridArea: "c", flexDirection: "column", alignItems: "flex-start", gap: 6, marginTop: 0 } : tightFit ? { gridArea: "c", marginTop: 0 } : {}) }}>
             <a
               href="#film"
               onClick={openFilm}
@@ -262,6 +270,7 @@ export default function HomePage() {
                 minWidth: 0,
                 justifyContent: "center",
                 order: 2,
+                ...(tightFit ? { display: "none" } : {}),
               }}
             >
               <span aria-hidden="true" style={{ display: "inline-block", width: 0, height: 0, borderLeft: "7px solid currentColor", borderTop: "4.5px solid transparent", borderBottom: "4.5px solid transparent" }} />
