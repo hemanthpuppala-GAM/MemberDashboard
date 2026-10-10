@@ -17,6 +17,8 @@ import UserApp from "./user/UserApp";
 import AskPage from "./pages/AskPage";
 import AskPosterPage from "./pages/AskPosterPage";
 import AskZoomPage from "./pages/AskZoomPage";
+import SupportDeskPage from "./support/SupportDeskPage";
+import MyQuestionsPage from "./support-member/MyQuestionsPage";
 import MaintenanceGate from "./components/MaintenanceGate";
 import { MemberAuthProvider, useMemberAuth } from "./auth/MemberAuthContext";
 import { LanguageProvider } from "./lib/LanguageContext";
@@ -55,6 +57,13 @@ function App() {
             <Route path="/ask" element={<AskPage />} />
             <Route path="/ask/poster" element={<AskPosterPage />} />
             <Route path="/ask/zoom" element={<AskZoomPage />} />
+
+            {/* Member follows their support questions (ticket emails link to /support/my?ticket=ID). */}
+            <Route path="/support/my" element={<MyQuestionsPage />} />
+
+            {/* Staff support desk (core: phone + PIN; volunteers: Google). Exact paths so /support/my stays separate. */}
+            <Route path="/support" element={<SupportDeskPage />} />
+            <Route path="/support/ticket/:id" element={<SupportDeskPage />} />
 
             <Route
               path="/dashboard/*"

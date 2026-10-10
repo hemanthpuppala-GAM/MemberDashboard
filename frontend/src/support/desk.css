@@ -1,0 +1,60 @@
+/* Support desk: same calm look as the public site (cream, ink, gold; Cormorant + Manrope).
+   Layout lives in Tailwind classes; this sheet only scopes base styles to .gaw-desk. */
+
+.gaw-desk {
+  min-height: 100dvh;
+  background: #f3ead3;
+  color: #14241c;
+  font-family: "Manrope", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  overflow-x: clip;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.gaw-desk *,
+.gaw-desk *::before,
+.gaw-desk *::after {
+  box-sizing: border-box;
+}
+/* The app base layer forces headings to the admin theme's font + colour. */
+.gaw-desk h1,
+.gaw-desk h2,
+.gaw-desk h3 {
+  color: inherit;
+  font-family: "Cormorant Garamond", serif;
+  font-weight: 600;
+  margin: 0;
+}
+.gaw-desk a {
+  color: #7a5e22;
+}
+.gaw-desk a:hover {
+  color: #14241c;
+}
+.gaw-desk :is(a, button, select, input, textarea, [tabindex]):focus-visible {
+  outline: 2px solid #c9a24a;
+  outline-offset: 2px;
+}
+.gaw-desk ::selection {
+  background: #e8cf83;
+  color: #12201a;
+}
+.gaw-desk .desk-scroll-x {
+  scrollbar-width: none;
+}
+.gaw-desk .desk-scroll-x::-webkit-scrollbar {
+  display: none;
+}
+@keyframes desk-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.gaw-desk .desk-spin {
+  animation: desk-spin 0.9s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .gaw-desk .desk-spin {
+    animation: none;
+  }
+}

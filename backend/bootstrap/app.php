@@ -17,6 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin' => \App\Http\Middleware\EnsureUserIsAdmin::class,
             'member' => \App\Http\Middleware\EnsureUserIsMember::class,
             'permission' => \App\Http\Middleware\CheckPermission::class,
+            'support.agent' => \App\Http\Middleware\ResolveSupportAgent::class,
         ]);
 
         // API-only app — there is no 'login' route to redirect guests to, so

@@ -58,6 +58,11 @@ use App\Http\Controllers\Api\Public\Settings\SettingController;
 use App\Http\Controllers\Api\Public\Content\TestimonialController;
 use App\Http\Controllers\Api\Public\Site\SiteContentController;
 use App\Http\Controllers\Api\Admin\Site\SiteContentController as AdminSiteContentController;
+use App\Http\Controllers\Api\Support\SupportAuthController;
+use App\Http\Controllers\Api\Support\TicketController as SupportTicketController;
+use App\Http\Controllers\Api\Support\SupportDashboardController;
+use App\Http\Controllers\Api\Support\MemberTicketController;
+use App\Http\Controllers\Api\Admin\Support\SupportAgentController;
 use App\Services\Auth\OAuthService;
 use Illuminate\Support\Facades\Route;
 
@@ -123,7 +128,28 @@ Route::prefix('v1')->group(function () {
             Route::get('/referral', [ReferralController::class, 'index']);
             Route::put('/profile', [MemberProfileController::class, 'update']);
             Route::put('/password', [MemberProfileController::class, 'updatePassword']);
+
+            // Their own support questions (tickets): status, replies, rating.
+            Route::get('/tickets', [MemberTicketController::class, 'index']);
+            Route::get('/tickets/{id}', [MemberTicketController::class, 'show'])->whereNumber('id');
+            Route::post('/tickets/{id}/comments', [MemberTicketController::class, 'comment'])->whereNumber('id')->middleware('throttle:20,1');
+            Route::post('/tickets/{id}/rating', [MemberTicketController::class, 'rate'])->whereNumber('id');
         });
+    });
+
+    // ---- Support desk ----
+    // Core support: phone + PIN. Volunteers use their member (Google) token on the same routes.
+    Route::post('/support/login', [SupportAuthController::class, 'login'])->middleware('throttle:8,1');
+    Route::middleware(['auth:sanctum', 'support.agent'])->prefix('support')->group(function () {
+        Route::get('/me', [SupportAuthController::class, 'me']);
+        Route::post('/logout', [SupportAuthController::class, 'logout']);
+        Route::get('/dashboard', [SupportDashboardController::class, 'index']);
+        Route::get('/agents', [SupportDashboardController::class, 'agents']);
+        Route::get('/tickets', [SupportTicketController::class, 'index']);
+        Route::post('/tickets', [SupportTicketController::class, 'store']);
+        Route::get('/tickets/{ticket}', [SupportTicketController::class, 'show']);
+        Route::patch('/tickets/{ticket}', [SupportTicketController::class, 'update']);
+        Route::post('/tickets/{ticket}/comments', [SupportTicketController::class, 'comment']);
     });
 
     // ---- Admin auth ----
@@ -140,6 +166,14 @@ Route::prefix('v1')->group(function () {
         // ---- Legacy flat content blocks ----
         Route::middleware('permission:cms.view')->get('/content', [AdminContentController::class, 'index']);
         Route::middleware('permission:cms.edit')->put('/content/{slug}', [AdminContentController::class, 'update']);
+
+        // ---- Support team (who can sign in to the support desk) ----
+        Route::middleware('permission:members.view')->get('/support-agents', [SupportAgentController::class, 'index']);
+        Route::middleware('permission:members.edit')->group(function () {
+            Route::post('/support-agents', [SupportAgentController::class, 'store']);
+            Route::put('/support-agents/{agent}', [SupportAgentController::class, 'update']);
+            Route::delete('/support-agents/{agent}', [SupportAgentController::class, 'destroy']);
+        });
 
         // ---- Site content (public page copy, one JSON document per page) ----
         Route::middleware('permission:cms.view')->get('/site-content', [AdminSiteContentController::class, 'index']);

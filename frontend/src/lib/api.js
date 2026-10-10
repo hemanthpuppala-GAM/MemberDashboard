@@ -89,6 +89,12 @@ export const api = {
   updateUser: (id, payload) => apiFetch(`/admin/users/${id}`, { method: "PUT", body: payload }),
   deleteUser: (id) => apiFetch(`/admin/users/${id}`, { method: "DELETE" }),
 
+  // Support desk team (People → Support team)
+  supportAgents: () => apiFetch("/admin/support-agents"),
+  createSupportAgent: (payload) => apiFetch("/admin/support-agents", { method: "POST", body: payload }),
+  updateSupportAgent: (id, payload) => apiFetch(`/admin/support-agents/${id}`, { method: "PUT", body: payload }),
+  deleteSupportAgent: (id) => apiFetch(`/admin/support-agents/${id}`, { method: "DELETE" }),
+
   roles: () => apiFetch("/admin/roles"),
   role: (id) => apiFetch(`/admin/roles/${id}`),
   createRole: (payload) => apiFetch("/admin/roles", { method: "POST", body: payload }),
