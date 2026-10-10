@@ -191,7 +191,9 @@ export default function HomePage() {
   // Shorter screens without that room: the pill moves up beside the kicker line and the hero's
   // Watch link is dropped (the "Watch the intro" card on the right is the same thing).
   const fitColW = (w - 2 * gutPx - 48) * (wideFit ? 1.2 / 2.2 : 0.5);
-  const tightFit = fitOn && !wideFit && h < 800 && fitColW - gutPx >= 520; // kicker + pill side by side
+  const tightFit = fitOn && !wideFit && h < 800 && fitColW - gutPx >= 470; // kicker + pill side by side (kicker spacing tightens below)
+  // Very short screens (a 1080p laptop at 150% scaling is ~1280×590): smaller headline and line.
+  const shortFit = tightFit && h < 680;
   const fitTreeH = h - hh - (w >= 1200 ? 34 : 0) - (heroH || 300) - (footH || 80) - 28;
   const fitTreePx = Math.max(240, Math.min(fitColW - 200, fitTreeH * (1277 / 835)));
   // Desktop / landscape tablet: the whole home page fits one screen. Hero copy + tree in the left
@@ -229,20 +231,20 @@ export default function HomePage() {
         <div
           id="top"
           ref={heroRef}
-          style={{ ...(fit ? { gridColumn: 1, gridRow: 2, paddingRight: 0 } : {}), position: "relative", zIndex: 5, order: 1, display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "clamp(10px,1.8vh,16px)", ...(wideFit || tightFit ? { display: "grid", gridTemplateColumns: "auto auto", gridTemplateAreas: wideFit ? '"k k" "h c" "p p"' : '"k c" "h h" "p p"', justifyContent: "start", alignItems: "center", columnGap: wideFit ? 40 : 24 } : {}), width: fit ? "auto" : desk ? "50%" : "100%", padding: desk ? "clamp(8px,2vh,28px) clamp(24px,5vw,72px) 0" : tablet ? "20px clamp(32px,6vw,56px) 16px" : "0 22px 12px", textAlign: "left", background: ivory }}
+          style={{ ...(fit ? { gridColumn: 1, gridRow: 2, paddingRight: 0 } : {}), position: "relative", zIndex: 5, order: 1, display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "clamp(10px,1.8vh,16px)", ...(wideFit || tightFit ? { display: "grid", gridTemplateColumns: "auto auto", gridTemplateAreas: wideFit ? '"k k" "h c" "p p"' : '"k c" "h h" "p p"', justifyContent: "start", alignItems: "center", columnGap: wideFit ? 40 : 18 } : {}), width: fit ? "auto" : desk ? "50%" : "100%", padding: desk ? "clamp(8px,2vh,28px) clamp(24px,5vw,72px) 0" : tablet ? "20px clamp(32px,6vw,56px) 16px" : "0 22px 12px", textAlign: "left", background: ivory }}
         >
 
-          <span style={{ display: "inline-flex", alignItems: "center", gap: 10, fontSize: 11, fontWeight: 700, letterSpacing: ".3em", textTransform: "uppercase", color: "#7A5E22", animation: "gaw-rise .9s both", gridArea: "k", whiteSpace: "nowrap" }}>
+          <span style={{ display: "inline-flex", alignItems: "center", gap: 10, fontSize: 11, fontWeight: 700, letterSpacing: ".3em", textTransform: "uppercase", color: "#7A5E22", animation: "gaw-rise .9s both", gridArea: "k", whiteSpace: "nowrap", ...(tightFit ? { letterSpacing: ".2em" } : {}) }}>
             <span aria-hidden="true" style={{ width: 6, height: 6, borderRadius: "50%", background: "#C9A24A" }} />
             Free meditation · every day
           </span>
           <h1
             className="serif"
-            style={{ margin: 0, fontWeight: 500, fontSize: desk ? "clamp(34px,min(3.9vw,7.5dvh),64px)" : tablet ? "clamp(40px,5.6vw,56px)" : "clamp(26px,7.4vw,34px)", lineHeight: 1, letterSpacing: "-.015em", textWrap: "balance", maxWidth: desk ? "14ch" : "none", color: "#12201A", animation: "gaw-rise .9s .1s both", gridArea: "h" }}
+            style={{ margin: 0, fontWeight: 500, fontSize: shortFit ? "clamp(30px,6.2dvh,44px)" : desk ? "clamp(34px,min(3.9vw,7.5dvh),64px)" : tablet ? "clamp(40px,5.6vw,56px)" : "clamp(26px,7.4vw,34px)", lineHeight: 1, letterSpacing: "-.015em", textWrap: "balance", maxWidth: desk ? "14ch" : "none", color: "#12201A", animation: "gaw-rise .9s .1s both", gridArea: "h" }}
           >
             {c.headline} <em style={{ color: "#8A6F34" }}>{c.headlineAccent}</em>
           </h1>
-          <p style={{ margin: 0, fontSize: desk ? "clamp(15px,1.2vw,18px)" : tablet ? 17 : "clamp(11.5px,3.2vw,14px)", fontWeight: 400, lineHeight: 1.45, color: "#3A3128", textWrap: "pretty", maxWidth: desk || tablet ? "48ch" : "none", animation: "gaw-rise .9s .25s both", gridArea: "p" }}>{c.subline}</p>
+          <p style={{ margin: 0, fontSize: shortFit ? 14.5 : desk ? "clamp(15px,1.2vw,18px)" : tablet ? 17 : "clamp(11.5px,3.2vw,14px)", fontWeight: 400, lineHeight: 1.45, color: "#3A3128", textWrap: "pretty", maxWidth: desk || tablet ? "48ch" : "none", animation: "gaw-rise .9s .25s both", gridArea: "p" }}>{c.subline}</p>
           <div style={{ display: "flex", flexWrap: desk ? "nowrap" : "wrap", justifyContent: "flex-start", alignItems: "center", gap: desk ? 24 : 10, marginTop: desk ? 8 : 4, animation: "gaw-rise .9s .4s both", ...(wideFit ? { gridArea: "c", flexDirection: "column", alignItems: "flex-start", gap: 6, marginTop: 0 } : tightFit ? { gridArea: "c", marginTop: 0 } : {}) }}>
             <a
               href="#film"
