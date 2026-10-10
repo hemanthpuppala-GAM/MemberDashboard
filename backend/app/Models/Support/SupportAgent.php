@@ -8,13 +8,30 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\HasApiTokens;
 
-#[Fillable(['kind', 'name', 'phone', 'email', 'is_active'])]
+#[Fillable(['kind', 'name', 'phone', 'email', 'user_id', 'is_active'])]
 #[Hidden(['pin_hash'])]
 class SupportAgent extends Authenticatable
 {
     use HasApiTokens;
 
+    /** Kinds an admin adds by hand. "staff" agents are created when an admin user opens the desk. */
     public const KINDS = ['core', 'volunteer'];
+
+    public const STAFF = 'staff';
+
+    public function user()
+    {
+        return $this->belongsTo(\App\Models\Auth\User::class);
+    }
+
+    /** The desk identity of an admin-panel user (created on first use). */
+    public static function forUser(\App\Models\Auth\User $user): self
+    {
+        return static::firstOrCreate(
+            ['user_id' => $user->id],
+            ['kind' => self::STAFF, 'name' => $user->name ?: $user->email, 'is_active' => true],
+        );
+    }
 
     protected function casts(): array
     {

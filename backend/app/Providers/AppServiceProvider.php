@@ -6,6 +6,7 @@ use App\Mail\Transport\BrevoApiTransport;
 use App\Models\People\ContactSubmission;
 use App\Models\People\VolunteerApplication;
 use App\Models\Support\Ticket;
+use App\Services\Support\QueryTicketSync;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\ServiceProvider;
@@ -41,6 +42,22 @@ class AppServiceProvider extends ServiceProvider
                 Ticket::fromVolunteerApplication($a);
             } catch (\Throwable $e) {
                 Log::warning('Could not create ticket for volunteer application '.$a->id.': '.$e->getMessage());
+            }
+        });
+
+        // Admin Queries <-> support desk: one inbox, kept in step both ways.
+        ContactSubmission::updated(function (ContactSubmission $s) {
+            try {
+                QueryTicketSync::fromSubmission($s);
+            } catch (\Throwable $e) {
+                Log::warning('Could not sync query '.$s->id.' to its ticket: '.$e->getMessage());
+            }
+        });
+        Ticket::updated(function (Ticket $t) {
+            try {
+                QueryTicketSync::fromTicket($t);
+            } catch (\Throwable $e) {
+                Log::warning('Could not sync ticket '.$t->id.' to its query: '.$e->getMessage());
             }
         });
     }

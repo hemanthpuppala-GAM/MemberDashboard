@@ -65,6 +65,9 @@ class ReportController extends Controller
         return response()->json([
             'by_category' => ContactSubmission::selectRaw('category, count(*) as count')->groupBy('category')->pluck('count', 'category'),
             'by_status' => ContactSubmission::selectRaw('status, count(*) as count')->groupBy('status')->pluck('count', 'status'),
+            // The whole support desk (queries + calls + WhatsApp + volunteer sign-ups).
+            'tickets_by_source' => \App\Models\Support\Ticket::selectRaw('source, count(*) as count')->groupBy('source')->pluck('count', 'source'),
+            'tickets_by_status' => \App\Models\Support\Ticket::selectRaw('status, count(*) as count')->groupBy('status')->pluck('count', 'status'),
         ]);
     }
 

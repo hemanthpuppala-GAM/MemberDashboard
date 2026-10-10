@@ -24,6 +24,9 @@ class SettingController extends Controller
         'banner.cta_url',
         'maintenance.enabled',
         'maintenance.message',
+        'zoom.url',
+        'zoom.meeting_id',
+        'zoom.passcode',
     ];
 
     public function index(Request $request)
@@ -35,8 +38,8 @@ class SettingController extends Controller
         // Computed, not the raw list — the allowlist itself stays admin-only.
         $data['maintenance.bypass'] = $this->ipBypassesMaintenance($request, $flat['maintenance.allowed_ips'] ?? '');
 
-        $data['support.primary'] = preg_replace('/\D/', '', (string) config('services.support.primary'));
-        $data['support.web'] = preg_replace('/\D/', '', (string) config('services.support.web'));
+        $data['support.primary'] = Setting::supportNumber('primary');
+        $data['support.web'] = Setting::supportNumber('web');
 
         return response()->json($data);
     }
