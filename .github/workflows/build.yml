@@ -85,11 +85,12 @@ jobs:
       - name: Keep Laravel's empty working folders
         # FTP only creates folders that hold a file, and Laravel's own
         # placeholders are .gitignore files (excluded below). Without these the
-        # app fails with "Please provide a valid cache path".
+        # app fails with "Please provide a valid cache path". The files must not be
+        # empty: the FTPS server drops the connection on zero-byte uploads.
         run: |
           for d in storage/framework/cache/data storage/framework/sessions storage/framework/views \
                    storage/logs storage/app/public storage/app/private bootstrap/cache; do
-            mkdir -p "backend/$d" && touch "backend/$d/.deploy-keep"
+            mkdir -p "backend/$d" && echo "Keeps this folder on the server (FTP skips empty folders)." > "backend/$d/.deploy-keep"
           done
       - uses: actions/upload-artifact@v4
         with:

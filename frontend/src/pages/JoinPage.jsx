@@ -1,6 +1,5 @@
 import { useMemo, useState } from "react";
-import { Link, Navigate, useNavigate, useSearchParams } from "react-router-dom";
-import { Shield } from "lucide-react";
+import { Link, Navigate, useSearchParams } from "react-router-dom";
 import logoMark from "../assets/logo-golden-age.jpg";
 import hariPic from "../assets/hari_sir_stream.png";
 import Starfield from "../components/layout/Starfield";
@@ -17,25 +16,17 @@ const PROVIDERS = [
 ];
 
 /**
- * Join screen — Google sign-in plus email/password, matching goldenagewisdom.org / Design.md §8.
- * The email/password form sits behind a "prefer email?" toggle (closed by default): Google already
- * covers the fast path, so the full form only needs to render once someone actually asks for it —
- * that's what keeps the card short enough to read without scrolling, on both the fresh-visitor and
- * the returning-member layouts below.
+ * Join screen — Google (Gmail) sign-in only, matching goldenagewisdom.org / Design.md §8.
+ * Returning members get a one-tap "Continue as …" first. No email/password form and no demo
+ * account on the public page (owner decision, Oct 2026).
  */
 export default function JoinPage() {
-  const { user, loading, loginDemo, login, register } = useMemberAuth();
-  const navigate = useNavigate();
+  const { user, loading } = useMemberAuth();
   const [params] = useSearchParams();
   const [busy, setBusy] = useState(null);
   const [error, setError] = useState(params.get("error") || "");
   const lastMember = useMemo(() => getLastMember(), []);
 
-  const [mode, setMode] = useState("login");
-  const [form, setForm] = useState({ name: "", email: "", password: "", password_confirmation: "" });
-  const [formError, setFormError] = useState("");
-  const [submitting, setSubmitting] = useState(false);
-  const [showEmailForm, setShowEmailForm] = useState(false);
 
   if (!loading && user) return <Navigate to="/dashboard" replace />;
 
@@ -48,43 +39,6 @@ export default function JoinPage() {
   const continueAsLast = () => {
     // Re-auth via the remembered provider when possible; otherwise send to Google.
     startOAuth(lastMember?.oauth_provider && lastMember.oauth_provider !== "demo" ? lastMember.oauth_provider : "google");
-  };
-
-  const startDemo = async () => {
-    setBusy("demo");
-    setError("");
-    try {
-      await loginDemo();
-      navigate("/dashboard", { replace: true });
-    } catch (e) {
-      setError(e.message || "Could not start demo session.");
-      setBusy(null);
-    }
-  };
-
-  const updateField = (field) => (e) => setForm((f) => ({ ...f, [field]: e.target.value }));
-
-  const switchMode = (nextMode) => {
-    setMode(nextMode);
-    setFormError("");
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setFormError("");
-    setSubmitting(true);
-    try {
-      if (mode === "signup") {
-        await register(form.name, form.email, form.password, form.password_confirmation, params.get("ref") || undefined);
-      } else {
-        await login(form.email, form.password);
-      }
-      navigate("/dashboard", { replace: true });
-    } catch (e) {
-      setFormError(e.message || "Something went wrong. Please try again.");
-    } finally {
-      setSubmitting(false);
-    }
   };
 
   const initial = (lastMember?.name || "?").trim().charAt(0).toUpperCase();
@@ -162,7 +116,7 @@ export default function JoinPage() {
                 key={id}
                 type="button"
                 onClick={() => startOAuth(id)}
-                disabled={!!busy || submitting}
+                disabled={!!busy}
                 className={`flex w-full items-center justify-center gap-3 rounded-full px-4 py-2.5 text-[14.5px] font-medium transition-all disabled:opacity-60 ${
                   variant === "google"
                     ? "bg-white text-[#1f1f1f] shadow-[0_4px_20px_rgba(80,65,40,0.15)] hover:bg-white/95 border border-[var(--color-border)]"
@@ -181,121 +135,9 @@ export default function JoinPage() {
             </p>
           )}
 
-          {!showEmailForm ? (
-            <button
-              type="button"
-              onClick={() => setShowEmailForm(true)}
-              className="mt-3 w-full rounded-full border border-dashed border-[var(--color-border)] px-4 py-2.5 text-[13px] font-medium text-[var(--color-ink-soft)] transition-colors hover:border-[var(--color-gold)] hover:text-[var(--color-ink)]"
-            >
-              Prefer email &amp; password?
-            </button>
-          ) : (
-            <>
-              <div className="my-3 flex items-center gap-3">
-                <div className="h-px flex-1 bg-[var(--color-border)]" />
-                <span className="text-[11px] tracking-wide text-[var(--color-muted)] uppercase">or use email</span>
-                <div className="h-px flex-1 bg-[var(--color-border)]" />
-              </div>
-
-              <form onSubmit={handleSubmit} className="flex flex-col gap-2.5">
-                {mode === "signup" && (
-                  <input
-                    type="text"
-                    placeholder="Full name"
-                    autoComplete="name"
-                    required
-                    value={form.name}
-                    onChange={updateField("name")}
-                    disabled={submitting}
-                    className="w-full rounded-full border border-[var(--color-border-strong)] bg-white px-4 py-2.5 text-[15px] text-[var(--color-ink)] placeholder:text-[var(--color-ink-soft)] outline-none transition-all focus:border-[var(--color-gold-deep)] focus:shadow-[0_0_0_3px_rgba(198,161,91,0.28)] disabled:opacity-60"
-                  />
-                )}
-                <input
-                  type="email"
-                  placeholder="Email"
-                  autoComplete="username"
-                  required
-                  value={form.email}
-                  onChange={updateField("email")}
-                  disabled={submitting}
-                  className="w-full rounded-full border border-[var(--color-border-strong)] bg-white px-4 py-2.5 text-[15px] text-[var(--color-ink)] placeholder:text-[var(--color-ink-soft)] outline-none transition-all focus:border-[var(--color-gold-deep)] focus:shadow-[0_0_0_3px_rgba(198,161,91,0.28)] disabled:opacity-60"
-                />
-                <input
-                  type="password"
-                  placeholder="Password"
-                  autoComplete={mode === "signup" ? "new-password" : "current-password"}
-                  required
-                  minLength={8}
-                  value={form.password}
-                  onChange={updateField("password")}
-                  disabled={submitting}
-                  className="w-full rounded-full border border-[var(--color-border-strong)] bg-white px-4 py-2.5 text-[15px] text-[var(--color-ink)] placeholder:text-[var(--color-ink-soft)] outline-none transition-all focus:border-[var(--color-gold-deep)] focus:shadow-[0_0_0_3px_rgba(198,161,91,0.28)] disabled:opacity-60"
-                />
-                {mode === "signup" && (
-                  <input
-                    type="password"
-                    placeholder="Confirm password"
-                    autoComplete="new-password"
-                    required
-                    minLength={8}
-                    value={form.password_confirmation}
-                    onChange={updateField("password_confirmation")}
-                    disabled={submitting}
-                    className="w-full rounded-full border border-[var(--color-border-strong)] bg-white px-4 py-2.5 text-[15px] text-[var(--color-ink)] placeholder:text-[var(--color-ink-soft)] outline-none transition-all focus:border-[var(--color-gold-deep)] focus:shadow-[0_0_0_3px_rgba(198,161,91,0.28)] disabled:opacity-60"
-                  />
-                )}
-
-                {formError && (
-                  <p className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-center text-[13px] text-red-700">
-                    {formError}
-                  </p>
-                )}
-
-                <button
-                  type="submit"
-                  disabled={submitting || !!busy}
-                  className="mt-1 w-full rounded-full bg-gradient-to-br from-[var(--color-gold)] to-[var(--color-gold-deep)] px-4 py-2.5 text-[14.5px] font-semibold text-[var(--color-on-gold)] transition-opacity hover:opacity-95 disabled:opacity-60"
-                >
-                  {submitting ? (mode === "signup" ? "Creating account…" : "Signing in…") : mode === "signup" ? "Create account" : "Sign in"}
-                </button>
-              </form>
-
-              <p className="mt-2.5 text-center text-[13px] text-[var(--color-muted)]">
-                {mode === "signup" ? (
-                  <>
-                    Already have an account?{" "}
-                    <button type="button" onClick={() => switchMode("login")} className="font-medium text-[var(--color-gold-deep)] hover:underline">
-                      Sign in
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    New here?{" "}
-                    <button type="button" onClick={() => switchMode("signup")} className="font-medium text-[var(--color-gold-deep)] hover:underline">
-                      Create an account
-                    </button>
-                  </>
-                )}
-              </p>
-
-              <div className="mt-3 flex items-start gap-2.5 rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-soft)] px-3.5 py-2.5">
-                <Shield size={15} className="mt-0.5 shrink-0 text-[var(--color-gold-deep)]" />
-                <p className="text-[11.5px] leading-relaxed text-[var(--color-ink-soft)]">
-                  Your password is encrypted and never shared.
-                </p>
-              </div>
-            </>
-          )}
-
-          <button
-            type="button"
-            onClick={startDemo}
-            disabled={!!busy || submitting}
-            className="mt-3 w-full rounded-full border border-dashed border-[var(--color-border)] px-4 py-2.5 text-[13px] text-[var(--color-ink-soft)] transition-colors hover:border-[var(--color-gold)] hover:text-[var(--color-ink)] disabled:opacity-60"
-          >
-            <span className="font-medium">{busy === "demo" ? "Opening demo…" : "Look around a demo account"}</span>
-            <span className="mt-0.5 block text-[11px] text-[var(--color-muted)]">demo@goldenagewisdom.org · nothing is saved</span>
-          </button>
+          <p className="mt-3 text-center text-[11.5px] leading-relaxed text-[var(--color-muted)]">
+            Sign in with your Google (Gmail) account — no new password to remember.
+          </p>
         </div>
 
         <Link to="/" className="mt-3.5 text-center text-[13px] text-white/55 transition-colors hover:text-[var(--color-gold-light)]">

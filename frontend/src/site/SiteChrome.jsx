@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { GUTTER, SITE_PAGES, UTILITY_LINKS, YOUTUBE_URL } from "./sitePages";
+import { GUTTER, NAV_INLINE_MIN, SITE_PAGES, UTILITY_LINKS, YOUTUBE_URL } from "./sitePages";
 import { useMemberBadge } from "./useMemberBadge";
 import { siteAsset } from "./siteAssets";
 import { useViewportWidth } from "./useViewport";
@@ -239,9 +239,10 @@ export function MobileMenu({ active, onClose }) {
 export function SiteHeader({ active }) {
   const w = useViewportWidth();
   const [menu, setMenu] = useState(false);
-  const desk = w >= 900;
+  // Inline page links + utility row only where they fit on one line (tablets get the menu).
+  const desk = w >= NAV_INLINE_MIN;
   return (
-    <>
+    <div className="gaw-sticky-head">
       {desk && <UtilityRow />}
       <header
         style={{
@@ -266,7 +267,7 @@ export function SiteHeader({ active }) {
         </div>
       </header>
       {!desk && menu && <MobileMenu active={active} onClose={() => setMenu(false)} />}
-    </>
+    </div>
   );
 }
 
