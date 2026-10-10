@@ -2,6 +2,15 @@
 
 Format: date · item · status (🟡 designed / ✅ implemented @sha / ⬅ code change to mirror in Design / ↩ mirrored in Design)
 
+## 2026-10-12 — Admin panel modules feed the site and support desk (code first; no design handoff)
+- ⬅ code change: site quotes (Home voices, About/Wisdom/Wellness/Events quotes) come from admin Testimonials (featured first, else published); bundled quotes are the fallback. The 12 existing quotes were copied into Testimonials.
+- ⬅ code change: Home "Sits around the world", Events daily cards and Upcoming/Past gatherings come from admin Live Sessions (sessions can repeat every day, with a time zone). Events second card title becomes "Around the world" when sessions are outside USA/UK; gatherings get a "Join →" link when they have one.
+- ⬅ code change: "Join on Zoom" link, meeting ID and passcode come from admin Settings → Support & Zoom. Support numbers are editable there too (blank = server .env value).
+- ⬅ code change: new `/donate` page (cream sub-page, one card per admin donation method: QR, UPI/bank rows with Copy, "Give online" link; empty state points to WhatsApp support). "Donate" added to the utility row / mobile menu and the footer ("Support the mission · Donate").
+- ⬅ code change: sub-page footers gain a bottom row — Member support Call / WhatsApp (from Settings) + admin Contact Info channels. Privacy page gains a Member support line.
+- ⬅ code change: admin Broadcasts show on the new site (banner/ticker inside the sticky header on sub-pages; dismissable toast under the header on Home and Privacy; popups bottom-right in cream/gold) and in the member dashboard. Admin target picker adds Home, Privacy, Member dashboard.
+- ⬅ code change: admin Queries and the support desk are one inbox (status/assignee sync both ways). Admin staff with Queries access open the desk with their admin login ("Admin staff? Sign in to the admin panel" on the desk login; header button "Back to admin"). Admin Dashboard gets ticket widgets; Reports shows tickets by status/source.
+
 ## 2026-10-11 — Member support desk (built in code first; no design handoff yet)
 - ⬅ code change: new staff desk at `/support` (core support: phone + PIN; volunteers: member Google account) with KPI tiles, ticket queue (Mine / Unassigned / All open / Resolved), ticket panel (thread, internal notes, reply, status, assignee, urgent, call/WhatsApp/email), "Log a call / WhatsApp", Team & reviews. Public-site look (cream/ink/gold). Please design-review and mirror.
 - ⬅ code change: members' "My questions" page at `/support/my` (status, thread, reply, 1–5 star rating). Linked from the member dashboard nav and after sending on /ask.

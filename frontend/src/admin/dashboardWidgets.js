@@ -16,6 +16,10 @@ import {
   Radio,
   Languages,
   ShieldCheck,
+  Headset,
+  UserRoundX,
+  CircleCheck,
+  Star,
 } from "lucide-react";
 
 /**
@@ -24,6 +28,7 @@ import {
  * WIDGET_PERMISSIONS) — the backend only ever includes a key if the logged-in
  * admin holds `permission`, so this list is filtered again here purely for
  * the "add a widget" picker UI, not as the source of truth for access.
+ * Optional `format(value)` renders the stat (e.g. a rating that can be null).
  */
 export const DASHBOARD_WIDGETS = [
   { id: "pages_total", label: "Website pages", icon: Files, permission: "cms.view", to: "/admin/cms/pages" },
@@ -32,6 +37,14 @@ export const DASHBOARD_WIDGETS = [
   { id: "content_blocks", label: "Legacy content blocks", icon: LayoutGrid, permission: "cms.view" },
   { id: "queries_new", label: "New queries", icon: Inbox, permission: "members.view", to: "/admin/queries" },
   { id: "queries_total", label: "Total queries", icon: MessageSquareText, permission: "members.view", to: "/admin/queries" },
+  // Support desk (/support): every query plus calls, WhatsApp chats and volunteer sign-ups.
+  { id: "tickets_open", label: "Open tickets", icon: Headset, permission: "members.view", to: "/support" },
+  { id: "tickets_unassigned", label: "Unassigned tickets", icon: UserRoundX, permission: "members.view", to: "/support" },
+  { id: "tickets_resolved_7d", label: "Resolved (7 days)", icon: CircleCheck, permission: "members.view", to: "/support" },
+  {
+    id: "tickets_avg_rating", label: "Avg. rating", icon: Star, permission: "members.view", to: "/support",
+    format: (v) => (v == null ? "—" : `★ ${v}`),
+  },
   { id: "members_active", label: "Active members", icon: UsersRound, permission: "members.view", to: "/admin/members" },
   { id: "members_total", label: "Total members", icon: UsersRound, permission: "members.view", to: "/admin/members" },
   { id: "practitioners_total", label: "Practitioners", icon: UserCog, permission: "users.view", to: "/admin/users" },
@@ -47,4 +60,4 @@ export const DASHBOARD_WIDGETS = [
 ];
 
 /** What a first-time admin (no saved layout yet) sees — mirrors the old fixed dashboard. */
-export const DEFAULT_DASHBOARD_WIDGETS = ["pages_total", "media_total", "queries_new", "members_active", "practitioners_total"];
+export const DEFAULT_DASHBOARD_WIDGETS = ["pages_total", "media_total", "queries_new", "tickets_open", "members_active", "practitioners_total"];

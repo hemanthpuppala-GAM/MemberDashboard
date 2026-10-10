@@ -15,7 +15,8 @@ import { api } from "../../../lib/api";
 import { usePermissions } from "../../usePermissions";
 
 const EMPTY = { kind: "core", name: "", phone: "", email: "", pin: "", is_active: true };
-const KIND_LABEL = { core: "Core support", volunteer: "Volunteer" };
+const KIND_LABEL = { core: "Core support", volunteer: "Volunteer", staff: "Staff (admin login)" };
+const KIND_TONE = { core: "accent", volunteer: "info", staff: "neutral" };
 const DESK_URL = `${window.location.origin}${import.meta.env.BASE_URL}support`;
 
 const errorText = (err, fallback) => (err?.errors ? Object.values(err.errors).flat()[0] : err?.message ?? fallback);
@@ -98,7 +99,8 @@ export default function SupportTeamPage() {
   const setActive = async (agent, active) => {
     setAgents((rows) => rows.map((r) => (r.id === agent.id ? { ...r, is_active: active } : r)));
     try {
-      await api.updateSupportAgent(agent.id, { is_active: active });
+      // Send phone/email back too: the update endpoint treats an absent phone/email as "clear it".
+      await api.updateSupportAgent(agent.id, { phone: agent.phone ?? null, email: agent.email ?? null, is_active: active });
       toast.success(active ? `${agent.name} can sign in again` : `${agent.name} deactivated and signed out`);
     } catch (err) {
       setAgents((rows) => rows.map((r) => (r.id === agent.id ? { ...r, is_active: !active } : r)));
@@ -134,12 +136,12 @@ export default function SupportTeamPage() {
         id: "kind",
         header: "Role",
         accessorFn: (a) => KIND_LABEL[a.kind] ?? a.kind,
-        cell: ({ row, getValue }) => <Badge tone={row.original.kind === "core" ? "accent" : "info"}>{getValue()}</Badge>,
+        cell: ({ row, getValue }) => <Badge tone={KIND_TONE[row.original.kind] ?? "neutral"}>{getValue()}</Badge>,
       },
       {
         id: "contact",
         header: "Sign-in",
-        accessorFn: (a) => (a.kind === "core" ? a.phone : a.email) ?? "",
+        accessorFn: (a) => (a.kind === "staff" ? "Admin panel login" : (a.kind === "core" ? a.phone : a.email) ?? ""),
         cell: ({ getValue }) => <span className="break-all">{getValue() || "—"}</span>,
       },
       {
@@ -158,7 +160,9 @@ export default function SupportTeamPage() {
         accessorKey: "has_pin",
         header: "PIN set",
         cell: ({ row }) =>
-          row.original.kind !== "core" ? (
+          row.original.kind === "staff" ? (
+            <span className="text-[var(--a-text-faint)]">Admin login</span>
+          ) : row.original.kind !== "core" ? (
             <span className="text-[var(--a-text-faint)]">Google</span>
           ) : row.original.has_pin ? (
             <Check size={16} className="text-[var(--a-success)]" aria-label="PIN set" />
@@ -171,12 +175,17 @@ export default function SupportTeamPage() {
         id: "actions",
         header: "",
         enableSorting: false,
-        cell: ({ row }) => (
-          <div className="flex justify-end gap-1">
-            <IconButton icon={Pencil} label={canEdit ? "Edit" : noEdit} disabled={!canEdit} onClick={() => openEdit(row.original)} />
-            <IconButton icon={Trash2} label={canEdit ? "Remove" : noEdit} variant="danger" disabled={!canEdit} onClick={() => setToDelete(row.original)} />
-          </div>
-        ),
+        cell: ({ row }) => {
+          // Staff agents are created automatically from an admin user; only on/off applies to them.
+          const staff = row.original.kind === "staff";
+          const staffNote = "Admin staff sign in with their admin login — use the Active switch to turn them off";
+          return (
+            <div className="flex justify-end gap-1">
+              <IconButton icon={Pencil} label={!canEdit ? noEdit : staff ? staffNote : "Edit"} disabled={!canEdit || staff} onClick={() => openEdit(row.original)} />
+              <IconButton icon={Trash2} label={!canEdit ? noEdit : staff ? staffNote : "Remove"} variant="danger" disabled={!canEdit || staff} onClick={() => setToDelete(row.original)} />
+            </div>
+          );
+        },
       },
     ],
     [canEdit],
@@ -189,6 +198,9 @@ export default function SupportTeamPage() {
           <h1 className="text-[24px] font-bold text-[var(--a-text-primary)]">Support team</h1>
           <p className="mt-1 max-w-[640px] text-[13.5px] text-[var(--a-text-muted)]">
             Core support sign in at /support with their phone number and PIN. Volunteers sign in with their Google account (the email listed here).
+          </p>
+          <p className="mt-1 max-w-[640px] text-[13px] text-[var(--a-text-muted)]">
+            Admin staff with access to Queries can open the support desk with their admin login.
           </p>
           <a
             href={DESK_URL}

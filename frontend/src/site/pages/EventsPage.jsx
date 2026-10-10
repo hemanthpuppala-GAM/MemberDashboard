@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import { SitePage, SiteHeader, Breadcrumb, SiteFooter, AdminEditLink } from "../SiteChrome";
 import { useMemberBadge } from "../useMemberBadge";
 import { useSiteContent } from "../useSiteContent";
+import { usePageQuotes } from "../siteQuotes";
+import { useEventSessions, eventRow, visitorZone } from "../liveSessions";
 import { useViewportWidth } from "../useViewport";
 import { YOUTUBE_URL } from "../sitePages";
 import "./events.css";
@@ -92,14 +94,6 @@ function fmtIn(hhmm) {
   const [h, m] = String(hhmm || "0:0").split(":").map(Number);
   return `${h % 12 || 12}:${String(m).padStart(2, "0")}${h < 12 ? " AM" : " PM"}`;
 }
-function visitorZone() {
-  try {
-    return Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
-  } catch {
-    return "UTC";
-  }
-}
-
 function buildSession(s, zoneTz, zone, now, tz) {
   const a = localOf(s.start, zoneTz, now);
   const b = localOf(s.end, zoneTz, now);
@@ -145,6 +139,7 @@ function SessionCard({ kicker, note, sessions }) {
 /** /events — design: Events.dc.html (sessions + gatherings from content/events.json) */
 export default function EventsPage() {
   const c = useSiteContent("events", FALLBACKS);
+  const quotes = usePageQuotes("events", c.quotes);
   const { isMember } = useMemberBadge();
   const w = useViewportWidth();
   const desk = w >= 900;
@@ -157,9 +152,19 @@ export default function EventsPage() {
     return () => clearInterval(t);
   }, []);
 
-  const india = (c.sessionsIndia || []).map((s) => buildSession(s, "Asia/Kolkata", "IST", now, tz));
-  const abroad = (c.sessionsAbroad || []).map((s) => buildSession(s, s.tz || "UTC", s.zone || "", now, tz));
-  const upcoming = c.upcoming || [];
+  // Admin Live Sessions when published (daily → schedule cards, one-off → gatherings), else events.json.
+  const live = useEventSessions();
+  let india, abroad;
+  if (live.daily) {
+    india = live.daily.filter((s) => s.tz === "Asia/Kolkata").map((s) => buildSession(s, s.tz, s.zone, now, tz));
+    abroad = live.daily.filter((s) => s.tz !== "Asia/Kolkata").map((s) => buildSession(s, s.tz, s.zone, now, tz));
+  } else {
+    india = (c.sessionsIndia || []).map((s) => buildSession(s, "Asia/Kolkata", "IST", now, tz));
+    abroad = (c.sessionsAbroad || []).map((s) => buildSession(s, s.tz || "UTC", s.zone || "", now, tz));
+  }
+  const abroadKicker = live.daily && abroad.some((s) => !/^(America|Europe\/London)/.test(s.tz)) ? "Around the world" : c.abroadKicker;
+  const upcoming = live.upcoming ? live.upcoming.slice(0, 5).map(eventRow) : c.upcoming || [];
+  const past = live.past ? live.past.map(eventRow) : c.past || [];
 
   return (
     <SitePage>
@@ -191,8 +196,8 @@ export default function EventsPage() {
         <div style={{ display: "grid", gridTemplateColumns: desk ? "minmax(0,1.15fr) minmax(300px,.85fr)" : "1fr", gap: 18, alignItems: "start", ...rise(0.3) }}>
           {/* Left: daily sessions */}
           <div style={{ display: "flex", flexDirection: "column", gap: 18, minWidth: 0 }}>
-            <SessionCard kicker={c.indiaKicker} note={c.indiaNote} sessions={india} />
-            <SessionCard kicker={c.abroadKicker} note={c.abroadNote} sessions={abroad} />
+            {india.length > 0 && <SessionCard kicker={c.indiaKicker} note={c.indiaNote} sessions={india} />}
+            {abroad.length > 0 && <SessionCard kicker={abroadKicker} note={c.abroadNote} sessions={abroad} />}
 
             <DesignLink
               href={c.watchHref}
@@ -233,15 +238,21 @@ export default function EventsPage() {
               {!upcoming.length && <p style={{ margin: 0, fontSize: 14, lineHeight: 1.6, color: "rgba(246,241,230,.78)", textWrap: "pretty" }}>{c.upcomingEmpty}</p>}
               {upcoming.map((e, i) => (
                 <div key={i} style={{ display: "grid", gridTemplateColumns: "56px minmax(0,1fr)", gap: 16, padding: "12px 0", borderBottom: "1px solid rgba(246,241,230,.1)" }}>
-                  <span style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "7px 0", borderRadius: 14, background: "rgba(232,207,131,.14)", border: "1px solid rgba(201,162,74,.5)" }}>
+                  <span style={{ display: "flex", flexDirection: "column", alignItems: "center", alignSelf: "start", padding: "7px 0", borderRadius: 14, background: "rgba(232,207,131,.14)", border: "1px solid rgba(201,162,74,.5)" }}>
                     <span className="serif" style={{ fontSize: 22, lineHeight: 1.1, color: "#E8CF83" }}>
                       {e.day}
                     </span>
                     <span style={{ fontSize: 10.5, fontWeight: 700, letterSpacing: ".1em", color: "#C9A24A" }}>{e.month}</span>
                   </span>
-                  <span style={{ display: "flex", flexDirection: "column", gap: 3 }}>
+                  <span style={{ display: "flex", flexDirection: "column", gap: 3, minWidth: 0 }}>
                     <span style={{ fontWeight: 600, fontSize: 15, color: "#F6F1E6" }}>{e.title}</span>
                     <span style={{ fontSize: 13, lineHeight: 1.45, color: "rgba(246,241,230,.72)" }}>{e.meta}</span>
+                    {e.desc && <span style={{ fontSize: 12.5, lineHeight: 1.45, color: "rgba(246,241,230,.6)", textWrap: "pretty" }}>{e.desc}</span>}
+                    {e.joinUrl && (
+                      <a href={e.joinUrl} target="_blank" rel="noopener noreferrer" className="gaw-ev-register" style={{ display: "inline-flex", alignItems: "center", alignSelf: "flex-start", minHeight: 32, fontSize: 12, fontWeight: 700, letterSpacing: ".12em", textTransform: "uppercase" }}>
+                        Join →
+                      </a>
+                    )}
                   </span>
                 </div>
               ))}
@@ -254,7 +265,7 @@ export default function EventsPage() {
               <h2 className="serif" style={{ margin: 0, fontWeight: 500, fontSize: 22, lineHeight: 1.1, color: "#12201A" }}>
                 {c.pastTitle}
               </h2>
-              {(c.past || []).map((p, i) => (
+              {past.map((p, i) => (
                 <div key={i} style={{ display: "grid", gridTemplateColumns: "56px minmax(0,1fr) auto", alignItems: "center", gap: 14, padding: "10px 0", borderBottom: "1px solid rgba(138,111,52,.15)" }}>
                   <span style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "7px 0", borderRadius: 14, background: "rgba(232,207,131,.25)", border: "1px solid rgba(201,162,74,.4)" }}>
                     <span className="serif" style={{ fontSize: 20, lineHeight: 1.1, color: "#12201A" }}>
@@ -272,7 +283,7 @@ export default function EventsPage() {
             </article>
 
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              {(c.quotes || []).map((t, i) => (
+              {quotes.map((t, i) => (
                 <blockquote key={i} style={{ margin: 0, padding: "12px 16px", borderRadius: 14, background: "rgba(232,207,131,.22)", border: "1px solid rgba(201,162,74,.4)", fontSize: 13, lineHeight: 1.5, fontStyle: "italic", color: "#3A3128" }}>
                   {t.text}{" "}
                   <span style={{ fontStyle: "normal", fontSize: 10.5, fontWeight: 600, letterSpacing: ".08em", textTransform: "uppercase", color: "#7A5E22" }}>— {t.name}, via NeoSouth</span>

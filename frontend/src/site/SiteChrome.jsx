@@ -5,16 +5,30 @@ import { useMemberBadge } from "./useMemberBadge";
 import { siteAsset } from "./siteAssets";
 import { useViewportWidth } from "./useViewport";
 import { useSiteEditMode } from "./useSiteAdmin";
+import { useContactChannels, useSiteSettings } from "./usePublicData";
+import BroadcastManager, { BROADCAST_SLOT_ATTR } from "../components/layout/BroadcastManager";
+import { channelHref } from "../lib/contactChannels";
+import { displayNumber } from "../ask/support";
 import "./site.css";
 
 const CAPS = { textTransform: "uppercase", whiteSpace: "nowrap" };
 
-/** Outer wrapper for every public page: fonts, cream background, scoped CSS. */
+/**
+ * Admin → Broadcasts "Target pages" key for each site path. Keys are the CMS page slugs the admin
+ * picker offers (meditation is "meditate" there); home / privacy aren't CMS pages, so only
+ * broadcasts with no target pages ("all pages") reach them until the picker offers those keys.
+ */
+const BROADCAST_PAGE = { "/": "home", "/meditation": "meditate" };
+const broadcastPageFor = (pathname) => BROADCAST_PAGE[pathname] ?? (pathname.replace(/^\/+|\/+$/g, "") || "home");
+
+/** Outer wrapper for every public page: fonts, cream background, scoped CSS, admin broadcasts. */
 export function SitePage({ children, style }) {
   useScrollToHash();
+  const { pathname } = useLocation();
   return (
     <div className="gaw-site" style={{ display: "flex", flexDirection: "column", ...style }}>
       {children}
+      <BroadcastManager key={pathname} view={broadcastPageFor(pathname)} site />
     </div>
   );
 }
@@ -267,6 +281,8 @@ export function SiteHeader({ active }) {
         </div>
       </header>
       {!desk && menu && <MobileMenu active={active} onClose={() => setMenu(false)} />}
+      {/* Admin broadcast banner / ticker lands here (BroadcastManager in SitePage) — pinned with the header. */}
+      <div {...{ [BROADCAST_SLOT_ATTR]: "" }} />
     </div>
   );
 }
@@ -311,7 +327,51 @@ export function SiteFooter({ title, sub, children }) {
           </>
         )}
       </div>
+      <FooterContact />
     </footer>
+  );
+}
+
+const digits = (v) => String(v || "").replace(/\D/g, "");
+
+/**
+ * Footer's bottom row: support lines (admin Settings, .env fallback on the server — never bundled),
+ * the admin's visible Contact channels, and Donate. Channels repeating a support number are skipped.
+ */
+function FooterContact() {
+  const s = useSiteSettings();
+  const channels = useContactChannels();
+  const primary = digits(s?.["support.primary"]);
+  const web = digits(s?.["support.web"]);
+  const support = [
+    primary && { key: "call", label: `Call ${displayNumber(primary)}`, href: `tel:+${primary}` },
+    web && { key: "wa", label: `WhatsApp ${displayNumber(web)}`, href: `https://wa.me/${web}`, external: true },
+  ].filter(Boolean);
+  const supportDigits = [primary, web].filter(Boolean);
+  const extra = (Array.isArray(channels) ? channels : [])
+    .filter((c) => c.value && !((c.type === "phone" || c.type === "whatsapp") && supportDigits.some((d) => d.endsWith(digits(c.value).slice(-10)))))
+    .map((c) => ({ key: `c${c.id}`, label: c.label || c.value, title: c.label ? c.value : undefined, href: channelHref(c), external: c.type === "website" || c.type === "social" || c.type === "whatsapp" }));
+  const item = { display: "inline-flex", alignItems: "center", minHeight: 32 };
+  return (
+    <div style={{ flexBasis: "100%", display: "flex", flexWrap: "wrap", alignItems: "center", gap: "2px 20px", paddingTop: 14, borderTop: "1px solid rgba(246,241,230,.1)", fontSize: 12.5, color: "rgba(246,241,230,.72)" }}>
+      {support.length > 0 && (
+        <span style={{ fontSize: 10.5, fontWeight: 700, letterSpacing: ".16em", ...CAPS, color: "rgba(232,207,131,.85)" }}>Member support</span>
+      )}
+      {[...support, ...extra].map((l) =>
+        l.href ? (
+          <a key={l.key} href={l.href} title={l.title} className="gaw-foot-link" style={item} {...(l.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}>
+            {l.label}
+          </a>
+        ) : (
+          <span key={l.key} title={l.title} style={item}>
+            {l.label}
+          </span>
+        ),
+      )}
+      <Link to="/donate" className="gaw-foot-link" style={{ ...item, marginLeft: "auto", fontSize: 11, fontWeight: 700, letterSpacing: ".14em", ...CAPS }}>
+        Support the mission · Donate
+      </Link>
+    </div>
   );
 }
 

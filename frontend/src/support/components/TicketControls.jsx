@@ -58,7 +58,7 @@ export default function TicketControls({ ticket, me, agents, busy, onUpdate }) {
             {others.map((a) => (
               <option key={a.id} value={a.id}>
                 {a.name}
-                {a.kind === "volunteer" ? " · volunteer" : ""}
+                {a.kind === "volunteer" ? " · volunteer" : a.kind === "staff" ? " · staff" : ""}
               </option>
             ))}
             {ticket.assignee && ticket.assignee.id !== me?.id && !others.some((a) => a.id === ticket.assignee.id) && (

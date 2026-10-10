@@ -9,11 +9,12 @@ export const SITE_PAGES = [
   { key: "events", label: "Events", to: "/events" },
 ];
 
-/** Utility row above the header (≥900px) / inside the hamburger menu (<900px). */
+/** Utility row above the header (≥NAV_INLINE_MIN) / inside the hamburger menu (below). Donate lives here, not in the page links, so the header never wraps. */
 export const UTILITY_LINKS = [
   { label: "Member support", to: "/ask" },
   { label: "Volunteer", to: "/volunteer" },
   { label: "Privacy", to: "/privacy" },
+  { label: "Donate", to: "/donate" },
 ];
 
 /** Pages whose copy is editable at /admin/content/{page}. */

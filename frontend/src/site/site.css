@@ -170,3 +170,92 @@
   z-index: 40;
   box-shadow: 0 10px 24px -18px rgba(0, 0, 0, 0.55);
 }
+
+/* Footer contact row (SiteFooter → FooterContact) */
+.gaw-site a.gaw-foot-link {
+  color: var(--gold-light);
+  transition: color 0.2s;
+}
+.gaw-site a.gaw-foot-link:hover {
+  color: var(--light);
+}
+
+/* Admin broadcasts (components/layout/BroadcastManager with `site`): the shared component's
+   Tailwind look re-coloured to the site palette. Not scoped to .gaw-site — Privacy uses it too. */
+.gaw-bc-site .gaw-bc-banner {
+  background: #0e1a14;
+  border-top: 1px solid rgba(232, 207, 131, 0.16);
+  font-family: "Manrope", sans-serif;
+}
+.gaw-bc-site .gaw-bc-banner > span {
+  color: #f6f1e6;
+  letter-spacing: 0.01em;
+}
+.gaw-bc-site .gaw-bc-ticker {
+  background: linear-gradient(90deg, #e8cf83, #c9a24a);
+  font-family: "Manrope", sans-serif;
+}
+.gaw-bc-site .gaw-bc-ticker,
+.gaw-bc-site .gaw-bc-ticker * {
+  color: #14241c;
+}
+.gaw-bc-site a.gaw-bc-cta,
+.gaw-bc-site a.gaw-bc-cta:hover {
+  background: linear-gradient(90deg, #e8cf83, #c9a24a);
+  color: #14241c;
+  min-height: 32px;
+  display: inline-flex;
+  align-items: center;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 11px;
+  font-weight: 700;
+}
+.gaw-bc-site .gaw-bc-x {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  min-height: 32px;
+  color: rgba(246, 241, 230, 0.7);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+.gaw-bc-site .gaw-bc-popup {
+  background: linear-gradient(160deg, #fffdf8 0%, #f3ead3 100%);
+  border: 1px solid rgba(201, 162, 74, 0.45);
+  font-family: "Manrope", sans-serif;
+}
+.gaw-bc-site .gaw-bc-popup .gaw-bc-title {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.15;
+  color: #12201a;
+}
+.gaw-bc-site .gaw-bc-popup .gaw-bc-x {
+  top: 6px;
+  right: 6px;
+  border-radius: 999px;
+  background: rgba(20, 36, 28, 0.08);
+  color: #3a3128;
+}
+.gaw-bc-site .gaw-bc-popup .gaw-bc-x:hover {
+  background: rgba(20, 36, 28, 0.16);
+}
+.gaw-bc-site .gaw-bc-popup p {
+  color: #3a3128;
+}
+/* Pages with no header slot (Home's one-screen layout, Privacy): float, don't push content. */
+.gaw-bc-site.gaw-bc-toast {
+  position: fixed;
+  left: 50%;
+  z-index: 70; /* top: set inline from the header's height */
+  width: min(640px, calc(100vw - 32px));
+  transform: translateX(-50%);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 20px 50px -18px rgba(0, 0, 0, 0.55);
+  animation: gaw-rise 0.4s both;
+}

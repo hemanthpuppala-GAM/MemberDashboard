@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { Phone, Users } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Phone, ShieldCheck, Users } from "lucide-react";
 import { useSupportAuth } from "./SupportAuthContext";
 import { Button, ErrorNote, GoogleIcon, cardClass, inputClass } from "./components/ui";
 
-/** Signed-out desk: core team (phone + PIN) or volunteer (Google). */
+/** Signed-out desk: core team (phone + PIN), volunteer (Google), or admin staff (admin panel sign-in). */
 export default function SupportLoginPage() {
-  const { status, notice } = useSupportAuth();
+  const { status, notice, hasAdminSession, adminRefused } = useSupportAuth();
 
   return (
     <main className="mx-auto flex min-h-dvh w-full max-w-[920px] flex-col px-4 pb-10 pt-[calc(28px+env(safe-area-inset-top))] sm:px-6 sm:pt-14">
@@ -24,6 +25,19 @@ export default function SupportLoginPage() {
         <CoreLogin />
         <VolunteerLogin />
       </div>
+
+      {!hasAdminSession && !adminRefused && (
+        <p className="mt-5 flex items-center justify-center gap-2 text-center text-[14px] text-[#5A5546]">
+          <ShieldCheck size={16} aria-hidden className="shrink-0 text-[#7A5E22]" />
+          <span>
+            Admin staff?{" "}
+            <Link to="/admin/login?next=/support" className="font-semibold text-[#14241C] underline decoration-[rgba(201,162,74,0.7)] underline-offset-4 hover:text-[#7A5E22]">
+              Sign in to the admin panel
+            </Link>{" "}
+            and the desk opens with that login.
+          </span>
+        </p>
+      )}
     </main>
   );
 }

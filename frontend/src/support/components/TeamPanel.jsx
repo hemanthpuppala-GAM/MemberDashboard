@@ -53,7 +53,7 @@ function TeamTable({ team, meId }) {
                 {a.name}
                 {a.id === meId && <span className="ml-1 font-normal text-[#5A5546]">(you)</span>}
               </td>
-              <td className={td}>{a.kind === "core" ? "Core" : "Volunteer"}</td>
+              <td className={td}>{{ core: "Core", volunteer: "Volunteer", staff: "Staff" }[a.kind] ?? a.kind}</td>
               <td className={`${td} text-right tabular-nums`}>{a.open}</td>
               <td className={`${td} text-right tabular-nums`}>
                 {a.resolved_30d} / {a.resolved_total}

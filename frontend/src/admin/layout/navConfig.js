@@ -2,7 +2,7 @@ import {
   LayoutDashboard, FileText, Image, Inbox, UsersRound, UserCog, ShieldCheck,
   Megaphone, Radio, QrCode, BarChart3, Globe, Settings, Files, Phone, Landmark,
   Music2, MessageSquareQuote, HeartHandshake, ListChecks, CalendarClock, Timer,
-  ClipboardList, PanelsTopLeft, Headset,
+  ClipboardList, PanelsTopLeft, Headset, LifeBuoy,
 } from "lucide-react";
 
 /**
@@ -33,6 +33,8 @@ export const NAV = [
     type: "group", key: "people", label: "People", icon: UsersRound,
     items: [
       { to: "/admin/queries", label: "Queries", icon: Inbox, permission: "members.view" },
+      // Leaves the admin panel: the desk (/support) shares this app's router and accepts the admin sign-in.
+      { to: "/support", label: "Support desk", icon: LifeBuoy, permission: "members.view" },
       { to: "/admin/members", label: "Members", icon: UsersRound, permission: "members.view" },
       { to: "/admin/users", label: "Users", icon: UserCog, permission: "users.view" },
       { to: "/admin/roles", label: "Roles", icon: ShieldCheck, permission: "roles.view" },

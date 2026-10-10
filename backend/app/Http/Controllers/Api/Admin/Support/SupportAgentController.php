@@ -49,10 +49,13 @@ class SupportAgentController extends Controller
 
     private function fill(SupportAgent $agent, Request $request, bool $creating): void
     {
-        $request->merge([
-            'phone' => SupportAgent::normalizePhone($request->input('phone')),
-            'email' => $request->filled('email') ? strtolower(trim($request->input('email'))) : null,
-        ]);
+        // Normalise only what was sent, so a partial update (e.g. just is_active) keeps phone/email.
+        if ($creating || $request->has('phone')) {
+            $request->merge(['phone' => SupportAgent::normalizePhone($request->input('phone'))]);
+        }
+        if ($creating || $request->has('email')) {
+            $request->merge(['email' => $request->filled('email') ? strtolower(trim($request->input('email'))) : null]);
+        }
         $kind = $request->input('kind', $agent->kind ?? 'volunteer');
 
         $data = $request->validate([

@@ -11,7 +11,6 @@ import LangTabs from "../../ui/LangTabs";
 import RichTextEditor from "../../ui/RichTextEditor";
 import MediaPickerModal from "../../ui/MediaPickerModal";
 import ImageField from "../../ui/ImageField";
-import VideoField from "../../ui/VideoField";
 import RangeField from "../../ui/RangeField";
 import { api } from "../../../lib/api";
 import { SECTION_TYPES, MEDIA_FOLDERS } from "../../mock/mockData";

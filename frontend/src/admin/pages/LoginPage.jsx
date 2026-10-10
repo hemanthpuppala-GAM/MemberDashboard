@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../useAuth";
 import Field, { TextInput } from "../ui/Field";
 import Button from "../ui/Button";
@@ -10,12 +10,15 @@ import logoFull from "../../assets/goldenage_logo_optimized.jpg";
 export default function LoginPage() {
   const { user, login } = useAuth();
   const navigate = useNavigate();
+  // "Admin staff? Sign in…" on the support desk sends ?next=/support so staff land back there.
+  const [params] = useSearchParams();
+  const next = /^\/support(\/|$)/.test(params.get("next") ?? "") ? params.get("next") : "/admin";
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  if (user) return <Navigate to="/admin" replace />;
+  if (user) return <Navigate to={next} replace />;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -23,7 +26,7 @@ export default function LoginPage() {
     setSubmitting(true);
     try {
       await login(email, password);
-      navigate("/admin", { replace: true });
+      navigate(next, { replace: true });
     } catch {
       setError("Invalid email or password.");
     } finally {
