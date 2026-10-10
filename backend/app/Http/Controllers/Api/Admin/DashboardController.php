@@ -18,6 +18,7 @@ use App\Models\Languages\Language;
 use App\Models\People\ContactSubmission;
 use App\Models\People\Member;
 use App\Models\People\VolunteerApplication;
+use App\Models\Support\Ticket;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 
@@ -31,6 +32,10 @@ class DashboardController extends Controller
         'content_blocks' => 'cms.view',
         'queries_new' => 'members.view',
         'queries_total' => 'members.view',
+        'tickets_open' => 'members.view',
+        'tickets_unassigned' => 'members.view',
+        'tickets_resolved_7d' => 'members.view',
+        'tickets_avg_rating' => 'members.view',
         'members_active' => 'members.view',
         'members_total' => 'members.view',
         'practitioners_total' => 'users.view',
@@ -54,6 +59,11 @@ class DashboardController extends Controller
             'content_blocks' => PageContent::count(),
             'queries_new' => ContactSubmission::where('status', 'new')->count(),
             'queries_total' => ContactSubmission::count(),
+            // Support desk: every query plus calls, WhatsApp chats and volunteer sign-ups.
+            'tickets_open' => Ticket::whereIn('status', Ticket::OPEN_STATUSES)->count(),
+            'tickets_unassigned' => Ticket::whereIn('status', Ticket::OPEN_STATUSES)->whereNull('assigned_agent_id')->count(),
+            'tickets_resolved_7d' => Ticket::where('resolved_at', '>=', now()->subDays(7))->count(),
+            'tickets_avg_rating' => ($r = Ticket::whereNotNull('rating')->avg('rating')) ? round((float) $r, 1) : null,
             'members_active' => Member::where('status', '!=', 'archived')->count(),
             'members_total' => Member::count(),
             'practitioners_total' => User::whereHas('roles', fn ($q) => $q->where('name', 'practitioner'))->count(),

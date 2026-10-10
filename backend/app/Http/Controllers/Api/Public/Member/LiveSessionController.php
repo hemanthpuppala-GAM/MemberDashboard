@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Public\Member;
 
 use App\Http\Controllers\Controller;
 use App\Models\Cms\Event;
+use App\Models\Settings\Setting;
 
 class LiveSessionController extends Controller
 {
@@ -13,26 +14,36 @@ class LiveSessionController extends Controller
     public function index()
     {
         $now = now();
+        $zoom = Setting::zoomUrl();
 
         $events = Event::where('is_published', true)
             ->where(function ($query) use ($now) {
-                $query->where('ends_at', '>=', $now)->orWhereNull('ends_at');
+                // Daily sits always have a next sitting; one-offs only until they finish.
+                $query->where('recurrence', 'daily')->orWhere(function ($q) use ($now) {
+                    $q->where(fn ($q) => $q->where('ends_at', '>=', $now)->orWhereNull('ends_at'))
+                        ->where('starts_at', '>=', $now->copy()->subHours(3));
+                });
             })
-            ->where('starts_at', '>=', $now->copy()->subHours(3))
-            ->orderBy('starts_at')
             ->with('host')
-            ->take(5)
             ->get()
-            ->map(fn (Event $event) => [
-                'id' => $event->id,
-                'title' => $event->title,
-                'starts_at' => $event->starts_at,
-                'ends_at' => $event->ends_at,
-                'teacher' => $event->host?->name,
-                'join_url' => $event->join_url,
-                'is_live' => $event->starts_at <= $now->copy()->addMinutes(self::JOIN_EARLY_MINUTES)
-                    && ($event->ends_at === null || $event->ends_at >= $now),
-            ]);
+            ->map(function (Event $event) use ($now, $zoom) {
+                [$start, $end] = $event->nextOccurrence($now);
+
+                return [
+                    'id' => $event->id,
+                    'title' => $event->title,
+                    'starts_at' => $start,
+                    'ends_at' => $event->ends_at || $event->isDaily() ? $end : null,
+                    'recurrence' => $event->recurrence ?: 'none',
+                    'teacher' => $event->host?->name,
+                    'join_url' => $event->join_url ?: $zoom,
+                    'is_live' => $start <= $now->copy()->addMinutes(self::JOIN_EARLY_MINUTES)
+                        && ($event->ends_at === null && ! $event->isDaily() || $end >= $now),
+                ];
+            })
+            ->sortBy('starts_at')
+            ->take(5)
+            ->values();
 
         return response()->json($events);
     }

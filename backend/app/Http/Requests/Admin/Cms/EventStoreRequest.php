@@ -18,6 +18,8 @@ class EventStoreRequest extends FormRequest
             'description' => ['nullable', 'string', 'max:2000'],
             'starts_at' => ['required', 'date'],
             'ends_at' => ['nullable', 'date', 'after_or_equal:starts_at'],
+            'recurrence' => ['sometimes', 'in:none,daily'],
+            'timezone' => ['nullable', 'timezone:all'],
             'location' => ['nullable', 'string', 'max:160'],
             'join_url' => ['nullable', 'string', 'max:255'],
             'is_published' => ['boolean'],

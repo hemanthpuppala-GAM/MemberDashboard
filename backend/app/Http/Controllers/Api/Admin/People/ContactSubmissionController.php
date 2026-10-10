@@ -7,6 +7,7 @@ use App\Http\Requests\Admin\People\ContactSubmissionUpdateRequest;
 use App\Models\People\ContactSubmission;
 use App\Models\People\Member;
 use App\Models\People\MemberJourney;
+use App\Services\Support\QueryTicketSync;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -42,7 +43,18 @@ class ContactSubmissionController extends Controller
 
     public function show(ContactSubmission $contactSubmission)
     {
-        return response()->json($contactSubmission->load('assignee:id,name'));
+        $ticket = QueryTicketSync::ticketFor($contactSubmission);
+
+        return response()->json($contactSubmission->load('assignee:id,name')->toArray() + [
+            // The same question on the support desk (thread, member replies, rating).
+            'ticket' => $ticket ? [
+                'id' => $ticket->id,
+                'ref' => $ticket->ref,
+                'status' => $ticket->status,
+                'comments_count' => $ticket->comments()->count(),
+                'rating' => $ticket->rating,
+            ] : null,
+        ]);
     }
 
     public function update(ContactSubmissionUpdateRequest $request, ContactSubmission $contactSubmission)

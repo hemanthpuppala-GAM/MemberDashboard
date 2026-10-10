@@ -23,6 +23,15 @@ class Setting extends Model
         'social.phone' => '',
         'social.address' => '',
 
+        // Support lines shown on the site and desk. Empty = use SUPPORT_PRIMARY / SUPPORT_WEB from .env.
+        'support.primary' => '',
+        'support.web' => '',
+
+        // The one Zoom room the daily sits use. A Live Session without its own link joins here.
+        'zoom.url' => '',
+        'zoom.meeting_id' => '',
+        'zoom.passcode' => '',
+
         'banner.enabled' => 'false',
         'banner.text' => 'Daily meditation is live now — join the circle.',
         'banner.cta_label' => 'Join now',
@@ -48,6 +57,29 @@ class Setting extends Model
     private static function value(string $key): string
     {
         return static::where('key', $key)->value('value') ?? static::DEFAULTS[$key];
+    }
+
+    public static function siteTimezone(): string
+    {
+        $tz = static::value('general.timezone');
+
+        return in_array($tz, timezone_identifiers_list(), true) ? $tz : 'Asia/Kolkata';
+    }
+
+    /** Support number (digits only): admin Settings first, then .env. */
+    public static function supportNumber(string $which): string
+    {
+        $raw = static::value('support.'.$which);
+        if (trim($raw) === '') {
+            $raw = (string) config('services.support.'.$which);
+        }
+
+        return preg_replace('/\D/', '', $raw);
+    }
+
+    public static function zoomUrl(): ?string
+    {
+        return trim(static::value('zoom.url')) ?: null;
     }
 
     public static function adminEmail(): string
