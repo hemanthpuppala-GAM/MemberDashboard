@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { SitePage, SiteHeader, Breadcrumb, SiteFooter, AdminEditLink } from "../SiteChrome";
 import { useMemberBadge } from "../useMemberBadge";
 import { useSiteContent } from "../useSiteContent";
+import { usePageQuotes } from "../siteQuotes";
 import { useViewportWidth } from "../useViewport";
 import { YOUTUBE_URL } from "../sitePages";
 import "./wisdom.css";
@@ -72,6 +73,7 @@ function ContentLink({ href, isMember, children, ...rest }) {
 /** /wisdom — design: Wisdom.dc.html */
 export default function WisdomPage() {
   const c = useSiteContent("wisdom", FALLBACKS);
+  const quotes = usePageQuotes("wisdom", c.quotes);
   const w = useViewportWidth();
   const { isMember } = useMemberBadge();
   const desk = w >= 900;
@@ -201,7 +203,7 @@ export default function WisdomPage() {
 
         {/* Testimonials */}
         <div style={{ display: "grid", gridTemplateColumns: twoCols, gap: 12, ...rise(0.35) }}>
-          {(c.quotes || []).map((t, i) => (
+          {quotes.map((t, i) => (
             <blockquote key={i} style={{ margin: 0, display: "flex", flexDirection: "column", gap: 6, padding: "16px 20px", borderRadius: 16, background: "rgba(232,207,131,.22)", border: "1px solid rgba(201,162,74,.4)" }}>
               <p className="serif" style={{ margin: 0, fontSize: 19, lineHeight: 1.3, color: "#12201A", textWrap: "pretty" }}>
                 {t.text}

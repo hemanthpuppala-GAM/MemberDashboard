@@ -11,6 +11,8 @@ import BodhiNavigator from "../home/BodhiNavigator";
 import { WorldSitsFooter } from "../home/WorldSits";
 import { CHAPTER_HASHES, QUESTIONS, chapterData } from "../home/homeData";
 import { useSits } from "../home/sits";
+import { useHomeSessions } from "../liveSessions";
+import { useHomeVoices } from "../siteQuotes";
 import "../home/home.css";
 
 /** Design DEFAULTS keys that content/home.json doesn't carry. */
@@ -119,7 +121,8 @@ export default function HomePage() {
   const [film, setFilm] = useState(false);
   const [qi, setQi] = useState(0);
   const [vi, setVi] = useState(0);
-  const sits = useSits(c.sessions);
+  const sits = useSits(useHomeSessions(c.sessions));
+  const voices = useHomeVoices(VOICES);
 
   const question = QUESTIONS[qi % QUESTIONS.length];
   const chapters = chapterData(question);
@@ -143,9 +146,10 @@ export default function HomePage() {
     }
   }, []);
 
-  // Rotating member voices (design: every 7s).
+  // Rotating member voices (design: every 7s). The list may change length when admin
+  // testimonials arrive, so the index is wrapped where it's read.
   useEffect(() => {
-    const t = setInterval(() => setVi((v) => (v + 1) % VOICES.length), 7000);
+    const t = setInterval(() => setVi((v) => v + 1), 7000);
     return () => clearInterval(t);
   }, []);
 
@@ -193,7 +197,7 @@ export default function HomePage() {
     e.preventDefault();
     setFilm(true);
   };
-  const voice = VOICES[vi];
+  const voice = voices[vi % voices.length];
 
   return (
     <SitePage>

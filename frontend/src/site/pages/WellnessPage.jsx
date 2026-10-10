@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { SitePage, SiteHeader, Breadcrumb, SiteFooter, AdminEditLink } from "../SiteChrome";
 import { useMemberBadge } from "../useMemberBadge";
 import { useSiteContent } from "../useSiteContent";
+import { usePageQuotes } from "../siteQuotes";
 import { useViewportWidth } from "../useViewport";
 import { siteAsset } from "../siteAssets";
 import "./wellness.css";
@@ -73,6 +74,7 @@ function SmartLink({ target, children, ...rest }) {
 /** /wellness — design: Wellness.dc.html */
 export default function WellnessPage() {
   const c = useSiteContent("wellness");
+  const quotes = usePageQuotes("wellness", c.quotes);
   const w = useViewportWidth();
   const { isMember } = useMemberBadge();
   const desk = w >= 900;
@@ -147,7 +149,7 @@ export default function WellnessPage() {
             </div>
 
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              {(c.quotes || []).map((t, i) => (
+              {quotes.map((t, i) => (
                 <blockquote key={i} style={{ margin: 0, padding: "12px 16px", borderRadius: 14, background: "rgba(232,207,131,.22)", border: "1px solid rgba(201,162,74,.4)", fontSize: 13, lineHeight: 1.5, fontStyle: "italic", color: "#3A3128" }}>
                   {t.text}{" "}
                   <span style={{ fontStyle: "normal", fontSize: 10.5, fontWeight: 600, letterSpacing: ".08em", textTransform: "uppercase", color: "#7A5E22" }}>— {t.name}, via NeoSouth</span>

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { canonicalZone } from "../liveSessions";
 
 /**
  * Daily group-sit schedule maths, ported from Home Bodhi Tree v2.dc.html
@@ -59,7 +60,7 @@ export function countdown(ms) {
 export function computeSits(sessions, now) {
   let viewerTz = "";
   try {
-    viewerTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    viewerTz = canonicalZone(Intl.DateTimeFormat().resolvedOptions().timeZone);
   } catch {
     /* ignore */
   }
@@ -109,7 +110,7 @@ export function sitsSummary(sits) {
   };
 }
 
-/** Live schedule from content.sessions, re-computed every 30s (as the design's _tick). */
+/** Live schedule from content.sessions (or admin daily Live Sessions, see liveSessions.js), re-computed every 30s (as the design's _tick). */
 export function useSits(sessions) {
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {

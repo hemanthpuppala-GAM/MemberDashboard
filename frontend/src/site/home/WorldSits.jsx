@@ -1,10 +1,12 @@
 import { siteAsset } from "../siteAssets";
+import { useZoom } from "../liveSessions";
 
 const FADE = (a, b) => `linear-gradient(90deg,transparent,#000 ${a}%,#000 ${b}%,transparent)`;
 
 /** Footer band "Meditations around the world" (#world-sits). `compact` (phones / portrait) stacks it: title, ticker, Zoom. */
 export function WorldSitsFooter({ c, s, compact = false }) {
-  const zoom = c.zoom || {};
+  const zoom = useZoom(c.zoom); // admin Settings → Zoom, else home.json
+  const zoomMeta = [zoom.id && `ID ${zoom.id}`, zoom.passcode && `Passcode ${zoom.passcode}`].filter(Boolean).join(" · ");
   return (
     <footer
       id="world-sits"
@@ -53,9 +55,7 @@ export function WorldSitsFooter({ c, s, compact = false }) {
         <span aria-hidden="true" style={{ width: 8, height: 8, borderRadius: "50%", background: "#14241C", boxShadow: "0 0 0 3px rgba(20,36,28,.18)" }} />
         <span style={{ display: "flex", flexDirection: "column", gap: 1, textAlign: "left" }}>
           <span>Join on Zoom</span>
-          <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: ".08em", color: "#3E2E0E" }}>
-            ID {zoom.id || ""} · Passcode {zoom.passcode || ""}
-          </span>
+          {zoomMeta && <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: ".08em", color: "#3E2E0E" }}>{zoomMeta}</span>}
         </span>
       </a>
     </footer>

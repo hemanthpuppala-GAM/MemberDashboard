@@ -1,5 +1,6 @@
 import { SitePage, SiteHeader, Breadcrumb, SiteFooter, AdminEditLink } from "../SiteChrome";
 import { useSiteContent } from "../useSiteContent";
+import { usePageQuotes } from "../siteQuotes";
 import { useViewportWidth } from "../useViewport";
 import { siteAsset } from "../siteAssets";
 
@@ -10,6 +11,7 @@ const rise = (delay = 0) => ({ animation: `gaw-rise .9s ${delay}s both` });
 /** /about — design: About.dc.html */
 export default function AboutPage() {
   const c = useSiteContent("about");
+  const quotes = usePageQuotes("about", c.quotes);
   const w = useViewportWidth();
   const desk = w >= 900;
   const mid = w >= 640;
@@ -79,7 +81,7 @@ export default function AboutPage() {
             {c.quotesKicker}
           </span>
           <div style={{ display: "grid", gridTemplateColumns: desk ? "repeat(4,minmax(0,1fr))" : mid ? "repeat(2,minmax(0,1fr))" : "1fr", gap: 16 }}>
-            {(c.quotes || []).map((t, i) => (
+            {quotes.map((t, i) => (
               <blockquote key={i} style={{ margin: 0, display: "flex", flexDirection: "column", justifyContent: "space-between", gap: 16, padding: 22, borderRadius: 18, background: "#14241C", color: "#F6F1E6", boxShadow: "0 18px 40px -20px rgba(0,0,0,.5)" }}>
                 <p className="serif" style={{ margin: 0, fontSize: "clamp(18px,1.4vw,22px)", lineHeight: 1.3, textWrap: "pretty" }}>
                   {t.text}
