@@ -121,7 +121,7 @@ function VolunteerLogin() {
           {status === "forbidden" ? "Use a different Google account" : "Continue with Google"}
         </Button>
         <p className="text-[12.5px] leading-relaxed text-[#5A5546]">
-          If you land on your member dashboard afterwards, just open this page again.
+          After signing in with Google you come straight back here.
         </p>
       </div>
     </section>

@@ -6,7 +6,7 @@ import { getMemberToken, setMemberToken } from "../lib/memberAuth";
 
 const API_URL = import.meta.env.VITE_API_URL ?? "https://goldenagewisdom.org/staging/backend/api/v1";
 const SUPPORT_TOKEN_KEY = "gaw_support_token";
-const RETURN_KEY = "gaw_after_login";
+const RETURN_KEY = "gaw_after_signin";
 
 export function getSupportToken() {
   try {
@@ -34,7 +34,7 @@ export function currentTokenKind() {
 
 /**
  * Remember that Google sign-in was started from the desk. The shared OAuth callback
- * (pages/AuthCallbackPage) can read this to come back to /support instead of /dashboard.
+ * (pages/AuthCallbackPage) reads this and returns to /support instead of /dashboard.
  */
 export function rememberReturnToDesk() {
   try {

@@ -97,7 +97,9 @@ function Desk() {
         {dash.error && !dash.data && <ErrorNote onRetry={refreshDash}>Couldn't load the desk numbers. {dash.error}</ErrorNote>}
         <KpiTiles stats={dash.data?.stats} />
 
-        <Segmented label="Show" value={view} options={VIEWS} onChange={setView} />
+        <div className="self-start">
+          <Segmented label="Show" value={view} options={VIEWS} onChange={setView} />
+        </div>
 
         {view === "team" ? (
           <TeamPanel team={dash.data?.team} reviews={dash.data?.latest_reviews} meId={me?.id} />
