@@ -241,7 +241,7 @@ export function SiteHeader({ active }) {
   const [menu, setMenu] = useState(false);
   const desk = w >= 900;
   return (
-    <>
+    <div className="gaw-sticky-head">
       {desk && <UtilityRow />}
       <header
         style={{
@@ -266,7 +266,7 @@ export function SiteHeader({ active }) {
         </div>
       </header>
       {!desk && menu && <MobileMenu active={active} onClose={() => setMenu(false)} />}
-    </>
+    </div>
   );
 }
 

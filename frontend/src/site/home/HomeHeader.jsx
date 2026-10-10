@@ -122,7 +122,7 @@ export default function HomeHeader({ c, vp, headerRef }) {
   const smallUtil = { display: "inline-flex", alignItems: "center", minHeight: 40, fontSize: 11, letterSpacing: ".1em", textTransform: "uppercase", fontWeight: 600 };
 
   return (
-    <>
+    <div className="gaw-sticky-head" style={{ order: 0 }}>
       {wide && <HomeUtilityRow c={c} />}
       <header
         ref={headerRef}
@@ -202,6 +202,6 @@ export default function HomeHeader({ c, vp, headerRef }) {
           </nav>
         )}
       </header>
-    </>
+    </div>
   );
 }

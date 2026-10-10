@@ -26,7 +26,8 @@
   font-family: "Manrope", sans-serif;
   -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;
-  overflow-x: hidden;
+  /* clip, not hidden: hidden makes this a scroll container and breaks the sticky header */
+  overflow-x: clip;
   padding-bottom: env(safe-area-inset-bottom);
 }
 .gaw-site *,
@@ -160,4 +161,12 @@
     animation: none !important;
     transition: none !important;
   }
+}
+
+/* Header (utility row + bar + open menu) stays pinned while the page scrolls. */
+.gaw-site .gaw-sticky-head {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  box-shadow: 0 10px 24px -18px rgba(0, 0, 0, 0.55);
 }
