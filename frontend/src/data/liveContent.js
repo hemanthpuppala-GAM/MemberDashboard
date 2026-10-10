@@ -183,7 +183,7 @@ export const EVENTS = {
       time: "11 AM – 6 PM",
       meta: "Awaken the inner wisdom · live with purpose & peace — a full day with Dr Harikrishna Garu, founder of the movement.",
       place: "9 Convention, Sanath Nagar, Hyderabad · parking limited — carpool",
-      contact: "info@goldenagewisdom.org",
+      contact: "goldenageguruteachings@gmail.com",
       ends: Date.UTC(2026, 6, 26, 12, 30), // 18:00 IST
     },
   ],

@@ -1,0 +1,135 @@
+{
+  "tagline": "A spiritual movement",
+  "headline": "Never meditated?",
+  "headlineAccent": "Perfect. Start here.",
+  "subline": "Free guided meditation, every day. No experience needed — just sit, breathe, and feel the difference in one session.",
+  "joinLabel": "Join as member",
+  "supportLabel": "Member support",
+  "volunteerNavLabel": "Join as volunteer",
+  "volunteerHintTitle": "Give a little time",
+  "volunteerHint": "Host a local sit, welcome newcomers on Zoom, translate talks, or help with events. A few hours a month, wherever you are.",
+  "phoneJoinLabel": "Daily sessions · by time zone",
+  "watchLabel": "Watch the intro",
+  "sitsTitle": "Sits around the world",
+  "qrEyebrow": "Members",
+  "qrSub": "Scan to join the group",
+  "volunteerLabel": "Volunteer",
+  "filmSrc": "assets/peace-film.mp4",
+  "zoom": {
+    "id": "817 8362 7692",
+    "passcode": "11111",
+    "url": "https://zoom.us/j/81783627692?pwd=11111"
+  },
+  "sessions": [
+    {
+      "name": "World Peace Meditation",
+      "start": "20:30",
+      "end": "21:00",
+      "tz": "Asia/Kolkata",
+      "zone": "IST"
+    },
+    {
+      "name": "USA · Central",
+      "start": "04:10",
+      "end": "05:10",
+      "tz": "America/Chicago",
+      "zone": "CT"
+    },
+    {
+      "name": "USA · Eastern",
+      "start": "05:10",
+      "end": "06:10",
+      "tz": "America/New_York",
+      "zone": "ET"
+    },
+    {
+      "name": "USA · Pacific",
+      "start": "04:10",
+      "end": "05:10",
+      "tz": "America/Los_Angeles",
+      "zone": "PT"
+    },
+    {
+      "name": "UK",
+      "start": "04:00",
+      "end": "05:00",
+      "tz": "Europe/London",
+      "zone": "UK"
+    }
+  ],
+  "joinShortLabel": "Join",
+  "privacyLabel": "Privacy",
+  "chipKicker": "The 41-day practice",
+  "chipLine": "Sit every day for 41 days — and watch yourself change.",
+  "pillars": [
+    {
+      "key": "wisdom",
+      "kicker": "Wisdom",
+      "line": "You are the master of your destiny.",
+      "quote": "“One sky above, one earth below, one breath of life — through all we flow.”",
+      "cta": "Read the teachings",
+      "href": "#wisdom",
+      "image": ""
+    },
+    {
+      "key": "wellness",
+      "kicker": "Wellness",
+      "line": "Eat pure. Move daily. Rest deeply.",
+      "quote": "“The body is the first temple. Keep it clean, light and kind.”",
+      "cta": "Daily practices",
+      "href": "#wellness",
+      "image": ""
+    },
+    {
+      "key": "meditation",
+      "kicker": "Meditation",
+      "line": "Sit with Dr Hari Krishna.",
+      "quote": "Free daily meditation and wisdom sessions, guided by Dr Hari Krishna and his team.",
+      "cta": "Join today’s session",
+      "href": "#meditate",
+      "image": ""
+    }
+  ],
+  "heroImage": "",
+  "heroCaption": "Dr Hari Krishna, MD",
+  "promoKicker": "Free · worldwide · daily Zoom sessions",
+  "promoTitle": "Sit with us for 41 days and see the change.",
+  "promoBody": "Free guided Zoom sessions every day, at different times around the world. Come as you are — join any sit.",
+  "promoCta": "Join a sit",
+  "eventKicker": "Upcoming",
+  "eventTitle": "Announce your next event here",
+  "eventSub": "City retreat, talk or group sit — date, place and a line about it.",
+  "eventCta": "See all events",
+  "eventHref": "#events",
+  "tipSunGazing": "A few minutes facing the rising sun, eyes soft, fills the body with light-energy and resets the sleep rhythm.",
+  "tipAlkaline": "Clean, mineral-rich water keeps the blood gently alkaline — easing fatigue, acidity and foggy thinking.",
+  "tipEarthing": "Bare feet on grass or soil for twenty minutes discharges stress and grounds a scattered mind.",
+  "rulesKicker": "Five golden rules · for a healthy life and oneness",
+  "rule1": "Sit in silence every day.",
+  "rule2": "Eat prana — fresh, vegetarian food.",
+  "rule3": "Greet the rising sun.",
+  "rule4": "Drink clean, alkaline water.",
+  "rule5": "Walk barefoot on the earth.",
+  "freeKicker": "Always free",
+  "freeLine": "We ask for nothing — only a better world.",
+  "subPages": [
+    {
+      "label": "About",
+      "href": "#about"
+    },
+    {
+      "label": "Mission",
+      "href": "#mission"
+    },
+    {
+      "label": "Teachings",
+      "href": "#wisdom"
+    },
+    {
+      "label": "Events",
+      "href": "#events"
+    }
+  ],
+  "testiKicker": "What members say",
+  "testiCta": "More stories"
+}

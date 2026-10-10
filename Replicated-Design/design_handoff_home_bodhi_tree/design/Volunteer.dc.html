@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Outfit:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; padding: 0; background: #09071a; }
+  body { font-family: 'Outfit', sans-serif; color: #efe9dc; -webkit-font-smoothing: antialiased; }
+  a { color: #d5b77c; text-decoration: none; }
+  a:hover { color: #e6d3a8; }
+  * { box-sizing: border-box; }
+  ::selection { background: rgba(213,183,124,0.28); }
+  input, textarea { font-family: 'Outfit', sans-serif; }
+  input::placeholder, textarea::placeholder { color: rgba(154,146,127,0.75); }
+  :focus-visible { outline: 2px solid rgba(213,183,124,0.85); outline-offset: 2px; }
+  @keyframes vIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+  @keyframes vPulse { 0%,100% { opacity: 0.45; } 50% { opacity: 1; } }
+  @media (max-width: 860px) { .v-2col { grid-template-columns: 1fr !important; } }
+  @media (max-width: 620px) { .v-row { grid-template-columns: 1fr !important; } }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; } }
+</style>
+</helmet>
+
+<div style="position: relative; min-height: 100dvh; background: #09071a; display: flex; flex-direction: column">
+  <div aria-hidden="true" style="position: fixed; inset: 0; pointer-events: none; background: radial-gradient(820px 640px at 26% 18%, rgba(96,84,166,0.28), transparent 68%), radial-gradient(900px 560px at 82% 104%, rgba(213,183,124,0.10), transparent 72%)"></div>
+
+  <nav style="position: relative; z-index: 20; flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px clamp(16px, 4vw, 44px) 10px">
+    <a href="/" style="display: flex; align-items: center; gap: 10px; min-height: 44px">
+      <img src="assets/logo-128.webp" alt="Golden Age Wisdom" width="26" height="26" style="width: 26px; height: 26px; border-radius: 50%; object-fit: cover; opacity: 0.92">
+      <span style="font-family: 'Marcellus', serif; font-size: 11.5px; letter-spacing: 0.22em; color: rgba(242,227,187,0.72)">GOLDEN AGE WISDOM</span>
+    </a>
+    <a href="/" style="display: inline-flex; align-items: center; gap: 9px; min-height: 44px; padding: 8px 18px; border-radius: 999px; border: 1px solid rgba(213,183,124,0.4); background: rgba(20,16,41,0.55); color: #e6d3a8; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; white-space: nowrap" style-hover="border-color: rgba(230,211,168,0.85); color: #f7ecd0">Go back</a>
+  </nav>
+
+  <main data-screen-label="Volunteer" style="position: relative; z-index: 10; flex: 1; width: 100%; max-width: 1120px; margin: 0 auto; padding: clamp(14px, 2.5vh, 30px) clamp(18px, 4vw, 44px) 60px; animation: vIn 0.6s ease both">
+
+    <div style="max-width: 640px">
+      <div style="font-size: 10.5px; letter-spacing: 0.3em; text-transform: uppercase; color: #b89758">Seva · service</div>
+      <h1 style="font-family: 'Marcellus', serif; font-weight: 400; font-size: clamp(30px, 4.6vw, 52px); line-height: 1.08; margin: 10px 0 0; color: #f7f1e3; text-wrap: balance">The work is quiet, and there is a lot of it.</h1>
+      <p style="max-width: 34em; margin: 14px 0 0; font-size: clamp(14px, 1.4vw, 16px); font-weight: 200; line-height: 1.65; color: rgba(226,219,204,0.95); text-wrap: pretty">Chairs get carried, calls get answered, someone new writes at midnight frightened by what they felt in meditation. None of it is glamorous. All of it is the movement. Tell us where you would like to stand.</p>
+    </div>
+
+    <sc-if value="{{ sent }}" hint-placeholder-val="{{ false }}">
+      <div style="margin-top: 28px; max-width: 640px; padding: 28px 30px; border-radius: 26px; border: 1px solid rgba(126,203,143,0.45); background: rgba(126,203,143,0.09); animation: vIn 0.5s ease both">
+        <div style="display: flex; align-items: center; gap: 11px">
+          <span style="width: 9px; height: 9px; border-radius: 50%; background: #7ecb8f; box-shadow: 0 0 12px #7ecb8f"></span>
+          <span style="font-size: 10.5px; letter-spacing: 0.26em; text-transform: uppercase; color: #9fd7ae">Received</span>
+        </div>
+        <h2 style="font-family: 'Marcellus', serif; font-weight: 400; font-size: clamp(22px, 3vw, 30px); line-height: 1.2; margin: 12px 0 0; color: #f2e9d8">{{ sentTitle }}</h2>
+        <p style="margin: 10px 0 0; font-size: 14px; font-weight: 300; line-height: 1.6; color: rgba(214,207,193,0.95)">{{ sentBody }}</p>
+        <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px">
+          <a href="/" style="display: inline-flex; align-items: center; padding: 11px 24px; border-radius: 999px; background: linear-gradient(135deg, #e6d3a8, #b89758); color: #241b06; font-size: 14px; font-weight: 500">Back to the site</a>
+          <button onClick="{{ again }}" style="padding: 11px 24px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.18); background: rgba(255,255,255,0.04); color: rgba(226,219,204,0.95); font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 300; cursor: pointer" style-hover="border-color: rgba(213,183,124,0.7)">Add someone else</button>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ notSent }}" hint-placeholder-val="{{ true }}">
+      <div class="v-2col" style="display: grid; grid-template-columns: 1.15fr 0.85fr; gap: clamp(18px, 3vw, 34px); margin-top: clamp(22px, 4vh, 40px); align-items: start">
+
+        <div style="display: flex; flex-direction: column; gap: 22px">
+
+          <div>
+            <div style="font-size: 10.5px; letter-spacing: 0.24em; text-transform: uppercase; color: #b89758">Where you would like to serve</div>
+            <div style="font-size: 12.5px; font-weight: 300; color: rgba(185,177,160,0.9); margin-top: 5px">Choose as many as you mean. Somebody will read this by hand.</div>
+            <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 14px">
+              <sc-for list="{{ teams }}" as="t" hint-placeholder-count="7">
+                <button onClick="{{ t.toggle }}" aria-pressed="{{ t.on }}" style="display: flex; align-items: flex-start; gap: 13px; width: 100%; padding: 14px 16px; border-radius: 18px; border: 1px solid {{ t.border }}; background: {{ t.bg }}; color: #efe9dc; font-family: 'Outfit', sans-serif; text-align: left; cursor: pointer" style-hover="border-color: rgba(230,211,168,0.75)">
+                  <span style="width: 30px; height: 30px; flex-shrink: 0; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid {{ t.border }}; background: {{ t.glyphBg }}; color: {{ t.glyphColor }}; font-size: 14px">{{ t.glyph }}</span>
+                  <span style="display: flex; flex-direction: column; gap: 3px; min-width: 0">
+                    <span style="font-size: 14.5px; font-weight: 500; color: {{ t.titleColor }}">{{ t.title }}</span>
+                    <span style="font-size: 12.5px; font-weight: 300; line-height: 1.5; color: rgba(185,177,160,0.95); text-wrap: pretty">{{ t.desc }}</span>
+                  </span>
+                  <span style="flex-shrink: 0; margin-left: auto; font-size: 13px; color: {{ t.tickColor }}">{{ t.tick }}</span>
+                </button>
+              </sc-for>
+            </div>
+          </div>
+
+          <div>
+            <div style="font-size: 10.5px; letter-spacing: 0.24em; text-transform: uppercase; color: #b89758">About you</div>
+            <div class="v-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px">
+              <label style="display: flex; flex-direction: column; gap: 6px">
+                <span style="font-size: 12px; font-weight: 300; color: rgba(185,177,160,0.95)">Your name</span>
+                <input value="{{ fName }}" onInput="{{ setName }}" type="text" autocomplete="name" placeholder="Full name" style="width: 100%; padding: 12px 15px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.16); background: rgba(255,255,255,0.045); color: #efe9dc; font-size: 14px; font-weight: 300">
+              </label>
+              <label style="display: flex; flex-direction: column; gap: 6px">
+                <span style="font-size: 12px; font-weight: 300; color: rgba(185,177,160,0.95)">Email</span>
+                <input value="{{ fEmail }}" onInput="{{ setEmail }}" type="email" autocomplete="email" placeholder="you@example.com" style="width: 100%; padding: 12px 15px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.16); background: rgba(255,255,255,0.045); color: #efe9dc; font-size: 14px; font-weight: 300">
+              </label>
+              <label style="display: flex; flex-direction: column; gap: 6px">
+                <span style="font-size: 12px; font-weight: 300; color: rgba(185,177,160,0.95)">Phone or WhatsApp</span>
+                <input value="{{ fPhone }}" onInput="{{ setPhone }}" type="tel" autocomplete="tel" placeholder="Optional" style="width: 100%; padding: 12px 15px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.16); background: rgba(255,255,255,0.045); color: #efe9dc; font-size: 14px; font-weight: 300">
+              </label>
+              <label style="display: flex; flex-direction: column; gap: 6px">
+                <span style="font-size: 12px; font-weight: 300; color: rgba(185,177,160,0.95)">City</span>
+                <input value="{{ fCity }}" onInput="{{ setCity }}" type="text" autocomplete="address-level2" placeholder="Hyderabad, Pune, anywhere" style="width: 100%; padding: 12px 15px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.16); background: rgba(255,255,255,0.045); color: #efe9dc; font-size: 14px; font-weight: 300">
+              </label>
+            </div>
+          </div>
+
+          <div>
+            <div style="font-size: 12px; font-weight: 300; color: rgba(185,177,160,0.95); margin-bottom: 9px">How much time can you give?</div>
+            <div style="display: flex; flex-wrap: wrap; gap: 8px">
+              <sc-for list="{{ avails }}" as="a" hint-placeholder-count="4">
+                <button onClick="{{ a.pick }}" style="padding: 9px 17px; border-radius: 999px; border: 1px solid {{ a.border }}; background: {{ a.bg }}; color: {{ a.color }}; font-family: 'Outfit', sans-serif; font-size: 12.5px; font-weight: 400; cursor: pointer; white-space: nowrap" style-hover="border-color: rgba(230,211,168,0.75)">{{ a.label }}</button>
+              </sc-for>
+            </div>
+          </div>
+
+          <label style="display: flex; flex-direction: column; gap: 6px">
+            <span style="font-size: 12px; font-weight: 300; color: rgba(185,177,160,0.95)">Anything you want us to know</span>
+            <textarea value="{{ fNote }}" onInput="{{ setNote }}" rows="4" placeholder="Skills, languages you speak, when you are usually free, or why this matters to you." style="width: 100%; padding: 13px 15px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.16); background: rgba(255,255,255,0.045); color: #efe9dc; font-size: 14px; font-weight: 300; line-height: 1.55; resize: vertical"></textarea>
+          </label>
+
+          <input value="{{ fHoney }}" onInput="{{ setHoney }}" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0">
+
+          <sc-if value="{{ hasError }}" hint-placeholder-val="{{ false }}">
+            <div style="padding: 13px 16px; border-radius: 16px; border: 1px solid rgba(224,132,132,0.5); background: rgba(224,132,132,0.1); font-size: 13px; font-weight: 300; line-height: 1.5; color: #f0c3c3">{{ error }}</div>
+          </sc-if>
+
+          <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 14px">
+            <button onClick="{{ submit }}" disabled="{{ busy }}" style="display: inline-flex; align-items: center; justify-content: center; gap: 9px; min-height: 48px; padding: 14px 34px; border-radius: 999px; border: none; background: linear-gradient(135deg, #e6d3a8, #b89758); color: #241b06; font-family: 'Outfit', sans-serif; font-size: 15px; font-weight: 500; cursor: {{ cursor }}; opacity: {{ opacity }}" style-hover="filter: brightness(1.07)">{{ submitLabel }}</button>
+            <span style="font-size: 12px; font-weight: 300; line-height: 1.5; color: rgba(154,146,127,0.95)">{{ pickedSummary }}</span>
+          </div>
+
+        </div>
+
+        <aside style="display: flex; flex-direction: column; gap: 14px; position: sticky; top: 18px">
+          <div style="padding: 20px 22px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.035)">
+            <div style="font-size: 10.5px; letter-spacing: 0.24em; text-transform: uppercase; color: #b89758">What happens next</div>
+            <div style="display: flex; flex-direction: column; gap: 14px; margin-top: 14px">
+              <sc-for list="{{ steps }}" as="s" hint-placeholder-count="3">
+                <div style="display: flex; gap: 12px; align-items: flex-start">
+                  <span style="width: 24px; height: 24px; flex-shrink: 0; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(213,183,124,0.45); font-family: 'Marcellus', serif; font-size: 12px; color: #d5b77c">{{ s.n }}</span>
+                  <span style="font-size: 12.5px; font-weight: 300; line-height: 1.55; color: rgba(200,192,178,0.95); text-wrap: pretty">{{ s.body }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+
+          <div style="padding: 20px 22px; border-radius: 24px; border: 1px solid rgba(213,183,124,0.3); background: rgba(213,183,124,0.06)">
+            <div style="font-family: 'Marcellus', serif; font-size: 17px; color: #f2e9d8">No commitment is too small</div>
+            <p style="margin: 8px 0 0; font-size: 12.5px; font-weight: 300; line-height: 1.6; color: rgba(200,192,178,0.95); text-wrap: pretty">One event a year is help. Answering three messages a week is help. Say what is true and we will never ask for more than that.</p>
+          </div>
+
+          <div style="padding: 18px 22px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.03)">
+            <div style="font-size: 12.5px; font-weight: 300; line-height: 1.6; color: rgba(185,177,160,0.95)">Rather write to a person? <a href="mailto:goldenageguruteachings@gmail.com?subject=Volunteering">goldenageguruteachings@gmail.com</a></div>
+          </div>
+        </aside>
+
+      </div>
+    </sc-if>
+  </main>
+
+  <footer style="position: relative; z-index: 10; flex-shrink: 0; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px 22px; padding: 0 clamp(18px, 4vw, 44px) 22px; font-size: 11.5px; font-weight: 300; color: rgba(154,146,127,0.95)">
+    <span style="font-family: 'Marcellus', serif; letter-spacing: 0.18em; color: rgba(213,183,124,0.9)">GOLDEN AGE WISDOM</span>
+    <span>A registered non-profit · © 2026</span>
+    <a href="/privacy">Privacy</a>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;1280px&quot;,&quot;height&quot;:&quot;900px&quot;}}">
+class Component extends DCLogic {
+  state = { picked: [], avail: '', name: '', email: '', phone: '', city: '', note: '', honey: '', busy: false, error: '', sent: null };
+
+  TEAMS = [
+    { id: 'events-setup', glyph: '△', title: 'Events — on the ground', desc: 'Setting up halls, chairs, mats, sound and signage. Arrive early, leave last.' },
+    { id: 'helpline', glyph: '☎', title: 'Helpline — first level', desc: 'Answer the first message or call, understand what is being asked, and pass it to the right team.' },
+    { id: 'local-event', glyph: '◎', title: 'Local event volunteer', desc: 'Host or help run sits and gatherings in your own city.' },
+    { id: 'kundalini-share', glyph: '✦', title: 'Experiences & doubts — for seasoned meditators', desc: 'Members write in about what rose in meditation — kundalini stirrings, heat, fear, something they cannot name. You have sat long enough to answer plainly and leave them unworried.' },
+    { id: 'donor', glyph: '❋', title: 'Donor member', desc: 'Give regularly so the teachings stay free for everyone else.' },
+    { id: 'social-media', glyph: '☾', title: 'Social media', desc: 'Write, film, edit and post — carry the work to people who have not heard of it.' },
+    { id: 'tech', glyph: '▽', title: 'Tech', desc: 'The website, the streams, the member tools. Anything that has to keep working.' },
+  ];
+  AVAILS = ['An hour or two a week', 'A few hours a week', 'Events only', 'Whenever I am needed'];
+  STEPS = [
+    { n: '1', body: 'Your note reaches a coordinator for each team you chose — not a queue, a person.' },
+    { n: '2', body: 'They write back to understand what you enjoy and what you would rather not do.' },
+    { n: '3', body: 'You are added to that team\u2019s circle and start at whatever pace suits you.' },
+  ];
+
+  toggle(id) {
+    const p = this.state.picked.slice();
+    const i = p.indexOf(id);
+    if (i >= 0) p.splice(i, 1); else p.push(id);
+    this.setState({ picked: p, error: '' });
+  }
+
+  async submit() {
+    if (this.state.busy) return;
+    const s = this.state;
+    if (!s.picked.length) return this.setState({ error: 'Choose at least one team — that is the only part we cannot guess.' });
+    if (!s.name.trim()) return this.setState({ error: 'We need a name to write back to.' });
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(s.email.trim())) return this.setState({ error: 'That email does not look right — check it once?' });
+    this.setState({ busy: true, error: '' });
+
+    const body = new URLSearchParams({
+      name: s.name.trim(), email: s.email.trim(), phone: s.phone.trim(), city: s.city.trim(),
+      role: 'volunteer', teams: s.picked.join(','), avail: s.avail, note: s.note.trim(),
+      website: s.honey, lang: (window.GAW_LANG || 'en').toUpperCase(),
+    });
+    try {
+      const r = await fetch('signup.php', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body });
+      const raw = await r.text();
+      let j = null; try { j = JSON.parse(raw); } catch (_) { j = null; }
+      if (!j) throw new Error('unreadable reply');
+      // The server explained itself — show its words, not a generic failure.
+      if (!j.ok) { this.setState({ busy: false, error: j.error || 'Something went wrong. Please try again.' }); return; }
+      this.setState({ busy: false, sent: j.message || 'Thank you — we have your note.' });
+    } catch (e) {
+      // The handler is PHP; opened as a bare file it will not exist. Say so honestly
+      // rather than showing a network error the visitor cannot act on.
+      this.setState({ busy: false, error: 'We could not reach the server. Please email goldenageguruteachings@gmail.com and we will add you by hand.' });
+    }
+  }
+
+  renderVals() {
+    const s = this.state;
+    const on = (id) => s.picked.indexOf(id) >= 0;
+    return {
+      sent: !!s.sent, notSent: !s.sent,
+      sentTitle: 'Thank you for offering to serve.',
+      sentBody: s.sent || '',
+      again: () => this.setState({ sent: null, picked: [], name: '', email: '', phone: '', city: '', note: '', avail: '' }),
+
+      teams: this.TEAMS.map(t => ({
+        ...t,
+        on: on(t.id),
+        toggle: () => this.toggle(t.id),
+        border: on(t.id) ? 'rgba(213,183,124,0.7)' : 'rgba(255,255,255,0.13)',
+        bg: on(t.id) ? 'rgba(213,183,124,0.12)' : 'rgba(255,255,255,0.035)',
+        glyphBg: on(t.id) ? 'rgba(213,183,124,0.2)' : 'rgba(255,255,255,0.05)',
+        glyphColor: on(t.id) ? '#f0dcaf' : 'rgba(213,183,124,0.75)',
+        titleColor: on(t.id) ? '#f7ecd0' : '#efe9dc',
+        tick: on(t.id) ? '✓' : '',
+        tickColor: '#d5b77c',
+      })),
+
+      avails: this.AVAILS.map(a => ({
+        label: a,
+        pick: () => this.setState({ avail: s.avail === a ? '' : a }),
+        border: s.avail === a ? 'rgba(213,183,124,0.7)' : 'rgba(255,255,255,0.14)',
+        bg: s.avail === a ? 'rgba(213,183,124,0.14)' : 'rgba(255,255,255,0.04)',
+        color: s.avail === a ? '#f7ecd0' : 'rgba(207,200,186,0.9)',
+      })),
+
+      steps: this.STEPS,
+
+      fName: s.name, fEmail: s.email, fPhone: s.phone, fCity: s.city, fNote: s.note, fHoney: s.honey,
+      setName: (e) => this.setState({ name: e.target.value }),
+      setEmail: (e) => this.setState({ email: e.target.value }),
+      setPhone: (e) => this.setState({ phone: e.target.value }),
+      setCity: (e) => this.setState({ city: e.target.value }),
+      setNote: (e) => this.setState({ note: e.target.value }),
+      setHoney: (e) => this.setState({ honey: e.target.value }),
+
+      busy: s.busy,
+      cursor: s.busy ? 'default' : 'pointer',
+      opacity: s.busy ? 0.6 : 1,
+      submitLabel: s.busy ? 'Sending…' : 'Count me in',
+      submit: () => this.submit(),
+      error: s.error, hasError: !!s.error,
+      pickedSummary: s.picked.length ? (s.picked.length === 1 ? '1 team chosen' : s.picked.length + ' teams chosen') : 'Nothing chosen yet',
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,206 @@
+/* Home Bodhi Tree v2.dc.html — hover states + keyframes inline styles can't
+   express. Reduced motion: site.css stops every animation under .gaw-site;
+   the extra rules here also hide the ripple rings (as the design does). */
+
+/* Header: guest Join pill + QR card */
+.gaw-site a.home-join-pill {
+  background: linear-gradient(90deg, #e8cf83, #c9a24a);
+  color: #14241c;
+  box-shadow: 0 8px 20px -10px rgba(201, 162, 74, 0.7);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.gaw-site a.home-join-pill:hover {
+  color: #14241c;
+  transform: translateY(-1px);
+  box-shadow: 0 12px 26px -10px rgba(201, 162, 74, 0.9);
+}
+.gaw-site a.home-qr-card {
+  color: #14241c;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.9) inset, 0 -1px 0 rgba(138, 111, 52, 0.25) inset, 0 18px 34px -10px rgba(60, 42, 16, 0.45), 0 6px 12px rgba(60, 42, 16, 0.12);
+  transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.3s;
+}
+.gaw-site a.home-qr-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.9) inset, 0 -1px 0 rgba(138, 111, 52, 0.25) inset, 0 26px 44px -12px rgba(60, 42, 16, 0.5), 0 8px 16px rgba(60, 42, 16, 0.14);
+}
+.gaw-site a.home-menu-link {
+  color: rgba(246, 241, 230, 0.85);
+}
+.gaw-site a.home-menu-util {
+  color: rgba(246, 241, 230, 0.6);
+}
+.gaw-site a.home-menu-link:hover,
+.gaw-site a.home-menu-util:hover {
+  color: #e8cf83;
+}
+
+/* Hero CTAs */
+.gaw-site a.home-watch {
+  color: #12201a;
+  transition: background 0.2s, color 0.2s;
+}
+.gaw-site a.home-watch:hover {
+  color: #8a6f34;
+  background: transparent !important;
+}
+.gaw-site a.home-sits-cta {
+  color: #14241c;
+  transition: transform 0.2s;
+}
+.gaw-site a.home-sits-cta:hover {
+  color: #14241c;
+  transform: translateY(-1px);
+}
+
+/* Bodhi-tree chapter nodes */
+.gaw-site .home-node {
+  transform: translate(-50%, -50%);
+  transition: background 0.45s, color 0.45s, box-shadow 0.45s, transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.gaw-site .home-node:hover {
+  transform: translate(-50%, -50%) scale(1.06);
+}
+.gaw-site a.home-caption-cta {
+  color: #7a5e22;
+}
+.gaw-site a.home-caption-cta:hover {
+  color: #1f3d2b;
+}
+
+/* Side cards */
+.gaw-site a.home-card-light {
+  color: #14241c;
+  transition: border-color 0.2s;
+}
+.gaw-site a.home-card-light:hover {
+  color: #14241c;
+  border-color: rgba(201, 162, 74, 0.6) !important;
+}
+.gaw-site a.home-card-dark {
+  color: #f6f1e6;
+  transition: background 0.2s;
+}
+.gaw-site a.home-card-dark:hover {
+  color: #f6f1e6;
+  background: #1f3a2e !important;
+}
+
+/* Sits marquee (footer + phone band) */
+.gaw-site .home-marquee {
+  animation: home-marquee 48s linear infinite;
+}
+.gaw-site .home-marquee:hover,
+.gaw-site .home-marquee:active {
+  animation-play-state: paused;
+}
+.gaw-site .home-sit-tile {
+  transition: transform 0.2s;
+}
+.gaw-site .home-sit-tile:hover {
+  transform: translateY(-1px);
+}
+.gaw-site a.home-zoom {
+  color: #14241c;
+  transition: transform 0.2s;
+}
+.gaw-site a.home-zoom:hover {
+  color: #14241c;
+  transform: translateY(-1px);
+}
+
+/* Film overlay */
+.gaw-site .home-film-btn:hover {
+  background: #14241c !important;
+}
+
+/* Chapters sheet */
+.gaw-site .home-ch-outline:hover {
+  background: #14241c !important;
+  color: #f6f1e6 !important;
+}
+.gaw-site .home-ch-prev:hover {
+  border-color: #14241c !important;
+}
+.gaw-site .home-ch-next:hover {
+  background: #1f3a2e !important;
+}
+.gaw-site a.home-ritual {
+  color: #14241c;
+  transition: background 0.3s;
+}
+.gaw-site a.home-ritual:hover {
+  color: #14241c;
+  background: #fffdf8 !important;
+}
+.gaw-site a.home-gold-cta,
+.gaw-site a.home-gold-cta:hover {
+  color: #14241c;
+}
+.gaw-site a.home-gold-cta:hover {
+  filter: brightness(1.05);
+}
+
+@keyframes home-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(201, 162, 74, 0.6);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(201, 162, 74, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(201, 162, 74, 0);
+  }
+}
+@keyframes home-inhale {
+  0% {
+    transform: scale(0.72);
+    opacity: 0.75;
+  }
+  40%,
+  60% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.72);
+    opacity: 0.75;
+  }
+}
+@keyframes home-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+@keyframes home-sheet {
+  from {
+    opacity: 0;
+    transform: translateY(6vh);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes home-heartbeat {
+  0%,
+  100% {
+    transform: scale(0.97);
+  }
+  50% {
+    transform: scale(1.04);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .gaw-site [data-ripple] {
+    opacity: 0 !important;
+  }
+}
+/* Ticker can't scroll itself under reduced motion — let people swipe it instead. */
+@media (prefers-reduced-motion: reduce) {
+  .gaw-site .home-marquee-wrap {
+    overflow-x: auto !important;
+  }
+}

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+html,body{margin:0;background:#F7F1E3;font-family:'Manrope',sans-serif;color:#15120E;-webkit-font-smoothing:antialiased}
+a{color:#7A5E22;text-decoration:none}a:hover{color:#15120E}
+input,select,textarea{font:inherit;color:#15120E;background:#FFFDF8;border:1px solid rgba(138,111,52,.35);border-radius:10px;padding:10px 12px;outline:none;width:100%;box-sizing:border-box}
+input:focus,select:focus,textarea:focus{border-color:#C9A24A;box-shadow:0 0 0 3px rgba(201,162,74,.25)}
+button{font:inherit;cursor:pointer}
+::selection{background:#E8CF83;color:#0B0A0A}
+</style>
+</helmet>
+
+<main style="max-width:980px;margin:0 auto;padding:clamp(24px,4vw,56px) clamp(20px,4vw,40px) 120px;display:flex;flex-direction:column;gap:32px">
+  <header style="display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px;padding-bottom:20px;border-bottom:1px solid rgba(138,111,52,.35)">
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <p style="margin:0;font-size:11px;font-weight:700;letter-spacing:.3em;text-transform:uppercase;color:#7A5E22">Admin · Wisdom page</p>
+      <h1 style="margin:0;font-family:'Cormorant Garamond',serif;font-weight:500;font-size:clamp(32px,4vw,44px);line-height:1;letter-spacing:-.01em">Cards, the Architecture of Reality &amp; quotes</h1>
+      <p style="margin:0;font-size:14px;color:#3A3128">Changes publish the moment you save. <a href="Wisdom.dc.html" target="_blank">Open the Wisdom page ↗</a> · <a href="Admin Home.dc.html">Home</a> · <a href="Admin About.dc.html">About</a> · <a href="Admin Mission.dc.html">Mission</a> · <a href="Admin Meditation.dc.html">Meditation</a></p>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <span style="font-size:12px;color:{{ statusColor }};min-width:120px;text-align:right">{{ status }}</span>
+      <button onClick="{{ reset }}" style="height:40px;padding:0 18px;border-radius:999px;border:1px solid rgba(138,111,52,.45);background:transparent;color:#15120E;font-size:11.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase">Reset to file</button>
+      <button onClick="{{ save }}" style="height:40px;padding:0 22px;border-radius:999px;border:0;background:#0B0A0A;color:#F6F1E6;font-size:11.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;box-shadow:0 8px 22px rgba(11,10,10,.22)" style-hover="color:#E8CF83">Save &amp; publish</button>
+    </div>
+  </header>
+
+  <section style="display:flex;flex-direction:column;gap:14px;padding:24px;border-radius:22px;background:rgba(255,253,248,.55);border:1px solid rgba(255,255,255,.7);box-shadow:0 1px 0 rgba(255,255,255,.8) inset,0 20px 40px -14px rgba(60,42,16,.2)">
+    <p style="margin:0;font-size:11px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:#7A5E22">Heading</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px">
+      <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:600;color:#3A3128"><span>Eyebrow</span><input type="text" data-k="eyebrow" value="{{ c.eyebrow }}" onChange="{{ setText }}"></label>
+      <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:600;color:#3A3128"><span>Title</span><input type="text" data-k="title" value="{{ c.title }}" onChange="{{ setText }}"></label>
+      <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:600;color:#3A3128"><span>Title accent (italic)</span><input type="text" data-k="titleAccent" value="{{ c.titleAccent }}" onChange="{{ setText }}"></label>
+    </div>
+  </section>
+
+  <section style="display:flex;flex-direction:column;gap:14px;padding:24px;border-radius:22px;background:rgba(255,253,248,.55);border:1px solid rgba(255,255,255,.7);box-shadow:0 1px 0 rgba(255,255,255,.8) inset,0 20px 40px -14px rgba(60,42,16,.2)">
+    <p style="margin:0;font-size:11px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:#7A5E22">Four wisdom cards</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px">
+      <sc-for list="{{ cards }}" as="g" hint-placeholder-count="4">
+        <div style="display:flex;flex-direction:column;gap:10px;padding:14px;border-radius:14px;background:#FFFDF8;border:1px solid rgba(138,111,52,.2)">
+          <div style="display:grid;grid-template-columns:64px 1fr;gap:8px">
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:11px;font-weight:600;color:#6B5E48"><span>Glyph</span><input type="text" data-i="{{ $index }}" data-k="glyph" value="{{ g.glyph }}" onChange="{{ setCard }}"></label>
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:11px;font-weight:600;color:#6B5E48"><span>Title</span><input type="text" data-i="{{ $index }}" data-k="title" value="{{ g.title }}" onChange="{{ setCard }}"></label>
+          </div>
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:11px;font-weight:600;color:#6B5E48"><span>Body</span><textarea rows="3" data-i="{{ $index }}" data-k="body" value="{{ g.body }}" onChange="{{ setCard }}" style="resize:vertical"></textarea></label>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <section style="display:flex;flex-direction:column;gap:14px;padding:24px;border-radius:22px;background:rgba(255,253,248,.55);border:1px solid rgba(255,255,255,.7);box-shadow:0 1px 0 rgba(255,255,255,.8) inset,0 20px 40px -14px rgba(60,42,16,.2)">
+    <p style="margin:0;font-size:11px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:#7A5E22">The Architecture of Reality</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px">
+      <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:600;color:#3A3128"><span>Kicker</span><input type="text" data-k="archKicker" value="{{ c.archKicker }}" onChange="{{ setText }}"></label>
+      <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:600;color:#3A3128"><span>Title</span><input type="text" data-k="archTitle" value="{{ c.archTitle }}" onChange="{{ setText }}"></label>
+    </div>
+    <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:600;color:#3A3128"><span>Intro</span><textarea rows="2" data-k="archSub" value="{{ c.archSub }}" onChange="{{ setText }}" style="resize:vertical"></textarea></label>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px">
+      <div style="display:flex;flex-direction:column;gap:10px;padding:14px;border-radius:14px;background:#FFFDF8;border:1px solid rgba(138,111,52,.2)">
+        <label style="display:flex;flex-direction:column;gap:6px;font-size:11px;font-weight:600;color:#6B5E48"><span>Static · label</span><input type="text" data-k="staticLabel" value="{{ c.staticLabel }}" onChange="{{ setText }}"></label>
+        <label style="display:flex;flex-direction:column;gap:6px;font-size:11px;font-weight:600;color:#6B5E48"><span>Static · tag</span><input type="text" data-k="staticTag" value="{{ c.staticTag }}" onChange="{{ setText }}"></label>
+        <label style="display:flex;flex-direction:column;gap:6px;font-size:11px;font-weight:600;color:#6B5E48"><span>Static · body</span><textarea rows="3" data-k="staticBody" value="{{ c.staticBody }}" onChange="{{ setText }}" style="resize:vertical"></textarea></label>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;padding:14px;border-radius:14px;background:#FFFDF8;border:1px solid rgba(138,111,52,.2)">
+        <label style="display:flex;flex-direction:column;gap:6px;font-size:11px;font-weight:600;color:#6B5E48"><span>Coherence · label</span><input type="text" data-k="coherentLabel" value="{{ c.coherentLabel }}" onChange="{{ setText }}"></label>
+        <label style="display:flex;flex-direction:column;gap:6px;font-size:11px;font-weight:600;color:#6B5E48"><span>Coherence · tag</span><input type="text" data-k="coherentTag" value="{{ c.coherentTag }}" onChange="{{ setText }}"></label>
+        <label style="display:flex;flex-direction:column;gap:6px;font-size:11px;font-weight:600;color:#6B5E48"><span>Coherence · body</span><textarea rows="3" data-k="coherentBody" value="{{ c.coherentBody }}" onChange="{{ setText }}" style="resize:vertical"></textarea></label>
+      </div>
+    </div>
+    <p style="margin:6px 0 0;font-size:11px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:#7A5E22">Three principles</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px">
+      <sc-for list="{{ principles }}" as="p" hint-placeholder-count="3">
+        <div style="display:flex;flex-direction:column;gap:10px;padding:14px;border-radius:14px;background:#FFFDF8;border:1px solid rgba(138,111,52,.2)">
+          <div style="display:grid;grid-template-columns:64px 1fr;gap:8px">
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:11px;font-weight:600;color:#6B5E48"><span>Glyph</span><input type="text" data-i="{{ $index }}" data-k="glyph" value="{{ p.glyph }}" onChange="{{ setPrinciple }}"></label>
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:11px;font-weight:600;color:#6B5E48"><span>Title</span><input type="text" data-i="{{ $index }}" data-k="title" value="{{ p.title }}" onChange="{{ setPrinciple }}"></label>
+          </div>
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:11px;font-weight:600;color:#6B5E48"><span>Body</span><textarea rows="2" data-i="{{ $index }}" data-k="body" value="{{ p.body }}" onChange="{{ setPrinciple }}" style="resize:vertical"></textarea></label>
+        </div>
+      </sc-for>
+    </div>
+    <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:600;color:#3A3128;max-width:360px;margin-top:6px"><span>Protocol heading</span><input type="text" data-k="protocolKicker" value="{{ c.protocolKicker }}" onChange="{{ setText }}"></label>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px">
+      <sc-for list="{{ protocol }}" as="s" hint-placeholder-count="3">
+        <div style="display:flex;flex-direction:column;gap:10px;padding:14px;border-radius:14px;background:#FFFDF8;border:1px solid rgba(138,111,52,.2)">
+          <div style="display:grid;grid-template-columns:64px 1fr;gap:8px">
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:11px;font-weight:600;color:#6B5E48"><span>No.</span><input type="text" data-i="{{ $index }}" data-k="n" value="{{ s.n }}" onChange="{{ setProtocol }}"></label>
+            <label style="display:flex;flex-direction:column;gap:6px;font-size:11px;font-weight:600;color:#6B5E48"><span>Title</span><input type="text" data-i="{{ $index }}" data-k="title" value="{{ s.title }}" onChange="{{ setProtocol }}"></label>
+          </div>
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:11px;font-weight:600;color:#6B5E48"><span>Body</span><textarea rows="2" data-i="{{ $index }}" data-k="body" value="{{ s.body }}" onChange="{{ setProtocol }}" style="resize:vertical"></textarea></label>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <section style="display:flex;flex-direction:column;gap:14px;padding:24px;border-radius:22px;background:rgba(255,253,248,.55);border:1px solid rgba(255,255,255,.7);box-shadow:0 1px 0 rgba(255,255,255,.8) inset,0 20px 40px -14px rgba(60,42,16,.2)">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+      <p style="margin:0;font-size:11px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:#7A5E22">Testimonials · {{ quoteCount }}</p>
+      <button onClick="{{ addQuote }}" style="height:34px;padding:0 14px;border-radius:999px;border:1px solid rgba(138,111,52,.45);background:transparent;color:#15120E;font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase">+ Add</button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <sc-for list="{{ quotes }}" as="q" hint-placeholder-count="2">
+        <div style="display:grid;grid-template-columns:minmax(0,3fr) minmax(140px,1fr) 40px;gap:10px;align-items:end;padding:12px;border-radius:14px;background:#FFFDF8;border:1px solid rgba(138,111,52,.2)">
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:11px;font-weight:600;color:#6B5E48"><span>Quote</span><input type="text" data-i="{{ $index }}" data-k="text" value="{{ q.text }}" onChange="{{ setQuote }}"></label>
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:11px;font-weight:600;color:#6B5E48"><span>Name</span><input type="text" data-i="{{ $index }}" data-k="name" value="{{ q.name }}" onChange="{{ setQuote }}"></label>
+          <button data-i="{{ $index }}" onClick="{{ removeQuote }}" title="Remove" aria-label="Remove testimonial" style="height:40px;width:40px;border-radius:10px;border:1px solid rgba(138,111,52,.3);background:transparent;color:#6B5E48;font-size:16px;line-height:1" style-hover="color:#A8403F;border-color:#A8403F">×</button>
+        </div>
+      </sc-for>
+    </div>
+    <p style="margin:6px 0 0;font-size:11px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:#7A5E22">Buttons &amp; footer</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px">
+      <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:600;color:#3A3128"><span>Film button</span><input type="text" data-k="filmLabel" value="{{ c.filmLabel }}" onChange="{{ setText }}"></label>
+      <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:600;color:#3A3128"><span>Film link</span><input type="text" data-k="filmHref" value="{{ c.filmHref }}" onChange="{{ setText }}"></label>
+      <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:600;color:#3A3128"><span>Join button</span><input type="text" data-k="cta" value="{{ c.cta }}" onChange="{{ setText }}"></label>
+      <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:600;color:#3A3128"><span>Join link</span><input type="text" data-k="ctaHref" value="{{ c.ctaHref }}" onChange="{{ setText }}"></label>
+      <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:600;color:#3A3128"><span>Footer · title</span><input type="text" data-k="footerTitle" value="{{ c.footerTitle }}" onChange="{{ setText }}"></label>
+      <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:600;color:#3A3128"><span>Footer · sub-line</span><input type="text" data-k="footerSub" value="{{ c.footerSub }}" onChange="{{ setText }}"></label>
+    </div>
+  </section>
+</main>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  static KEY = 'gaw:wisdom-content:v1';
+  state = { c: null, file: null, status: 'Loading…', dirty: false };
+  componentDidMount() {
+    fetch('content/wisdom.json?v=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).then(j => {
+      let c = j; try { const o = localStorage.getItem(Component.KEY); if (o) c = { ...j, ...JSON.parse(o) }; } catch {}
+      this.setState({ file: j, c: JSON.parse(JSON.stringify(c)), status: localStorage.getItem(Component.KEY) ? 'Published overrides active' : 'Showing file defaults' });
+    });
+  }
+  patch(fn) { this.setState(s => { const c = JSON.parse(JSON.stringify(s.c)); fn(c); return { c, dirty: true, status: 'Unsaved changes' }; }); }
+  renderVals() {
+    const c = this.state.c || { cards: [], principles: [], protocol: [], quotes: [] };
+    const arr = (k) => (e) => { const i = +e.target.dataset.i, f = e.target.dataset.k, v = e.target.value; this.patch(c => { c[k][i][f] = v; }); };
+    return {
+      c, cards: c.cards || [], principles: c.principles || [], protocol: c.protocol || [], quotes: c.quotes || [], quoteCount: (c.quotes || []).length,
+      setText: (e) => { const k = e.target.dataset.k, v = e.target.value; this.patch(c => { c[k] = v; }); },
+      setCard: arr('cards'), setPrinciple: arr('principles'), setProtocol: arr('protocol'), setQuote: arr('quotes'),
+      addQuote: () => this.patch(c => { c.quotes.push({ text: '“”', name: '' }); }),
+      removeQuote: (e) => { const i = +e.currentTarget.dataset.i; this.patch(c => { c.quotes.splice(i, 1); }); },
+      status: this.state.status, statusColor: this.state.dirty ? '#A8403F' : '#6B5E48',
+      save: () => { try { localStorage.setItem(Component.KEY, JSON.stringify(this.state.c)); this.setState({ dirty: false, status: 'Published ✓' }); } catch { this.setState({ status: 'Could not save' }); } },
+      reset: () => { localStorage.removeItem(Component.KEY); this.setState({ c: JSON.parse(JSON.stringify(this.state.file)), dirty: false, status: 'Reset to file defaults' }); }
+    };
+  }
+}
+</script>
+</body>
+</html>

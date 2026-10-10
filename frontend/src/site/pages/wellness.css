@@ -1,0 +1,22 @@
+/* /wellness — hover states from Wellness.dc.html (style-hover). */
+.gaw-site .wel-benefit {
+  transition: border-color 0.2s;
+}
+.gaw-site .wel-benefit:hover {
+  border-color: #c9a24a !important;
+}
+.gaw-site a.wel-outline,
+.gaw-site a.wel-outline:visited {
+  border: 1px solid #14241c;
+  color: #14241c;
+  transition: background 0.2s, color 0.2s;
+}
+.gaw-site a.wel-outline:hover {
+  background: #14241c;
+  color: #f6f1e6;
+}
+.gaw-site .wel-tab {
+  font: inherit;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+}

@@ -169,7 +169,7 @@
         </div>
         <div style="width: 100%; display: flex; align-items: center; gap: 12px; padding: 13px 16px; border-radius: 16px; border: 1px solid rgba(201,162,74,0.26); background: rgba(201,162,74,0.06); text-align: left">
           <svg viewBox="0 0 24 24" style="width: 18px; height: 18px; flex-shrink: 0"><path d="M12 2l8 3.5v5c0 5-3.4 9.3-8 11-4.6-1.7-8-6-8-11v-5L12 2z" fill="none" stroke="#C9A24A" stroke-width="1.6" stroke-linejoin="round"></path><path d="M8.5 12l2.5 2.5 4.5-4.7" fill="none" stroke="#C9A24A" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>
-          <span style="font-size: 13px; font-weight: 500; line-height: 1.55; color: #1B3328">We never see, store or handle passwords. Sign-in happens entirely with Google, Microsoft, Facebook or Apple — we only receive your name and email. Member sign-ins are protected by a Google Authenticator code. <a href="mailto:info@goldenagewisdom.org?subject=Privacy%20policy" style="font-size: 12.5px">Privacy policy</a></span>
+          <span style="font-size: 13px; font-weight: 500; line-height: 1.55; color: #1B3328">We never see, store or handle passwords. Sign-in happens entirely with Google, Microsoft, Facebook or Apple — we only receive your name and email. Member sign-ins are protected by a Google Authenticator code. <a href="mailto:goldenageguruteachings@gmail.com?subject=Privacy%20policy" style="font-size: 12.5px">Privacy policy</a></span>
         </div>
         <a href="./" style="font-size: 13px; color: #2E3A33">← Back to goldenagewisdom.org</a>
       </div>
@@ -362,10 +362,8 @@
                 <div style="max-width: 720px; padding: 16px 18px; border-radius: 16px; border: 1px solid rgba(47,107,69,0.3); background: rgba(47,107,69,0.07); display: flex; flex-direction: column; gap: 8px">
                   <span style="font-size: 14px; font-weight: 600; color: #2F6B45">{{ askNote }}</span>
                   <sc-if value="{{ askAckReady }}" hint-placeholder-val="{{ false }}">
-                    <span style="font-size: 13px; line-height: 1.6; color: #2E3A33">{{ askT.ackLine }} <strong>{{ askAckEmail }}</strong></span>
-                    <sc-if value="{{ askAckPending }}" hint-placeholder-val="{{ false }}">
-                      <button onClick="{{ sendAskAck }}" style="align-self: flex-start; padding: 9px 16px; border-radius: 999px; border: 1px solid rgba(47,107,69,0.5); background: none; color: #2F6B45; font-family: 'Manrope', sans-serif; font-size: 12.5px; font-weight: 600; cursor: pointer">{{ askT.ackBtn }}</button>
-                    </sc-if>
+                    <span style="font-size: 13px; line-height: 1.6; color: #2E3A33">{{ askAckStatus }} <strong>{{ askAckEmail }}</strong></span>
+                    
                   </sc-if>
                 </div>
               </sc-if>
@@ -1124,7 +1122,7 @@ class Component extends DCLogic {
   }
   knowledgeBase() {
     return [
-      'Golden Age Wisdom is a registered non-profit spiritual movement. Everything it teaches is free. Contact: info@goldenagewisdom.org.',
+      'Golden Age Wisdom is a registered non-profit spiritual movement. Everything it teaches is free. Contact: goldenageguruteachings@gmail.com.',
       'Founder: Dr. Harikrishna, a medical professional and spiritual teacher who founded the Golden Age Spiritual Movement.',
       'The core practice: sit comfortably, close the eyes and watch the breath. No kriyas, no breath-control techniques, no mantras required.',
       'The 41-day invitation: one 30-minute sit in silence every day for 41 days, then observe how mind and body heal and how you act.',
@@ -1213,7 +1211,7 @@ class Component extends DCLogic {
       event: (() => {
         const li = this.liveInfo();
         const rows = this.scheduleRows().map(r => r.label + ' — ' + r.local + ' (' + r.ist + ')').join('\n');
-        return 'Live sessions run Monday to Saturday (Sunday is the rest day):\n' + rows + '\n\n' + (li.status === 'live' ? li.label + ' is live right now — open Join live in your sidebar for the Zoom details.' : (li.status === 'rest' ? 'Sunday is rest — no group session today.' : 'Next: ' + li.label + ', ' + li.note + '.')) + ' For retreats and satsang dates, write to info@goldenagewisdom.org.';
+        return 'Live sessions run Monday to Saturday (Sunday is the rest day):\n' + rows + '\n\n' + (li.status === 'live' ? li.label + ' is live right now — open Join live in your sidebar for the Zoom details.' : (li.status === 'rest' ? 'Sunday is rest — no group session today.' : 'Next: ' + li.label + ', ' + li.note + '.')) + ' For retreats and satsang dates, write to goldenageguruteachings@gmail.com.';
       })(),
       journal: 'Your journal is private and encrypted — only you can read it. Writing right after a sit captures what the mind forgets in minutes. Open the Journal tab and note even one line about today\u2019s sitting.',
       stress: `I hear you, ${name}. Stress softens fastest in silence: sit now for just 5 minutes, eyes closed, watching the breath — nothing else. Your streak shows the healing is already working. Shall I open a session?`,
@@ -1229,7 +1227,7 @@ class Component extends DCLogic {
     }
     const fallbacks = [
       `I don\u2019t have that one yet, ${name}. Ask me about your streak, your minutes, the live sessions, the 41-day challenge, the journal, or how you\u2019re feeling today.`,
-      `That\u2019s outside what I know, ${name} — but I can help with your practice, your progress, the live sessions or the journal. For anything else, info@goldenagewisdom.org reaches a person.`,
+      `That\u2019s outside what I know, ${name} — but I can help with your practice, your progress, the live sessions or the journal. For anything else, goldenageguruteachings@gmail.com reaches a person.`,
       `Still learning that one. Try asking about meditation itself, kundalini, the 41 days, your streak, or tonight\u2019s session.`,
     ];
     this._fbN = (this._fbN || 0);
@@ -1324,7 +1322,7 @@ class Component extends DCLogic {
   async askGuide(q, local) {
     const facts = this.knowledgeBase().join('\n- ');
     const rules = 'You are the Wisdom Guide of Golden Age Wisdom, a warm meditation companion. Answer ONLY from the FACTS and MEMBER DATA below. '
-      + 'If the answer is not contained there, say plainly that you do not know and invite the member to write to info@goldenagewisdom.org. '
+      + 'If the answer is not contained there, say plainly that you do not know and invite the member to write to goldenageguruteachings@gmail.com. '
       + 'Never invent teachings, events, dates, numbers, names or scripture. Never give medical, psychiatric, legal or financial advice — refer to a qualified professional. '
       + 'Two to four sentences, calm and plain, no emoji except an occasional 🙏. If the member is distressed, be gentle and suggest a short sit.'
       + '\n\nFACTS:\n- ' + facts + '\n\nMEMBER DATA:\n' + this.memberContext();
@@ -1855,14 +1853,14 @@ class Component extends DCLogic {
     const s = this.state;
     const tab = s.tab;
     const SEVA_WHATSAPP = (((window.GAW_CONFIG || {}).support || {}).web || {}).e164 || '917396119111';
-    const SEVA_EMAIL = 'info@goldenagewisdom.org';
+    const SEVA_EMAIL = 'goldenageguruteachings@gmail.com';
     const te = s.askLang === 'te';
     const ASK_T = te ? {
       title: 'ప్రశ్న అడగండి', sub: 'మీ సాధనలో సందేహం ఉందా? మనిషిని అడగండి.', langBtn: 'English',
       intro: 'సాధారణ మాటల్లో మీ ప్రశ్న రాయండి. "పంపండి" నొక్కగానే WhatsApp తెరుచుకుంటుంది, మీ ప్రశ్న అప్పటికే టైప్ అయి ఉంటుంది. అక్కడ పంపండి చాలు. మా స్వచ్ఛంద సేవకుడు త్వరలో జవాబు ఇస్తారు.',
       step1: '1. మీ ప్రశ్న దేని గురించి?', step2: '2. మీ ప్రశ్న ఇక్కడ రాయండి', step3: '3. పంపండి',
       sendBtn: 'నా ప్రశ్న పంపండి', number: 'సహాయ బృందానికి WhatsApp లో వెళ్తుంది · కాల్: +91 7396 112 111',
-      ackLine: 'మీ ప్రశ్న అందింది అని ధృవీకరణ ఇమెయిల్ ఇక్కడికి పంపబడుతుంది:', ackBtn: 'ధృవీకరణ ఇమెయిల్ పంపండి',
+      ackSending: 'ధృవీకరణ ఇమెయిల్ పంపబడుతోంది:', ackSent: 'ధృవీకరణ ఇమెయిల్ పంపబడింది:',
       footnote: 'స్వచ్ఛంద సేవకులు సాధకులు, వైద్యులు కాదు. అత్యవసరమైతే ముందుగా వైద్యుడిని సంప్రదించండి.', qrLink: 'లాగిన్ లేకుండా అడగాలా? QR / వాయిస్ పేజీ తెరవండి →',
       topics: { health: 'ఆరోగ్యం & ఆహారం', kundalini: 'ధ్యానంలో అనుభవాలు', practice: 'కూర్చోవడంలో ఇబ్బంది', life: 'డబ్బు & రోజువారీ జీవితం', other: 'వేరే ఏదైనా' },
       hint: 'మీ ప్రశ్న ఇక్కడ రాయండి. మీ ఫోన్ నంబర్ కూడా రాయండి.',
@@ -1872,7 +1870,7 @@ class Component extends DCLogic {
       intro: 'Write your question in simple words. When you press "Send", WhatsApp opens with your question already typed. Just press send there. A volunteer will reply to you soon.',
       step1: '1. What is your question about?', step2: '2. Write your question here', step3: '3. Send it',
       sendBtn: 'Send my question', number: 'Goes to our support team on WhatsApp · Call: +91 7396 112 111',
-      ackLine: 'We will also send a confirmation email to', ackBtn: 'Send confirmation email',
+      ackSending: 'Sending a confirmation email to', ackSent: 'Confirmation sent to',
       footnote: 'Volunteers are seekers, not doctors. If something is urgent, see a doctor first.', qrLink: 'Ask without login — open the QR / voice page →',
       topics: { health: 'Health & food', kundalini: 'Feelings in meditation', practice: 'Trouble sitting', life: 'Money & daily life', other: 'Something else' },
       hint: 'Type your question here. Please also write your phone number.',
@@ -1881,15 +1879,7 @@ class Component extends DCLogic {
     const ASK_TOPICS = ['health', 'kundalini', 'practice', 'life', 'other'].map(key => ({ key, label: ASK_T.topics[key], hint: ASK_T.hint }));
     const askUser = this.lastUser() || {};
     const askAckEmail = askUser.email || '';
-    const sendAskAck = () => {
-      if (!askAckEmail) return;
-      const subj = te ? 'మీ ప్రశ్న అందింది — Golden Age Wisdom' : 'We received your question — Golden Age Wisdom';
-      const body = te
-        ? 'నమస్కారం ' + (askUser.name || '') + ',\n\nమీ ప్రశ్న మాకు అందింది. ధన్యవాదాలు. మా స్వచ్ఛంద సేవకుడు వీలైనంత త్వరగా ఈ ఇమెయిల్‌కు జవాబు ఇస్తారు.\n\nGolden Age Wisdom సేవా బృందం'
-        : 'Namaste ' + (askUser.name || '') + ',\n\nWe have received your question. Thank you. A volunteer will get back to you on this email as soon as possible.\n\nGolden Age Wisdom seva team';
-      window.location.href = 'mailto:' + askAckEmail + '?cc=' + SEVA_EMAIL + '&subject=' + encodeURIComponent(subj) + '&body=' + encodeURIComponent(body);
-      this.setState({ askAckSent: true, askNote: ASK_T.ackDone });
-    };
+    
     const navDefs = [
       { key: 'overview', icon: '☀', label: 'Overview' },
       { key: 'solo', icon: '▶', label: 'Sit & Scribe' },
@@ -2139,9 +2129,9 @@ class Component extends DCLogic {
       askNote: s.askNote || '',
       askT: ASK_T,
       toggleAskLang: () => this.setState({ askLang: te ? 'en' : 'te' }),
-      askAckEmail, sendAskAck,
+      askAckEmail,
       askAckReady: !!(s.askOk && askAckEmail),
-      askAckPending: !s.askAckSent,
+      askAckStatus: s.askAckSent ? ASK_T.ackSent : ASK_T.ackSending,
       sendAskWhatsapp: () => {
         const body = this.askBody(s, ASK_TOPICS);
         if (!body) { this.setState({ askSent: true, askOk: false, askNote: ASK_T.emptyNote }); return; }

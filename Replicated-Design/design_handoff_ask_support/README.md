@@ -36,8 +36,8 @@ Design: `design/Ask.dc.html`. Mobile-first, max-width 560px, centered, padding 2
   text #14241C Manrope 600 16px, "Send on WhatsApp". Under it, 12.5px centered #2E3A33:
   "Goes to our support team on WhatsApp · Call or message: +91 7396 112 111".
 - Status box after send: border rgba(47,107,69,0.3), bg rgba(47,107,69,0.07), radius 14px; bold 14px #2F6B45 note.
-  If member: line "We will also send a confirmation email to **{email}**" + outline button "Send confirmation email"
-  (border rgba(47,107,69,0.5), text #2F6B45). After click: note becomes "Confirmation email opened — press send there."
+  If member: line "Sending a confirmation email to **{email}**" which becomes "Confirmation sent to **{email}**" once the
+  server confirms (no button — the server sends the acknowledgement automatically).
 - Share card: bg #FFFDF8, border 1px rgba(201,162,74,0.3), radius 20px, padding 18px; branded QR 128px (see §QR) inside
   a 2px gold-bordered white frame, tappable → `/ask`; title "Share this page" (Cormorant 700 20px), body 13px,
   links "Print a QR poster" → poster, "Zoom slide" → zoom.
@@ -51,7 +51,7 @@ Design: `design/Member Flow.dc.html` (tab `help`). Replaces the old "Circles & h
 - 3 numbered steps (labels 12px 600 #7A5E22): 1. topic chips (Health & food · Feelings in meditation · Trouble sitting ·
   Money & daily life · Something else); 2. textarea (4 rows, same style); 3. primary button "Send my question" +
   "Goes to our support team on WhatsApp · Call: +91 7396 112 111".
-- After send: green status box (as above) with confirmation-email line + button, email = member's login email.
+- After send: green status box (as above) with confirmation-email status line ("Sending a confirmation email to …" → "Confirmation sent to …"), email = member's login email.
 - Link card at bottom: "Ask without login — open the QR / voice page →" → `/ask`.
 - Dashboard Overview: the "Wisdom of Dr. Harikrishna" card is **removed**; only stats strip + circles list remain.
 
@@ -83,7 +83,7 @@ module matrix, then draw on canvas exactly as above.
 - **Voice**: Web Speech API (`webkitSpeechRecognition`), `interimResults=true, continuous=true`, lang from the
   Speak-in chip. Append transcript to existing text. Unsupported → hide/disable mic and show note
   "Voice typing works best in Chrome on a phone."
-- **Acknowledgement email (members only)**: on send, trigger backend mail to member email, cc info@goldenagewisdom.org,
+- **Acknowledgement email (members only)**: on send, trigger backend mail to member email, cc goldenageguruteachings@gmail.com (official address, from gaw-config.js → officialEmail),
   subject "We received your question — Golden Age Wisdom", body "Namaste {name}, We have received your question.
   Thank you. A volunteer will get back to you as soon as possible. — Golden Age Wisdom seva team" (TE/KN variants in
   `design/Ask.dc.html` T.te/T.kn). The HTML design falls back to `mailto:`; the real build should send server-side

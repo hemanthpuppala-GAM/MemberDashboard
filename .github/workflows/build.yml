@@ -82,6 +82,15 @@ jobs:
       - run: cp deploy/htaccess-backend-root backend/.htaccess
       - name: Strip local-only files
         run: rm -rf backend/tests backend/node_modules backend/.env backend/storage/logs/*.log
+      - name: Keep Laravel's empty working folders
+        # FTP only creates folders that hold a file, and Laravel's own
+        # placeholders are .gitignore files (excluded below). Without these the
+        # app fails with "Please provide a valid cache path".
+        run: |
+          for d in storage/framework/cache/data storage/framework/sessions storage/framework/views \
+                   storage/logs storage/app/public storage/app/private bootstrap/cache; do
+            mkdir -p "backend/$d" && touch "backend/$d/.deploy-keep"
+          done
       - uses: actions/upload-artifact@v4
         with:
           name: backend
@@ -102,13 +111,10 @@ jobs:
           protocol: ${{ vars.FTP_PROTOCOL || 'ftps' }}
           local-dir: backend/
           server-dir: ${{ env.SERVER_DIR }}
-          # Never touch the server's .env or runtime state.
+          # Never touch the server's .env. Runtime files under storage/ are
+          # created on the server, never uploaded, so the action leaves them be;
+          # only the .deploy-keep placeholders go up from there.
           exclude: |
             **/.git*
             **/.git*/**
             .env
-            storage/logs/**
-            storage/framework/cache/**
-            storage/framework/sessions/**
-            storage/framework/views/**
-            storage/app/**

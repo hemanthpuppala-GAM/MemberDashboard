@@ -1,0 +1,25 @@
+{
+  "eyebrow": "Our Mission",
+  "title": "World peace through meditation —",
+  "titleAccent": "scientifically.",
+  "intro1": "In the ancient yuga cycle, time turns through four great ages. We live at the far edge of Kali — the age of conflict and restlessness — and every tradition that tells this story agrees on what comes next:",
+  "intro1Accent": "Satya Yugam, the age of truth.",
+  "intro1Tail": "A world where harmony is the norm, not the exception.",
+  "yugas": [
+    { "name": "Satya", "tag": "the Golden Age — truth, harmony, meditation as the natural state" },
+    { "name": "Treta", "tag": "the Silver Age — virtue begins to wane" },
+    { "name": "Dvapara", "tag": "the Bronze Age — balance tips toward unrest" },
+    { "name": "Kali", "tag": "the dark age of conflict — where we rise from, together" }
+  ],
+  "intro2": "Science gives us the mechanism: when enough minds settle into stillness, the collective field shifts — calm spreads the way fear does, person to person. The golden age is not waited for.",
+  "intro2Accent": "It is meditated into being.",
+  "goalNumber": "8",
+  "goalLead": "Our end goal: a minimum of",
+  "goalAccent": "8% of humanity in meditative space",
+  "goalTail": "— the critical mass of consciousness that tips the world into Satya Yugam.",
+  "dotsCaption": "Every lit dot is a meditator · be the next one",
+  "cta": "Join us — be one of the 8%",
+  "ctaHref": "Member Flow.dc.html",
+  "footerTitle": "Sit with us — free, every day.",
+  "footerSub": "Guided live on YouTube, Monday to Saturday. No experience needed."
+}

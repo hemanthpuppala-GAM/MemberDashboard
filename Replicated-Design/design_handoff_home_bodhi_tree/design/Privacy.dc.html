@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy notice · Golden Age Wisdom</title>
+<meta name="description" content="What Golden Age Wisdom collects and what it does not. No advertising cookies, no data sold, journals private to the member. Plainly written.">
+<link rel="canonical" href="https://goldenagewisdom.org/privacy">
+<meta name="theme-color" content="#0d0a1c">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Golden Age Wisdom">
+<meta property="og:title" content="Privacy notice">
+<meta property="og:description" content="What Golden Age Wisdom collects and what it does not. No advertising cookies, no data sold, journals private to the member. Plainly written.">
+<meta property="og:image" content="https://goldenagewisdom.org/assets/og-default.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://goldenagewisdom.org/privacy">
+<meta property="og:locale" content="en_IN">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Privacy notice">
+<meta name="twitter:description" content="What Golden Age Wisdom collects and what it does not. No advertising cookies, no data sold, journals private to the member. Plainly written.">
+<meta name="twitter:image" content="https://goldenagewisdom.org/assets/og-default.jpg">
+<link rel="icon" href="assets/logo-128.webp" type="image/webp">
+<link rel="apple-touch-icon" href="assets/logo-128.webp">
+
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Golden Age">
+<meta name="mobile-web-app-capable" content="yes">
+<script defer src="pwa.js"></script>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="./gaw-config.js"></script>
+<script src="./telemetry.js"></script>
+<style>
+  html, body { margin: 0; padding: 0; background: #0d0a1c; }
+  body { font-family: 'Outfit', sans-serif; color: #efe9dc; }
+  * { box-sizing: border-box; }
+  :focus-visible { outline: 2px solid #e6d3a8; outline-offset: 3px; border-radius: 6px; }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+  }
+  a { color: #d5b77c; text-decoration: none; }
+  a:hover { color: #e6d3a8; }
+  button, input, textarea, select, optgroup { font-family: inherit; }
+</style>
+</helmet>
+
+<div style="min-height: 100vh; background: radial-gradient(ellipse 70% 60% at 50% 0%, #141029 0%, #0d0a1c 55%, #080614 100%); padding: 40px 22px 60px">
+  <div style="max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 26px">
+
+    <div style="display: flex; align-items: center; gap: 12px">
+      <img src="assets/logo-128.webp" alt="" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(213,183,124,0.5)">
+      <span style="font-family: 'Marcellus', serif; font-size: 16px; letter-spacing: 0.06em; color: #e6d3a8">GOLDEN AGE WISDOM</span>
+    </div>
+
+    <div>
+      <div style="font-size: 11px; letter-spacing: 0.24em; text-transform: uppercase; color: #b89758">Privacy notice</div>
+      <h1 style="font-family: 'Marcellus', serif; font-size: clamp(28px, 4vw, 38px); margin: 8px 0 0; color: #f7f1e3">What we know about you, and what we don't</h1>
+      <p style="margin: 12px 0 0; font-size: 15px; font-weight: 300; line-height: 1.7; color: #b9b1a0; text-wrap: pretty">Golden Age Wisdom is a non-profit. We do not sell anything, we do not advertise, and we have no commercial interest in your data. This notice is written plainly on purpose.</p>
+    </div>
+
+    <div style="padding: 22px 24px; border-radius: 24px; background: rgba(213,183,124,0.07); border: 1px solid rgba(213,183,124,0.26); display: flex; flex-direction: column; gap: 10px">
+      <span style="font-family: 'Marcellus', serif; font-size: 18px; color: #f7f1e3">The short version</span>
+      <span style="font-size: 14px; font-weight: 300; line-height: 1.7; color: #cfc8ba">We never see your password. We keep your name, email and practice history — nothing more. Your journal is yours alone. Analytics are anonymous, off until you accept, and we set no advertising cookies of any kind.</span>
+    </div>
+
+    <sc-for list="{{ sections }}" as="s" hint-placeholder-count="6">
+      <div style="display: flex; flex-direction: column; gap: 9px">
+        <h2 style="font-family: 'Marcellus', serif; font-size: 20px; margin: 0; color: #f2e9d8">{{ s.title }}</h2>
+        <p style="margin: 0; font-size: 14px; font-weight: 300; line-height: 1.72; color: #b9b1a0; text-wrap: pretty">{{ s.body }}</p>
+        <sc-if value="{{ s.hasList }}" hint-placeholder-val="{{ false }}">
+          <ul style="margin: 4px 0 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px">
+            <sc-for list="{{ s.items }}" as="i" hint-placeholder-count="3">
+              <li style="font-size: 13.5px; font-weight: 300; line-height: 1.6; color: #cfc8ba">{{ i.text }}</li>
+            </sc-for>
+          </ul>
+        </sc-if>
+      </div>
+    </sc-for>
+
+    <div style="padding: 22px 24px; border-radius: 24px; background: rgba(255,255,255,0.035); border: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; gap: 12px">
+      <span style="font-family: 'Marcellus', serif; font-size: 18px; color: #f2e9d8">Your choice, on this device</span>
+      <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap">
+        <span style="padding: 5px 13px; border-radius: 999px; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; background: {{ consentBg }}; color: {{ consentColor }}">{{ consentState }}</span>
+        <span style="font-size: 12.5px; font-weight: 300; color: #9a927f">{{ consentWhen }}</span>
+      </div>
+      <div style="display: flex; gap: 9px; flex-wrap: wrap">
+        <button onClick="{{ accept }}" style="padding: 10px 20px; border-radius: 999px; border: none; background: linear-gradient(135deg, #d5b77c, #b89758); color: #241b06; font-family: 'Outfit', sans-serif; font-weight: 600; font-size: 13px; cursor: pointer">Allow anonymous analytics</button>
+        <button onClick="{{ decline }}" style="padding: 10px 20px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.2); background: none; color: #d8d2c4; font-family: 'Outfit', sans-serif; font-size: 13px; cursor: pointer">Decline &amp; erase</button>
+      </div>
+      <span style="font-size: 12px; font-weight: 300; line-height: 1.6; color: #7d7666">Declining erases the anonymous visit records and the random visitor key held in this browser. Nothing else changes — the teachings stay free either way.</span>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 8px; padding-top: 6px; border-top: 1px solid rgba(255,255,255,0.1)">
+      <span style="font-size: 13.5px; font-weight: 300; color: #b9b1a0">Questions, corrections or a request to delete your data — write to <a href="mailto:goldenageguruteachings@gmail.com?subject=Privacy%20request">goldenageguruteachings@gmail.com</a> and a volunteer will answer.</span>
+      <div style="display: flex; gap: 16px; flex-wrap: wrap; font-size: 13px">
+        <a href="index.html">← Back to Golden Age Wisdom</a>
+        <a href="Member Flow.dc.html">Member dashboard</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;900px&quot;,&quot;height&quot;:&quot;1000px&quot;}}">
+class Component extends DCLogic {
+  state = { tick: 0 };
+  T() { return window.GAWTelemetry || null; }
+  renderVals() {
+    const T = this.T(), c = T ? T.consentRecord() : null;
+    const sec = (title, body, items) => ({ title, body, items: (items || []).map(text => ({ text })), hasList: !!(items && items.length) });
+    return {
+      sections: [
+        sec('Signing in', 'You sign in with Google, Microsoft, Facebook or Apple. Your password is typed on their site, never ours — we never see it, store it or handle it. From them we receive only your name and email address, and we use those two things to greet you and to keep your practice history attached to you.'),
+        sec('What we store about your practice', 'Your dashboard is built from what you actually do:', [
+          'The dates and lengths of your sits, to show your streak and your place on the 41-day journey.',
+          'Your journal entries — private to your account and shown to nobody else, ever.',
+          'Your member number, so the same person is recognised across visits.',
+        ]),
+        sec('Your journal', 'Journal entries exist for you alone. No volunteer, admin or teacher reads them, and they are never used for analytics or shared with anyone. You can delete any entry, or ask us to delete all of them.'),
+        sec('Cookies', 'We set no cookies for advertising, tracking or profiling — none at all. The site remembers your sign-in and your preferences using your browser\u2019s own local storage, which stays on your device and is not transmitted to third parties. Clearing your browser data clears it.'),
+        sec('Anonymous analytics', 'To understand which teachings people reach for, we count page visits — and only after you accept. What is recorded is deliberately thin:', [
+          'The page name, the date and hour, and a random key for your browser (not your name or email).',
+          'Whether the screen is phone, tablet or desktop size, and your timezone name.',
+          'Nothing is bought, sold, joined with outside data, or sent to an advertising network.',
+        ]),
+        sec('Live sessions', 'The daily sessions run on Zoom and YouTube. Once you open either, that service\u2019s own privacy policy applies to what happens inside it — we have no view into the meeting beyond what you choose to tell us when you log your sit.'),
+        sec('Donations', 'Payments are processed by Stripe. Card details go straight to Stripe and never touch our servers; we see only that a donation succeeded, its amount, and the name and email you gave.'),
+        sec('Keeping and deleting', 'Practice history stays as long as you are a member. Anonymous visit records are pruned automatically after ' + (((window.GAW_CONFIG || {}).telemetryRetentionDays) || 90) + ' days. Ask us to delete your account and we will remove your profile, your practice history and your journal.'),
+        sec('Children', 'The teachings are open to all, but a member account is meant for adults. If a child has signed up, write to us and we will remove the account.'),
+        sec('Changes', 'If this notice changes in a way that matters, we will say so on the site rather than quietly editing the page.'),
+      ],
+      consentState: c ? (c.analytics ? 'Analytics allowed' : 'Analytics declined') : 'Not chosen yet',
+      consentBg: c ? (c.analytics ? 'rgba(126,203,143,0.18)' : 'rgba(224,132,132,0.16)') : 'rgba(255,255,255,0.08)',
+      consentColor: c ? (c.analytics ? '#a9dfb8' : '#e0a3a3') : '#b9b1a0',
+      consentWhen: c ? 'chosen ' + new Date(c.at).toLocaleDateString() : 'the banner will ask on your first visit',
+      accept: () => { if (this.T()) this.T().setConsent(true); this.setState(s => ({ tick: s.tick + 1 })); },
+      decline: () => { if (this.T()) this.T().setConsent(false); this.setState(s => ({ tick: s.tick + 1 })); },
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+/* Mission.dc.html — 8% goal grid: lit dots pulse. (Reduced motion: site.css stops it.) */
+@keyframes mission-dotglow {
+  0%,
+  100% {
+    opacity: 0.75;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.25);
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "eyebrow": "Wellness",
+  "title": "How stillness",
+  "titleAccent": "heals the body",
+  "benefits": [
+    { "icon": "meditation", "title": "Meditation", "body": "Calm the mind, connect with your soul — the foundation of all healing." },
+    { "icon": "sun", "title": "Sun gazing", "body": "Absorb natural sunlight — energize your body and mind." },
+    { "icon": "earth", "title": "Earthing", "body": "Walk barefoot on the earth — stay grounded and recharge naturally." },
+    { "icon": "food", "title": "41-day health diet program", "body": "A guided detox cycle, repeated every 6 months — download the full program below." },
+    { "icon": "water", "title": "Alkaline water", "body": "Stay hydrated with alkaline water for better health and balance." }
+  ],
+  "exploreLabel": "✦ Explore the Detox Diet program",
+  "cta": "Take the 41-day challenge",
+  "ctaHref": "Member Flow.dc.html",
+  "quotes": [
+    { "text": "“After knowing him I have not only improved my health but also my thinking towards my life.”", "name": "Sheela Shivraman" },
+    { "text": "“His teachings have helped me navigate daily stress with a calm and grounded spirit.”", "name": "Hem" }
+  ],
+  "rulesNumber": "5",
+  "rulesTitle": "Golden Rules to a Healthy and Happy Life",
+  "rulesSub": "Golden Age Spiritual Movement",
+  "rules": [
+    { "icon": "meditation", "title": "Meditation", "body": "Calm the mind, connect with your soul." },
+    { "icon": "sun", "title": "Sun Gazing", "body": "Absorb natural sunlight, energize your body and mind." },
+    { "icon": "earth", "title": "Earthing", "body": "Walk barefoot on the earth, stay grounded and recharge naturally." },
+    { "icon": "food", "title": "Detox & Unprocessed Food", "body": "Nourish your body with natural, unprocessed foods and detox regularly." },
+    { "icon": "water", "title": "Alkaline Water", "body": "Stay hydrated with alkaline water for better health and balance." }
+  ],
+  "rulesMotto": "Live Pure · Live Conscious · Live Golden",
+  "detoxEyebrow": "Wellness",
+  "detoxTitle": "The Golden Age Detox Diet",
+  "detoxBadge": "A 41-day program · repeat every 6 months",
+  "detox": [
+    { "label": "Satvik Diet", "glyph": "⚘", "title": "Eat close to nature", "desc": "Sattva means purity, harmony, clarity. The diet is less about restriction, more about refinement — natural, simple, minimally processed food for a calm mind and light body.", "items": ["Fresh fruits & raw or lightly cooked vegetables", "Soaked nuts & seeds, in small amounts", "Fresh coconut — the key satvik fat", "Gentle herbs: ginger, turmeric, cumin, mint", "Avoid: processed, fried, meat, alcohol, onion & garlic"] },
+    { "label": "16:8 Fasting", "glyph": "◔", "title": "16 hours of rest, 8 to nourish", "desc": "Time-restricted eating gives the body a daily healing window. Choose the rhythm that fits your life and keep it consistent.", "items": ["Early window — eat 8:00 AM to 4:00 PM", "Standard window — eat 12:00 PM to 8:00 PM", "Only water during the fasting hours", "Begin with ease, not perfection — the body adapts"] },
+    { "label": "Smoothies", "glyph": "❋", "title": "Seven detox smoothies", "desc": "One light smoothie breaks the fast each day — rotate through the week.", "items": ["Coconut · Coconut-green · Watermelon mono", "Papaya · Cucumber-mint · Bottle gourd · Ash gourd", "2–4 ingredients max, kept thin", "No sugar, dairy or powders — drink immediately"] },
+    { "label": "Salad Bowl", "glyph": "❁", "title": "The satvik bowl formula", "desc": "One vibrant bowl for the evening meal — natural color, simple combination, clean digestion, no dressing.", "items": ["50% vegetables · 20–30% fruit", "10–15% fresh coconut + a small handful of nuts", "Fresh herbs on top — coriander, mint, curry leaves", "5–7 ingredients max · eat the rainbow of natural colors"] },
+    { "label": "Probiotics", "glyph": "༚", "title": "Beetroot-carrot kanji", "desc": "A traditional fermented drink that supports gut balance — helpful bacteria in moderation, not excess.", "items": ["Beetroot + carrot sticks + mustard seeds in water", "Ferment 2–4 days in a warm place, stir daily", "Drink 100–200 ml with meals, once or twice a day", "Pause if bloated — the gut needs balance, not loading"] },
+    { "label": "Daily Routine", "glyph": "☉", "title": "One golden day", "desc": "The whole program in a single daily rhythm — repeat for 41 days, once every 6 months.", "items": ["Morning — plain water, light walk (fasting)", "12 PM — break the fast with one detox smoothie", "5–7 PM — one satvik salad bowl", "8 PM — the fast begins again · water only"] }
+  ],
+  "pdfLabel": "↓ Full program (PDF)",
+  "pdfHref": "assets/detox-diet.pdf",
+  "footerTitle": "Sit with us — free, every day.",
+  "footerSub": "Guided live on YouTube, Monday to Saturday. No experience needed."
+}

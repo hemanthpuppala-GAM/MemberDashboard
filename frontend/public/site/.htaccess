@@ -1,0 +1,8 @@
+# Design assets keep stable names (not content-hashed) — cache a day, not a year,
+# so a replaced image or PDF shows up without renaming it. (FilesMatch so it is
+# merged after the parent folder's year-long FilesMatch rule and wins.)
+<IfModule mod_headers.c>
+  <FilesMatch ".">
+    Header set Cache-Control "public, max-age=86400"
+  </FilesMatch>
+</IfModule>

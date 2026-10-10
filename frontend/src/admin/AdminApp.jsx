@@ -26,6 +26,8 @@ import MusicLibraryPage from "./pages/cms/MusicLibraryPage";
 import SitPresetsPage from "./pages/cms/SitPresetsPage";
 import EventsPage from "./pages/cms/EventsPage";
 import TestimonialsPage from "./pages/cms/TestimonialsPage";
+import SiteContentIndexPage from "./pages/site/SiteContentIndexPage";
+import SiteContentEditorPage from "./pages/site/SiteContentEditorPage";
 
 import QueryInboxPage from "./pages/people/QueryInboxPage";
 import MembersListPage from "./pages/people/MembersListPage";
@@ -77,6 +79,8 @@ export default function AdminApp() {
                 <Route path="cms/sit-presets" element={guarded("music.view", <SitPresetsPage />)} />
                 <Route path="cms/events" element={guarded("cms.view", <EventsPage />)} />
                 <Route path="cms/testimonials" element={guarded("testimonials.view", <TestimonialsPage />)} />
+                <Route path="content" element={guarded("cms.view", <SiteContentIndexPage />)} />
+                <Route path="content/:page" element={guarded("cms.view", <SiteContentEditorPage />)} />
 
                 <Route path="queries" element={guarded("members.view", <QueryInboxPage />)} />
                 <Route path="members" element={guarded("members.view", <MembersListPage />)} />

@@ -16,7 +16,7 @@
 <script src="./gaw-qr.js"></script>
 <style>
   html, body { margin: 0; padding: 0; background: #F3EAD3; }
-  body { font-family: 'Manrope', sans-serif; color: #1B3328; font-weight: 500; -webkit-font-smoothing: antialiased; }
+  body { font-family: 'Manrope', 'Noto Sans Telugu', 'Noto Sans Kannada', sans-serif; color: #1B3328; font-weight: 500; -webkit-font-smoothing: antialiased; }
   a { color: #7A5E22; text-decoration: none; } a:hover { color: #14241C; }
   @keyframes micPulse { 0% { box-shadow: 0 0 0 0 rgba(168,64,63,0.45); } 100% { box-shadow: 0 0 0 14px rgba(168,64,63,0); } }
 </style>
@@ -77,10 +77,7 @@
         <div style="padding: 14px 16px; border-radius: 14px; border: 1px solid rgba(47,107,69,0.3); background: rgba(47,107,69,0.07); display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center">
           <span style="font-size: 14px; font-weight: 600; color: #2F6B45">{{ note }}</span>
           <sc-if value="{{ showAck }}" hint-placeholder-val="{{ false }}">
-            <span style="font-size: 13px; line-height: 1.6; color: #2E3A33">{{ t.ackLine }} <strong>{{ memberEmail }}</strong></span>
-            <sc-if value="{{ ackPending }}" hint-placeholder-val="{{ false }}">
-              <button onClick="{{ sendAck }}" style="min-height: 44px; padding: 10px 18px; border-radius: 999px; border: 1px solid rgba(47,107,69,0.5); background: none; color: #2F6B45; font-family: 'Manrope', sans-serif; font-size: 13.5px; font-weight: 600; cursor: pointer">{{ t.ackBtn }}</button>
-            </sc-if>
+            <span style="font-size: 13px; line-height: 1.6; color: #2E3A33">{{ ackStatus }} <strong>{{ memberEmail }}</strong></span>
           </sc-if>
         </div>
       </sc-if>
@@ -108,7 +105,7 @@ class Component extends DCLogic {
   T = {
     en: {
       langBtn: 'తెలుగు', title: 'Ask a question', intro: 'No login needed. Type your question, or press the mic and speak. Then press Send — WhatsApp opens with your message ready. Our support team will reply there.',
-      step1: '1. Your question', step2: '2. Send it', speakIn: 'Speak in:', signedInAs: 'Signed in as', ackPromise: 'you will get a confirmation email.', ackLine: 'We will also send a confirmation email to', ackBtn: 'Send confirmation email', ackDone: 'Confirmation email opened — press send there.', ackSubject: 'We received your question — Golden Age Wisdom', ackBody: 'Namaste {name},\n\nWe have received your question. Thank you. A volunteer will get back to you as soon as possible.\n\nGolden Age Wisdom seva team', hint: 'Type here, or press the mic and speak.',
+      step1: '1. Your question', step2: '2. Send it', speakIn: 'Speak in:', signedInAs: 'Signed in as', ackPromise: 'you will get a confirmation email.', ackSending: 'Sending a confirmation email to', ackSent: 'Confirmation sent to', ackSubject: 'We received your question — Golden Age Wisdom', ackBody: 'Namaste {name},\n\nWe have received your question. Thank you. A volunteer will get back to you as soon as possible.\n\nGolden Age Wisdom seva team', hint: 'Type here, or press the mic and speak.',
       mic: 'Speak your question', micStop: 'Stop · listening…', sendBtn: 'Send on WhatsApp', number: 'Goes to our support team on WhatsApp · Call or message: +91 7396 112 111',
       qrTitle: 'Share this page', qrBody: 'Anyone can scan this code to ask a question — no account needed.', qrPoster: 'Print a QR poster',
       footnote: 'Our volunteers are seekers, not doctors. If something is urgent, see a doctor first.',
@@ -116,7 +113,7 @@ class Component extends DCLogic {
     },
     te: {
       langBtn: 'English', title: 'ప్రశ్న అడగండి', intro: 'లాగిన్ అవసరం లేదు. మీ ప్రశ్న టైప్ చేయండి, లేదా మైక్ నొక్కి మాట్లాడండి. తర్వాత "పంపండి" నొక్కండి — WhatsApp తెరుచుకుంటుంది, మీ సందేశం సిద్ధంగా ఉంటుంది. మా బృందం అక్కడే జవాబు ఇస్తుంది.',
-      step1: '1. మీ ప్రశ్న', step2: '2. పంపండి', speakIn: 'ఈ భాషలో మాట్లాడండి:', signedInAs: 'లాగిన్:', ackPromise: 'మీకు ధృవీకరణ ఇమెయిల్ వస్తుంది.', ackLine: 'ధృవీకరణ ఇమెయిల్ ఇక్కడికి పంపబడుతుంది:', ackBtn: 'ధృవీకరణ ఇమెయిల్ పంపండి', ackDone: 'ధృవీకరణ ఇమెయిల్ తెరుచుకుంది — అక్కడ పంపండి.', ackSubject: 'మీ ప్రశ్న అందింది — Golden Age Wisdom', ackBody: 'నమస్కారం {name},\n\nమీ ప్రశ్న మాకు అందింది. ధన్యవాదాలు. మా స్వచ్ఛంద సేవకుడు వీలైనంత త్వరగా జవాబు ఇస్తారు.\n\nGolden Age Wisdom సేవా బృందం', hint: 'ఇక్కడ టైప్ చేయండి, లేదా మైక్ నొక్కి మాట్లాడండి.',
+      step1: '1. మీ ప్రశ్న', step2: '2. పంపండి', speakIn: 'ఈ భాషలో మాట్లాడండి:', signedInAs: 'లాగిన్:', ackPromise: 'మీకు ధృవీకరణ ఇమెయిల్ వస్తుంది.', ackSending: 'ధృవీకరణ ఇమెయిల్ పంపబడుతోంది:', ackSent: 'ధృవీకరణ ఇమెయిల్ పంపబడింది:', ackSubject: 'మీ ప్రశ్న అందింది — Golden Age Wisdom', ackBody: 'నమస్కారం {name},\n\nమీ ప్రశ్న మాకు అందింది. ధన్యవాదాలు. మా స్వచ్ఛంద సేవకుడు వీలైనంత త్వరగా జవాబు ఇస్తారు.\n\nGolden Age Wisdom సేవా బృందం', hint: 'ఇక్కడ టైప్ చేయండి, లేదా మైక్ నొక్కి మాట్లాడండి.',
       mic: 'మాట్లాడి ప్రశ్న చెప్పండి', micStop: 'ఆపండి · వింటోంది…', sendBtn: 'WhatsApp లో పంపండి', number: 'మా సహాయ బృందానికి WhatsApp లో వెళ్తుంది · కాల్ / మెసేజ్: +91 7396 112 111',
       qrTitle: 'ఈ పేజీని పంచుకోండి', qrBody: 'ఎవరైనా ఈ కోడ్ స్కాన్ చేసి ప్రశ్న అడగవచ్చు — ఖాతా అవసరం లేదు.', qrPoster: 'QR పోస్టర్ ప్రింట్ చేయండి',
       footnote: 'మా స్వచ్ఛంద సేవకులు సాధకులు, వైద్యులు కాదు. అత్యవసరమైతే ముందుగా వైద్యుడిని కలవండి.',
@@ -124,7 +121,7 @@ class Component extends DCLogic {
     },
     kn: {
       title: 'ಪ್ರಶ್ನೆ ಕೇಳಿ', intro: 'ಲಾಗಿನ್ ಅಗತ್ಯವಿಲ್ಲ. ನಿಮ್ಮ ಪ್ರಶ್ನೆಯನ್ನು ಟೈಪ್ ಮಾಡಿ, ಅಥವಾ ಮೈಕ್ ಒತ್ತಿ ಮಾತನಾಡಿ. ನಂತರ "ಕಳುಹಿಸಿ" ಒತ್ತಿ — WhatsApp ತೆರೆಯುತ್ತದೆ, ನಿಮ್ಮ ಸಂದೇಶ ಸಿದ್ಧವಾಗಿರುತ್ತದೆ. ನಮ್ಮ ತಂಡ ಅಲ್ಲಿಯೇ ಉತ್ತರಿಸುತ್ತದೆ.',
-      step1: '1. ನಿಮ್ಮ ಪ್ರಶ್ನೆ', step2: '2. ಕಳುಹಿಸಿ', speakIn: 'ಈ ಭಾಷೆಯಲ್ಲಿ ಮಾತನಾಡಿ:', signedInAs: 'ಲಾಗಿನ್:', ackPromise: 'ನಿಮಗೆ ದೃಢೀಕರಣ ಇಮೇಲ್ ಬರುತ್ತದೆ.', ackLine: 'ದೃಢೀಕರಣ ಇಮೇಲ್ ಇಲ್ಲಿಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ:', ackBtn: 'ದೃಢೀಕರಣ ಇಮೇಲ್ ಕಳುಹಿಸಿ', ackDone: 'ದೃಢೀಕರಣ ಇಮೇಲ್ ತೆರೆಯಿತು — ಅಲ್ಲಿ ಕಳುಹಿಸಿ.', ackSubject: 'ನಿಮ್ಮ ಪ್ರಶ್ನೆ ಸ್ವೀಕರಿಸಲಾಗಿದೆ — Golden Age Wisdom', ackBody: 'ನಮಸ್ಕಾರ {name},\n\nನಿಮ್ಮ ಪ್ರಶ್ನೆ ನಮಗೆ ತಲುಪಿದೆ. ಧನ್ಯವಾದಗಳು. ನಮ್ಮ ಸ್ವಯಂಸೇವಕರು ಆದಷ್ಟು ಬೇಗ ಉತ್ತರಿಸುತ್ತಾರೆ.\n\nGolden Age Wisdom ಸೇವಾ ತಂಡ', hint: 'ಇಲ್ಲಿ ಟೈಪ್ ಮಾಡಿ, ಅಥವಾ ಮೈಕ್ ಒತ್ತಿ ಮಾತನಾಡಿ.',
+      step1: '1. ನಿಮ್ಮ ಪ್ರಶ್ನೆ', step2: '2. ಕಳುಹಿಸಿ', speakIn: 'ಈ ಭಾಷೆಯಲ್ಲಿ ಮಾತನಾಡಿ:', signedInAs: 'ಲಾಗಿನ್:', ackPromise: 'ನಿಮಗೆ ದೃಢೀಕರಣ ಇಮೇಲ್ ಬರುತ್ತದೆ.', ackSending: 'ದೃಢೀಕರಣ ಇಮೇಲ್ ಕಳುಹಿಸಲಾಗುತ್ತಿದೆ:', ackSent: 'ದೃಢೀಕರಣ ಇಮೇಲ್ ಕಳುಹಿಸಲಾಗಿದೆ:', ackSubject: 'ನಿಮ್ಮ ಪ್ರಶ್ನೆ ಸ್ವೀಕರಿಸಲಾಗಿದೆ — Golden Age Wisdom', ackBody: 'ನಮಸ್ಕಾರ {name},\n\nನಿಮ್ಮ ಪ್ರಶ್ನೆ ನಮಗೆ ತಲುಪಿದೆ. ಧನ್ಯವಾದಗಳು. ನಮ್ಮ ಸ್ವಯಂಸೇವಕರು ಆದಷ್ಟು ಬೇಗ ಉತ್ತರಿಸುತ್ತಾರೆ.\n\nGolden Age Wisdom ಸೇವಾ ತಂಡ', hint: 'ಇಲ್ಲಿ ಟೈಪ್ ಮಾಡಿ, ಅಥವಾ ಮೈಕ್ ಒತ್ತಿ ಮಾತನಾಡಿ.',
       mic: 'ಮಾತನಾಡಿ ಪ್ರಶ್ನೆ ಹೇಳಿ', micStop: 'ನಿಲ್ಲಿಸಿ · ಕೇಳುತ್ತಿದೆ…', sendBtn: 'WhatsApp ನಲ್ಲಿ ಕಳುಹಿಸಿ', number: 'ನಮ್ಮ ಸಹಾಯ ತಂಡಕ್ಕೆ WhatsApp ನಲ್ಲಿ ಹೋಗುತ್ತದೆ · ಕರೆ / ಸಂದೇಶ: +91 7396 112 111',
       qrTitle: 'ಈ ಪುಟವನ್ನು ಹಂಚಿಕೊಳ್ಳಿ', qrBody: 'ಯಾರಾದರೂ ಈ ಕೋಡ್ ಸ್ಕ್ಯಾನ್ ಮಾಡಿ ಪ್ರಶ್ನೆ ಕೇಳಬಹುದು — ಖಾತೆ ಅಗತ್ಯವಿಲ್ಲ.', qrPoster: 'QR ಪೋಸ್ಟರ್ ಮುದ್ರಿಸಿ',
       footnote: 'ನಮ್ಮ ಸ್ವಯಂಸೇವಕರು ಸಾಧಕರು, ವೈದ್ಯರಲ್ಲ. ತುರ್ತು ಇದ್ದರೆ ಮೊದಲು ವೈದ್ಯರನ್ನು ಭೇಟಿಯಾಗಿ.',
@@ -171,12 +168,8 @@ class Component extends DCLogic {
     const m = this.member() || {}, memberEmail = m.email || '', memberName = m.name || '';
     return {
       isMember: !!memberEmail, memberEmail, memberName, memberInitial: (memberName.trim()[0] || 'M').toUpperCase(),
-      showAck: !!(s.sent && memberEmail), ackPending: !s.ackSent,
-      sendAck: () => {
-        const body = t.ackBody.replace('{name}', memberName);
-        window.location.href = 'mailto:' + memberEmail + '?cc=info@goldenagewisdom.org&subject=' + encodeURIComponent(t.ackSubject) + '&body=' + encodeURIComponent(body);
-        this.setState({ ackSent: true, note: t.ackDone });
-      },
+      showAck: !!(s.sent && memberEmail),
+      ackStatus: s.ackSent ? t.ackSent : t.ackSending,
       t,
       pageLangs: this.PAGE_LANGS.map(([code, label, voice]) => { const on = s.lang === code; return { label, pick: () => this.setState({ lang: code, voice }), border: on ? 'rgba(201,162,74,0.75)' : 'rgba(138,111,52,0.25)', bg: on ? 'rgba(201,162,74,0.16)' : 'none', weight: on ? '600' : '400' }; }),
       voiceLangs: this.VOICES.map(([code, label]) => { const on = s.voice === code; return { label, pick: () => { if (s.listening && this.rec) this.rec.stop(); this.setState({ voice: code }); }, border: on ? 'rgba(201,162,74,0.75)' : 'rgba(138,111,52,0.25)', bg: on ? 'rgba(201,162,74,0.16)' : '#FFFDF8', color: on ? '#7A5E22' : '#2E3A33', weight: on ? '600' : '400' }; }),
@@ -197,6 +190,7 @@ class Component extends DCLogic {
         const body = 'Golden Age Wisdom — question (via ' + (memberName ? 'member' : 'QR/web') + ')' + who + '\n\n' + q;
         window.open('https://wa.me/' + this.WA + '?text=' + encodeURIComponent(body), '_blank', 'noopener');
         this.setState({ note: t.opening, sent: true, ackSent: false });
+        if (memberEmail) setTimeout(() => this.setState({ ackSent: true }), 1800); // server sends the ack; design simulates the state flip
       },
       hasNote: !!s.note, note: s.note,
       pageHref: this.pageUrl(),

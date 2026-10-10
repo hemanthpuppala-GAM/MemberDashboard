@@ -53,7 +53,7 @@ class AskQuestionTest extends TestCase
         $this->assertSame('asha@example.com', $submission->email);
 
         Mail::assertSent(AskReceivedMail::class, fn (AskReceivedMail $mail) => $mail->hasTo('asha@example.com')
-            && $mail->hasCc('info@goldenagewisdom.org')
+            && $mail->hasCc('goldenageguruteachings@gmail.com')
             && $mail->lang === 'te'
             && str_contains($mail->envelope()->subject, 'మీ ప్రశ్న అందింది'));
     }

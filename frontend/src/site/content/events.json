@@ -1,0 +1,44 @@
+{
+  "eyebrow": "Events",
+  "title": "Daily live sessions",
+  "titleAccent": "& gatherings",
+  "sub": "Free, guided, worldwide — sit with us wherever you are.",
+  "indiaKicker": "India · IST",
+  "indiaNote": "Every day · including Sunday",
+  "sessionsIndia": [
+    { "start": "04:10", "end": "05:10", "title": "Brahmamuhurtham meditation", "desc": "The sacred pre-dawn hour — deepest stillness" },
+    { "start": "11:11", "end": "12:12", "title": "11:11 Meditation", "desc": "Mid-day group sit — a portal of synchronicity and stillness" },
+    { "start": "20:00", "end": "21:00", "title": "Online meditation", "desc": "Live guided group meditation" },
+    { "start": "20:30", "end": "21:00", "title": "World Peace Meditation", "desc": "Mass meditation for global peace — the 8% begins here" },
+    { "start": "21:00", "end": "22:00", "title": "Wisdom session · Dr. HariKrishna", "desc": "Knowledge, living Upanishads and open Q&A" }
+  ],
+  "abroadKicker": "USA & UK",
+  "abroadNote": "Local time · every day",
+  "sessionsAbroad": [
+    { "start": "04:10", "end": "05:10", "tz": "America/Chicago", "zone": "CT", "title": "USA · Central", "desc": "Early-morning group sit" },
+    { "start": "05:10", "end": "06:10", "tz": "America/New_York", "zone": "ET", "title": "USA · Eastern", "desc": "Early-morning group sit" },
+    { "start": "04:10", "end": "05:10", "tz": "America/Los_Angeles", "zone": "PT", "title": "USA · Pacific", "desc": "Early-morning group sit" },
+    { "start": "04:00", "end": "05:00", "tz": "Europe/London", "zone": "UK", "title": "United Kingdom", "desc": "Early-morning group sit" }
+  ],
+  "watchLabel": "▶ Watch live on YouTube — free, worldwide",
+  "watchHref": "https://youtube.com/@goldenagegurus",
+  "zoomTitle": "Zoom circle — members only",
+  "zoomBody": "Join on Zoom and ask Dr. HariKrishna your open spiritual questions — 1:1, live.",
+  "zoomCta": "Sign in →",
+  "zoomHref": "Member Flow.dc.html",
+  "upcomingTitle": "Upcoming gatherings",
+  "upcomingEmpty": "No gatherings on the calendar right now — the free live sessions run every day. New retreats and satsangs are announced here first.",
+  "upcoming": [],
+  "pastTitle": "Past gatherings",
+  "past": [
+    { "day": "26", "month": "JUL", "title": "Awakening Hyderabad", "meta": "A full day with Dr. HariKrishna Garu · 9 Convention, Sanath Nagar" }
+  ],
+  "registerLabel": "Register as a member →",
+  "registerHref": "Member Flow.dc.html",
+  "quotes": [
+    { "text": "“I have attended a few of his sessions — fantastic, and free of cost.”", "name": "Swathi G" },
+    { "text": "“The Golden Age movement will definitely attract more youth towards meditation.”", "name": "Aruna Chatla" }
+  ],
+  "footerTitle": "Sit with us — free, every day.",
+  "footerSub": "Guided live on YouTube, every day. No experience needed."
+}

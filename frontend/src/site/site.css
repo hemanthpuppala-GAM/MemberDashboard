@@ -1,0 +1,163 @@
+/* Public site (design_handoff_home_bodhi_tree). Layout is inline in the
+   components, as in the design files; this sheet holds what inline styles
+   can't: hover/focus states, keyframes, reduced-motion. Scoped to .gaw-site. */
+
+.gaw-site {
+  --ink: #14241c;
+  --ink-2: #1b3328;
+  --cream: #f3ead3;
+  --card: #fffdf8;
+  --card-2: #fbf6ea;
+  --body: #2e3a33;
+  --muted: #5a5546;
+  --gold: #c9a24a;
+  --gold-light: #e8cf83;
+  --gold-deep: #a8853a;
+  --gold-border: #b8923e;
+  --gold-text: #7a5e22;
+  --panel: #0e1a14;
+  --panel-2: #12201a;
+  --light: #f6f1e6;
+  --light-2: #d8d2c4;
+
+  min-height: 100dvh;
+  background: var(--cream);
+  color: var(--ink);
+  font-family: "Manrope", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  overflow-x: hidden;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.gaw-site *,
+.gaw-site *::before,
+.gaw-site *::after {
+  box-sizing: border-box;
+}
+/* The app's base layer forces h1–h3 to the old theme's ink + display font;
+   the designs let headings inherit from their section (light text on dark panels). */
+.gaw-site h1,
+.gaw-site h2,
+.gaw-site h3 {
+  color: inherit;
+  font-family: inherit;
+}
+.gaw-site a {
+  color: var(--gold-text);
+  text-decoration: none;
+}
+.gaw-site a:hover {
+  color: var(--ink);
+}
+.gaw-site a:focus-visible,
+.gaw-site button:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 4px;
+  border-radius: 999px;
+}
+.gaw-site ::selection {
+  background: var(--gold-light);
+  color: var(--panel-2);
+}
+.gaw-site .serif {
+  font-family: "Cormorant Garamond", serif;
+}
+
+/* Header / utility row */
+.gaw-site a.gaw-util-link,
+.gaw-site a.gaw-nav-link {
+  color: rgba(246, 241, 230, 0.66);
+  transition: color 0.2s;
+}
+.gaw-site a.gaw-nav-link {
+  color: rgba(246, 241, 230, 0.74);
+}
+.gaw-site a.gaw-nav-link.is-active {
+  color: var(--gold-light);
+}
+.gaw-site a.gaw-util-link:hover,
+.gaw-site a.gaw-nav-link:hover {
+  color: var(--gold-light);
+}
+.gaw-site a.gaw-brand,
+.gaw-site a.gaw-brand:hover {
+  color: var(--light);
+}
+
+/* Pills / buttons */
+.gaw-site .gaw-pill-gold {
+  background: linear-gradient(90deg, #e8cf83, #c9a24a);
+  color: var(--ink);
+  box-shadow: 0 8px 20px -10px rgba(201, 162, 74, 0.7);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.gaw-site a.gaw-pill-gold,
+.gaw-site a.gaw-pill-gold:hover {
+  color: var(--ink);
+}
+.gaw-site .gaw-pill-gold:hover {
+  transform: translateY(-1px);
+}
+.gaw-site .gaw-pill-outline {
+  border: 1px solid rgba(201, 162, 74, 0.6);
+  background: rgba(246, 241, 230, 0.06);
+  color: var(--light);
+  transition: background 0.2s;
+}
+.gaw-site a.gaw-pill-outline,
+.gaw-site a.gaw-pill-outline:hover {
+  color: var(--light);
+}
+.gaw-site .gaw-pill-outline:hover {
+  background: rgba(246, 241, 230, 0.12);
+}
+.gaw-site .gaw-pill-ghost-light {
+  border: 1px solid rgba(246, 241, 230, 0.4);
+  color: var(--light);
+  transition: background 0.2s, color 0.2s;
+}
+.gaw-site a.gaw-pill-ghost-light {
+  color: var(--light);
+}
+.gaw-site .gaw-pill-ghost-light:hover {
+  background: var(--light);
+  color: var(--ink);
+}
+.gaw-site .gaw-breadcrumb a {
+  color: var(--gold-text);
+}
+.gaw-site .gaw-breadcrumb a:hover {
+  color: var(--ink);
+}
+
+/* Motion */
+@keyframes gaw-rise {
+  from {
+    opacity: 0;
+    translate: 0 14px;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+@keyframes gaw-heartbeat {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.04);
+  }
+}
+.gaw-site .gaw-heartbeat {
+  animation: gaw-heartbeat 8s 1.4s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .gaw-site *,
+  .gaw-site *::before,
+  .gaw-site *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

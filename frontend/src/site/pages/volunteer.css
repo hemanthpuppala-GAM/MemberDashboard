@@ -1,0 +1,58 @@
+/* /volunteer — states from Volunteer.dc.html (style-hover, placeholders, focus, keyframes). */
+@keyframes vol-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.gaw-site .vol-main input,
+.gaw-site .vol-main textarea {
+  font-family: "Outfit", sans-serif;
+}
+.gaw-site .vol-main input::placeholder,
+.gaw-site .vol-main textarea::placeholder {
+  color: rgba(154, 146, 127, 0.75);
+}
+.gaw-site .vol-main input:focus-visible,
+.gaw-site .vol-main textarea:focus-visible,
+.gaw-site .vol-main button:focus-visible {
+  outline: 2px solid rgba(213, 183, 124, 0.85);
+  outline-offset: 2px;
+}
+.gaw-site .vol-main input:focus-visible,
+.gaw-site .vol-main textarea:focus-visible {
+  border-radius: 14px;
+}
+.gaw-site .vol-main textarea:focus-visible {
+  border-radius: 16px;
+}
+.gaw-site .vol-main button.vol-team:focus-visible {
+  border-radius: 18px;
+}
+.gaw-site .vol-main ::selection {
+  background: rgba(213, 183, 124, 0.28);
+  color: inherit;
+}
+.gaw-site .vol-choice {
+  transition: border-color 0.2s, background 0.2s;
+}
+.gaw-site .vol-choice:hover {
+  border-color: rgba(230, 211, 168, 0.75) !important;
+}
+.gaw-site .vol-submit:not(:disabled):hover {
+  filter: brightness(1.07);
+}
+.gaw-site a.vol-link {
+  color: #d5b77c;
+}
+.gaw-site a.vol-link:hover {
+  color: #e6d3a8;
+}
+.gaw-site a.vol-back,
+.gaw-site a.vol-back:hover {
+  color: #241b06;
+}
