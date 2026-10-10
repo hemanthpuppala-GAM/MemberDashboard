@@ -2,6 +2,11 @@
 
 Format: date · item · status (🟡 designed / ✅ implemented @sha / ⬅ code change to mirror in Design / ↩ mirrored in Design)
 
+## 2026-10-11 — Member support desk (built in code first; no design handoff yet)
+- ⬅ code change: new staff desk at `/support` (core support: phone + PIN; volunteers: member Google account) with KPI tiles, ticket queue (Mine / Unassigned / All open / Resolved), ticket panel (thread, internal notes, reply, status, assignee, urgent, call/WhatsApp/email), "Log a call / WhatsApp", Team & reviews. Public-site look (cream/ink/gold). Please design-review and mirror.
+- ⬅ code change: members' "My questions" page at `/support/my` (status, thread, reply, 1–5 star rating). Linked from the member dashboard nav and after sending on /ask.
+- ⬅ code change: Ask page — big "🎤 Speak your question" button with a first-time nudge now sits above the textarea (visible without scrolling on phones); voice errors explain what to do. Design: Ask.dc.html.
+
 ## 2026-10-09 — Public home page + sub-pages + admin editors (design_handoff_home_bodhi_tree)
 - ✅ @9eecaa6 Home `/` — Bodhi Tree v2: hero medallion, 6-node tree navigator (full Buddha + roots visible, pills cover painted leaf labels), 7 chapter sections, world-sits footer, peace film overlay
 - ✅ @9eecaa6 Sub-pages `/about` `/mission` `/meditation` `/wisdom` `/wellness` `/events` with shared chrome (About: decorative corner frame behind portrait removed)
