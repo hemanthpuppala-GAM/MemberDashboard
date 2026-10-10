@@ -12,6 +12,21 @@ import { useVoiceInput } from "../ask/useVoiceInput";
 
 const LANG_KEY = "gaw_ask_lang";
 
+function voiceErrorText(t, kind, voiceLang) {
+  const label = VOICE_LANGS.find((l) => l.code === voiceLang)?.label || voiceLang;
+  const map = { denied: t.errDenied, blocked: t.errBlocked, nomic: t.errNoMic, nospeech: t.errNoSpeech, network: t.errNetwork, lang: fill(t.errLang, { lang: label }) };
+  return map[kind] || t.voiceErr;
+}
+
+function MicIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <rect x="9" y="3" width="6" height="11" rx="3" />
+      <path d="M5 11a7 7 0 0 0 14 0M12 18v3" />
+    </svg>
+  );
+}
+
 function initialLang(param) {
   if (PAGE_LANGS.some((l) => l.code === param)) return param;
   try {
@@ -56,7 +71,7 @@ export default function AskPage() {
   };
 
   const pickVoiceLang = (code) => {
-    voice.stop();
+    voice.clearError();
     setVoiceLang(code);
   };
 
@@ -124,6 +139,50 @@ export default function AskPage() {
           <p className="mt-2 mb-0 text-[15px] leading-[1.6] text-[#2E3A33]">{t.intro}</p>
         </div>
 
+        {/* Voice first: the big mic sits above the fold on every device, with a nudge for first-timers. */}
+        {voice.supported ? (
+          <div className="flex flex-col gap-2.5 rounded-[22px] border border-[rgba(201,162,74,0.45)] bg-[#FFFDF8] p-3.5 shadow-[0_10px_28px_-16px_rgba(60,42,16,0.45)]">
+            {!voice.listening && !voice.error && !text && (
+              <span className="inline-flex items-center gap-2 self-start rounded-full bg-[rgba(201,162,74,0.18)] px-3 py-1.5 text-[13px] font-semibold text-[#7A5E22]">
+                <span aria-hidden="true">✨</span>
+                {t.micHint}
+              </span>
+            )}
+            <button
+              type="button"
+              onClick={voice.toggle}
+              aria-pressed={voice.listening}
+              className={`inline-flex min-h-[56px] w-full cursor-pointer items-center justify-center gap-3 rounded-full px-5 text-[17px] font-bold transition-colors ${
+                voice.listening
+                  ? "animate-[micPulse_1.2s_ease-out_infinite] bg-[#A8403F] text-white"
+                  : `bg-[#14241C] text-[#F6F1E6] hover:bg-[#1B3328] ${!text && !voice.error ? "animate-[micPulse_2.4s_ease-out_infinite]" : ""}`
+              }`}
+            >
+              {voice.listening ? (
+                <span aria-hidden="true" className="h-3.5 w-3.5 rounded-[3px] bg-white" />
+              ) : (
+                <MicIcon />
+              )}
+              {voice.listening ? t.micStop : t.mic}
+            </button>
+            <p aria-live="polite" className={`m-0 min-h-[1.2em] text-[13px] leading-[1.45] ${voice.error ? "font-semibold text-[#A8403F]" : "text-[#5A5546]"}`}>
+              {voice.error ? voiceErrorText(t, voice.error, voiceLang) : voice.listening ? t.listeningHint : ""}
+            </p>
+            <div className="flex flex-col gap-1.5">
+              <span className="text-[12px] text-[#5A5546]">{t.speakIn}</span>
+              <div className="-mx-1 flex gap-1.5 overflow-x-auto px-1 pb-1 [scrollbar-width:none]">
+                {VOICE_LANGS.map((l) => (
+                  <Chip key={l.code} selected={voiceLang === l.code} onClick={() => pickVoiceLang(l.code)} className="shrink-0 whitespace-nowrap">
+                    {l.label}
+                  </Chip>
+                ))}
+              </div>
+            </div>
+          </div>
+        ) : (
+          <p className="m-0 rounded-[14px] bg-[rgba(201,162,74,0.12)] px-3.5 py-2.5 text-[13px] text-[#5A5546]">{t.noVoice}</p>
+        )}
+
         <div className="flex flex-col gap-2">
           <StepLabel>{t.step1}</StepLabel>
           <textarea
@@ -133,39 +192,10 @@ export default function AskPage() {
               setNote("");
             }}
             placeholder={t.hint}
-            rows={5}
+            rows={4}
             aria-label={t.step1}
             className={`${textareaClass} text-[16px]`}
           />
-          <div className="flex flex-col gap-1.5">
-            <span className="text-[12px] text-[#5A5546]">{t.speakIn}</span>
-            <div className="flex flex-wrap gap-1.5">
-              {VOICE_LANGS.map((l) => (
-                <Chip key={l.code} selected={voiceLang === l.code} onClick={() => pickVoiceLang(l.code)}>
-                  {l.label}
-                </Chip>
-              ))}
-            </div>
-          </div>
-          <div className="flex flex-wrap items-center gap-2.5">
-            {voice.supported && (
-              <button
-                type="button"
-                onClick={voice.toggle}
-                className={`inline-flex min-h-[44px] cursor-pointer items-center gap-2 rounded-full border px-[18px] py-3 text-[14px] font-semibold ${
-                  voice.listening
-                    ? "animate-[micPulse_1.2s_ease-out_infinite] border-[rgba(168,64,63,0.6)] bg-[rgba(168,64,63,0.1)] text-[#A8403F]"
-                    : "border-[rgba(138,111,52,0.35)] bg-transparent text-[#1B3328]"
-                }`}
-              >
-                <span aria-hidden="true" className="text-[16px]">●</span>
-                {voice.listening ? t.micStop : t.mic}
-              </button>
-            )}
-            {(!voice.supported || voice.error) && (
-              <span className="text-[12.5px] text-[#5A5546]">{voice.supported ? t.voiceErr : t.noVoice}</span>
-            )}
-          </div>
         </div>
 
         <div className="flex flex-col gap-2">
