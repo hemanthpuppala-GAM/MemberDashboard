@@ -206,6 +206,11 @@ export default function AskPage() {
           <span className="text-center text-[12.5px] text-[#2E3A33]">{fill(t.number, { primary: support.primaryDisplay })}</span>
           {note && !sent && <span className="text-center text-[13px] font-semibold text-[#A8403F]">{note}</span>}
           {note && sent && <SentStatus note={note} ack={ack} t={t} className="items-center text-center" />}
+          {sent && user && (
+            <Link to="/support/my" className="inline-flex min-h-[44px] items-center justify-center text-[14px] font-semibold text-[#7A5E22] underline underline-offset-[3px] hover:text-[#14241C]">
+              Track your question →
+            </Link>
+          )}
         </div>
 
         <div className="flex flex-wrap items-center gap-4 rounded-[20px] border border-[rgba(201,162,74,0.3)] bg-[#FFFDF8] p-[18px]">

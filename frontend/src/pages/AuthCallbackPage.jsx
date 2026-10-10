@@ -3,6 +3,18 @@ import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { memberAuthApi, setMemberToken } from "../lib/memberAuth";
 import { useMemberAuth } from "../auth/MemberAuthContext";
 
+/** Pages like /support/my set this before starting Google sign-in so the member comes back to them. */
+function takeReturnPath() {
+  try {
+    const p = sessionStorage.getItem("gaw_after_signin");
+    sessionStorage.removeItem("gaw_after_signin");
+    if (p && p.startsWith("/") && !p.startsWith("//")) return p;
+  } catch {
+    /* storage blocked */
+  }
+  return "/dashboard";
+}
+
 /** Lands here after OAuth callback with ?token=… — stores session and opens the dashboard. */
 export default function AuthCallbackPage() {
   const [params] = useSearchParams();
@@ -22,7 +34,7 @@ export default function AuthCallbackPage() {
       .me()
       .then(({ user: u }) => {
         applySession(token, u);
-        navigate("/dashboard", { replace: true });
+        navigate(takeReturnPath(), { replace: true });
       })
       .catch(() => {
         setMemberToken(null);
