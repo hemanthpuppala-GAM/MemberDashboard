@@ -8,7 +8,7 @@ import HomeHeader from "../home/HomeHeader";
 import FilmOverlay from "../home/FilmOverlay";
 import ChaptersSheet from "../home/ChaptersSheet";
 import BodhiNavigator from "../home/BodhiNavigator";
-import { WorldSitsFooter, PhoneSitsBand } from "../home/WorldSits";
+import { WorldSitsFooter } from "../home/WorldSits";
 import { CHAPTER_HASHES, QUESTIONS, chapterData } from "../home/homeData";
 import { useSits } from "../home/sits";
 import "../home/home.css";
@@ -175,7 +175,6 @@ export default function HomePage() {
   const treePx = Math.max(380, Math.min((w - 2 * gutPx - 48) * 0.56, (h - hh - 640) * (1277 / 835), 900));
   const cardsPx = Math.max(320, w - 2 * gutPx - treePx - 48);
   const fullHeight = desk && h >= 900;
-  const showBase = desk && h >= 620;
   const ivory = desk ? "transparent" : "rgba(243,234,211,.92)";
   const heroImage = siteAsset((c.heroImage && c.heroImage.trim()) || "assets/hari-stream-forest.png");
   const filmSrc = (c.filmSrc && c.filmSrc.trim()) || "assets/peace-film.mp4";
@@ -189,11 +188,6 @@ export default function HomePage() {
     <SitePage>
       <main style={{ position: "relative", minHeight: "100dvh", height: fullHeight ? "100dvh" : "auto", overflow: fullHeight ? "hidden" : "visible", background: "#F3EAD3", display: "flex", flexDirection: "column" }}>
         <div aria-hidden="true" style={{ position: "absolute", inset: 0, background: "#F7F1E3" }} />
-        {!desk && (
-          <div style={{ position: "relative", order: 2, flex: "1 1 0", minHeight: 150, overflow: "hidden" }}>
-            <img src={heroImage} alt="Dr Hari Krishna" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", objectPosition: "50% 42%" }} />
-          </div>
-        )}
 
         <HomeHeader c={c} vp={{ w, h, desk, phone }} headerRef={headerRef} />
 
@@ -214,7 +208,7 @@ export default function HomePage() {
             {c.headline} <em style={{ color: "#8A6F34" }}>{c.headlineAccent}</em>
           </h1>
           <p style={{ margin: 0, fontSize: desk ? "clamp(15px,1.2vw,18px)" : "clamp(11.5px,3.2vw,14px)", fontWeight: 400, lineHeight: 1.45, color: "#3A3128", textWrap: "pretty", maxWidth: desk ? "40ch" : "none", animation: "gaw-rise .9s .25s both" }}>{c.subline}</p>
-          <div style={{ display: "flex", flexWrap: "nowrap", justifyContent: "flex-start", alignItems: "center", gap: desk ? 24 : 10, marginTop: desk ? 8 : 4, animation: "gaw-rise .9s .4s both" }}>
+          <div style={{ display: "flex", flexWrap: desk ? "nowrap" : "wrap", justifyContent: "flex-start", alignItems: "center", gap: desk ? 24 : 10, marginTop: desk ? 8 : 4, animation: "gaw-rise .9s .4s both" }}>
             <a
               href="#film"
               onClick={openFilm}
@@ -246,7 +240,6 @@ export default function HomePage() {
               <span aria-hidden="true" style={{ display: "inline-block", width: 0, height: 0, borderLeft: "7px solid currentColor", borderTop: "4.5px solid transparent", borderBottom: "4.5px solid transparent" }} />
               {c.watchLabel}
             </a>
-            {desk && (
               <Link
                 to="/#world-sits"
                 className="home-sits-cta"
@@ -258,11 +251,8 @@ export default function HomePage() {
                   <span style={{ fontSize: 12.5, fontWeight: 700, letterSpacing: ".02em", color: "#14241C" }}>{sits.heroLine}</span>
                 </span>
               </Link>
-            )}
           </div>
         </div>
-
-        {!desk && <PhoneSitsBand c={c} s={sits} phone={phone} withAnchor={!showBase} />}
 
         {/* Bodhi-tree navigator + side cards. #teachings = the header's "Teachings" link target. */}
         <div
@@ -347,7 +337,7 @@ export default function HomePage() {
           </div>
         </div>
 
-        {showBase && <WorldSitsFooter c={c} s={sits} />}
+        <WorldSitsFooter c={c} s={sits} compact={!desk} />
       </main>
 
       {film && <FilmOverlay src={filmSrc} onClose={() => setFilm(false)} />}
