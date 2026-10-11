@@ -78,14 +78,14 @@ export default function AskPage() {
   }, [lang]);
 
   const pickPageLang = (l) => {
-    voice.stop();
+    voice.switchLang(l.voice);
     setLang(l.code);
     setVoiceLang(l.voice);
   };
 
   const pickVoiceLang = (code) => {
-    voice.beforeLangChange();
     voice.clearError();
+    voice.switchLang(code);
     setVoiceLang(code);
   };
 
