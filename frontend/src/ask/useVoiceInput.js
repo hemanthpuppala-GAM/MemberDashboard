@@ -245,6 +245,6 @@ export function useVoiceInput({ lang, text, onText }) {
 
   const toggle = useCallback(() => (listening ? stop() : start()), [listening, start, stop]);
 
-  // iPhone browsers other than Safari have no speech service: use the keyboard's 🎤 instead.
-  return { supported: !!SR, keyboardOnly: IOS && !IOS_SAFARI, listening, error, notice, toggle, start, stop, switchLang, clearError: () => setError(null) };
+  // `ios`: lets the page fall back to the keyboard's own 🎤 when this browser has no speech service.
+  return { supported: !!SR, ios: IOS, listening, error, notice, toggle, start, stop, switchLang, clearError: () => setError(null) };
 }

@@ -54,9 +54,9 @@ export default function AskPage() {
 
   const voice = useVoiceInput({ lang: voiceLang, text, onText: setText });
   const boxRef = useRef(null);
-  // iPhone without a working speech service (non-Safari browser, or it just refused): the same
-  // button opens the keyboard, whose own 🎤 dictates in any app. No error, no settings.
-  const keyboardMode = voice.keyboardOnly || voice.error === "ios";
+  // Every iPhone browser tries real voice typing first. Only if it has no speech service (or
+  // refuses it) does the same button open the keyboard, whose own 🎤 dictates in any app.
+  const keyboardMode = voice.error === "ios" || (voice.ios && !voice.supported);
   const [kbOpen, setKbOpen] = useState(false);
   const micTap = () => {
     if (keyboardMode) {
@@ -156,7 +156,7 @@ export default function AskPage() {
         {/* Everything needed to ask fits on one screen: voice + question side by side on wide screens, stacked and compact on phones. */}
         <div className="flex flex-col gap-4 lg:grid lg:grid-cols-2 lg:items-stretch lg:gap-5">
         {/* Voice first: the big mic, with a nudge for first-timers. */}
-        {voice.supported ? (
+        {voice.supported || keyboardMode ? (
           <div className="flex flex-col gap-2 rounded-[22px] border border-[rgba(201,162,74,0.45)] bg-[#FFFDF8] p-3.5 shadow-[0_10px_28px_-16px_rgba(60,42,16,0.45)]">
             {!voice.listening && !voice.error && !text && !keyboardMode && (
               <span className="inline-flex items-center gap-2 self-start rounded-full bg-[rgba(201,162,74,0.18)] px-3 py-1 text-[12.5px] font-semibold text-[#7A5E22]">
