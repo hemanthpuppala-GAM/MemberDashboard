@@ -55,6 +55,9 @@ export const ASK_PAGE_T = {
     errLang: "{lang} voice typing isn't available on this device. Try English, or type.",
     errIos: "On iPhone, voice typing works in Safari. Open this page in Safari — or tap the box below and press the 🎤 on your keyboard.",
     relangHint: "Language changed — tap the mic to speak in {lang}.",
+    errIosDict: "Voice typing needs Dictation. On your iPhone: Settings → General → Keyboard → turn on Enable Dictation. Or tap the box below and press the 🎤 on your keyboard.",
+    kbHintBefore: "On iPhone: tap the button above, then press the 🎤 on your keyboard and speak.",
+    kbHint: "Now press the 🎤 at the bottom of your keyboard and speak. (For Telugu, tap 🌐 on the keyboard first.)",
   },
   te: {
     title: "ప్రశ్న అడగండి",
@@ -92,6 +95,9 @@ export const ASK_PAGE_T = {
     errLang: "{lang} వాయిస్ టైపింగ్ ఈ పరికరంలో అందుబాటులో లేదు. English ప్రయత్నించండి లేదా టైప్ చేయండి.",
     errIos: "iPhone లో వాయిస్ టైపింగ్ Safari లో పనిచేస్తుంది. ఈ పేజీని Safari లో తెరవండి — లేదా కింది బాక్స్ నొక్కి కీబోర్డ్‌లోని 🎤 నొక్కండి.",
     relangHint: "భాష మారింది — {lang} లో మాట్లాడటానికి మైక్ నొక్కండి.",
+    errIosDict: "వాయిస్ టైపింగ్‌కు Dictation అవసరం. iPhone లో: Settings → General → Keyboard → Enable Dictation ఆన్ చేయండి. లేదా కింది బాక్స్ నొక్కి కీబోర్డ్‌లోని 🎤 నొక్కండి.",
+    kbHintBefore: "iPhone లో: పై బటన్ నొక్కి, తర్వాత కీబోర్డ్‌లోని 🎤 నొక్కి మాట్లాడండి.",
+    kbHint: "ఇప్పుడు కీబోర్డ్ కింద ఉన్న 🎤 నొక్కి మాట్లాడండి. (తెలుగు కోసం ముందుగా కీబోర్డ్‌లో 🌐 నొక్కండి.)",
   },
   kn: {
     title: "ಪ್ರಶ್ನೆ ಕೇಳಿ",
@@ -129,6 +135,9 @@ export const ASK_PAGE_T = {
     errLang: "{lang} ವಾಯ್ಸ್ ಟೈಪಿಂಗ್ ಈ ಸಾಧನದಲ್ಲಿ ಲಭ್ಯವಿಲ್ಲ. English ಪ್ರಯತ್ನಿಸಿ ಅಥವಾ ಟೈಪ್ ಮಾಡಿ.",
     errIos: "iPhone ನಲ್ಲಿ ವಾಯ್ಸ್ ಟೈಪಿಂಗ್ Safari ಯಲ್ಲಿ ಕೆಲಸ ಮಾಡುತ್ತದೆ. ಈ ಪುಟವನ್ನು Safari ಯಲ್ಲಿ ತೆರೆಯಿರಿ — ಅಥವಾ ಕೆಳಗಿನ ಬಾಕ್ಸ್ ಒತ್ತಿ ಕೀಬೋರ್ಡ್‌ನ 🎤 ಒತ್ತಿ.",
     relangHint: "ಭಾಷೆ ಬದಲಾಗಿದೆ — {lang} ನಲ್ಲಿ ಮಾತನಾಡಲು ಮೈಕ್ ಒತ್ತಿ.",
+    errIosDict: "ವಾಯ್ಸ್ ಟೈಪಿಂಗ್‌ಗೆ Dictation ಬೇಕು. iPhone ನಲ್ಲಿ: Settings → General → Keyboard → Enable Dictation ಆನ್ ಮಾಡಿ. ಅಥವಾ ಕೆಳಗಿನ ಬಾಕ್ಸ್ ಒತ್ತಿ ಕೀಬೋರ್ಡ್‌ನ 🎤 ಒತ್ತಿ.",
+    kbHintBefore: "iPhone ನಲ್ಲಿ: ಮೇಲಿನ ಬಟನ್ ಒತ್ತಿ, ನಂತರ ಕೀಬೋರ್ಡ್‌ನ 🎤 ಒತ್ತಿ ಮಾತನಾಡಿ.",
+    kbHint: "ಈಗ ಕೀಬೋರ್ಡ್ ಕೆಳಗಿನ 🎤 ಒತ್ತಿ ಮಾತನಾಡಿ. (ಕನ್ನಡಕ್ಕಾಗಿ ಮೊದಲು ಕೀಬೋರ್ಡ್‌ನಲ್ಲಿ 🌐 ಒತ್ತಿ.)",
   },
 };
 

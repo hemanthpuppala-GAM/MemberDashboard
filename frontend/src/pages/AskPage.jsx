@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import logo from "../assets/logo-coin-tight.png";
 import { useMemberAuth } from "../auth/MemberAuthContext";
@@ -14,7 +14,7 @@ const LANG_KEY = "gaw_ask_lang";
 
 function voiceErrorText(t, kind, voiceLang) {
   const label = VOICE_LANGS.find((l) => l.code === voiceLang)?.label || voiceLang;
-  const map = { denied: t.errDenied, blocked: t.errBlocked, nomic: t.errNoMic, nospeech: t.errNoSpeech, network: t.errNetwork, lang: fill(t.errLang, { lang: label }), ios: t.errIos };
+  const map = { denied: t.errDenied, blocked: t.errBlocked, nomic: t.errNoMic, nospeech: t.errNoSpeech, network: t.errNetwork, lang: fill(t.errLang, { lang: label }), ios: t.errIos, iosdict: t.errIosDict };
   return map[kind] || t.voiceErr;
 }
 
@@ -53,6 +53,19 @@ export default function AskPage() {
   const t = ASK_PAGE_T[lang];
 
   const voice = useVoiceInput({ lang: voiceLang, text, onText: setText });
+  const boxRef = useRef(null);
+  // iPhone without a working speech service (non-Safari browser, or it just refused): the same
+  // button opens the keyboard, whose own 🎤 dictates in any app. No error, no settings.
+  const keyboardMode = voice.keyboardOnly || voice.error === "ios";
+  const [kbOpen, setKbOpen] = useState(false);
+  const micTap = () => {
+    if (keyboardMode) {
+      boxRef.current?.focus();
+      setKbOpen(true);
+      return;
+    }
+    voice.toggle();
+  };
 
   useEffect(() => {
     document.title = `${ASK_PAGE_T[lang].title} · Golden Age Wisdom`;
@@ -145,7 +158,7 @@ export default function AskPage() {
         {/* Voice first: the big mic, with a nudge for first-timers. */}
         {voice.supported ? (
           <div className="flex flex-col gap-2 rounded-[22px] border border-[rgba(201,162,74,0.45)] bg-[#FFFDF8] p-3.5 shadow-[0_10px_28px_-16px_rgba(60,42,16,0.45)]">
-            {!voice.listening && !voice.error && !text && (
+            {!voice.listening && !voice.error && !text && !keyboardMode && (
               <span className="inline-flex items-center gap-2 self-start rounded-full bg-[rgba(201,162,74,0.18)] px-3 py-1 text-[12.5px] font-semibold text-[#7A5E22]">
                 <span aria-hidden="true">✨</span>
                 {t.micHint}
@@ -153,7 +166,7 @@ export default function AskPage() {
             )}
             <button
               type="button"
-              onClick={voice.toggle}
+              onClick={micTap}
               aria-pressed={voice.listening}
               className={`inline-flex min-h-[52px] w-full cursor-pointer items-center justify-center gap-3 rounded-full px-5 text-[17px] font-bold transition-colors ${
                 voice.listening
@@ -168,8 +181,12 @@ export default function AskPage() {
               )}
               {voice.listening ? t.micStop : t.mic}
             </button>
-            <p aria-live="polite" className={`m-0 min-h-[1.2em] text-[13px] leading-[1.45] ${voice.error ? "font-semibold text-[#A8403F]" : "text-[#5A5546]"}`}>
-              {voice.error
+            <p aria-live="polite" className={`m-0 min-h-[1.2em] text-[13px] leading-[1.45] ${voice.error && !keyboardMode ? "font-semibold text-[#A8403F]" : keyboardMode ? "font-semibold text-[#14241C]" : "text-[#5A5546]"}`}>
+              {keyboardMode
+                ? kbOpen
+                  ? t.kbHint
+                  : t.kbHintBefore
+                : voice.error
                 ? voiceErrorText(t, voice.error, voiceLang)
                 : voice.listening
                   ? t.listeningHint
@@ -177,7 +194,7 @@ export default function AskPage() {
                     ? fill(t.relangHint, { lang: VOICE_LANGS.find((l) => l.code === voiceLang)?.label || voiceLang })
                     : ""}
             </p>
-            <div className="flex flex-col gap-1.5">
+            <div className={`flex flex-col gap-1.5 ${keyboardMode ? "hidden" : ""}`}>
               <span className="text-[12px] text-[#5A5546]">{t.speakIn}</span>
               <div className="-mx-1 flex gap-1.5 overflow-x-auto px-1 pb-1 [scrollbar-width:none]">
                 {VOICE_LANGS.map((l) => (
@@ -196,6 +213,7 @@ export default function AskPage() {
         <div className="flex flex-col gap-1.5 lg:flex-1">
           <StepLabel>{t.step1}</StepLabel>
           <textarea
+            ref={boxRef}
             value={text}
             onChange={(e) => {
               setText(e.target.value);

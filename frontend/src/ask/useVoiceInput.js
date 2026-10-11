@@ -6,6 +6,8 @@ const MOBILE = /Android|iPhone|iPad|iPod|Mobile/i.test(UA);
 // iPhone/iPad (iPadOS reports as a Mac with touch). Every iOS browser is WebKit; speech
 // recognition only really works in Safari, and only when started straight from a tap.
 const IOS = /iPhone|iPad|iPod/i.test(UA) || (/Macintosh/.test(UA) && typeof navigator !== "undefined" && navigator.maxTouchPoints > 1);
+// Safari itself (not Chrome/Edge/Firefox/Google/in-app browsers, which add their own token).
+const IOS_SAFARI = IOS && /Safari/.test(UA) && !/CriOS|FxiOS|EdgiOS|OPiOS|GSA\/|FBAN|FBAV|Instagram|Line\//.test(UA);
 const MAX_RESTARTS = 40; // phones end each utterance after a pause; keep listening until the user taps Stop
 
 /** Browser error code → what we tell the user (keys in ASK_PAGE_T: err*). */
@@ -41,7 +43,7 @@ function micBlockedByPolicy() {
  */
 export function useVoiceInput({ lang, text, onText }) {
   const [listening, setListening] = useState(false);
-  const [error, setError] = useState(null); // null | denied | blocked | nomic | nospeech | network | lang | ios | generic
+  const [error, setError] = useState(null); // null | denied | blocked | nomic | nospeech | network | lang | ios | iosdict | generic
   const [notice, setNotice] = useState(null); // null | relang (iPhone: language changed, tap the mic again)
   const recRef = useRef(null);
   const wantRef = useRef(false); // user wants to keep listening
@@ -92,9 +94,10 @@ export function useVoiceInput({ lang, text, onText }) {
 
     rec.onerror = (e) => {
       let kind = ERROR_KIND[e.error] || (e.error === "aborted" ? null : "generic");
-      // On iPhone the mic was already allowed (getUserMedia ran first): a refusal here means this
-      // browser (Edge/Chrome/in-app) has no speech service, not that the mic is blocked.
-      if (IOS && kind === "denied") kind = "ios";
+      // On iPhone the mic was already allowed (getUserMedia ran first), so a refusal here is not
+      // a blocked mic: in Safari it means Dictation is switched off in iOS Settings; in other
+      // browsers (Edge/Chrome/in-app) there is no speech service at all.
+      if (IOS && kind === "denied") kind = IOS_SAFARI ? "iosdict" : "ios";
       // A pause on a phone ends the utterance with "no-speech": keep going if we already heard words.
       if (kind === "nospeech" && (committedRef.current || gotSpeech) && wantRef.current) return;
       if (kind) {
@@ -213,5 +216,6 @@ export function useVoiceInput({ lang, text, onText }) {
 
   const toggle = useCallback(() => (listening ? stop() : start()), [listening, start, stop]);
 
-  return { supported: !!SR, listening, error, notice, toggle, start, stop, beforeLangChange, clearError: () => setError(null) };
+  // iPhone browsers other than Safari have no speech service: use the keyboard's 🎤 instead.
+  return { supported: !!SR, keyboardOnly: IOS && !IOS_SAFARI, listening, error, notice, toggle, start, stop, beforeLangChange, clearError: () => setError(null) };
 }
