@@ -53,6 +53,8 @@ export const ASK_PAGE_T = {
     errNoSpeech: "We didn't hear anything. Tap the button, wait for it to turn red, then speak.",
     errNetwork: "Voice typing needs internet. Check your connection, or type.",
     errLang: "{lang} voice typing isn't available on this device. Try English, or type.",
+    errIos: "On iPhone, voice typing works in Safari. Open this page in Safari — or tap the box below and press the 🎤 on your keyboard.",
+    relangHint: "Language changed — tap the mic to speak in {lang}.",
   },
   te: {
     title: "ప్రశ్న అడగండి",
@@ -88,6 +90,8 @@ export const ASK_PAGE_T = {
     errNoSpeech: "ఏమీ వినిపించలేదు. బటన్ నొక్కి, ఎరుపు రంగులోకి మారాక మాట్లాడండి.",
     errNetwork: "వాయిస్ టైపింగ్‌కు ఇంటర్నెట్ అవసరం. కనెక్షన్ చూడండి లేదా టైప్ చేయండి.",
     errLang: "{lang} వాయిస్ టైపింగ్ ఈ పరికరంలో అందుబాటులో లేదు. English ప్రయత్నించండి లేదా టైప్ చేయండి.",
+    errIos: "iPhone లో వాయిస్ టైపింగ్ Safari లో పనిచేస్తుంది. ఈ పేజీని Safari లో తెరవండి — లేదా కింది బాక్స్ నొక్కి కీబోర్డ్‌లోని 🎤 నొక్కండి.",
+    relangHint: "భాష మారింది — {lang} లో మాట్లాడటానికి మైక్ నొక్కండి.",
   },
   kn: {
     title: "ಪ್ರಶ್ನೆ ಕೇಳಿ",
@@ -123,6 +127,8 @@ export const ASK_PAGE_T = {
     errNoSpeech: "ಏನೂ ಕೇಳಿಸಲಿಲ್ಲ. ಬಟನ್ ಒತ್ತಿ, ಕೆಂಪು ಆದ ನಂತರ ಮಾತನಾಡಿ.",
     errNetwork: "ವಾಯ್ಸ್ ಟೈಪಿಂಗ್‌ಗೆ ಇಂಟರ್ನೆಟ್ ಬೇಕು. ಸಂಪರ್ಕ ಪರಿಶೀಲಿಸಿ ಅಥವಾ ಟೈಪ್ ಮಾಡಿ.",
     errLang: "{lang} ವಾಯ್ಸ್ ಟೈಪಿಂಗ್ ಈ ಸಾಧನದಲ್ಲಿ ಲಭ್ಯವಿಲ್ಲ. English ಪ್ರಯತ್ನಿಸಿ ಅಥವಾ ಟೈಪ್ ಮಾಡಿ.",
+    errIos: "iPhone ನಲ್ಲಿ ವಾಯ್ಸ್ ಟೈಪಿಂಗ್ Safari ಯಲ್ಲಿ ಕೆಲಸ ಮಾಡುತ್ತದೆ. ಈ ಪುಟವನ್ನು Safari ಯಲ್ಲಿ ತೆರೆಯಿರಿ — ಅಥವಾ ಕೆಳಗಿನ ಬಾಕ್ಸ್ ಒತ್ತಿ ಕೀಬೋರ್ಡ್‌ನ 🎤 ಒತ್ತಿ.",
+    relangHint: "ಭಾಷೆ ಬದಲಾಗಿದೆ — {lang} ನಲ್ಲಿ ಮಾತನಾಡಲು ಮೈಕ್ ಒತ್ತಿ.",
   },
 };
 
