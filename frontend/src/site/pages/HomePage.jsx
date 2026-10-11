@@ -188,12 +188,16 @@ export default function HomePage() {
   const fitOn = w >= 1024 && w >= h * 1.15 && h >= 560;
   const headPx = 6.9 * Math.max(34, Math.min(w * 0.039, h * 0.075, 64)); // two-line headline width
   const wideFit = fitOn && (w - 2 * gutPx - 48) * (1.2 / 2.2) - gutPx >= headPx + 40 + 280;
-  // Shorter screens without that room: the pill moves up beside the kicker line and the hero's
-  // Watch link is dropped (the "Watch the intro" card on the right is the same thing).
+  // Shorter screens: the pill sits beside the headline and the hero's Watch link is dropped
+  // (the "Watch the intro" card on the right is the same thing). Both compact modes drop the
+  // "Free meditation · every day" kicker so the headline starts at the top.
   const fitColW = (w - 2 * gutPx - 48) * (wideFit ? 1.2 / 2.2 : 0.5);
-  const tightFit = fitOn && !wideFit && h < 800 && fitColW - gutPx >= 470; // kicker + pill side by side (kicker spacing tightens below)
+  const tightFit = fitOn && !wideFit && h < 800;
   // Very short screens (a 1080p laptop at 150% scaling is ~1280×590): smaller headline and line.
   const shortFit = tightFit && h < 680;
+  // Room beside the headline for the pill (else it goes under the sub-line, e.g. 1024px tablets).
+  const headFitPx = 6.9 * (shortFit ? Math.max(30, Math.min(h * 0.062, 44)) : Math.max(34, Math.min(w * 0.039, h * 0.075, 64)));
+  const pillBeside = wideFit || fitColW - gutPx - headFitPx - 18 >= 200;
   const fitTreeH = h - hh - (w >= 1200 ? 34 : 0) - (heroH || 300) - (footH || 80) - 28;
   const fitTreePx = Math.max(240, Math.min(fitColW - 200, fitTreeH * (1277 / 835)));
   // Desktop / landscape tablet: the whole home page fits one screen. Hero copy + tree in the left
@@ -231,10 +235,10 @@ export default function HomePage() {
         <div
           id="top"
           ref={heroRef}
-          style={{ ...(fit ? { gridColumn: 1, gridRow: 2, paddingRight: 0 } : {}), position: "relative", zIndex: 5, order: 1, display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "clamp(10px,1.8vh,16px)", ...(wideFit || tightFit ? { display: "grid", gridTemplateColumns: "auto auto", gridTemplateAreas: wideFit ? '"k k" "h c" "p p"' : '"k c" "h h" "p p"', justifyContent: "start", alignItems: "center", columnGap: wideFit ? 40 : 18 } : {}), width: fit ? "auto" : desk ? "50%" : "100%", padding: desk ? "clamp(8px,2vh,28px) clamp(24px,5vw,72px) 0" : tablet ? "20px clamp(32px,6vw,56px) 16px" : "0 22px 12px", textAlign: "left", background: ivory }}
+          style={{ ...(fit ? { gridColumn: 1, gridRow: 2, paddingRight: 0 } : {}), position: "relative", zIndex: 5, order: 1, display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "clamp(10px,1.8vh,16px)", ...(wideFit || tightFit ? { display: "grid", gridTemplateColumns: "auto minmax(0,1fr)", gridTemplateAreas: pillBeside ? '"h c" "p p"' : '"h h" "p p" "c c"', justifyContent: "start", alignItems: "center", columnGap: wideFit ? 40 : 18 } : {}), width: fit ? "auto" : desk ? "50%" : "100%", padding: desk ? "clamp(8px,2vh,28px) clamp(24px,5vw,72px) 0" : tablet ? "20px clamp(32px,6vw,56px) 16px" : "0 22px 12px", textAlign: "left", background: ivory }}
         >
 
-          <span style={{ display: "inline-flex", alignItems: "center", gap: 10, fontSize: 11, fontWeight: 700, letterSpacing: ".3em", textTransform: "uppercase", color: "#7A5E22", animation: "gaw-rise .9s both", gridArea: "k", whiteSpace: "nowrap", ...(tightFit ? { letterSpacing: ".2em" } : {}) }}>
+          <span style={{ display: "inline-flex", alignItems: "center", gap: 10, fontSize: 11, fontWeight: 700, letterSpacing: ".3em", textTransform: "uppercase", color: "#7A5E22", animation: "gaw-rise .9s both", gridArea: "k", whiteSpace: "nowrap", ...(wideFit || tightFit ? { display: "none" } : {}) }}>
             <span aria-hidden="true" style={{ width: 6, height: 6, borderRadius: "50%", background: "#C9A24A" }} />
             Free meditation · every day
           </span>
@@ -245,7 +249,7 @@ export default function HomePage() {
             {c.headline} <em style={{ color: "#8A6F34" }}>{c.headlineAccent}</em>
           </h1>
           <p style={{ margin: 0, fontSize: shortFit ? 14.5 : desk ? "clamp(15px,1.2vw,18px)" : tablet ? 17 : "clamp(11.5px,3.2vw,14px)", fontWeight: 400, lineHeight: 1.45, color: "#3A3128", textWrap: "pretty", maxWidth: desk || tablet ? "48ch" : "none", animation: "gaw-rise .9s .25s both", gridArea: "p" }}>{c.subline}</p>
-          <div style={{ display: "flex", flexWrap: desk ? "nowrap" : "wrap", justifyContent: "flex-start", alignItems: "center", gap: desk ? 24 : 10, marginTop: desk ? 8 : 4, animation: "gaw-rise .9s .4s both", ...(wideFit ? { gridArea: "c", flexDirection: "column", alignItems: "flex-start", gap: 6, marginTop: 0 } : tightFit ? { gridArea: "c", marginTop: 0 } : {}) }}>
+          <div style={{ display: "flex", flexWrap: desk ? "nowrap" : "wrap", justifyContent: "flex-start", alignItems: "center", gap: desk ? 24 : 10, marginTop: desk ? 8 : 4, animation: "gaw-rise .9s .4s both", ...(wideFit ? { gridArea: "c", flexDirection: "column", alignItems: "flex-start", gap: 6, marginTop: 0, minWidth: 0 } : tightFit ? { gridArea: "c", marginTop: 0, minWidth: 0 } : {}) }}>
             <a
               href="#film"
               onClick={openFilm}
@@ -281,11 +285,11 @@ export default function HomePage() {
               <Link
                 to="/#world-sits"
                 className="home-sits-cta"
-                style={{ display: "inline-flex", alignItems: "center", gap: 12, height: 48, padding: "0 22px 0 16px", borderRadius: 999, background: "linear-gradient(90deg,#E8CF83,#C9A24A)", border: "1px solid rgba(255,255,255,.5)", boxShadow: "0 1px 0 rgba(255,255,255,.6) inset,0 12px 30px -10px rgba(201,162,74,.7)", whiteSpace: "nowrap" }}
+                style={{ display: "inline-flex", alignItems: "center", gap: 12, height: 48, padding: "0 22px 0 16px", borderRadius: 999, background: "linear-gradient(90deg,#E8CF83,#C9A24A)", border: "1px solid rgba(255,255,255,.5)", boxShadow: "0 1px 0 rgba(255,255,255,.6) inset,0 12px 30px -10px rgba(201,162,74,.7)", whiteSpace: "nowrap", ...(tightFit ? { whiteSpace: "normal", height: "auto", minHeight: 48, padding: "8px 20px 8px 16px", maxWidth: "100%" } : {}) }}
               >
                 <span aria-hidden="true" style={{ width: 9, height: 9, borderRadius: "50%", background: sits.dot, boxShadow: sits.dotGlow, animation: sits.dotAnim }} />
                 <span style={{ display: "flex", flexDirection: "column", gap: 1, textAlign: "left" }}>
-                  <span style={{ fontSize: 10, fontWeight: 800, letterSpacing: ".22em", textTransform: "uppercase", color: "#5A3C0E" }}>{sits.heroKicker}</span>
+                  <span style={{ fontSize: 10, fontWeight: 800, letterSpacing: tightFit ? ".12em" : ".22em", textTransform: "uppercase", color: "#5A3C0E" }}>{sits.heroKicker}</span>
                   <span style={{ fontSize: 12.5, fontWeight: 700, letterSpacing: ".02em", color: "#14241C" }}>{sits.heroLine}</span>
                 </span>
               </Link>
@@ -350,8 +354,8 @@ export default function HomePage() {
                 <span aria-hidden="true" style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 40, lineHeight: 0.6, color: "#C9A24A" }}>
                   “
                 </span>
-                <span key={vi} style={{ display: "flex", flexDirection: "column", gap: 8, minHeight: "7.2em", animation: "gaw-rise .7s both" }}>
-                  <span style={{ fontFamily: "'Cormorant Garamond',serif", fontWeight: 500, fontSize: "clamp(16px,1.3vw,22px)", lineHeight: 1.15, textWrap: "pretty" }}>{voice.text}</span>
+                <span key={vi} style={{ display: "flex", flexDirection: "column", gap: 8, minHeight: fit ? 0 : "7.2em", animation: "gaw-rise .7s both" }}>
+                  <span style={{ fontFamily: "'Cormorant Garamond',serif", fontWeight: 500, fontSize: fit ? "clamp(14px,min(1.3vw,2.5dvh),22px)" : "clamp(16px,1.3vw,22px)", lineHeight: 1.15, textWrap: "pretty", ...(fit ? { display: "-webkit-box", WebkitBoxOrient: "vertical", WebkitLineClamp: 4, overflow: "hidden" } : {}) }}>{voice.text}</span>
                   <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: ".08em", color: "rgba(246,241,230,.75)" }}>— {voice.name}, via NeoSouth</span>
                 </span>
                 <span style={{ ...CARD_CTA, color: "#E8CF83" }}>
@@ -365,7 +369,7 @@ export default function HomePage() {
                 className="home-card-light"
                 style={{ position: "relative", display: "flex", flexDirection: "column", justifyContent: "flex-end", gap: 8, overflow: "hidden", padding: CARD_PAD, borderRadius: 22, background: "linear-gradient(160deg,#E9EEDF 0%,#D6DEC8 100%)", border: "1px solid rgba(255,255,255,.7)", boxShadow: "0 1px 0 rgba(255,255,255,.8) inset,0 20px 40px -14px rgba(31,61,43,.22)", animation: "gaw-rise .9s .9s both", cursor: "pointer" }}
               >
-                <span aria-hidden="true" style={{ position: "absolute", left: "50%", top: "38%", width: 56, height: 56, transform: "translate(-50%,-50%)", borderRadius: "50%", background: "#14241C", boxShadow: "0 0 0 8px rgba(20,36,28,.08),0 12px 24px -8px rgba(20,36,28,.5)" }}>
+                <span aria-hidden="true" style={{ position: "absolute", left: "50%", top: "38%", width: 56, height: 56, transform: "translate(-50%,-50%)", borderRadius: "50%", background: "#14241C", boxShadow: "0 0 0 8px rgba(20,36,28,.08),0 12px 24px -8px rgba(20,36,28,.5)", ...(fit && h < 760 ? { left: "auto", right: 18, top: 18, transform: "none" } : {}) }}>
                   <span style={{ position: "absolute", left: "55%", top: "50%", transform: "translate(-50%,-50%)", width: 0, height: 0, borderLeft: "16px solid #E8CF83", borderTop: "10px solid transparent", borderBottom: "10px solid transparent" }} />
                 </span>
                 <span style={{ ...CARD_KICK, color: "#1F3D2B" }}>Two minutes</span>
