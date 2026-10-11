@@ -7,7 +7,7 @@ import { ASK_PAGE_T, PAGE_LANGS, VOICE_LANGS } from "../ask/copy";
 import { submitQuestion } from "../ask/submitQuestion";
 import { useSupportNumbers, whatsappUrl } from "../ask/support";
 import { fill, primaryButtonClass, textareaClass } from "../ask/styles";
-import { Chip, SentStatus, StepLabel } from "../ask/ui";
+import { Chip, KeyboardMicPicture, SentStatus, StepLabel } from "../ask/ui";
 import { useVoiceInput } from "../ask/useVoiceInput";
 
 const LANG_KEY = "gaw_ask_lang";
@@ -194,6 +194,12 @@ export default function AskPage() {
                     ? fill(t.relangHint, { lang: VOICE_LANGS.find((l) => l.code === voiceLang)?.label || voiceLang })
                     : ""}
             </p>
+            {keyboardMode && (
+              <div className="flex flex-col items-start gap-1.5">
+                <KeyboardMicPicture label={t.kbHint} />
+                {t.kbLangTip && <span className="text-[12.5px] text-[#5A5546]">{t.kbLangTip}</span>}
+              </div>
+            )}
             <div className={`flex flex-col gap-1.5 ${keyboardMode ? "hidden" : ""}`}>
               <span className="text-[12px] text-[#5A5546]">{t.speakIn}</span>
               <div className="-mx-1 flex gap-1.5 overflow-x-auto px-1 pb-1 [scrollbar-width:none]">
