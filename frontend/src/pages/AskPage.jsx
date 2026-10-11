@@ -14,7 +14,7 @@ const LANG_KEY = "gaw_ask_lang";
 
 function voiceErrorText(t, kind, voiceLang) {
   const label = VOICE_LANGS.find((l) => l.code === voiceLang)?.label || voiceLang;
-  const map = { denied: t.errDenied, blocked: t.errBlocked, nomic: t.errNoMic, nospeech: t.errNoSpeech, network: t.errNetwork, lang: fill(t.errLang, { lang: label }) };
+  const map = { denied: t.errDenied, blocked: t.errBlocked, nomic: t.errNoMic, nospeech: t.errNoSpeech, network: t.errNetwork, lang: fill(t.errLang, { lang: label }), ios: t.errIos };
   return map[kind] || t.voiceErr;
 }
 
@@ -71,6 +71,7 @@ export default function AskPage() {
   };
 
   const pickVoiceLang = (code) => {
+    voice.beforeLangChange();
     voice.clearError();
     setVoiceLang(code);
   };
@@ -168,7 +169,13 @@ export default function AskPage() {
               {voice.listening ? t.micStop : t.mic}
             </button>
             <p aria-live="polite" className={`m-0 min-h-[1.2em] text-[13px] leading-[1.45] ${voice.error ? "font-semibold text-[#A8403F]" : "text-[#5A5546]"}`}>
-              {voice.error ? voiceErrorText(t, voice.error, voiceLang) : voice.listening ? t.listeningHint : ""}
+              {voice.error
+                ? voiceErrorText(t, voice.error, voiceLang)
+                : voice.listening
+                  ? t.listeningHint
+                  : voice.notice === "relang"
+                    ? fill(t.relangHint, { lang: VOICE_LANGS.find((l) => l.code === voiceLang)?.label || voiceLang })
+                    : ""}
             </p>
             <div className="flex flex-col gap-1.5">
               <span className="text-[12px] text-[#5A5546]">{t.speakIn}</span>

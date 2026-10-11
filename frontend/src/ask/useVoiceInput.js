@@ -1,7 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 const SR = typeof window !== "undefined" ? window.SpeechRecognition || window.webkitSpeechRecognition : null;
-const MOBILE = typeof navigator !== "undefined" && /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent || "");
+const UA = typeof navigator !== "undefined" ? navigator.userAgent || "" : "";
+const MOBILE = /Android|iPhone|iPad|iPod|Mobile/i.test(UA);
+// iPhone/iPad (iPadOS reports as a Mac with touch). Every iOS browser is WebKit; speech
+// recognition only really works in Safari, and only when started straight from a tap.
+const IOS = /iPhone|iPad|iPod/i.test(UA) || (/Macintosh/.test(UA) && typeof navigator !== "undefined" && navigator.maxTouchPoints > 1);
 const MAX_RESTARTS = 40; // phones end each utterance after a pause; keep listening until the user taps Stop
 
 /** Browser error code → what we tell the user (keys in ASK_PAGE_T: err*). */
@@ -37,7 +41,8 @@ function micBlockedByPolicy() {
  */
 export function useVoiceInput({ lang, text, onText }) {
   const [listening, setListening] = useState(false);
-  const [error, setError] = useState(null); // null | denied | blocked | nomic | nospeech | network | lang | generic
+  const [error, setError] = useState(null); // null | denied | blocked | nomic | nospeech | network | lang | ios | generic
+  const [notice, setNotice] = useState(null); // null | relang (iPhone: language changed, tap the mic again)
   const recRef = useRef(null);
   const wantRef = useRef(false); // user wants to keep listening
   const restartsRef = useRef(0);
@@ -65,7 +70,9 @@ export function useVoiceInput({ lang, text, onText }) {
     recRef.current = rec;
     rec.lang = langRef.current;
     rec.interimResults = true;
-    rec.continuous = !MOBILE;
+    // Android repeats words in continuous mode, so it runs one utterance at a time. iOS can't be
+    // restarted without a tap, so it stays in one continuous session until Stop.
+    rec.continuous = !MOBILE || IOS;
     rec.maxAlternatives = 1;
     let sessionFinal = "";
     let gotSpeech = false;
@@ -84,19 +91,23 @@ export function useVoiceInput({ lang, text, onText }) {
     };
 
     rec.onerror = (e) => {
-      const kind = ERROR_KIND[e.error] || (e.error === "aborted" ? null : "generic");
+      let kind = ERROR_KIND[e.error] || (e.error === "aborted" ? null : "generic");
+      // On iPhone the mic was already allowed (getUserMedia ran first): a refusal here means this
+      // browser (Edge/Chrome/in-app) has no speech service, not that the mic is blocked.
+      if (IOS && kind === "denied") kind = "ios";
       // A pause on a phone ends the utterance with "no-speech": keep going if we already heard words.
       if (kind === "nospeech" && (committedRef.current || gotSpeech) && wantRef.current) return;
       if (kind) {
         wantRef.current = false;
         setError(kind);
+        setListening(false); // never leave the button stuck on "listening" (iOS may not fire onend)
       }
     };
 
     rec.onend = () => {
       if (sessionFinal) committedRef.current = `${committedRef.current} ${sessionFinal}`.trim();
       emit("");
-      if (wantRef.current && restartsRef.current < MAX_RESTARTS) {
+      if (wantRef.current && !IOS && restartsRef.current < MAX_RESTARTS) {
         restartsRef.current += 1;
         setTimeout(() => {
           if (!wantRef.current) return;
@@ -141,6 +152,7 @@ export function useVoiceInput({ lang, text, onText }) {
   const start = useCallback(async () => {
     if (!SR) return;
     setError(null);
+    setNotice(null);
     if (micBlockedByPolicy()) {
       setError("blocked");
       return;
@@ -185,7 +197,21 @@ export function useVoiceInput({ lang, text, onText }) {
     }
   }, [lang]);
 
+  // Call from the language tap, before changing `lang`. iOS only starts the mic from a tap, so
+  // there we stop and ask for one more tap instead of failing with "not allowed".
+  const beforeLangChange = useCallback(() => {
+    if (!IOS || !wantRef.current) return;
+    wantRef.current = false;
+    try {
+      recRef.current?.stop();
+    } catch {
+      /* ignore */
+    }
+    setListening(false);
+    setNotice("relang");
+  }, []);
+
   const toggle = useCallback(() => (listening ? stop() : start()), [listening, start, stop]);
 
-  return { supported: !!SR, listening, error, toggle, start, stop, clearError: () => setError(null) };
+  return { supported: !!SR, listening, error, notice, toggle, start, stop, beforeLangChange, clearError: () => setError(null) };
 }
