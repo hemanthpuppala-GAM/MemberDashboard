@@ -6,6 +6,8 @@ const MOBILE = /Android|iPhone|iPad|iPod|Mobile/i.test(UA);
 // iPhone/iPad (iPadOS reports as a Mac with touch). Every iOS browser is WebKit; speech
 // recognition only really works in Safari, and only when started straight from a tap.
 const IOS = /iPhone|iPad|iPod/i.test(UA) || (/Macintosh/.test(UA) && typeof navigator !== "undefined" && navigator.maxTouchPoints > 1);
+// Safari itself (not Chrome/Edge/Firefox/Google/in-app browsers, which add their own token).
+const IOS_SAFARI = IOS && /Safari/.test(UA) && !/CriOS|FxiOS|EdgiOS|OPiOS|GSA\/|FBAN|FBAV|Instagram|Line\//.test(UA);
 const MAX_RESTARTS = 40; // phones end each utterance after a pause; keep listening until the user taps Stop
 
 /** Browser error code → what we tell the user (keys in ASK_PAGE_T: err*). */
@@ -41,7 +43,7 @@ function micBlockedByPolicy() {
  */
 export function useVoiceInput({ lang, text, onText }) {
   const [listening, setListening] = useState(false);
-  const [error, setError] = useState(null); // null | denied | blocked | nomic | nospeech | network | lang | ios | generic
+  const [error, setError] = useState(null); // null | denied | blocked | nomic | nospeech | network | lang | ios | iosdict | generic
   const [notice, setNotice] = useState(null); // null | relang (iPhone: language changed, tap the mic again)
   const recRef = useRef(null);
   const wantRef = useRef(false); // user wants to keep listening
@@ -52,6 +54,8 @@ export function useVoiceInput({ lang, text, onText }) {
   const langRef = useRef(lang);
   const onTextRef = useRef(onText);
   const runRef = useRef(null); // latest runSession, for the restart inside its own onend
+  const sessionTextRef = useRef(""); // what the current utterance has produced so far (interim included)
+  const switchedAtRef = useRef(0); // when the language was last switched mid-listening
 
   useEffect(() => {
     textRef.current = text;
@@ -76,8 +80,12 @@ export function useVoiceInput({ lang, text, onText }) {
     rec.maxAlternatives = 1;
     let sessionFinal = "";
     let gotSpeech = false;
+    sessionTextRef.current = "";
+    // A language switch replaces this session with a new one; the old one's late events are ignored.
+    const live = () => recRef.current === rec;
 
     rec.onresult = (e) => {
+      if (!live()) return;
       let finals = "";
       let interim = "";
       for (let i = 0; i < e.results.length; i++) {
@@ -87,14 +95,26 @@ export function useVoiceInput({ lang, text, onText }) {
       }
       sessionFinal = finals.trim();
       if (finals || interim) gotSpeech = true;
+      sessionTextRef.current = `${finals}${interim}`.trim();
       emit(`${finals}${interim}`);
     };
 
     rec.onerror = (e) => {
+      if (!live()) return;
       let kind = ERROR_KIND[e.error] || (e.error === "aborted" ? null : "generic");
-      // On iPhone the mic was already allowed (getUserMedia ran first): a refusal here means this
-      // browser (Edge/Chrome/in-app) has no speech service, not that the mic is blocked.
-      if (IOS && kind === "denied") kind = "ios";
+      // On iPhone the mic was already allowed (getUserMedia ran first), so a refusal here is not
+      // a blocked mic: in Safari it means Dictation is switched off in iOS Settings; in other
+      // browsers (Edge/Chrome/in-app) there is no speech service at all.
+      if (IOS && kind === "denied") {
+        // Refused right after a language switch: not a settings problem, just needs one more tap.
+        if (Date.now() - switchedAtRef.current < 2000) {
+          wantRef.current = false;
+          setListening(false);
+          setNotice("relang");
+          return;
+        }
+        kind = IOS_SAFARI ? "iosdict" : "ios";
+      }
       // A pause on a phone ends the utterance with "no-speech": keep going if we already heard words.
       if (kind === "nospeech" && (committedRef.current || gotSpeech) && wantRef.current) return;
       if (kind) {
@@ -105,6 +125,8 @@ export function useVoiceInput({ lang, text, onText }) {
     };
 
     rec.onend = () => {
+      if (!live()) return;
+      sessionTextRef.current = "";
       if (sessionFinal) committedRef.current = `${committedRef.current} ${sessionFinal}`.trim();
       emit("");
       if (wantRef.current && !IOS && restartsRef.current < MAX_RESTARTS) {
@@ -184,34 +206,45 @@ export function useVoiceInput({ lang, text, onText }) {
     }
   }, [runSession]);
 
-  // Language changed while listening → end this utterance (its words are kept) and the
-  // normal restart in onend picks up the new language.
   useEffect(() => {
-    if (langRef.current === lang) return;
     langRef.current = lang;
-    if (!wantRef.current) return;
-    try {
-      recRef.current?.stop();
-    } catch {
-      /* ignore */
-    }
   }, [lang]);
 
-  // Call from the language tap, before changing `lang`. iOS only starts the mic from a tap, so
-  // there we stop and ask for one more tap instead of failing with "not allowed".
-  const beforeLangChange = useCallback(() => {
-    if (!IOS || !wantRef.current) return;
-    wantRef.current = false;
-    try {
-      recRef.current?.stop();
-    } catch {
-      /* ignore */
-    }
-    setListening(false);
-    setNotice("relang");
-  }, []);
+  /**
+   * Call from the language tap itself (before/with changing `lang`). While listening, the words
+   * heard so far are kept and a new session starts at once in the new language — inside the tap,
+   * which iOS requires — so switching back and forth any number of times never stops the mic.
+   */
+  const switchLang = useCallback(
+    (next) => {
+      if (langRef.current === next) return;
+      langRef.current = next;
+      setNotice(null);
+      if (!wantRef.current) return;
+      const old = recRef.current;
+      committedRef.current = `${committedRef.current} ${sessionTextRef.current}`.replace(/\s+/g, " ").trim();
+      sessionTextRef.current = "";
+      recRef.current = null; // old session's late events are now ignored
+      try {
+        old?.abort?.();
+      } catch {
+        /* already ended */
+      }
+      switchedAtRef.current = Date.now();
+      restartsRef.current = 0;
+      try {
+        runSession();
+      } catch {
+        wantRef.current = false;
+        setListening(false);
+        setNotice("relang");
+      }
+    },
+    [runSession],
+  );
 
   const toggle = useCallback(() => (listening ? stop() : start()), [listening, start, stop]);
 
-  return { supported: !!SR, listening, error, notice, toggle, start, stop, beforeLangChange, clearError: () => setError(null) };
+  // iPhone browsers other than Safari have no speech service: use the keyboard's 🎤 instead.
+  return { supported: !!SR, keyboardOnly: IOS && !IOS_SAFARI, listening, error, notice, toggle, start, stop, switchLang, clearError: () => setError(null) };
 }
