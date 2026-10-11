@@ -186,7 +186,8 @@ export function useVoiceInput({ lang, text, onText }) {
         stream.getTracks().forEach((t) => t.stop());
       } catch (e) {
         const name = e?.name || "";
-        if (name === "NotFoundError" || name === "OverconstrainedError") setError("nomic");
+        // NotReadable/Abort: the mic is held by something else, usually a phone call.
+        if (name === "NotFoundError" || name === "OverconstrainedError" || name === "NotReadableError" || name === "AbortError") setError("nomic");
         else if (name === "SecurityError" && micBlockedByPolicy()) setError("blocked");
         else setError("denied");
         return;
