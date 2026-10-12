@@ -41,7 +41,9 @@ return [
     | OAUTH_DEV_BYPASS=true, clicking a provider mints a local demo member.
     */
     'oauth' => [
-        'dev_bypass' => env('OAUTH_DEV_BYPASS', true),
+        // Signs people in WITHOUT Google when no keys are set. Local development only:
+        // off by default, and ignored outside APP_ENV=local (see OAuthController).
+        'dev_bypass' => (bool) env('OAUTH_DEV_BYPASS', false),
     ],
 
     'google' => [

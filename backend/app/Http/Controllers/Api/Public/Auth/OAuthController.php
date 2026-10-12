@@ -23,8 +23,9 @@ class OAuthController extends Controller
     {
         abort_unless(in_array($provider, OAuthService::PROVIDERS, true), 404);
 
-        // Local/dev without provider keys: mint a member session immediately.
-        if (! $this->oauth->isConfigured($provider) && config('services.oauth.dev_bypass')) {
+        // Local development without provider keys: mint a member session immediately.
+        // Never on a real server, even if OAUTH_DEV_BYPASS was left on.
+        if (! $this->oauth->isConfigured($provider) && config('services.oauth.dev_bypass') && app()->environment('local')) {
             $member = $this->oauth->upsertMember($provider, [
                 'id' => "dev-{$provider}",
                 'email' => "{$provider}.dev@goldenagewisdom.org",
@@ -35,7 +36,11 @@ class OAuthController extends Controller
             return $this->finishAndRedirect($member);
         }
 
-        abort_unless($this->oauth->isConfigured($provider), 503, "OAuth provider [{$provider}] is not configured.");
+        if (! $this->oauth->isConfigured($provider)) {
+            report(new \RuntimeException("OAuth provider [{$provider}] is not configured (set its client id/secret/redirect in .env)."));
+
+            return $this->errorRedirect('Google sign-in is not available right now. Please try again later.');
+        }
 
         $state = Str::random(40);
         Cache::put($this->stateKey($state), $provider, now()->addMinutes(10));
