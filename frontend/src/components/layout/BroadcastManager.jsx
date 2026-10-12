@@ -11,7 +11,7 @@ const VIEW_TO_SLUG = { hub: "home", practice: "meditate" };
 export const BROADCAST_SLOT_ATTR = "data-gaw-broadcast-slot";
 
 /**
- * Broadcast button link. Admins type in-site paths like "/register/21-day"; a plain <a> would drop
+ * Broadcast button link. Admins type in-site paths like "/register/41-day"; a plain <a> would drop
  * the app's base path (/staging/preview/) and land on the server's 404, so in-site paths go
  * through the router. Full URLs (https://, wa.me, Zoom…) open in a new tab.
  */
