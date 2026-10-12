@@ -78,6 +78,9 @@ function BroadcastTicker({ b, onDismiss }) {
 }
 
 function BroadcastPopup({ b, onDismiss, isHub }) {
+  // A picture that fails to load (e.g. storage link missing on the server) is hidden, never an empty box.
+  const [imgOk, setImgOk] = useState(true);
+  const hasImg = !!b.content_image_path && imgOk;
   return (
     <div
       className={`gaw-bc-popup animate-[viewIn_0.35s_ease] fixed right-4 z-[70] w-[min(340px,calc(100vw-2rem))] overflow-hidden rounded-2xl border border-[rgba(168,185,160,0.35)] bg-[var(--color-bg)] shadow-[0_20px_50px_-15px_rgba(0,0,0,0.35)] ${
@@ -88,12 +91,12 @@ function BroadcastPopup({ b, onDismiss, isHub }) {
         type="button"
         onClick={onDismiss}
         aria-label="Dismiss"
-        className={`gaw-bc-x absolute top-2.5 right-2.5 z-10 rounded-full bg-black/10 p-1 hover:bg-black/20 ${b.content_image_path ? "text-white/90" : "text-[var(--color-ink)]"}`}
+        className={`gaw-bc-x absolute top-2.5 right-2.5 z-10 rounded-full bg-black/10 p-1 hover:bg-black/20 ${hasImg ? "text-white/90" : "text-[var(--color-ink)]"}`}
       >
         <X size={14} />
       </button>
-      {b.content_image_path && (
-        <img src={storageUrl(b.content_image_path)} alt="" className={b.type === "media_popup" ? "h-36 w-full object-cover" : "h-28 w-full object-cover"} />
+      {hasImg && (
+        <img src={storageUrl(b.content_image_path)} alt="" onError={() => setImgOk(false)} className={b.type === "media_popup" ? "h-36 w-full object-cover" : "h-28 w-full object-cover"} />
       )}
       <div className="flex flex-col gap-1.5 p-4">
         <p className="gaw-bc-title font-body text-[14.5px] font-semibold text-[var(--color-ink)]">{b.title}</p>

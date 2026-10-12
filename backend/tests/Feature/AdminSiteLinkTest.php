@@ -136,4 +136,14 @@ class AdminSiteLinkTest extends TestCase
         $this->postJson('/api/v1/auth/login', ['email' => 'a@b.c', 'password' => 'x'])->assertNotFound();
         $this->postJson('/api/v1/auth/register', ['name' => 'Dummy', 'email' => 'a@b.c', 'password' => 'secret123'])->assertNotFound();
     }
+
+    public function test_google_redirect_never_signs_in_without_google_keys(): void
+    {
+        config(['services.google.client_id' => null, 'services.google.client_secret' => null, 'services.oauth.dev_bypass' => true]);
+
+        $res = $this->get('/api/v1/auth/google/redirect');
+        $res->assertRedirect();
+        $this->assertStringContainsString('/join?error=', $res->headers->get('Location'));
+        $this->assertSame(0, \App\Models\People\Member::count());
+    }
 }
