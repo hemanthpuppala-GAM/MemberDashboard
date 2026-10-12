@@ -64,6 +64,12 @@ return [
 
     // Ask-a-question routing. primary = published call/message line; web = receives every
     // website/QR WhatsApp send. Digits only (E.164 without '+').
+    // Members sign in with Google only. The demo account and email/password sign-up/sign-in are
+    // switched off unless explicitly enabled (local testing).
+    'member_auth' => [
+        'password_and_demo' => (bool) env('MEMBER_PASSWORD_LOGIN', false),
+    ],
+
     'support' => [
         'primary' => env('SUPPORT_PRIMARY', '917396112111'),
         'web' => env('SUPPORT_WEB', '917396119111'),

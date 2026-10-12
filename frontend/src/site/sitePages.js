@@ -2,7 +2,6 @@
 export const SITE_PAGES = [
   { key: "about", label: "About", to: "/about" },
   { key: "mission", label: "Mission", to: "/mission" },
-  { key: "teachings", label: "Teachings", to: "/#teachings" },
   { key: "meditation", label: "Meditation", to: "/meditation" },
   { key: "wisdom", label: "Wisdom", to: "/wisdom" },
   { key: "wellness", label: "Wellness", to: "/wellness" },
@@ -22,9 +21,11 @@ export const EDITABLE_PAGES = ["home", "about", "mission", "meditation", "wisdom
 
 export const OFFICIAL_EMAIL = "goldenageguruteachings@gmail.com";
 export const YOUTUBE_URL = "https://www.youtube.com/@GoldenAgeGurus";
+/** "Watch live" goes to the channel's live/streams tab, not the channel home. */
+export const YOUTUBE_LIVE_URL = "https://www.youtube.com/@GoldenAgeGurus/streams";
 
 /** Side gutter used by the header / utility row. */
 export const GUTTER = "clamp(16px,5vw,72px)";
 
-/** Width at which the 7 page links fit inline in the header (else they move into the menu). */
+/** Width at which the page links fit inline in the header (else they move into the menu). */
 export const NAV_INLINE_MIN = 1200;

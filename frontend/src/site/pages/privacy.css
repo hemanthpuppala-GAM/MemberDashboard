@@ -1,41 +1,45 @@
-/* Privacy.dc.html — standalone dark page (Marcellus + Outfit). Scoped to .gaw-privacy. */
-.gaw-privacy {
-  font-family: "Outfit", sans-serif;
-  color: #efe9dc;
-  -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
-  padding-bottom: env(safe-area-inset-bottom);
+/* /privacy — site theme (cream / ink / gold). Layout + states the inline styles can't express. */
+.gaw-site .priv-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(18px, 3vw, 32px);
+  align-items: start;
 }
-.gaw-privacy *,
-.gaw-privacy *::before,
-.gaw-privacy *::after {
-  box-sizing: border-box;
-}
-.gaw-privacy a {
-  color: #d5b77c;
-  text-decoration: none;
-}
-.gaw-privacy a:hover {
-  color: #e6d3a8;
-}
-.gaw-privacy :focus-visible {
-  outline: 2px solid #e6d3a8;
-  outline-offset: 3px;
-  border-radius: 6px;
-}
-.gaw-privacy button,
-.gaw-privacy input,
-.gaw-privacy textarea,
-.gaw-privacy select {
-  font-family: inherit;
-}
-@media (prefers-reduced-motion: reduce) {
-  .gaw-privacy *,
-  .gaw-privacy *::before,
-  .gaw-privacy *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
+@media (min-width: 900px) {
+  .gaw-site .priv-grid {
+    grid-template-columns: minmax(0, 1.5fr) minmax(280px, 0.8fr);
   }
+  .gaw-site .priv-aside {
+    position: sticky;
+    top: 130px;
+  }
+}
+.gaw-site .priv-list li {
+  position: relative;
+  padding-left: 22px;
+}
+.gaw-site .priv-list li::before {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 0.62em;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #c9a24a;
+}
+.gaw-site .priv-ghost {
+  border: 1px solid rgba(20, 36, 28, 0.5);
+  background: transparent;
+  color: #14241c;
+  transition: background 0.2s, color 0.2s;
+}
+.gaw-site .priv-ghost:hover {
+  background: #14241c;
+  color: #e8cf83;
+}
+.gaw-site .gaw-privacy a:focus-visible,
+.gaw-site .gaw-privacy button:focus-visible {
+  outline: 2px solid #7a5e22;
+  outline-offset: 3px;
 }

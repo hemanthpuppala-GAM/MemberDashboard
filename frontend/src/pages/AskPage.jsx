@@ -128,12 +128,21 @@ export default function AskPage() {
             <img src={logo} alt="" className="h-10 w-10 rounded-full" />
             <span className="hidden font-headline text-[18px] font-bold text-[#14241C] min-[420px]:inline">Golden Age Wisdom</span>
           </Link>
-          <div className="flex gap-1.5">
+          <div className="flex items-center gap-1.5">
             {PAGE_LANGS.map((l) => (
               <Chip key={l.code} selected={lang === l.code} onClick={() => pickPageLang(l)} className="px-3.5">
                 {l.label}
               </Chip>
             ))}
+            {/* Close: back to the website (this page also opens straight from the QR / WhatsApp). */}
+            <Link
+              to="/"
+              aria-label={t.close}
+              title={t.close}
+              className="ml-1 flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[rgba(20,36,28,0.18)] bg-white text-[20px] leading-none text-[#14241C] hover:bg-[#FFFDF8]"
+            >
+              ✕
+            </Link>
           </div>
         </div>
 

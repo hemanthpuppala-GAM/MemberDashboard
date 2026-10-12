@@ -183,7 +183,7 @@ export default function RegistrationFormEditorPage() {
         <div className="flex flex-col gap-6">
           <Card title="Form details">
             <div className="flex flex-col gap-5">
-              <Field label="Title" required hint='Shown at the top of the form, e.g. "21 Days Guided Meditation with Hari Sir"'>
+              <Field label="Title" required hint='Shown at the top of the form, e.g. "41 Days Guided Meditation with Hari Sir"'>
                 <TextInput value={form.title} onChange={(e) => updateForm("title")(e.target.value)} disabled={!canEdit} />
               </Field>
               <Field label="Link slug" required hint={`Shareable link: ${registrationFormPublicUrl(form.slug || "your-slug")}`}>

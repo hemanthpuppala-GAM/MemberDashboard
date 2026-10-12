@@ -199,7 +199,7 @@ export default function BroadcastsPage() {
             )}
             <div className="grid grid-cols-2 gap-4">
               <Field label="CTA label" hint="Leave both blank to hide the button"><TextInput value={form.cta_label} onChange={(e) => setForm((f) => ({ ...f, cta_label: e.target.value }))} /></Field>
-              <Field label="CTA URL" hint="Required if CTA label is set"><TextInput value={form.cta_url} onChange={(e) => setForm((f) => ({ ...f, cta_url: e.target.value }))} /></Field>
+              <Field label="CTA URL" hint="A page on this site (e.g. /events, /register/41-day) or a full link (https://…). Required if CTA label is set."><TextInput value={form.cta_url} onChange={(e) => setForm((f) => ({ ...f, cta_url: e.target.value }))} /></Field>
             </div>
             <Field label="Target pages" hint="None selected = every page, including the member dashboard">
               <div className="flex flex-wrap gap-1.5">

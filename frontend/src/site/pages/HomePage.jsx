@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { SitePage, AdminEditLink } from "../SiteChrome";
+import { SitePage, AdminEditLink, DailySitLink } from "../SiteChrome";
 import { useMemberBadge } from "../useMemberBadge";
 import { useSiteContent } from "../useSiteContent";
 import { siteAsset } from "../siteAssets";
@@ -282,8 +282,7 @@ export default function HomePage() {
               <span aria-hidden="true" style={{ display: "inline-block", width: 0, height: 0, borderLeft: "7px solid currentColor", borderTop: "4.5px solid transparent", borderBottom: "4.5px solid transparent" }} />
               {c.watchLabel}
             </a>
-              <Link
-                to="/#world-sits"
+              <DailySitLink
                 className="home-sits-cta"
                 style={{ display: "inline-flex", alignItems: "center", gap: 12, height: 48, padding: "0 22px 0 16px", borderRadius: 999, background: "linear-gradient(90deg,#E8CF83,#C9A24A)", border: "1px solid rgba(255,255,255,.5)", boxShadow: "0 1px 0 rgba(255,255,255,.6) inset,0 12px 30px -10px rgba(201,162,74,.7)", whiteSpace: "nowrap", ...(tightFit ? { whiteSpace: "normal", height: "auto", minHeight: 48, padding: "8px 20px 8px 16px", maxWidth: "100%" } : {}) }}
               >
@@ -292,7 +291,7 @@ export default function HomePage() {
                   <span style={{ fontSize: 10, fontWeight: 800, letterSpacing: tightFit ? ".12em" : ".22em", textTransform: "uppercase", color: "#5A3C0E" }}>{sits.heroKicker}</span>
                   <span style={{ fontSize: 12.5, fontWeight: 700, letterSpacing: ".02em", color: "#14241C" }}>{sits.heroLine}</span>
                 </span>
-              </Link>
+              </DailySitLink>
           </div>
         </div>
 

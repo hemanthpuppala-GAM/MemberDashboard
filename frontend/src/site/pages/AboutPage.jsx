@@ -47,7 +47,7 @@ export default function AboutPage() {
           <h1 className="serif" style={{ margin: 0, fontWeight: 500, fontSize: "clamp(36px,4.4vw,66px)", lineHeight: 1, letterSpacing: "-.015em", textWrap: "balance", color: "#12201A", ...rise(0.1) }}>
             {c.title} <em style={{ color: "#8A6F34" }}>{c.titleAccent}</em>
           </h1>
-          <p style={{ margin: 0, fontSize: "clamp(15px,1.15vw,18px)", lineHeight: 1.6, color: "#3A3128", textWrap: "pretty", maxWidth: "54ch", ...rise(0.2) }}>{c.intro}</p>
+          <p style={{ margin: 0, fontSize: "clamp(15px,1.15vw,18px)", lineHeight: 1.6, color: "#3A3128", textWrap: "pretty", maxWidth: "60ch", ...rise(0.2) }}>{c.intro}</p>
           <div style={{ display: "flex", flexWrap: "wrap", gap: "10px 18px", ...rise(0.3) }}>
             {[c.badge1, c.badge2].filter(Boolean).map((b) => (
               <span key={b} style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "8px 14px", borderRadius: 999, border: "1px solid rgba(138,111,52,.35)", fontSize: 11, fontWeight: 700, letterSpacing: ".14em", textTransform: "uppercase", color: "#7A5E22" }}>
@@ -55,22 +55,25 @@ export default function AboutPage() {
               </span>
             ))}
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: mid ? "repeat(3,minmax(0,1fr))" : "1fr", gap: 14, marginTop: "clamp(6px,1vh,14px)", ...rise(0.4) }}>
-            {(c.strengths || []).map((g, i) => (
-              <article
-                key={i}
-                style={{ display: "flex", flexDirection: "column", gap: 8, padding: "18px 18px 20px", borderRadius: 18, background: "rgba(255,253,248,.55)", border: "1px solid rgba(255,255,255,.7)", boxShadow: "0 1px 0 rgba(255,255,255,.8) inset,0 12px 30px -14px rgba(60,42,16,.28)" }}
-              >
-                <span aria-hidden="true" className="serif" style={{ fontSize: 26, lineHeight: 1, color: "#8A6F34" }}>
-                  {g.glyph}
-                </span>
-                <h2 className="serif" style={{ margin: 0, fontWeight: 500, fontSize: 22, lineHeight: 1.1, color: "#12201A" }}>
-                  {g.title}
-                </h2>
-                <p style={{ margin: 0, fontSize: 13.5, lineHeight: 1.55, color: "#3A3128", textWrap: "pretty" }}>{g.body}</p>
-              </article>
-            ))}
-          </div>
+        </div>
+      </section>
+
+      <section aria-label="Dr. Hari Krishna's background" style={{ padding: `0 ${PAD} clamp(40px,6vh,72px)` }}>
+        <div style={{ maxWidth: 1360, margin: "0 auto", display: "grid", gridTemplateColumns: desk ? "repeat(3,minmax(0,1fr))" : "1fr", gap: desk ? 18 : 14, ...rise(0.4) }}>
+          {(c.strengths || []).map((g, i) => (
+            <article
+              key={i}
+              style={{ display: "flex", flexDirection: "column", gap: 10, padding: "clamp(20px,2vw,28px)", borderRadius: 20, background: "rgba(255,253,248,.55)", border: "1px solid rgba(255,255,255,.7)", boxShadow: "0 1px 0 rgba(255,255,255,.8) inset,0 12px 30px -14px rgba(60,42,16,.28)" }}
+            >
+              <span aria-hidden="true" className="serif" style={{ fontSize: 28, lineHeight: 1, color: "#8A6F34" }}>
+                {g.glyph}
+              </span>
+              <h2 className="serif" style={{ margin: 0, fontWeight: 500, fontSize: "clamp(22px,1.8vw,26px)", lineHeight: 1.15, color: "#12201A", textWrap: "balance" }}>
+                {g.title}
+              </h2>
+              <p style={{ margin: 0, maxWidth: "68ch", fontSize: 15, lineHeight: 1.65, color: "#3A3128", textWrap: "pretty" }}>{g.body}</p>
+            </article>
+          ))}
         </div>
       </section>
 

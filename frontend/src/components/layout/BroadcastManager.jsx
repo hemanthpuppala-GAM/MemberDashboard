@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
+import { Link } from "react-router-dom";
 import { X } from "lucide-react";
 import { publicApi, storageUrl } from "../../lib/api";
 import { getVisitorType, isBroadcastSuppressed, markBroadcastSeen } from "../../lib/broadcasts";
@@ -9,14 +10,47 @@ const VIEW_TO_SLUG = { hub: "home", practice: "meditate" };
 /** New public site: SiteHeader renders this inside its sticky head so a banner stays pinned with the header. */
 export const BROADCAST_SLOT_ATTR = "data-gaw-broadcast-slot";
 
+/**
+ * Broadcast button link. Admins type in-site paths like "/register/41-day"; a plain <a> would drop
+ * the app's base path (/staging/preview/) and land on the server's 404, so in-site paths go
+ * through the router. Full URLs (https://, wa.me, Zoom…) open in a new tab.
+ */
+function CtaLink({ url, className, children, onClick }) {
+  const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+  let u = String(url || "").trim();
+  const sameSite = u.startsWith(window.location.origin);
+  if (sameSite) u = u.slice(window.location.origin.length) || "/";
+  if (u.startsWith("/") && !u.startsWith("//")) {
+    if (base && (u === base || u.startsWith(`${base}/`))) u = u.slice(base.length) || "/";
+    return (
+      <Link to={u} className={className} onClick={onClick}>
+        {children}
+      </Link>
+    );
+  }
+  if (u.startsWith("#")) {
+    return (
+      <a href={u} className={className} onClick={onClick}>
+        {children}
+      </a>
+    );
+  }
+  const href = /^[a-z][a-z0-9+.-]*:/i.test(u) ? u : `https://${u}`;
+  return (
+    <a href={href} target="_blank" rel="noopener noreferrer" className={className} onClick={onClick}>
+      {children}
+    </a>
+  );
+}
+
 function BroadcastBanner({ b, onDismiss }) {
   return (
     <div className="gaw-bc-banner relative z-40 flex items-center justify-center gap-3 bg-[var(--color-ink)] px-10 py-2.5 text-center">
       <span className="text-[13px] font-medium text-white">{b.content_text}</span>
       {b.cta_label && b.cta_url && (
-        <a href={b.cta_url} className="gaw-bc-cta shrink-0 rounded-full bg-white/15 px-3 py-1 text-[11.5px] font-semibold text-white transition-colors hover:bg-white/25">
+        <CtaLink url={b.cta_url} onClick={onDismiss} className="gaw-bc-cta shrink-0 rounded-full bg-white/15 px-3 py-1 text-[11.5px] font-semibold text-white transition-colors hover:bg-white/25">
           {b.cta_label}
-        </a>
+        </CtaLink>
       )}
       <button type="button" onClick={onDismiss} aria-label="Dismiss" className="gaw-bc-x absolute right-3 text-white/60 hover:text-white">
         <X size={15} />
@@ -65,12 +99,13 @@ function BroadcastPopup({ b, onDismiss, isHub }) {
         <p className="gaw-bc-title font-body text-[14.5px] font-semibold text-[var(--color-ink)]">{b.title}</p>
         {b.content_text && <p className="text-[13px] leading-relaxed text-[var(--color-muted)]">{b.content_text}</p>}
         {b.cta_label && b.cta_url && (
-          <a
-            href={b.cta_url}
+          <CtaLink
+            url={b.cta_url}
+            onClick={onDismiss}
             className="gaw-bc-cta mt-1.5 w-fit rounded-full bg-gradient-to-br from-[var(--color-gold)] to-[var(--color-gold-deep)] px-4 py-1.5 text-[12.5px] font-semibold text-[var(--color-on-gold)] transition-all hover:shadow-[0_0_16px_rgba(198,161,91,0.5)]"
           >
             {b.cta_label}
-          </a>
+          </CtaLink>
         )}
       </div>
     </div>

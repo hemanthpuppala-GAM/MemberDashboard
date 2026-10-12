@@ -1,36 +1,39 @@
 {
-  "eyebrow": "Wisdom",
-  "title": "Ancient truths,",
-  "titleAccent": "scientific clarity",
+  "eyebrow": "Wisdom without boundaries",
+  "title": "Ancient Wisdom. Modern Science.",
+  "titleAccent": "Universal Understanding.",
+  "intro": "Wisdom transcends time, cultures, and traditions. At Golden Age, Dr. Hari Krishna brings together ancient Indian scriptures, teachings of spiritual masters from the East and West, and modern scientific perspectives to explore life's deepest questions. Through simple explanations and practical examples, he makes profound spiritual knowledge accessible to everyone, encouraging curiosity, awareness, and self-discovery.",
   "cards": [
-    { "glyph": "𑀰", "title": "Living Upanishads", "body": "Aham Brahmasmi and Tat Tvam Asi taught as living truths — ancient wisdom made practical for modern minds." },
-    { "glyph": "⚛", "title": "Science meets spirit", "body": "Meditation, prana and energy explained through biology, psychology and physiology — logic and self-inquiry, never blind belief." },
-    { "glyph": "༄", "title": "Demystifying kundalini", "body": "Genuine awakening cannot be forced — it unfolds naturally through meditation, inner purification and sustained practice." },
-    { "glyph": "✦", "title": "True markers of growth", "body": "Less fear, anger and anxiety; more compassion, awareness and wisdom — real change, not mystical display." }
+    {
+      "glyph": "𑀰",
+      "title": "Ancient Scriptures & Timeless Teachings",
+      "body": "From the Upanishads, Bhagavad Gita, Ashtavakra Gita, and Yoga Sutras to other sacred texts, Dr. Hari Krishna explores ancient wisdom in a way that connects with modern life. His teachings help seekers understand concepts such as karma, dharma, consciousness, self-realization, and the true nature of existence."
+    },
+    {
+      "glyph": "✦",
+      "title": "Wisdom of Spiritual Masters",
+      "body": "Spiritual wisdom is not limited to one tradition or culture. Dr. Hari Krishna explores the teachings of great masters such as Buddha, Mahavatar Babaji, Adi Shankaracharya, Swami Vivekananda, Ramana Maharshi, and many others. Drawing from both Eastern and Western philosophies, he highlights different perspectives on meditation, awareness, inner transformation, and the search for truth."
+    },
+    {
+      "glyph": "⚛",
+      "title": "Where Science Meets Spirituality",
+      "body": "Can modern science help us understand ancient spiritual ideas? Dr. Hari Krishna explores the fascinating relationship between meditation, consciousness, neuroscience, psychology, physics, and spirituality. By examining scientific understanding alongside traditional spiritual teachings, he encourages deeper inquiry into the mind, body, energy, and human experience."
+    }
   ],
-  "archKicker": "The Architecture of Reality",
-  "archTitle": "You are an electromagnetic broadcast",
-  "archSub": "The heart generates a magnetic field ~100× stronger than the brain's — measurable up to 15 feet around the body. What you feel, you transmit.",
-  "staticLabel": "Static noise · stress",
-  "staticTag": "cortisol · adrenaline",
-  "staticBody": "Fear and hurry make the heart rhythm jagged and the brain scattered — an incoherent signal that broadcasts, and attracts, more static.",
-  "coherentLabel": "Coherence · meditation",
-  "coherentTag": "oxytocin · DHEA",
-  "coherentBody": "A quiet heart broadcasts a smooth, organised wave. Like a tuning fork, a coherent field sets the space around it humming in sympathy.",
-  "principles": [
-    { "glyph": "◉", "title": "The observer", "body": "Attention collapses possibility into experience — what you steadily watch, you make real." },
-    { "glyph": "∞", "title": "Entanglement", "body": "Your field is never isolated — influence travels between hearts without physical contact." },
-    { "glyph": "♒", "title": "Resonance", "body": "A coherent field attracts matching people, opportunities and events — like answers like." }
-  ],
-  "protocolKicker": "The Coherence Protocol · daily",
-  "protocol": [
-    { "n": "01", "title": "Morning coherence", "body": "Before opening your eyes: 10 minutes of slow 5-second rhythmic breathing — set the day's frequency first." },
-    { "n": "02", "title": "Scan & interrupt", "body": "Catch static in real time. On tension, breathe 5-5-7 — the longer exhale calms the nervous system out of survival mode." },
-    { "n": "03", "title": "Feel it done", "body": "The field responds to feeling, not thought — gratitude in advance broadcasts the signal of a life already fulfilled." }
-  ],
+  "libraryKicker": "Golden Age Wisdom Library",
+  "libraryTitle": "Explore the Golden Age Wisdom Library",
+  "libraryBody": "Our vision is to make Golden Age a growing hub for spiritual knowledge — a place where anyone can discover ancient scriptures, learn about spiritual masters, explore different philosophies, and deepen their understanding. Through Dr. Hari Krishna's wisdom talks and educational resources, we aim to make this knowledge freely accessible to everyone.",
+  "libraryClose": "Explore. Question. Understand. Experience.",
+  "libraryCloseSub": "One place to discover wisdom from across the world.",
   "quotes": [
-    { "text": "“He explains spiritual principles in a simple, logical and scientific way.”", "name": "Sreenivas Kumar G." },
-    { "text": "“Incredibly knowledgeable — a walking encyclopedia, with answers to even the most profound spiritual questions.”", "name": "Kavitha Reddy" }
+    {
+      "text": "“He explains spiritual principles in a simple, logical and scientific way.”",
+      "name": "Sreenivas Kumar G."
+    },
+    {
+      "text": "“Incredibly knowledgeable — a walking encyclopedia, with answers to even the most profound spiritual questions.”",
+      "name": "Kavitha Reddy"
+    }
   ],
   "filmLabel": "Watch the intro film",
   "filmHref": "https://www.youtube.com/@GoldenAgeGurus",

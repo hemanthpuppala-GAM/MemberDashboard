@@ -2,6 +2,19 @@
 
 Format: date · item · status (🟡 designed / ✅ implemented @sha / ⬅ code change to mirror in Design / ↩ mirrored in Design)
 
+## 2026-10-12 — Owner corrections round (code first)
+- ⬅ code change: header page links drop "Teachings" (it only scrolled the home page) — About · Mission · Meditation · Wisdom · Wellness · Events.
+- ⬅ code change: every "Watch live" goes to the YouTube live tab (youtube.com/@GoldenAgeGurus/streams), not the channel home.
+- ⬅ code change: "Join the daily sit" (sub-page footers, Events footer — was "Join free") and the home "Next group meditation" pill open the Zoom room (admin Settings → Zoom, else bundled link) in a new tab.
+- ⬅ code change: signed-in header pill reads "My dashboard" (initial avatar) instead of the member's first name.
+- ⬅ code change: browser-tab icon is the Golden Age logo (was the default Vite bolt).
+- ⬅ code change: Ask / Member support page gets a ✕ (top-right) back to the website (EN/TE/KN label).
+- ⬅ code change: footer support row = two labelled pills "📞 Customer care +91 7396 112 111" and "💬 WhatsApp +91 7396 119 111" (numbers from Settings).
+- ⬅ code change: broadcasts show once per visit (not on every page change); in-site CTA links keep the site base path (fixes the 404).
+- ⬅ code change: Volunteer and Privacy re-themed to the cream site style (shared header, breadcrumb, footer). New footer copy — Volunteer "Seva is the movement / Every hour offered keeps the sits free and the doors open."; Privacy "Written plainly, on purpose / A non-profit with no commercial interest in your data."
+- ⬅ code change: owner copy on About (portrait caption "Founder, Golden Age"; Education / 25 Years / Kundalini cards below the hero), Mission (collective-energy copy; yugas story and "8%" goal removed; button "Join us"), Meditation (5 steps, best time / how long / goal, The Science Simply, Recommends, Other practices with descriptions, "Gammuga Kurcho", 4 Kundalini blocks), Wisdom (Wisdom without boundaries + 3 sections + Library; "Architecture of Reality" removed). Wellness golden-rules label "Golden Age".
+- Backend: member demo account and email/password sign-in are off unless MEMBER_PASSWORD_LOGIN=true (Google only in production).
+
 ## 2026-10-12 — Admin panel modules feed the site and support desk (code first; no design handoff)
 - ⬅ code change: site quotes (Home voices, About/Wisdom/Wellness/Events quotes) come from admin Testimonials (featured first, else published); bundled quotes are the fallback. The 12 existing quotes were copied into Testimonials.
 - ⬅ code change: Home "Sits around the world", Events daily cards and Upcoming/Past gatherings come from admin Live Sessions (sessions can repeat every day, with a time zone). Events second card title becomes "Around the world" when sessions are outside USA/UK; gatherings get a "Join →" link when they have one.

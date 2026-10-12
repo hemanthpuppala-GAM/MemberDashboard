@@ -56,7 +56,7 @@ export default function RegistrationFormsPage() {
         <div>
           <h1 className="text-[24px] font-bold text-[var(--a-text-primary)]">Registration forms</h1>
           <p className="mt-1 text-[13.5px] text-[var(--a-text-muted)]">
-            Build a form for a program (e.g. "21 Days Guided Meditation with Hari Sir"), share the link, then pull the
+            Build a form for a program (e.g. "41 Days Guided Meditation with Hari Sir"), share the link, then pull the
             registrant list to add people to WhatsApp.
           </p>
         </div>

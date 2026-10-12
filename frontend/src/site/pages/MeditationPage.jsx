@@ -25,6 +25,13 @@ const SMALL_CARD = {
   border: "1px solid rgba(255,255,255,.7)",
   boxShadow: "0 1px 0 rgba(255,255,255,.8) inset,0 12px 30px -14px rgba(60,42,16,.28)",
 };
+const FOOTER_PILL = { display: "inline-flex", alignItems: "center", height: 44, borderRadius: 999, fontSize: 11.5, letterSpacing: ".12em", textTransform: "uppercase", whiteSpace: "nowrap" };
+/** Long copy fields keep paragraphs as blank-line separated text (editable in one admin textarea). */
+const paragraphs = (text) =>
+  String(text || "")
+    .split(/\n\s*\n/)
+    .map((t) => t.trim())
+    .filter(Boolean);
 const LABEL = { fontSize: 10.5, fontWeight: 700, letterSpacing: ".18em", textTransform: "uppercase", color: "#7A5E22" };
 
 /** Defaults from Meditation.dc.html DEFAULTS that content/meditation.json may not carry. */
@@ -37,20 +44,21 @@ const FALLBACKS = {
   howClose: "That's the whole method. Nothing to buy, nothing to master.",
   scienceKicker: "The science, simply",
   recKicker: "Dr. Hari Krishna recommends",
-  techKicker: "Other techniques people use",
+  techKicker: "Other meditation & breathing practices",
   bodyLead: "And the body?",
   bodyCta: "Detox diet →",
   bodyHref: "Wellness.dc.html#detox",
   pathLabel: "Where are you on the path?",
   simpleLabel: "New to this",
   deepLabel: "Seasoned meditator",
-  simpleLead: "As Dr. HariKrishna says —",
-  simpleQuote: "“Gammuga kurcho”",
-  simpleTail: "means simply sit, quietly.",
+  simpleLead: "",
+  simpleQuote: "“Gammuga Kurcho”",
+  simpleTail: "— Dr. Hari Krishna",
   cta: "Take the 41-day challenge",
   ctaHref: "Member Flow.dc.html",
   footerTitle: "Sit with us — free, every day.",
   footerSub: "Guided live on YouTube, Monday to Saturday. No experience needed.",
+  watchHref: "https://www.youtube.com/@GoldenAgeGurus/streams",
 };
 
 const DESIGN_ROUTES = {
@@ -175,12 +183,12 @@ export default function MeditationPage() {
                     <span className="serif" style={{ fontWeight: 500, fontSize: 20, lineHeight: 1.15, color: "#12201A" }}>
                       {h.title}
                     </span>
-                    <span style={{ fontSize: 13.5, lineHeight: 1.55, color: "#3A3128", textWrap: "pretty" }}>{h.body}</span>
+                    <span style={{ fontSize: 14.5, lineHeight: 1.6, color: "#3A3128", textWrap: "pretty" }}>{h.body}</span>
                   </div>
                 </li>
               ))}
             </ol>
-            <span style={{ fontSize: 13, fontStyle: "italic", color: "#6B5E48" }}>{c.howClose}</span>
+            <span style={{ fontSize: 14, lineHeight: 1.55, fontStyle: "italic", color: "#6B5E48", textWrap: "pretty" }}>{c.howClose}</span>
           </article>
 
           <figure style={{ margin: 0, position: "relative", display: "flex", flexDirection: "column", borderRadius: 24, overflow: "hidden", background: "#14241C", minHeight: 320, boxShadow: "0 30px 60px -30px rgba(20,14,6,.6)" }}>
@@ -201,58 +209,60 @@ export default function MeditationPage() {
         {/* Quick answers */}
         <div style={{ display: "grid", gridTemplateColumns: mid ? "repeat(3,minmax(0,1fr))" : "1fr", gap: 14, ...rise(0.3) }}>
           {(c.answers || []).map((q, i) => (
-            <article key={i} style={SMALL_CARD}>
-              <span style={LABEL}>{q.label}</span>
-              <span className="serif" style={{ fontWeight: 500, fontSize: 22, lineHeight: 1.15, color: "#12201A" }}>
+            <article key={i} style={{ ...SMALL_CARD, padding: "20px 22px 22px" }}>
+              {q.label ? <span style={LABEL}>{q.label}</span> : null}
+              <h2 className="serif" style={{ margin: "0 0 4px", fontWeight: 500, fontSize: 22, lineHeight: 1.15, color: "#12201A" }}>
                 {q.answer}
-              </span>
-              <span style={{ fontSize: 13, lineHeight: 1.5, color: "#3A3128", textWrap: "pretty" }}>{q.detail}</span>
+              </h2>
+              <p style={{ margin: 0, fontSize: 14, lineHeight: 1.65, color: "#3A3128", textWrap: "pretty" }}>{q.detail}</p>
             </article>
           ))}
         </div>
 
-        {/* Science + recommendation */}
-        <div style={{ display: "grid", gridTemplateColumns: desk ? "minmax(0,1fr) minmax(0,1fr)" : "1fr", gap: 18, alignItems: "stretch", ...rise(0.35) }}>
-          <article
-            style={{ display: "flex", gap: 22, alignItems: "center", flexWrap: "wrap", padding: "clamp(20px,2.4vw,28px)", borderRadius: 24, background: "linear-gradient(170deg,#1B3328 0%,#14241C 100%)", color: "#F6F1E6", boxShadow: "0 30px 60px -30px rgba(20,14,6,.6)" }}
-          >
-            <TorusIcon />
-            <div style={{ flex: 1, minWidth: 220, display: "flex", flexDirection: "column", gap: 8 }}>
-              <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: ".22em", textTransform: "uppercase", color: "#C9A24A" }}>{c.scienceKicker}</span>
-              <h2 className="serif" style={{ margin: 0, fontWeight: 500, fontSize: 24, lineHeight: 1.15, color: "#F6F1E6" }}>
-                {c.scienceTitle}
-              </h2>
-              <p style={{ margin: 0, fontSize: 13.5, lineHeight: 1.6, color: "rgba(246,241,230,.82)", textWrap: "pretty" }}>{c.scienceBody}</p>
-            </div>
-          </article>
+        {/* The science, simply */}
+        <article
+          aria-labelledby="gaw-med-science"
+          style={{ display: "flex", gap: "clamp(20px,3vw,40px)", alignItems: desk ? "flex-start" : "center", flexDirection: mid ? "row" : "column", padding: "clamp(22px,3vw,40px)", borderRadius: 24, background: "linear-gradient(170deg,#1B3328 0%,#14241C 100%)", color: "#F6F1E6", boxShadow: "0 30px 60px -30px rgba(20,14,6,.6)", ...rise(0.35) }}
+        >
+          <TorusIcon />
+          <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: 12 }}>
+            <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: ".22em", textTransform: "uppercase", color: "#C9A24A" }}>{c.scienceKicker}</span>
+            <h2 id="gaw-med-science" className="serif" style={{ margin: 0, fontWeight: 500, fontSize: "clamp(24px,2.4vw,32px)", lineHeight: 1.15, color: "#F6F1E6" }}>
+              {c.scienceTitle}
+            </h2>
+            {paragraphs(c.scienceBody).map((t, i) => (
+              <p key={i} style={{ margin: 0, maxWidth: "68ch", fontSize: 15, lineHeight: 1.7, color: "rgba(246,241,230,.84)", textWrap: "pretty" }}>
+                {t}
+              </p>
+            ))}
+            {c.scienceClose ? (
+              <p className="serif" style={{ margin: "6px 0 0", maxWidth: "40ch", fontSize: "clamp(19px,1.6vw,22px)", fontStyle: "italic", lineHeight: 1.35, color: "#E8CF83", textWrap: "balance" }}>
+                {c.scienceClose}
+              </p>
+            ) : null}
+          </div>
+        </article>
 
-          <article style={{ ...CARD, display: "flex", flexDirection: "column", gap: 12, padding: "clamp(20px,2.4vw,28px)" }}>
+        {/* Recommendation + other practices */}
+        <div style={{ display: "grid", gridTemplateColumns: desk ? "minmax(0,1fr) minmax(0,1fr)" : "1fr", gap: 18, alignItems: "stretch", ...rise(0.35) }}>
+          <article style={{ ...CARD, display: "flex", flexDirection: "column", gap: 14, padding: "clamp(20px,2.4vw,28px)" }}>
             <div
-              style={{ display: "grid", gridTemplateColumns: "28px minmax(0,1fr)", gap: 12, padding: 16, borderRadius: 16, background: "linear-gradient(135deg,rgba(232,207,131,.4),rgba(232,207,131,.12))", border: "1px solid rgba(201,162,74,.5)" }}
+              style={{ display: "grid", gridTemplateColumns: "28px minmax(0,1fr)", gap: 14, padding: "clamp(16px,2vw,22px)", borderRadius: 16, background: "linear-gradient(135deg,rgba(232,207,131,.4),rgba(232,207,131,.12))", border: "1px solid rgba(201,162,74,.5)" }}
             >
               <span aria-hidden="true" style={{ width: 28, height: 28, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", background: "#14241C", color: "#E8CF83", fontSize: 12 }}>
                 ✦
               </span>
-              <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                 <span style={LABEL}>{c.recKicker}</span>
-                <span className="serif" style={{ fontWeight: 500, fontSize: 22, lineHeight: 1.15, color: "#12201A" }}>
+                <h2 className="serif" style={{ margin: 0, fontWeight: 500, fontSize: 24, lineHeight: 1.15, color: "#12201A" }}>
                   {c.recTitle}
-                </span>
-                <span style={{ fontSize: 13.5, lineHeight: 1.55, color: "#3A3128", textWrap: "pretty" }}>{c.recBody}</span>
+                </h2>
+                <p style={{ margin: 0, fontSize: 15, lineHeight: 1.65, color: "#3A3128", textWrap: "pretty" }}>{c.recBody}</p>
               </div>
             </div>
-            <span style={{ ...LABEL, color: "#6B5E48" }}>{c.techKicker}</span>
-            <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexWrap: "wrap", gap: 8 }}>
-              {(c.techniques || []).map((name) => (
-                <li key={name} style={{ padding: "6px 14px", borderRadius: 999, border: "1px solid rgba(138,111,52,.35)", fontSize: 12, fontWeight: 600, color: "#3A3128", whiteSpace: "nowrap" }}>
-                  {name}
-                </li>
-              ))}
-            </ul>
-            <span style={{ fontSize: 13, lineHeight: 1.5, color: "#6B5E48" }}>{c.techNote}</span>
-            <span aria-hidden="true" style={{ height: 1, background: "rgba(138,111,52,.2)" }} />
+            <span aria-hidden="true" style={{ height: 1, background: "rgba(138,111,52,.2)", marginTop: "auto" }} />
             <div style={{ display: "flex", gap: 14, alignItems: "center", flexWrap: "wrap" }}>
-              <p style={{ margin: 0, flex: 1, minWidth: 200, fontSize: 13.5, lineHeight: 1.55, color: "#3A3128" }}>
+              <p style={{ margin: 0, flex: 1, minWidth: 200, fontSize: 14, lineHeight: 1.6, color: "#3A3128" }}>
                 <strong style={{ fontWeight: 600, color: "#8A6F34" }}>{c.bodyLead}</strong> {c.bodyText}
               </p>
               <DesignLink
@@ -264,6 +274,31 @@ export default function MeditationPage() {
                 {c.bodyCta}
               </DesignLink>
             </div>
+          </article>
+
+          <article aria-labelledby="gaw-med-tech" style={{ ...CARD, display: "flex", flexDirection: "column", gap: 12, padding: "clamp(20px,2.4vw,28px)" }}>
+            <h2 id="gaw-med-tech" style={{ ...LABEL, margin: 0 }}>
+              {c.techKicker}
+            </h2>
+            {c.techIntro ? <p style={{ margin: 0, fontSize: 14, lineHeight: 1.6, color: "#3A3128", textWrap: "pretty" }}>{c.techIntro}</p> : null}
+            <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: 8 }}>
+              {(c.techniques || []).map((t, i) => {
+                const name = typeof t === "string" ? t : t?.name;
+                const desc = typeof t === "string" ? "" : t?.desc;
+                return (
+                  <li key={i} style={{ display: "grid", gridTemplateColumns: "10px minmax(0,1fr)", gap: 12, alignItems: "baseline", padding: "10px 14px", borderRadius: 14, border: "1px solid rgba(138,111,52,.25)", background: "rgba(255,253,248,.5)" }}>
+                    <span aria-hidden="true" style={{ width: 7, height: 7, borderRadius: "50%", background: "#C9A24A", transform: "translateY(-1px)" }} />
+                    <span style={{ fontSize: 14, lineHeight: 1.55, color: "#3A3128", textWrap: "pretty" }}>
+                      <strong className="serif" style={{ fontWeight: 500, fontSize: 18, color: "#12201A" }}>
+                        {name}
+                      </strong>
+                      {desc ? <> — {desc}</> : null}
+                    </span>
+                  </li>
+                );
+              })}
+            </ul>
+            <p style={{ margin: 0, fontSize: 14, lineHeight: 1.6, color: "#6B5E48", textWrap: "pretty" }}>{c.techNote}</p>
           </article>
         </div>
 
@@ -286,24 +321,24 @@ export default function MeditationPage() {
           <div id="gaw-med-panel" role="tabpanel" aria-labelledby={simple ? "gaw-med-tab-simple" : "gaw-med-tab-deep"} style={{ width: "100%", display: "flex", flexDirection: "column", gap: 16 }}>
             {simple ? (
               <p style={{ margin: 0, width: "100%", padding: "18px 24px", borderRadius: 18, border: "1px dashed rgba(201,162,74,.6)", textAlign: "center", fontSize: 15, fontStyle: "italic", color: "#3A3128" }}>
-                {c.simpleLead}{" "}
-                <span className="serif" style={{ fontStyle: "normal", fontWeight: 500, fontSize: 20, color: "#12201A" }}>
+                {c.simpleLead ? <>{c.simpleLead} </> : null}
+                <span className="serif" style={{ fontStyle: "normal", fontWeight: 500, fontSize: 24, color: "#12201A" }}>
                   {c.simpleQuote}
                 </span>{" "}
-                {c.simpleTail}
+                <span style={{ whiteSpace: "nowrap" }}>{c.simpleTail}</span>
               </p>
             ) : (
               <>
-                <div style={{ width: "100%", display: "grid", gridTemplateColumns: desk ? "repeat(4,minmax(0,1fr))" : mid ? "repeat(2,minmax(0,1fr))" : "1fr", gap: 14 }}>
+                <div style={{ width: "100%", display: "grid", gridTemplateColumns: mid ? "repeat(2,minmax(0,1fr))" : "1fr", gap: 14 }}>
                   {(c.deepCards || []).map((d, i) => (
-                    <article key={i} style={SMALL_CARD}>
+                    <article key={i} style={{ ...SMALL_CARD, gap: 8, padding: "20px 22px 22px" }}>
                       <span aria-hidden="true" className="serif" style={{ fontSize: 22, lineHeight: 1, color: "#8A6F34" }}>
                         {d.glyph}
                       </span>
                       <h3 className="serif" style={{ margin: 0, fontWeight: 500, fontSize: 21, lineHeight: 1.15, color: "#12201A" }}>
                         {d.title}
                       </h3>
-                      <span style={{ fontSize: 13, lineHeight: 1.55, color: "#3A3128", textWrap: "pretty" }}>{d.body}</span>
+                      <p style={{ margin: 0, maxWidth: "68ch", fontSize: 14, lineHeight: 1.65, color: "#3A3128", textWrap: "pretty" }}>{d.body}</p>
                     </article>
                   ))}
                 </div>
@@ -323,7 +358,14 @@ export default function MeditationPage() {
         </div>
       </section>
 
-      <SiteFooter title={c.footerTitle} sub={c.footerSub} />
+      <SiteFooter title={c.footerTitle} sub={c.footerSub}>
+        <a href={c.watchHref} target="_blank" rel="noopener noreferrer" className="gaw-pill-ghost-light" style={{ ...FOOTER_PILL, gap: 10, padding: "0 20px", fontWeight: 600 }}>
+          Watch live
+        </a>
+        <Link to="/#world-sits" className="gaw-pill-gold" style={{ ...FOOTER_PILL, padding: "0 22px", fontWeight: 700, boxShadow: "none" }}>
+          Join the daily sit
+        </Link>
+      </SiteFooter>
       <AdminEditLink page="meditation" />
     </SitePage>
   );

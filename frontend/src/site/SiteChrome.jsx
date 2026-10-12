@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { GUTTER, NAV_INLINE_MIN, SITE_PAGES, UTILITY_LINKS, YOUTUBE_URL } from "./sitePages";
+import { GUTTER, NAV_INLINE_MIN, SITE_PAGES, UTILITY_LINKS, YOUTUBE_LIVE_URL } from "./sitePages";
 import { useMemberBadge } from "./useMemberBadge";
 import { siteAsset } from "./siteAssets";
 import { useViewportWidth } from "./useViewport";
@@ -9,6 +9,7 @@ import { useContactChannels, useSiteSettings } from "./usePublicData";
 import BroadcastManager, { BROADCAST_SLOT_ATTR } from "../components/layout/BroadcastManager";
 import { channelHref } from "../lib/contactChannels";
 import { displayNumber } from "../ask/support";
+import { useDailySitUrl } from "./useDailySit";
 import "./site.css";
 
 const CAPS = { textTransform: "uppercase", whiteSpace: "nowrap" };
@@ -155,7 +156,7 @@ export function MemberPill({ joinLabel = "Join free", height = 44, style, guestP
   const base = { display: "inline-flex", alignItems: "center", gap: 10, height, borderRadius: 999, fontSize: 11.5, fontWeight: 700, letterSpacing: ".12em", ...CAPS, ...style };
   if (m.isMember) {
     return (
-      <Link to="/dashboard" title="Open my dashboard" className="gaw-pill-outline" style={{ ...base, padding: "0 18px 0 6px" }}>
+      <Link to="/dashboard" title={`Signed in as ${m.first} — open my dashboard`} className="gaw-pill-outline" style={{ ...base, padding: "0 18px 0 6px" }}>
         <span
           className="serif"
           style={{
@@ -173,7 +174,7 @@ export function MemberPill({ joinLabel = "Join free", height = 44, style, guestP
         >
           {m.initial}
         </span>
-        {m.first}
+        My dashboard
       </Link>
     );
   }
@@ -243,7 +244,7 @@ export function MobileMenu({ active, onClose }) {
         className="gaw-pill-gold"
         style={{ display: "flex", alignItems: "center", justifyContent: "center", marginTop: 12, height: 48, borderRadius: 999, fontSize: 12, fontWeight: 700, letterSpacing: ".12em", textTransform: "uppercase" }}
       >
-        {m.isMember ? `My dashboard · ${m.first}` : "Join free"}
+        {m.isMember ? "My dashboard" : "Join free"}
       </Link>
     </nav>
   );
@@ -318,12 +319,12 @@ export function SiteFooter({ title, sub, children }) {
       <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 14 }}>
         {children ?? (
           <>
-            <a href={YOUTUBE_URL} target="_blank" rel="noopener noreferrer" className="gaw-pill-ghost-light" style={{ display: "inline-flex", alignItems: "center", gap: 10, height: 44, padding: "0 20px", borderRadius: 999, fontSize: 11.5, fontWeight: 600, letterSpacing: ".12em", ...CAPS }}>
+            <a href={YOUTUBE_LIVE_URL} target="_blank" rel="noopener noreferrer" className="gaw-pill-ghost-light" style={{ display: "inline-flex", alignItems: "center", gap: 10, height: 44, padding: "0 20px", borderRadius: 999, fontSize: 11.5, fontWeight: 600, letterSpacing: ".12em", ...CAPS }}>
               Watch live
             </a>
-            <Link to="/#world-sits" className="gaw-pill-gold" style={{ display: "inline-flex", alignItems: "center", height: 44, padding: "0 22px", borderRadius: 999, fontSize: 11.5, fontWeight: 700, letterSpacing: ".12em", boxShadow: "none", ...CAPS }}>
+            <DailySitLink className="gaw-pill-gold" style={{ display: "inline-flex", alignItems: "center", height: 44, padding: "0 22px", borderRadius: 999, fontSize: 11.5, fontWeight: 700, letterSpacing: ".12em", boxShadow: "none", ...CAPS }}>
               Join the daily sit
-            </Link>
+            </DailySitLink>
           </>
         )}
       </div>
@@ -333,6 +334,17 @@ export function SiteFooter({ title, sub, children }) {
 }
 
 const digits = (v) => String(v || "").replace(/\D/g, "");
+
+/** "Join the daily sit" / "Next group meditation": opens the Zoom room in a new tab. */
+export function DailySitLink({ children, ...rest }) {
+  const url = useDailySitUrl();
+  if (url.startsWith("/")) return <Link to={url} {...rest}>{children}</Link>;
+  return (
+    <a href={url} target="_blank" rel="noopener noreferrer" {...rest}>
+      {children}
+    </a>
+  );
+}
 
 /**
  * Footer's bottom row: support lines (admin Settings, .env fallback on the server — never bundled),
@@ -344,8 +356,8 @@ function FooterContact() {
   const primary = digits(s?.["support.primary"]);
   const web = digits(s?.["support.web"]);
   const support = [
-    primary && { key: "call", label: `Call ${displayNumber(primary)}`, href: `tel:+${primary}` },
-    web && { key: "wa", label: `WhatsApp ${displayNumber(web)}`, href: `https://wa.me/${web}`, external: true },
+    primary && { key: "call", icon: "📞", kicker: "Customer care", label: displayNumber(primary), href: `tel:+${primary}` },
+    web && { key: "wa", icon: "💬", kicker: "WhatsApp", label: displayNumber(web), href: `https://wa.me/${web}`, external: true },
   ].filter(Boolean);
   const supportDigits = [primary, web].filter(Boolean);
   const extra = (Array.isArray(channels) ? channels : [])
@@ -355,9 +367,26 @@ function FooterContact() {
   return (
     <div style={{ flexBasis: "100%", display: "flex", flexWrap: "wrap", alignItems: "center", gap: "2px 20px", paddingTop: 14, borderTop: "1px solid rgba(246,241,230,.1)", fontSize: 12.5, color: "rgba(246,241,230,.72)" }}>
       {support.length > 0 && (
-        <span style={{ fontSize: 10.5, fontWeight: 700, letterSpacing: ".16em", ...CAPS, color: "rgba(232,207,131,.85)" }}>Member support</span>
+        <span style={{ fontSize: 10.5, fontWeight: 700, letterSpacing: ".16em", ...CAPS, color: "rgba(232,207,131,.85)", marginRight: 4 }}>Member support</span>
       )}
-      {[...support, ...extra].map((l) =>
+      {support.map((l) => (
+        <a
+          key={l.key}
+          href={l.href}
+          className="gaw-foot-support"
+          {...(l.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+          style={{ display: "inline-flex", alignItems: "center", gap: 10, minHeight: 44, margin: "4px 0", padding: "6px 16px 6px 8px", borderRadius: 999, border: "1px solid rgba(232,207,131,.35)", background: "rgba(246,241,230,.06)", color: "#F6F1E6" }}
+        >
+          <span aria-hidden="true" style={{ width: 30, height: 30, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", background: "linear-gradient(135deg,#E8CF83,#C9A24A)", fontSize: 14 }}>
+            {l.icon}
+          </span>
+          <span style={{ display: "flex", flexDirection: "column", lineHeight: 1.2 }}>
+            <span style={{ fontSize: 9.5, fontWeight: 700, letterSpacing: ".16em", ...CAPS, color: "rgba(232,207,131,.9)" }}>{l.kicker}</span>
+            <span style={{ fontSize: 13.5, fontWeight: 600 }}>{l.label}</span>
+          </span>
+        </a>
+      ))}
+      {extra.map((l) =>
         l.href ? (
           <a key={l.key} href={l.href} title={l.title} className="gaw-foot-link" style={item} {...(l.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}>
             {l.label}

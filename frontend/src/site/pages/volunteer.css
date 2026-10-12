@@ -1,58 +1,79 @@
-/* /volunteer — states from Volunteer.dc.html (style-hover, placeholders, focus, keyframes). */
-@keyframes vol-in {
-  from {
-    opacity: 0;
-    transform: translateY(14px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
+/* /volunteer — site theme (cream / ink / gold). States the inline styles can't express. */
 .gaw-site .vol-main input,
 .gaw-site .vol-main textarea {
-  font-family: "Outfit", sans-serif;
+  font-family: inherit;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 .gaw-site .vol-main input::placeholder,
 .gaw-site .vol-main textarea::placeholder {
-  color: rgba(154, 146, 127, 0.75);
+  color: #8a7f68;
+}
+.gaw-site .vol-main input:hover,
+.gaw-site .vol-main textarea:hover {
+  border-color: rgba(138, 111, 52, 0.6);
 }
 .gaw-site .vol-main input:focus-visible,
-.gaw-site .vol-main textarea:focus-visible,
-.gaw-site .vol-main button:focus-visible {
-  outline: 2px solid rgba(213, 183, 124, 0.85);
+.gaw-site .vol-main textarea:focus-visible {
+  outline: 2px solid #7a5e22;
   outline-offset: 2px;
+  border-color: #c9a24a;
+  box-shadow: 0 0 0 4px rgba(201, 162, 74, 0.2);
 }
-.gaw-site .vol-main input:focus-visible,
-.gaw-site .vol-main textarea:focus-visible {
-  border-radius: 14px;
-}
-.gaw-site .vol-main textarea:focus-visible {
-  border-radius: 16px;
+.gaw-site .vol-main button:focus-visible,
+.gaw-site .vol-main a:focus-visible {
+  outline: 2px solid #7a5e22;
+  outline-offset: 3px;
 }
 .gaw-site .vol-main button.vol-team:focus-visible {
   border-radius: 18px;
 }
-.gaw-site .vol-main ::selection {
-  background: rgba(213, 183, 124, 0.28);
-  color: inherit;
+
+/* Team cards */
+.gaw-site .vol-team {
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  background: rgba(255, 253, 248, 0.7);
+  color: #12201a;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.8) inset, 0 10px 26px -16px rgba(60, 42, 16, 0.3);
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s, transform 0.2s;
 }
-.gaw-site .vol-choice {
-  transition: border-color 0.2s, background 0.2s;
+.gaw-site .vol-team:hover {
+  border-color: rgba(201, 162, 74, 0.6);
+  transform: translateY(-1px);
 }
-.gaw-site .vol-choice:hover {
-  border-color: rgba(230, 211, 168, 0.75) !important;
+.gaw-site .vol-team.is-on {
+  border-color: #c9a24a;
+  background: #fbf3dc;
+  box-shadow: 0 0 0 1px #c9a24a, 0 14px 30px -16px rgba(122, 94, 34, 0.45);
 }
-.gaw-site .vol-submit:not(:disabled):hover {
-  filter: brightness(1.07);
+
+/* Availability pills */
+.gaw-site .vol-avail {
+  border: 1px solid rgba(138, 111, 52, 0.45);
+  background: rgba(255, 253, 248, 0.6);
+  color: #3a3128;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
 }
-.gaw-site a.vol-link {
-  color: #d5b77c;
+.gaw-site .vol-avail:hover {
+  border-color: #8a6f34;
+  background: #fffdf8;
 }
-.gaw-site a.vol-link:hover {
-  color: #e6d3a8;
+.gaw-site .vol-avail.is-on {
+  border-color: #14241c;
+  background: #14241c;
+  color: #e8cf83;
 }
-.gaw-site a.vol-back,
-.gaw-site a.vol-back:hover {
-  color: #241b06;
+
+/* Secondary pill on cream: ink outline */
+.gaw-site .vol-ghost {
+  border: 1px solid rgba(20, 36, 28, 0.5);
+  background: transparent;
+  color: #14241c;
+  transition: background 0.2s, color 0.2s;
+}
+.gaw-site .vol-ghost:hover {
+  background: #14241c;
+  color: #e8cf83;
+}
+.gaw-site .vol-submit:disabled {
+  transform: none;
 }

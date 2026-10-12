@@ -1,4 +1,4 @@
-/* Wisdom.dc.html — hover states + coherent-wave keyframes. (Reduced motion: site.css stops animation.) */
+/* Wisdom.dc.html — hover states + library wave keyframes. (Reduced motion: site.css stops animation.) */
 .gaw-site .wisdom-card {
   border: 1px solid rgba(255, 255, 255, 0.7);
   transition: border-color 0.2s;

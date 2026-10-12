@@ -129,4 +129,11 @@ class AdminSiteLinkTest extends TestCase
         $this->postJson('/api/v1/admin/events', ['title' => 'Evening sit', 'starts_at' => '2026-10-12T13:30:00Z', 'recurrence' => 'daily', 'timezone' => 'Asia/Calcutta'])->assertCreated();
         $this->assertSame('Asia/Kolkata', Event::sole()->timezone);
     }
+
+    public function test_demo_and_password_member_login_are_off_by_default(): void
+    {
+        $this->postJson('/api/v1/auth/demo')->assertNotFound();
+        $this->postJson('/api/v1/auth/login', ['email' => 'a@b.c', 'password' => 'x'])->assertNotFound();
+        $this->postJson('/api/v1/auth/register', ['name' => 'Dummy', 'email' => 'a@b.c', 'password' => 'secret123'])->assertNotFound();
+    }
 }

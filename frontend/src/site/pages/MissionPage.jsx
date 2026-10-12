@@ -57,7 +57,7 @@ export default function MissionPage() {
   const w = useViewportWidth();
   const { isMember } = useMemberBadge();
   const desk = w >= 900;
-  const yugas = c.yugas || [];
+  const paras = [c.intro1, c.intro2, c.intro3].filter(Boolean);
 
   return (
     <SitePage>
@@ -74,48 +74,36 @@ export default function MissionPage() {
           </span>
           <h1
             className="serif"
-            style={{ margin: 0, fontWeight: 500, fontSize: "clamp(34px,4.4vw,64px)", lineHeight: 1.02, letterSpacing: "-.015em", textWrap: "balance", color: "#12201A", maxWidth: "20ch", ...rise(0.1) }}
+            style={{ margin: 0, fontWeight: 500, fontSize: "clamp(34px,4.4vw,64px)", lineHeight: 1.02, letterSpacing: "-.015em", textWrap: "balance", color: "#12201A", maxWidth: "24ch", ...rise(0.1) }}
           >
-            {c.title} <em style={{ color: "#8A6F34" }}>{c.titleAccent}</em>
+            {c.title} <em style={{ display: "block", color: "#8A6F34" }}>{c.titleAccent}</em>
           </h1>
         </div>
 
         <div style={{ display: "grid", gridTemplateColumns: desk ? "minmax(0,1.15fr) minmax(300px,.85fr)" : "1fr", gap: 18, alignItems: "stretch", ...rise(0.25) }}>
           <article
-            style={{ display: "flex", flexDirection: "column", gap: 18, padding: "clamp(22px,2.6vw,32px)", borderRadius: 24, background: "rgba(255,253,248,.55)", border: "1px solid rgba(255,255,255,.7)", boxShadow: "0 1px 0 rgba(255,255,255,.8) inset,0 18px 40px -18px rgba(60,42,16,.3)" }}
+            style={{ display: "flex", flexDirection: "column", gap: 18, padding: "clamp(22px,2.6vw,36px)", borderRadius: 24, background: "rgba(255,253,248,.55)", border: "1px solid rgba(255,255,255,.7)", boxShadow: "0 1px 0 rgba(255,255,255,.8) inset,0 18px 40px -18px rgba(60,42,16,.3)" }}
           >
-            <p style={{ margin: 0, fontSize: "clamp(15px,1.1vw,17px)", lineHeight: 1.65, color: "#3A3128", textWrap: "pretty" }}>
-              {c.intro1} <strong style={{ fontWeight: 600, color: "#12201A" }}>{c.intro1Accent}</strong> {c.intro1Tail}
-            </p>
-            <div style={{ display: "flex", flexDirection: "column", gap: 10, padding: "16px 18px", borderRadius: 16, background: "rgba(243,234,211,.7)", border: "1px solid rgba(138,111,52,.18)" }}>
-              {yugas.map((y, i) => (
-                <div key={i} style={{ display: "grid", gridTemplateColumns: "12px 92px minmax(0,1fr)", alignItems: "center", gap: 12 }}>
-                  <span
-                    aria-hidden="true"
-                    style={{ width: 10, height: 10, borderRadius: "50%", background: i === 0 ? GOLD_DOT : "rgba(20,36,28,.18)", boxShadow: i === 0 ? "0 0 10px rgba(201,162,74,.7)" : "none" }}
-                  />
-                  <span className="serif" style={{ fontSize: 19, fontWeight: 500, color: i === 0 ? "#8A6F34" : "#12201A" }}>
-                    {y.name}
-                  </span>
-                  <span style={{ fontSize: 13, lineHeight: 1.4, color: "#5A4E3C" }}>{y.tag}</span>
-                </div>
-              ))}
-            </div>
-            <p style={{ margin: 0, fontSize: "clamp(15px,1.1vw,17px)", lineHeight: 1.65, color: "#3A3128", textWrap: "pretty" }}>
-              {c.intro2} <strong style={{ fontWeight: 600, color: "#12201A" }}>{c.intro2Accent}</strong>
-            </p>
+            {paras.map((p, i) => (
+              <p
+                key={i}
+                className={i === 0 ? "serif" : undefined}
+                style={i === 0 ? { margin: 0, maxWidth: "62ch", fontSize: "clamp(19px,1.5vw,22px)", lineHeight: 1.45, color: "#12201A", textWrap: "pretty" } : { margin: 0, maxWidth: "68ch", fontSize: "clamp(15px,1.1vw,17px)", lineHeight: 1.7, color: "#3A3128", textWrap: "pretty" }}
+              >
+                {p}
+              </p>
+            ))}
           </article>
 
           <aside
-            aria-label="Our end goal"
+            aria-label="Together, a peaceful world"
             style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 18, padding: "clamp(22px,2.6vw,32px)", borderRadius: 24, background: "linear-gradient(170deg,#1B3328 0%,#14241C 100%)", color: "#F6F1E6", textAlign: "center", boxShadow: "0 30px 60px -30px rgba(20,14,6,.6)" }}
           >
-            <span className="serif" style={{ fontSize: "clamp(64px,6vw,96px)", lineHeight: 0.9, color: "#E8CF83", textShadow: "0 2px 30px rgba(201,162,74,.45)" }}>
-              {c.goalNumber}
-              <span style={{ fontSize: ".45em", verticalAlign: "top", marginLeft: 4 }}>%</span>
+            <span aria-hidden="true" className="serif" style={{ fontSize: 30, lineHeight: 1, color: "#E8CF83" }}>
+              ༄
             </span>
-            <p style={{ margin: 0, maxWidth: "34ch", fontSize: 14.5, lineHeight: 1.55, color: "rgba(246,241,230,.82)", textWrap: "pretty" }}>
-              {c.goalLead} <strong style={{ fontWeight: 600, color: "#E8CF83" }}>{c.goalAccent}</strong> {c.goalTail}
+            <p className="serif" style={{ margin: 0, maxWidth: "18ch", fontSize: "clamp(26px,2.4vw,36px)", lineHeight: 1.2, fontWeight: 500, color: "#F6F1E6", textWrap: "balance", textShadow: "0 2px 30px rgba(201,162,74,.35)" }}>
+              {c.closing}
             </p>
             <div aria-hidden="true" style={{ display: "grid", gridTemplateColumns: "repeat(20,9px)", gap: 5 }}>
               {DOTS.map((d, i) => (
