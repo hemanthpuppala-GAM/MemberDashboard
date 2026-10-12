@@ -108,9 +108,12 @@ Route::prefix('v1')->group(function () {
     Route::match(['get', 'post'], '/auth/{provider}/callback', [OAuthController::class, 'callback'])
         ->whereIn('provider', OAuthService::PROVIDERS)
         ->middleware('throttle:20,1');
-    Route::post('/auth/demo', [OAuthController::class, 'demo'])->middleware('throttle:10,1');
-    Route::post('/auth/register', [MemberAuthController::class, 'register'])->middleware('throttle:10,1');
-    Route::post('/auth/login', [MemberAuthController::class, 'login'])->middleware('throttle:10,1');
+    // Google-only in production: demo + email/password only when MEMBER_PASSWORD_LOGIN=true.
+    if (config('services.member_auth.password_and_demo')) {
+        Route::post('/auth/demo', [OAuthController::class, 'demo'])->middleware('throttle:10,1');
+        Route::post('/auth/register', [MemberAuthController::class, 'register'])->middleware('throttle:10,1');
+        Route::post('/auth/login', [MemberAuthController::class, 'login'])->middleware('throttle:10,1');
+    }
 
     Route::middleware(['auth:sanctum', 'member'])->group(function () {
         Route::post('/auth/logout', [MemberAuthController::class, 'logout']);

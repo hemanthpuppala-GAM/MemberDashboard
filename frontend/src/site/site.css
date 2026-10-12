@@ -259,3 +259,14 @@
   box-shadow: 0 20px 50px -18px rgba(0, 0, 0, 0.55);
   animation: gaw-rise 0.4s both;
 }
+
+/* Footer support lines (customer care / WhatsApp) as labelled pills. */
+.gaw-site a.gaw-foot-support {
+  text-decoration: none;
+  transition: background 0.2s, border-color 0.2s;
+}
+.gaw-site a.gaw-foot-support:hover,
+.gaw-site a.gaw-foot-support:focus-visible {
+  background: rgba(246, 241, 230, 0.12);
+  border-color: rgba(232, 207, 131, 0.7);
+}

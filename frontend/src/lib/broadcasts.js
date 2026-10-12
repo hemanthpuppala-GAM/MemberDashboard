@@ -1,4 +1,6 @@
 const SEEN_PREFIX = "gaw_broadcast_seen_";
+// "Every visit" means once per visit (page load), not again on every in-app page change.
+const shownThisVisit = new Set();
 const VISITED_KEY = "gaw_visited_before";
 
 function todayKey() {
@@ -19,6 +21,7 @@ export function getVisitorType() {
 /** Whether a broadcast has already satisfied its `frequency` limit for this visitor. */
 export function isBroadcastSuppressed(broadcast) {
   try {
+    if (shownThisVisit.has(broadcast.id)) return true;
     const key = SEEN_PREFIX + broadcast.id;
     switch (broadcast.frequency) {
       case "once_per_session":
@@ -37,6 +40,7 @@ export function isBroadcastSuppressed(broadcast) {
 
 /** Records that a broadcast has been shown, per its `frequency` rule. */
 export function markBroadcastSeen(broadcast) {
+  shownThisVisit.add(broadcast.id);
   try {
     const key = SEEN_PREFIX + broadcast.id;
     if (broadcast.frequency === "once_per_session") sessionStorage.setItem(key, "1");

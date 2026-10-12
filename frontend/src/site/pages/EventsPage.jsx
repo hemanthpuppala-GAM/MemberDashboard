@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { SitePage, SiteHeader, Breadcrumb, SiteFooter, AdminEditLink } from "../SiteChrome";
+import { SitePage, SiteHeader, Breadcrumb, SiteFooter, AdminEditLink, DailySitLink } from "../SiteChrome";
 import { useMemberBadge } from "../useMemberBadge";
 import { useSiteContent } from "../useSiteContent";
 import { usePageQuotes } from "../siteQuotes";
 import { useEventSessions, eventRow, visitorZone } from "../liveSessions";
 import { useViewportWidth } from "../useViewport";
-import { YOUTUBE_URL } from "../sitePages";
+import { YOUTUBE_LIVE_URL } from "../sitePages";
 import "./events.css";
 
 const PAD = "clamp(20px,5vw,72px)";
@@ -29,7 +29,7 @@ const FALLBACKS = {
   abroadKicker: "USA & UK",
   abroadNote: "Local time · every day",
   watchLabel: "▶ Watch live on YouTube — free, worldwide",
-  watchHref: "https://youtube.com/@goldenagegurus",
+  watchHref: "https://www.youtube.com/@GoldenAgeGurus/streams",
   zoomTitle: "Zoom circle — members only",
   zoomCta: "Sign in →",
   zoomHref: "Member Flow.dc.html",
@@ -295,12 +295,12 @@ export default function EventsPage() {
       </section>
 
       <SiteFooter title={c.footerTitle} sub={c.footerSub}>
-        <a href={YOUTUBE_URL} target="_blank" rel="noopener noreferrer" className="gaw-pill-ghost-light" style={{ ...PILL, gap: 10, padding: "0 20px", fontWeight: 600 }}>
+        <a href={YOUTUBE_LIVE_URL} target="_blank" rel="noopener noreferrer" className="gaw-pill-ghost-light" style={{ ...PILL, gap: 10, padding: "0 20px", fontWeight: 600 }}>
           Watch live
         </a>
-        <Link to={isMember ? "/dashboard" : "/join"} className="gaw-pill-gold" style={{ ...PILL, padding: "0 22px", fontWeight: 700, boxShadow: "none" }}>
-          Join free
-        </Link>
+        <DailySitLink className="gaw-pill-gold" style={{ ...PILL, padding: "0 22px", fontWeight: 700, boxShadow: "none" }}>
+          Join the daily sit
+        </DailySitLink>
       </SiteFooter>
       <AdminEditLink page="events" />
     </SitePage>

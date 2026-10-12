@@ -1,15 +1,14 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { SitePage, SiteHeader, Breadcrumb, SiteFooter } from "../SiteChrome";
 import { useMemberBadge } from "../useMemberBadge";
-import { siteAsset } from "../siteAssets";
 import { OFFICIAL_EMAIL } from "../sitePages";
 import { useSiteSettings } from "../usePublicData";
 import { displayNumber } from "../../ask/support";
-import BroadcastManager from "../../components/layout/BroadcastManager";
 import "./privacy.css";
 
-/* Privacy.dc.html uses its own dark, standalone layout (Marcellus + Outfit, brand row) —
-   not the shared site header — so this page does not render SiteHeader. */
+/* Restyled to the public site's theme (cream / ink / gold, Cormorant + Manrope) with the shared
+   SitePage chrome — the original Privacy.dc.html was a standalone dark page. */
 
 const RETENTION_DAYS = 90; // design: GAW_CONFIG.telemetryRetentionDays || 90
 
@@ -81,8 +80,12 @@ const SECTIONS = [
   sec("Changes", "If this notice changes in a way that matters, we will say so on the site rather than quietly editing the page."),
 ];
 
-const MARCELLUS = { fontFamily: "'Marcellus', serif" };
-const PILL_BTN = { display: "inline-flex", alignItems: "center", justifyContent: "center", minHeight: 44, padding: "10px 20px", borderRadius: 999, fontFamily: "'Outfit', sans-serif", fontSize: 13, cursor: "pointer" };
+const PAD = "clamp(20px,5vw,72px)";
+const KICKER = { display: "inline-flex", alignItems: "center", gap: 10, fontSize: 11, fontWeight: 700, letterSpacing: ".3em", textTransform: "uppercase", color: "#7A5E22" };
+const SMALL_CAPS = { fontSize: 10.5, fontWeight: 700, letterSpacing: ".18em", textTransform: "uppercase", color: "#7A5E22" };
+const CARD = { borderRadius: 22, background: "rgba(255,253,248,.7)", border: "1px solid rgba(255,255,255,.75)", boxShadow: "0 1px 0 rgba(255,255,255,.8) inset,0 14px 34px -16px rgba(60,42,16,.32)" };
+const PILL_BTN = { display: "inline-flex", alignItems: "center", justifyContent: "center", minHeight: 44, padding: "0 22px", borderRadius: 999, fontFamily: "inherit", fontSize: 11.5, fontWeight: 700, letterSpacing: ".12em", textTransform: "uppercase", cursor: "pointer" };
+const rise = (delay = 0) => ({ animation: `gaw-rise .9s ${delay}s both` });
 
 /** /privacy — design: Privacy.dc.html */
 export default function PrivacyPage() {
@@ -102,104 +105,126 @@ export default function PrivacyPage() {
   }, []);
 
   const state = consent ? (consent.analytics ? "Analytics allowed" : "Analytics declined") : "Not chosen yet";
-  const stateBg = consent ? (consent.analytics ? "rgba(126,203,143,0.18)" : "rgba(224,132,132,0.16)") : "rgba(255,255,255,0.08)";
-  const stateColor = consent ? (consent.analytics ? "#a9dfb8" : "#e0a3a3") : "#b9b1a0";
+  const stateBg = consent ? (consent.analytics ? "rgba(63,138,90,.14)" : "rgba(176,70,70,.12)") : "rgba(138,111,52,.14)";
+  const stateColor = consent ? (consent.analytics ? "#245A38" : "#8A2626") : "#5E4A1B";
   const when = consent ? `chosen ${new Date(consent.at).toLocaleDateString()}` : "the banner will ask on your first visit";
 
   return (
-    <div className="gaw-privacy" style={{ minHeight: "100vh", background: "radial-gradient(ellipse 70% 60% at 50% 0%, #141029 0%, #0d0a1c 55%, #080614 100%)", padding: "40px 22px 60px" }}>
-      <main style={{ maxWidth: 760, margin: "0 auto", display: "flex", flexDirection: "column", gap: 26 }}>
-        <Link to="/" style={{ display: "flex", alignItems: "center", gap: 12, alignSelf: "flex-start", minHeight: 44 }}>
-          <img src={siteAsset("assets/logo-128.webp")} alt="" style={{ width: 40, height: 40, borderRadius: "50%", objectFit: "cover", border: "1px solid rgba(213,183,124,0.5)" }} />
-          <span style={{ ...MARCELLUS, fontSize: 16, letterSpacing: "0.06em", color: "#e6d3a8" }}>GOLDEN AGE WISDOM</span>
-        </Link>
+    <SitePage>
+      <SiteHeader />
+      <Breadcrumb current="Privacy" />
 
-        <div>
-          <div style={{ fontSize: 11, letterSpacing: "0.24em", textTransform: "uppercase", color: "#b89758" }}>Privacy notice</div>
-          <h1 style={{ ...MARCELLUS, fontWeight: 400, fontSize: "clamp(28px, 4vw, 38px)", margin: "8px 0 0", color: "#f7f1e3" }}>What we know about you, and what we don&apos;t</h1>
-          <p style={{ margin: "12px 0 0", fontSize: 15, fontWeight: 300, lineHeight: 1.7, color: "#b9b1a0", textWrap: "pretty" }}>
+      <main
+        className="gaw-privacy"
+        style={{ flex: 1, width: "100%", maxWidth: 1120, margin: "0 auto", padding: `clamp(22px,4vh,44px) ${PAD} clamp(40px,6vh,72px)`, display: "flex", flexDirection: "column", gap: "clamp(22px,4vh,36px)" }}
+      >
+        <header style={{ display: "flex", flexDirection: "column", gap: 14, maxWidth: 720 }}>
+          <span style={{ ...KICKER, ...rise() }}>
+            <span aria-hidden="true" style={{ width: 6, height: 6, borderRadius: "50%", background: "#C9A24A" }} />
+            Privacy notice
+          </span>
+          <h1 className="serif" style={{ margin: 0, fontWeight: 500, fontSize: "clamp(34px,4.2vw,58px)", lineHeight: 1.02, letterSpacing: "-.015em", textWrap: "balance", color: "#12201A", ...rise(0.1) }}>
+            What we know about you, <em style={{ color: "#8A6F34" }}>and what we don&apos;t</em>
+          </h1>
+          <p style={{ margin: 0, fontSize: "clamp(15px,1.15vw,17px)", lineHeight: 1.6, color: "#3A3128", textWrap: "pretty", ...rise(0.2) }}>
             Golden Age Wisdom is a non-profit. We do not sell anything, we do not advertise, and we have no commercial interest in your data. This notice is written plainly on purpose.
           </p>
-        </div>
+        </header>
 
-        <div style={{ padding: "22px 24px", borderRadius: 24, background: "rgba(213,183,124,0.07)", border: "1px solid rgba(213,183,124,0.26)", display: "flex", flexDirection: "column", gap: 10 }}>
-          <span style={{ ...MARCELLUS, fontSize: 18, color: "#f7f1e3" }}>The short version</span>
-          <span style={{ fontSize: 14, fontWeight: 300, lineHeight: 1.7, color: "#cfc8ba" }}>
-            We never see your password. We keep your name, email and practice history — nothing more. Your journal is yours alone. Analytics are anonymous, off until you accept, and we set no advertising cookies of any kind.
-          </span>
-        </div>
+        <div className="priv-grid" style={rise(0.25)}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 18, minWidth: 0 }}>
+            <div style={{ padding: "24px 26px", borderRadius: 22, background: "#14241C", color: "#F6F1E6", boxShadow: "0 18px 40px -20px rgba(0,0,0,.5)", display: "flex", flexDirection: "column", gap: 10 }}>
+              <h2 className="serif" style={{ margin: 0, fontWeight: 500, fontSize: 28, lineHeight: 1.1 }}>
+                The short version
+              </h2>
+              <p style={{ margin: 0, fontSize: 15, lineHeight: 1.7, color: "rgba(246,241,230,.86)", textWrap: "pretty" }}>
+                We never see your password. We keep your name, email and practice history — nothing more. Your journal is yours alone. Analytics are anonymous, off until you accept, and we set no advertising cookies of any kind.
+              </p>
+            </div>
 
-        {SECTIONS.map((s) => (
-          <section key={s.title} style={{ display: "flex", flexDirection: "column", gap: 9 }}>
-            <h2 style={{ ...MARCELLUS, fontWeight: 400, fontSize: 20, margin: 0, color: "#f2e9d8" }}>{s.title}</h2>
-            <p style={{ margin: 0, fontSize: 14, fontWeight: 300, lineHeight: 1.72, color: "#b9b1a0", textWrap: "pretty" }}>{s.body}</p>
-            {s.items.length > 0 && (
-              <ul style={{ margin: "4px 0 0", paddingLeft: 20, display: "flex", flexDirection: "column", gap: 6 }}>
-                {s.items.map((t) => (
-                  <li key={t} style={{ fontSize: 13.5, fontWeight: 300, lineHeight: 1.6, color: "#cfc8ba" }}>
-                    {t}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </section>
-        ))}
-
-        <section
-          aria-labelledby="privacy-choice"
-          style={{ padding: "22px 24px", borderRadius: 24, background: "rgba(255,255,255,0.035)", border: "1px solid rgba(255,255,255,0.1)", display: "flex", flexDirection: "column", gap: 12 }}
-        >
-          <h2 id="privacy-choice" style={{ ...MARCELLUS, fontWeight: 400, margin: 0, fontSize: 18, color: "#f2e9d8" }}>
-            Your choice, on this device
-          </h2>
-          <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }} aria-live="polite">
-            <span style={{ padding: "5px 13px", borderRadius: 999, fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase", background: stateBg, color: stateColor }}>{state}</span>
-            <span style={{ fontSize: 12.5, fontWeight: 300, color: "#9a927f" }}>{when}</span>
+            <div style={{ ...CARD, padding: "8px clamp(20px,3vw,32px)" }}>
+              {SECTIONS.map((s, i) => (
+                <section key={s.title} style={{ display: "flex", flexDirection: "column", gap: 8, padding: "22px 0", borderTop: i ? "1px solid rgba(138,111,52,.18)" : 0 }}>
+                  <span aria-hidden="true" style={{ ...SMALL_CAPS, fontSize: 10, color: "#8A6F34" }}>
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <h2 className="serif" style={{ fontWeight: 500, fontSize: 25, lineHeight: 1.12, margin: 0, color: "#12201A" }}>
+                    {s.title}
+                  </h2>
+                  <p style={{ margin: 0, fontSize: 15, lineHeight: 1.72, color: "#3A3128", textWrap: "pretty" }}>{s.body}</p>
+                  {s.items.length > 0 && (
+                    <ul className="priv-list" style={{ margin: "4px 0 0", padding: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: 8 }}>
+                      {s.items.map((t) => (
+                        <li key={t} style={{ fontSize: 14.5, lineHeight: 1.6, color: "#3A3128" }}>
+                          {t}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </section>
+              ))}
+            </div>
           </div>
-          <div style={{ display: "flex", gap: 9, flexWrap: "wrap" }}>
-            <button type="button" onClick={() => setConsent(writeConsent(true))} style={{ ...PILL_BTN, border: "none", background: "linear-gradient(135deg, #d5b77c, #b89758)", color: "#241b06", fontWeight: 600 }}>
-              Allow anonymous analytics
-            </button>
-            <button type="button" onClick={() => setConsent(writeConsent(false))} style={{ ...PILL_BTN, border: "1px solid rgba(255,255,255,0.2)", background: "none", color: "#d8d2c4" }}>
-              Decline &amp; erase
-            </button>
-          </div>
-          <span style={{ fontSize: 12, fontWeight: 300, lineHeight: 1.6, color: "#7d7666" }}>
-            Declining erases the anonymous visit records and the random visitor key held in this browser. Nothing else changes — the teachings stay free either way.
-          </span>
-        </section>
 
-        <footer style={{ display: "flex", flexDirection: "column", gap: 8, paddingTop: 6, borderTop: "1px solid rgba(255,255,255,0.1)" }}>
-          <span style={{ fontSize: 13.5, fontWeight: 300, color: "#b9b1a0" }}>
-            Questions, corrections or a request to delete your data — write to <a href={`mailto:${OFFICIAL_EMAIL}?subject=Privacy%20request`}>{OFFICIAL_EMAIL}</a> and a volunteer will answer.
-          </span>
-          {(primary || web) && (
-            <span style={{ fontSize: 13, fontWeight: 300, color: "#9a927f" }}>
-              Member support:{" "}
-              {primary && (
-                <a href={`tel:+${primary}`} style={{ whiteSpace: "nowrap" }}>
-                  call {displayNumber(primary)}
-                </a>
+          <aside className="priv-aside" style={{ display: "flex", flexDirection: "column", gap: 16, minWidth: 0 }}>
+            <section aria-labelledby="privacy-choice" style={{ ...CARD, padding: "22px 24px", display: "flex", flexDirection: "column", gap: 14 }}>
+              <h2 id="privacy-choice" className="serif" style={{ fontWeight: 500, margin: 0, fontSize: 24, lineHeight: 1.15, color: "#12201A" }}>
+                Your choice, on this device
+              </h2>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }} aria-live="polite">
+                <span style={{ padding: "6px 13px", borderRadius: 999, fontSize: 10.5, fontWeight: 700, letterSpacing: ".14em", textTransform: "uppercase", background: stateBg, color: stateColor }}>{state}</span>
+                <span style={{ fontSize: 13, color: "#5A5546" }}>{when}</span>
+              </div>
+              <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                <button type="button" onClick={() => setConsent(writeConsent(true))} className="gaw-pill-gold" style={{ ...PILL_BTN, border: 0 }}>
+                  Allow anonymous analytics
+                </button>
+                <button type="button" onClick={() => setConsent(writeConsent(false))} className="priv-ghost" style={PILL_BTN}>
+                  Decline &amp; erase
+                </button>
+              </div>
+              <span style={{ fontSize: 13, lineHeight: 1.6, color: "#5A5546" }}>
+                Declining erases the anonymous visit records and the random visitor key held in this browser. Nothing else changes — the teachings stay free either way.
+              </span>
+            </section>
+
+            <section aria-label="Contact" style={{ padding: "20px 24px", borderRadius: 22, background: "rgba(255,253,248,.45)", border: "1px solid rgba(138,111,52,.22)", display: "flex", flexDirection: "column", gap: 10 }}>
+              <span style={{ fontSize: 14, lineHeight: 1.65, color: "#3A3128", overflowWrap: "anywhere" }}>
+                Questions, corrections or a request to delete your data — write to{" "}
+                <a href={`mailto:${OFFICIAL_EMAIL}?subject=Privacy%20request`} style={{ fontWeight: 600 }}>
+                  {OFFICIAL_EMAIL}
+                </a>{" "}
+                and a volunteer will answer.
+              </span>
+              {(primary || web) && (
+                <span style={{ fontSize: 13.5, lineHeight: 1.6, color: "#5A5546" }}>
+                  <span style={{ ...SMALL_CAPS, marginRight: 8 }}>Member support</span>
+                  {primary && (
+                    <a href={`tel:+${primary}`} style={{ whiteSpace: "nowrap", fontWeight: 600 }}>
+                      call {displayNumber(primary)}
+                    </a>
+                  )}
+                  {primary && web && " · "}
+                  {web && (
+                    <a href={`https://wa.me/${web}`} target="_blank" rel="noopener noreferrer" style={{ whiteSpace: "nowrap", fontWeight: 600 }}>
+                      WhatsApp {displayNumber(web)}
+                    </a>
+                  )}
+                </span>
               )}
-              {primary && web && " · "}
-              {web && (
-                <a href={`https://wa.me/${web}`} target="_blank" rel="noopener noreferrer" style={{ whiteSpace: "nowrap" }}>
-                  WhatsApp {displayNumber(web)}
-                </a>
-              )}
-            </span>
-          )}
-          <div style={{ display: "flex", gap: 16, flexWrap: "wrap", fontSize: 13 }}>
-            <Link to="/" style={{ display: "inline-flex", alignItems: "center", minHeight: 44 }}>
-              ← Back to Golden Age Wisdom
-            </Link>
-            <Link to={isMember ? "/dashboard" : "/join"} style={{ display: "inline-flex", alignItems: "center", minHeight: 44 }}>
-              Member dashboard
-            </Link>
-          </div>
-        </footer>
+            </section>
+          </aside>
+        </div>
       </main>
-      <BroadcastManager view="privacy" site />
-    </div>
+
+      <SiteFooter title="Written plainly, on purpose" sub="A non-profit with no commercial interest in your data.">
+        <Link to="/" className="gaw-pill-ghost-light" style={{ ...PILL_BTN, gap: 8, cursor: undefined }}>
+          ← Back to Golden Age Wisdom
+        </Link>
+        <Link to={isMember ? "/dashboard" : "/join"} className="gaw-pill-gold" style={{ ...PILL_BTN, boxShadow: "none", cursor: undefined }}>
+          Member dashboard
+        </Link>
+      </SiteFooter>
+    </SitePage>
   );
 }

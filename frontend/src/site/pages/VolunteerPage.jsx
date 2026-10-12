@@ -1,27 +1,29 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { SitePage, SiteHeader } from "../SiteChrome";
+import { SitePage, SiteHeader, Breadcrumb, SiteFooter } from "../SiteChrome";
 import { useViewportWidth } from "../useViewport";
 import { OFFICIAL_EMAIL } from "../sitePages";
 import { publicApi } from "../../lib/api";
 import { useLanguage } from "../../lib/LanguageContext";
 import "./volunteer.css";
 
-const DISPLAY = "'Marcellus', serif";
-const BODY = "'Outfit', sans-serif";
-const LABEL = { fontSize: 10.5, letterSpacing: "0.24em", textTransform: "uppercase", color: "#b89758" };
-const FIELD_LABEL = { fontSize: 12, fontWeight: 300, color: "rgba(185,177,160,0.95)" };
-const FIELD_ERR = { fontSize: 12, fontWeight: 300, lineHeight: 1.4, color: "#f0c3c3" };
+const PAD = "clamp(20px,5vw,72px)";
+const KICKER = { display: "inline-flex", alignItems: "center", gap: 10, fontSize: 11, fontWeight: 700, letterSpacing: ".3em", textTransform: "uppercase", color: "#7A5E22" };
+const LABEL = { display: "inline-flex", alignItems: "center", gap: 10, fontSize: 10.5, fontWeight: 700, letterSpacing: ".2em", textTransform: "uppercase", color: "#7A5E22" };
+const FIELD_LABEL = { fontSize: 12.5, fontWeight: 600, color: "#3A3128" };
+const FIELD_ERR = { fontSize: 12.5, fontWeight: 500, lineHeight: 1.4, color: "#9B2C2C" };
+const CARD = { borderRadius: 22, background: "rgba(255,253,248,.7)", border: "1px solid rgba(255,255,255,.75)", boxShadow: "0 1px 0 rgba(255,255,255,.8) inset,0 14px 34px -16px rgba(60,42,16,.32)" };
+const PILL = { display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8, minHeight: 48, padding: "0 26px", borderRadius: 999, fontFamily: "inherit", fontSize: 11.5, fontWeight: 700, letterSpacing: ".12em", textTransform: "uppercase" };
+const rise = (delay = 0) => ({ animation: `gaw-rise .9s ${delay}s both` });
 const inputStyle = (bad) => ({
   width: "100%",
-  minHeight: 44,
+  minHeight: 48,
   padding: "12px 15px",
   borderRadius: 14,
-  border: `1px solid ${bad ? "rgba(224,132,132,0.7)" : "rgba(255,255,255,0.16)"}`,
-  background: "rgba(255,255,255,0.045)",
-  color: "#efe9dc",
-  fontSize: 14,
-  fontWeight: 300,
+  border: `1px solid ${bad ? "#B04646" : "rgba(138,111,52,.38)"}`,
+  background: "#FFFDF8",
+  color: "#12201A",
+  fontSize: 15,
 });
 
 /** Team cards from the design; slugs = volunteer_categories.slug (migration 2026_10_10_000001). */
@@ -163,7 +165,7 @@ export default function VolunteerPage() {
   };
 
   const field = (key, label, props, errKey = key) => (
-    <label style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+    <label style={{ display: "flex", flexDirection: "column", gap: 7 }}>
       <span style={FIELD_LABEL}>{label}</span>
       <input
         value={form[key]}
@@ -184,122 +186,85 @@ export default function VolunteerPage() {
   const pickedSummary = picked.length ? (picked.length === 1 ? "1 team chosen" : `${picked.length} teams chosen`) : "Nothing chosen yet";
 
   return (
-    <SitePage style={{ position: "relative", background: "#09071a", color: "#efe9dc", fontFamily: BODY }}>
-      <div
-        aria-hidden="true"
-        style={{
-          position: "fixed",
-          inset: 0,
-          pointerEvents: "none",
-          background: "radial-gradient(820px 640px at 26% 18%, rgba(96,84,166,0.28), transparent 68%), radial-gradient(900px 560px at 82% 104%, rgba(213,183,124,0.10), transparent 72%)",
-        }}
-      />
+    <SitePage>
       <SiteHeader />
+      <Breadcrumb current="Volunteer" />
 
       <main
         className="vol-main"
         data-screen-label="Volunteer"
-        style={{ position: "relative", zIndex: 1, flex: 1, width: "100%", maxWidth: 1120, margin: "0 auto", padding: "clamp(14px, 2.5vh, 30px) clamp(18px, 4vw, 44px) 60px", animation: "vol-in 0.6s ease both" }}
+        style={{ flex: 1, width: "100%", maxWidth: 1120, margin: "0 auto", padding: `clamp(22px,4vh,44px) ${PAD} clamp(40px,6vh,72px)`, display: "flex", flexDirection: "column", gap: "clamp(22px,4vh,36px)" }}
       >
-        <div style={{ maxWidth: 640 }}>
-          <div style={{ fontSize: 10.5, letterSpacing: "0.3em", textTransform: "uppercase", color: "#b89758" }}>Seva · service</div>
-          <h1 style={{ fontFamily: DISPLAY, fontWeight: 400, fontSize: "clamp(30px, 4.6vw, 52px)", lineHeight: 1.08, margin: "10px 0 0", color: "#f7f1e3", textWrap: "balance" }}>
-            The work is quiet, and there is a lot of it.
+        <header style={{ display: "flex", flexDirection: "column", gap: 14, maxWidth: 660 }}>
+          <span style={{ ...KICKER, ...rise() }}>
+            <span aria-hidden="true" style={{ width: 6, height: 6, borderRadius: "50%", background: "#C9A24A" }} />
+            Seva · service
+          </span>
+          <h1 className="serif" style={{ margin: 0, fontWeight: 500, fontSize: "clamp(34px,4.2vw,58px)", lineHeight: 1.02, letterSpacing: "-.015em", textWrap: "balance", color: "#12201A", ...rise(0.1) }}>
+            The work is quiet, <em style={{ color: "#8A6F34" }}>and there is a lot of it.</em>
           </h1>
-          <p style={{ maxWidth: "34em", margin: "14px 0 0", fontSize: "clamp(14px, 1.4vw, 16px)", fontWeight: 200, lineHeight: 1.65, color: "rgba(226,219,204,0.95)", textWrap: "pretty" }}>
+          <p style={{ margin: 0, fontSize: "clamp(15px,1.15vw,17px)", lineHeight: 1.6, color: "#3A3128", textWrap: "pretty", ...rise(0.2) }}>
             Chairs get carried, calls get answered, someone new writes at midnight frightened by what they felt in meditation. None of it is glamorous. All of it is the movement. Tell us where you would like to stand.
           </p>
-        </div>
+        </header>
 
         {sent ? (
-          <div
-            role="status"
-            style={{ marginTop: 28, maxWidth: 640, padding: "28px 30px", borderRadius: 26, border: "1px solid rgba(126,203,143,0.45)", background: "rgba(126,203,143,0.09)", animation: "vol-in 0.5s ease both" }}
-          >
-            <div style={{ display: "flex", alignItems: "center", gap: 11 }}>
-              <span aria-hidden="true" style={{ width: 9, height: 9, borderRadius: "50%", background: "#7ecb8f", boxShadow: "0 0 12px #7ecb8f" }} />
-              <span style={{ fontSize: 10.5, letterSpacing: "0.26em", textTransform: "uppercase", color: "#9fd7ae" }}>Received</span>
-            </div>
-            <h2 style={{ fontFamily: DISPLAY, fontWeight: 400, fontSize: "clamp(22px, 3vw, 30px)", lineHeight: 1.2, margin: "12px 0 0", color: "#f2e9d8" }}>Thank you for offering to serve.</h2>
-            <p style={{ margin: "10px 0 0", fontSize: 14, fontWeight: 300, lineHeight: 1.6, color: "rgba(214,207,193,0.95)" }}>{sent}</p>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginTop: 20 }}>
-              <Link
-                to="/"
-                className="vol-back"
-                style={{ display: "inline-flex", alignItems: "center", minHeight: 44, padding: "11px 24px", borderRadius: 999, background: "linear-gradient(135deg, #e6d3a8, #b89758)", fontSize: 14, fontWeight: 500 }}
-              >
+          <div role="status" style={{ ...CARD, maxWidth: 660, padding: "28px 30px", ...rise(0) }}>
+            <span style={{ ...LABEL, color: "#2F6B45" }}>
+              <span aria-hidden="true" style={{ width: 8, height: 8, borderRadius: "50%", background: "#3F8A5A", boxShadow: "0 0 0 4px rgba(63,138,90,.18)" }} />
+              Received
+            </span>
+            <h2 className="serif" style={{ fontWeight: 500, fontSize: "clamp(26px,3vw,34px)", lineHeight: 1.1, margin: "12px 0 0", color: "#12201A" }}>
+              Thank you for offering to serve.
+            </h2>
+            <p style={{ margin: "10px 0 0", fontSize: 15, lineHeight: 1.6, color: "#3A3128" }}>{sent}</p>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 12, marginTop: 22 }}>
+              <Link to="/" className="gaw-pill-gold" style={{ ...PILL, minHeight: 44 }}>
                 Back to the site
               </Link>
-              <button
-                type="button"
-                onClick={again}
-                className="vol-choice"
-                style={{ minHeight: 44, padding: "11px 24px", borderRadius: 999, border: "1px solid rgba(255,255,255,0.18)", background: "rgba(255,255,255,0.04)", color: "rgba(226,219,204,0.95)", fontFamily: BODY, fontSize: 14, fontWeight: 300, cursor: "pointer" }}
-              >
+              <button type="button" onClick={again} className="vol-ghost" style={{ ...PILL, minHeight: 44, cursor: "pointer" }}>
                 Add someone else
               </button>
             </div>
           </div>
         ) : (
-          <form
-            noValidate
-            onSubmit={submit}
-            style={{ display: "grid", gridTemplateColumns: twoCol ? "1.15fr 0.85fr" : "1fr", gap: "clamp(18px, 3vw, 34px)", marginTop: "clamp(22px, 4vh, 40px)", alignItems: "start" }}
-          >
-            <div style={{ display: "flex", flexDirection: "column", gap: 22, minWidth: 0 }}>
+          <form noValidate onSubmit={submit} style={{ display: "grid", gridTemplateColumns: twoCol ? "minmax(0,1.15fr) minmax(0,.85fr)" : "1fr", gap: "clamp(20px,3vw,36px)", alignItems: "start", ...rise(0.25) }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 28, minWidth: 0 }}>
               <fieldset style={{ margin: 0, padding: 0, border: 0, minWidth: 0 }}>
-                <legend style={{ ...LABEL, padding: 0 }}>Where you would like to serve</legend>
-                <div style={{ fontSize: 12.5, fontWeight: 300, color: "rgba(185,177,160,0.9)", marginTop: 5 }}>Choose as many as you mean. Somebody will read this by hand.</div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 14 }}>
+                <legend style={{ ...LABEL, padding: 0 }}>
+                  <span aria-hidden="true" style={{ width: 18, height: 1, background: "#C9A24A" }} />
+                  Where you would like to serve
+                </legend>
+                <div style={{ fontSize: 13.5, color: "#5A5546", marginTop: 8 }}>Choose as many as you mean. Somebody will read this by hand.</div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 12, marginTop: 16 }}>
                   {teams.map((t) => {
                     const on = picked.includes(t.id);
-                    const border = on ? "rgba(213,183,124,0.7)" : "rgba(255,255,255,0.13)";
                     return (
                       <button
                         key={t.id}
                         type="button"
                         onClick={() => toggle(t.id)}
                         aria-pressed={on}
-                        className="vol-choice vol-team"
-                        style={{
-                          display: "flex",
-                          alignItems: "flex-start",
-                          gap: 13,
-                          width: "100%",
-                          minHeight: 44,
-                          padding: "14px 16px",
-                          borderRadius: 18,
-                          border: `1px solid ${border}`,
-                          background: on ? "rgba(213,183,124,0.12)" : "rgba(255,255,255,0.035)",
-                          color: "#efe9dc",
-                          fontFamily: BODY,
-                          textAlign: "left",
-                          cursor: "pointer",
-                        }}
+                        className={`vol-team${on ? " is-on" : ""}`}
+                        style={{ display: "flex", alignItems: "flex-start", gap: 14, width: "100%", minHeight: 44, padding: "16px 18px", borderRadius: 18, fontFamily: "inherit", textAlign: "left", cursor: "pointer" }}
                       >
                         <span
                           aria-hidden="true"
-                          style={{
-                            width: 30,
-                            height: 30,
-                            flexShrink: 0,
-                            borderRadius: "50%",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            border: `1px solid ${border}`,
-                            background: on ? "rgba(213,183,124,0.2)" : "rgba(255,255,255,0.05)",
-                            color: on ? "#f0dcaf" : "rgba(213,183,124,0.75)",
-                            fontSize: 14,
-                          }}
+                          className="serif"
+                          style={{ width: 36, height: 36, flexShrink: 0, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", background: on ? "#14241C" : "#F3EAD3", color: on ? "#E8CF83" : "#8A6F34", fontSize: 17 }}
                         >
                           {t.glyph}
                         </span>
                         <span style={{ display: "flex", flexDirection: "column", gap: 3, minWidth: 0 }}>
-                          <span style={{ fontSize: 14.5, fontWeight: 500, color: on ? "#f7ecd0" : "#efe9dc" }}>{t.title}</span>
-                          <span style={{ fontSize: 12.5, fontWeight: 300, lineHeight: 1.5, color: "rgba(185,177,160,0.95)", textWrap: "pretty" }}>{t.desc}</span>
+                          <span className="serif" style={{ fontSize: 20, fontWeight: 600, lineHeight: 1.15, color: "#12201A" }}>
+                            {t.title}
+                          </span>
+                          <span style={{ fontSize: 13.5, lineHeight: 1.55, color: "#3A3128", textWrap: "pretty" }}>{t.desc}</span>
                         </span>
-                        <span aria-hidden="true" style={{ flexShrink: 0, marginLeft: "auto", fontSize: 13, color: "#d5b77c" }}>
+                        <span
+                          aria-hidden="true"
+                          style={{ flexShrink: 0, marginLeft: "auto", width: 24, height: 24, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", border: on ? 0 : "1px solid rgba(138,111,52,.4)", background: on ? "linear-gradient(90deg,#E8CF83,#C9A24A)" : "transparent", color: "#14241C", fontSize: 13, fontWeight: 700 }}
+                        >
                           {on ? "✓" : ""}
                         </span>
                       </button>
@@ -309,8 +274,11 @@ export default function VolunteerPage() {
               </fieldset>
 
               <fieldset style={{ margin: 0, padding: 0, border: 0, minWidth: 0 }}>
-                <legend style={{ ...LABEL, padding: 0 }}>About you</legend>
-                <div style={{ display: "grid", gridTemplateColumns: twoRow ? "1fr 1fr" : "1fr", gap: 12, marginTop: 14 }}>
+                <legend style={{ ...LABEL, padding: 0 }}>
+                  <span aria-hidden="true" style={{ width: 18, height: 1, background: "#C9A24A" }} />
+                  About you
+                </legend>
+                <div style={{ display: "grid", gridTemplateColumns: twoRow ? "1fr 1fr" : "1fr", gap: 14, marginTop: 16 }}>
                   {field("name", "Your name", { type: "text", autoComplete: "name", placeholder: "Full name", required: true })}
                   {field("email", "Email", { type: "email", autoComplete: "email", placeholder: "you@example.com", required: true })}
                   {field("phone", "Phone or WhatsApp", { type: "tel", autoComplete: "tel", placeholder: "With country code, e.g. +91", required: true })}
@@ -319,7 +287,7 @@ export default function VolunteerPage() {
               </fieldset>
 
               <fieldset style={{ margin: 0, padding: 0, border: 0, minWidth: 0 }}>
-                <legend style={{ ...FIELD_LABEL, padding: 0, marginBottom: 9 }}>How much time can you give?</legend>
+                <legend style={{ ...FIELD_LABEL, padding: 0, marginBottom: 10 }}>How much time can you give?</legend>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
                   {AVAILS.map((a) => {
                     const on = avail === a;
@@ -332,20 +300,8 @@ export default function VolunteerPage() {
                           setAvail(on ? "" : a);
                           clearErr("availability");
                         }}
-                        className="vol-choice"
-                        style={{
-                          minHeight: 44,
-                          padding: "9px 17px",
-                          borderRadius: 999,
-                          border: `1px solid ${on ? "rgba(213,183,124,0.7)" : "rgba(255,255,255,0.14)"}`,
-                          background: on ? "rgba(213,183,124,0.14)" : "rgba(255,255,255,0.04)",
-                          color: on ? "#f7ecd0" : "rgba(207,200,186,0.9)",
-                          fontFamily: BODY,
-                          fontSize: 12.5,
-                          fontWeight: 400,
-                          cursor: "pointer",
-                          whiteSpace: "nowrap",
-                        }}
+                        className={`vol-avail${on ? " is-on" : ""}`}
+                        style={{ minHeight: 44, padding: "0 18px", borderRadius: 999, fontFamily: "inherit", fontSize: 13, fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap" }}
                       >
                         {a}
                       </button>
@@ -354,7 +310,7 @@ export default function VolunteerPage() {
                 </div>
               </fieldset>
 
-              <label style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+              <label style={{ display: "flex", flexDirection: "column", gap: 7 }}>
                 <span style={FIELD_LABEL}>Anything you want us to know</span>
                 <textarea
                   value={form.note}
@@ -384,89 +340,66 @@ export default function VolunteerPage() {
               />
 
               {error && (
-                <div role="alert" style={{ padding: "13px 16px", borderRadius: 16, border: "1px solid rgba(224,132,132,0.5)", background: "rgba(224,132,132,0.1)", fontSize: 13, fontWeight: 300, lineHeight: 1.5, color: "#f0c3c3" }}>
+                <div role="alert" style={{ padding: "13px 16px", borderRadius: 16, border: "1px solid rgba(176,70,70,.45)", background: "rgba(176,70,70,.07)", fontSize: 14, fontWeight: 500, lineHeight: 1.5, color: "#8A2626" }}>
                   {error}
                 </div>
               )}
 
-              <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 14 }}>
+              <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 16 }}>
                 <button
                   type="submit"
                   disabled={busy}
-                  className="vol-submit"
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: 9,
-                    minHeight: 48,
-                    padding: "14px 34px",
-                    borderRadius: 999,
-                    border: "none",
-                    background: "linear-gradient(135deg, #e6d3a8, #b89758)",
-                    color: "#241b06",
-                    fontFamily: BODY,
-                    fontSize: 15,
-                    fontWeight: 500,
-                    cursor: busy ? "default" : "pointer",
-                    opacity: busy ? 0.6 : 1,
-                  }}
+                  className="gaw-pill-gold vol-submit"
+                  style={{ ...PILL, padding: "0 34px", border: 0, fontSize: 12, cursor: busy ? "default" : "pointer", opacity: busy ? 0.6 : 1 }}
                 >
                   {busy ? "Sending…" : "Count me in"}
                 </button>
-                <span aria-live="polite" style={{ fontSize: 12, fontWeight: 300, lineHeight: 1.5, color: "rgba(154,146,127,0.95)" }}>
+                <span aria-live="polite" style={{ fontSize: 13, lineHeight: 1.5, color: "#5A5546" }}>
                   {pickedSummary}
                 </span>
               </div>
             </div>
 
-            <aside style={{ display: "flex", flexDirection: "column", gap: 14, position: "sticky", top: 18, minWidth: 0 }}>
-              <div style={{ padding: "20px 22px", borderRadius: 24, border: "1px solid rgba(255,255,255,0.1)", background: "rgba(255,255,255,0.035)" }}>
-                <div style={LABEL}>What happens next</div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 14, marginTop: 14 }}>
+            <aside style={{ display: "flex", flexDirection: "column", gap: 16, position: twoCol ? "sticky" : "static", top: 130, minWidth: 0 }}>
+              <div style={{ ...CARD, padding: "22px 24px" }}>
+                <span style={LABEL}>What happens next</span>
+                <div style={{ display: "flex", flexDirection: "column", gap: 16, marginTop: 16 }}>
                   {STEPS.map((s) => (
-                    <div key={s.n} style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
+                    <div key={s.n} style={{ display: "flex", gap: 14, alignItems: "flex-start" }}>
                       <span
                         aria-hidden="true"
-                        style={{ width: 24, height: 24, flexShrink: 0, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid rgba(213,183,124,0.45)", fontFamily: DISPLAY, fontSize: 12, color: "#d5b77c" }}
+                        className="serif"
+                        style={{ width: 30, height: 30, flexShrink: 0, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", background: "#F3EAD3", boxShadow: "0 0 0 1px rgba(138,111,52,.3)", fontSize: 16, fontWeight: 600, color: "#7A5E22" }}
                       >
                         {s.n}
                       </span>
-                      <span style={{ fontSize: 12.5, fontWeight: 300, lineHeight: 1.55, color: "rgba(200,192,178,0.95)", textWrap: "pretty" }}>{s.body}</span>
+                      <span style={{ fontSize: 14, lineHeight: 1.55, color: "#3A3128", textWrap: "pretty" }}>{s.body}</span>
                     </div>
                   ))}
                 </div>
               </div>
 
-              <div style={{ padding: "20px 22px", borderRadius: 24, border: "1px solid rgba(213,183,124,0.3)", background: "rgba(213,183,124,0.06)" }}>
-                <div style={{ fontFamily: DISPLAY, fontSize: 17, color: "#f2e9d8" }}>No commitment is too small</div>
-                <p style={{ margin: "8px 0 0", fontSize: 12.5, fontWeight: 300, lineHeight: 1.6, color: "rgba(200,192,178,0.95)", textWrap: "pretty" }}>
+              <div style={{ padding: "22px 24px", borderRadius: 22, background: "#14241C", color: "#F6F1E6", boxShadow: "0 18px 40px -20px rgba(0,0,0,.5)" }}>
+                <div className="serif" style={{ fontSize: 24, lineHeight: 1.15 }}>
+                  No commitment is too small
+                </div>
+                <p style={{ margin: "8px 0 0", fontSize: 13.5, lineHeight: 1.6, color: "rgba(246,241,230,.8)", textWrap: "pretty" }}>
                   One event a year is help. Answering three messages a week is help. Say what is true and we will never ask for more than that.
                 </p>
               </div>
 
-              <div style={{ padding: "18px 22px", borderRadius: 24, border: "1px solid rgba(255,255,255,0.1)", background: "rgba(255,255,255,0.03)" }}>
-                <div style={{ fontSize: 12.5, fontWeight: 300, lineHeight: 1.6, color: "rgba(185,177,160,0.95)", overflowWrap: "anywhere" }}>
-                  Rather write to a person?{" "}
-                  <a className="vol-link" href={`mailto:${OFFICIAL_EMAIL}?subject=Volunteering`}>
-                    {OFFICIAL_EMAIL}
-                  </a>
-                </div>
+              <div style={{ padding: "18px 24px", borderRadius: 22, background: "rgba(255,253,248,.45)", border: "1px solid rgba(138,111,52,.22)", fontSize: 13.5, lineHeight: 1.6, color: "#3A3128", overflowWrap: "anywhere" }}>
+                Rather write to a person?{" "}
+                <a href={`mailto:${OFFICIAL_EMAIL}?subject=Volunteering`} style={{ fontWeight: 600 }}>
+                  {OFFICIAL_EMAIL}
+                </a>
               </div>
             </aside>
           </form>
         )}
       </main>
 
-      <footer
-        style={{ position: "relative", zIndex: 1, flexShrink: 0, display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "center", gap: "8px 22px", padding: "0 clamp(18px, 4vw, 44px) 22px", fontSize: 11.5, fontWeight: 300, color: "rgba(154,146,127,0.95)" }}
-      >
-        <span style={{ fontFamily: DISPLAY, letterSpacing: "0.18em", color: "rgba(213,183,124,0.9)" }}>GOLDEN AGE WISDOM</span>
-        <span>A registered non-profit · © 2026</span>
-        <Link to="/privacy" className="vol-link" style={{ display: "inline-flex", alignItems: "center", minHeight: 44 }}>
-          Privacy
-        </Link>
-      </footer>
+      <SiteFooter title="Seva is the movement" sub="Every hour offered keeps the sits free and the doors open." />
     </SitePage>
   );
 }
