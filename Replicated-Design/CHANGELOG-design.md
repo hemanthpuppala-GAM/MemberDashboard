@@ -3,6 +3,7 @@
 Format: date · item · status (🟡 designed / ✅ implemented @sha / ⬅ code change to mirror in Design / ↩ mirrored in Design)
 
 ## 2026-10-12 — Owner corrections round (code first)
+- ⬅ code change: Home one-screen layout on tall wide screens — when the caption column is what limits the Bodhi tree, the chapter caption moves under the tree and the tree uses the column's full width (1738×1300: 642→771px). Home "Upcoming" card shows the next one-off Live Session from admin (title + date · time · place); default copy is now "Gatherings & retreats / City retreats, talks and group sits with Dr. Hari Krishna — see what is coming up." (was the design placeholder "Announce your next event here").
 - ⬅ code change: header page links drop "Teachings" (it only scrolled the home page) — About · Mission · Meditation · Wisdom · Wellness · Events.
 - ⬅ code change: every "Watch live" goes to the YouTube live tab (youtube.com/@GoldenAgeGurus/streams), not the channel home.
 - ⬅ code change: "Join the daily sit" (sub-page footers, Events footer — was "Join free") and the home "Next group meditation" pill open the Zoom room (admin Settings → Zoom, else bundled link) in a new tab.

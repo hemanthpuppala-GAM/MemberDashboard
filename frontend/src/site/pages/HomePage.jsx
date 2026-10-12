@@ -11,7 +11,7 @@ import BodhiNavigator from "../home/BodhiNavigator";
 import { WorldSitsFooter } from "../home/WorldSits";
 import { CHAPTER_HASHES, QUESTIONS, chapterData } from "../home/homeData";
 import { useSits } from "../home/sits";
-import { useHomeSessions } from "../liveSessions";
+import { eventRow, useEventSessions, useHomeSessions } from "../liveSessions";
 import { useHomeVoices } from "../siteQuotes";
 import "../home/home.css";
 
@@ -199,7 +199,12 @@ export default function HomePage() {
   const headFitPx = 6.9 * (shortFit ? Math.max(30, Math.min(h * 0.062, 44)) : Math.max(34, Math.min(w * 0.039, h * 0.075, 64)));
   const pillBeside = wideFit || fitColW - gutPx - headFitPx - 18 >= 200;
   const fitTreeH = h - hh - (w >= 1200 ? 34 : 0) - (heroH || 300) - (footH || 80) - 28;
-  const fitTreePx = Math.max(240, Math.min(fitColW - 200, fitTreeH * (1277 / 835)));
+  // Tree beside its caption, or — on tall wide screens where the caption's column is what limits
+  // the tree — caption underneath (≈150px) so the tree can use the column's full width.
+  const besideTreePx = Math.min(fitColW - 200, fitTreeH * (1277 / 835));
+  const stackedTreePx = Math.min(fitColW - gutPx, (fitTreeH - 150) * (1277 / 835));
+  const treeStacked = stackedTreePx > besideTreePx + 40;
+  const fitTreePx = Math.max(240, treeStacked ? stackedTreePx : besideTreePx);
   // Desktop / landscape tablet: the whole home page fits one screen. Hero copy + tree in the left
   // column, the four cards fill the right column (where the hero emblem used to be), footer at the bottom.
   const fit = fitOn;
@@ -212,6 +217,9 @@ export default function HomePage() {
     setFilm(true);
   };
   const voice = voices[vi % voices.length];
+  // "Upcoming" card: the next one-off Live Session from admin, else the editable default copy.
+  const nextEvent = useEventSessions().upcoming?.[0];
+  const nextRow = nextEvent ? eventRow(nextEvent) : null;
 
   return (
     <SitePage>
@@ -316,8 +324,8 @@ export default function HomePage() {
             ...(fit ? { display: "contents" } : {}),
           }}
         >
-          <div style={{ display: "flex", flexDirection: "column", alignItems: desk ? "flex-start" : "center", flex: "none", minWidth: 0, maxWidth: "100%", width: desk ? undefined : "100%", ...(fit ? { gridColumn: 1, gridRow: 3, position: "relative", zIndex: 6, padding: `12px 0 12px ${gutPx}px`, minHeight: 0, overflow: "hidden", flexDirection: "row", alignItems: "center", gap: 0 } : {}) }}>
-            <BodhiNavigator active={active} chapters={chapters} desk={desk} treeW={fit ? `${fitTreePx}px` : desk ? `${treePx}px` : tablet ? "min(100%, 640px)" : "100%"} onActive={setActive} onOpen={openChapter} side={fit} />
+          <div style={{ display: "flex", flexDirection: "column", alignItems: desk ? "flex-start" : "center", flex: "none", minWidth: 0, maxWidth: "100%", width: desk ? undefined : "100%", ...(fit ? { gridColumn: 1, gridRow: 3, position: "relative", zIndex: 6, padding: `12px 0 12px ${gutPx}px`, minHeight: 0, overflow: "hidden", flexDirection: treeStacked ? "column" : "row", alignItems: treeStacked ? "flex-start" : "center", justifyContent: "center", gap: 0 } : {}) }}>
+            <BodhiNavigator active={active} chapters={chapters} desk={desk} treeW={fit ? `${fitTreePx}px` : desk ? `${treePx}px` : tablet ? "min(100%, 640px)" : "100%"} onActive={setActive} onOpen={openChapter} side={fit && !treeStacked} />
           </div>
 
           <div style={{ ...(fit ? { gridColumn: 2, gridRow: "2 / 4", position: "relative", zIndex: 6, padding: `clamp(12px,2.2vh,28px) ${gutPx}px 16px 0`, minHeight: 0 } : {}), display: "flex", flexDirection: "column", alignItems: "stretch", justifyContent: "flex-start", flex: "0 0 auto", minWidth: 0, width: fit ? "auto" : desk ? cardsPx : tablet ? "min(calc(100% - 64px), 760px)" : "calc(100% - 44px)", alignSelf: desk ? "stretch" : "center", margin: desk ? 0 : "0 auto 16px" }}>
@@ -336,8 +344,8 @@ export default function HomePage() {
                 style={{ position: "relative", minHeight: 0, display: "flex", flexDirection: "column", justifyContent: "center", gap: 8, overflow: "hidden", padding: CARD_PAD, borderRadius: 22, background: "rgba(255,253,248,.55)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)", border: "1px solid rgba(255,255,255,.7)", boxShadow: "0 1px 0 rgba(255,255,255,.8) inset,0 20px 40px -14px rgba(60,42,16,.22)", animation: "gaw-rise .9s .7s both" }}
               >
                 <span style={{ ...CARD_KICK, color: "#7A5E22" }}>{c.eventKicker}</span>
-                <span style={CARD_TITLE}>{c.eventTitle}</span>
-                <span style={CARD_SUB}>{c.eventSub}</span>
+                <span style={CARD_TITLE}>{nextRow ? nextRow.title : c.eventTitle}</span>
+                <span style={CARD_SUB}>{nextRow ? `${nextRow.day} ${nextRow.month} · ${nextRow.meta}` : c.eventSub}</span>
                 <span style={{ ...CARD_CTA, color: "#7A5E22" }}>
                   {c.eventCta} {ARROW}
                 </span>
