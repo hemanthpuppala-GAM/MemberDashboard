@@ -66,3 +66,20 @@
   border-color: #14241c;
   color: #e8cf83;
 }
+
+.gaw-site .wisdom-divider {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 4px;
+  font-size: 12px;
+  color: #c9a24a;
+}
+.gaw-site .wisdom-divider > span {
+  width: clamp(48px, 12vw, 120px);
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #c9a24a);
+}
+.gaw-site .wisdom-divider > span:last-child {
+  background: linear-gradient(90deg, #c9a24a, transparent);
+}

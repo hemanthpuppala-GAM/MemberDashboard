@@ -482,6 +482,7 @@ export const SITE_CONTENT_SCHEMAS = {
             type: "list",
             key: "stages",
             itemLabel: (st) => st.name || "Stage",
+            layout: "cards",
             fields: [
               { key: "place", label: "Place on the river", type: "text" },
               { key: "name", label: "Name", type: "text" },

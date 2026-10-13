@@ -113,6 +113,9 @@ function RiverSection({ c, desk, mid }) {
   return (
     <section aria-labelledby="wisdom-river-title" className="wisdom-river" style={{ display: "flex", flexDirection: "column", gap: "clamp(22px,3.5vh,34px)", marginTop: 8 }}>
       <header style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12, textAlign: "center" }}>
+        <span aria-hidden="true" className="wisdom-divider">
+          <span />◈<span />
+        </span>
         {c.riverKicker ? <Kicker>{c.riverKicker}</Kicker> : null}
         <h2 id="wisdom-river-title" className="serif" style={{ margin: 0, fontWeight: 500, fontSize: "clamp(28px,3.2vw,46px)", lineHeight: 1.08, letterSpacing: "-.01em", color: INK, maxWidth: "26ch", textWrap: "balance" }}>
           {c.riverTitle} {c.riverTitleAccent ? <em style={{ color: "#8A6F34" }}>{c.riverTitleAccent}</em> : null}
