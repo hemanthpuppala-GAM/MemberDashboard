@@ -12,12 +12,12 @@ import { YOUTUBE_LIVE_URL } from "../site/sitePages";
  * home time ("4:10 AM IST") rides along underneath.
  */
 
-/** Daily YouTube live stream (Golden Age Gurus channel). Starts 10:45 IST; the end only drives the "Live now" badge. */
+/** Daily YouTube live stream (Golden Age Gurus channel): 9:00–11:45 PM IST (owner-confirmed). */
 export const YOUTUBE_LIVE = {
   title: "Live on YouTube",
   desc: "Dr. HariKrishna live on the Golden Age Gurus channel — free for everyone.",
-  start: "10:45",
-  end: "12:15",
+  start: "21:00",
+  end: "23:45",
   tz: "Asia/Kolkata",
   zone: "IST",
   region: "Worldwide",
