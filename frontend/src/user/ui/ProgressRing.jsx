@@ -1,6 +1,6 @@
 import { useId } from "react";
 
-export default function ProgressRing({ value, max, size = 76, stroke = 7, label }) {
+export default function ProgressRing({ value, max, size = 76, stroke = 7, label, track = "rgba(168,185,160,0.20)", labelClass = "text-[var(--color-ink)]" }) {
   const gradientId = useId();
   const pct = Math.min(1, Math.max(0, value / max));
   const r = (size - stroke) / 2;
@@ -10,7 +10,7 @@ export default function ProgressRing({ value, max, size = 76, stroke = 7, label 
   return (
     <div className="relative shrink-0" style={{ width: size, height: size }}>
       <svg width={size} height={size} className="-rotate-90">
-        <circle cx={size / 2} cy={size / 2} r={r} stroke="rgba(168,185,160,0.20)" strokeWidth={stroke} fill="none" />
+        <circle cx={size / 2} cy={size / 2} r={r} stroke={track} strokeWidth={stroke} fill="none" />
         <circle
           cx={size / 2}
           cy={size / 2}
@@ -31,7 +31,7 @@ export default function ProgressRing({ value, max, size = 76, stroke = 7, label 
         </defs>
       </svg>
       {label && (
-        <div className="absolute inset-0 flex items-center justify-center font-display text-[13px] text-[var(--color-ink)]">
+        <div className={`absolute inset-0 flex items-center justify-center font-display text-[13px] ${labelClass}`}>
           {label}
         </div>
       )}

@@ -1,0 +1,77 @@
+/*
+ * Member area palette. The public site's light ivory tokens read washed-out on a
+ * working dashboard, so the member shell deepens them: darker ink, firmer borders,
+ * a warm canvas behind white cards, and a forest-green sidebar + hero carrying the
+ * brand gold (the same night band as the site's header, footer and Wisdom Library).
+ */
+.member-theme {
+  --color-ink: #13221b;
+  --color-ink-soft: #4a4034;
+  --color-border: #ddd0b7;
+  --color-bg-soft: #f1e8d5;
+  --color-blue-dark: #2f5d4a;
+  --color-gold-deep: #7a5a17;
+  --member-canvas: #f5efe2;
+  --member-forest: #14241c;
+  --member-forest-2: #1f3b2e;
+}
+
+/* Dark hero panel — tokens for text on forest green. */
+.member-hero {
+  --mh-ink: #f6f1e6;
+  --mh-ink-soft: rgba(246, 241, 230, 0.8);
+  --mh-gold: #e8cf83;
+  background:
+    radial-gradient(ellipse 70% 90% at 100% 0%, rgba(232, 207, 131, 0.2), transparent 60%),
+    radial-gradient(ellipse 50% 70% at 0% 100%, rgba(63, 166, 91, 0.14), transparent 65%),
+    linear-gradient(160deg, var(--member-forest-2, #1f3b2e) 0%, var(--member-forest, #14241c) 100%);
+  box-shadow: 0 24px 50px -28px rgba(20, 36, 28, 0.75);
+  color: var(--mh-ink);
+}
+.member-hero-accent {
+  background: linear-gradient(120deg, #f6e3a6 0%, #e8cf83 45%, #c9a24a 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Sidebar on forest green. */
+.member-sidebar {
+  background: linear-gradient(180deg, var(--member-forest-2) 0%, var(--member-forest) 100%);
+  border-right: 1px solid rgba(232, 207, 131, 0.16);
+  color: rgba(246, 241, 230, 0.82);
+}
+.member-sidebar .ms-link {
+  color: rgba(246, 241, 230, 0.78);
+}
+.member-sidebar .ms-link:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+}
+.member-sidebar .ms-link.is-active {
+  background: rgba(232, 207, 131, 0.16);
+  color: #fff;
+}
+.member-sidebar .ms-icon {
+  background: rgba(255, 255, 255, 0.07);
+  color: rgba(246, 241, 230, 0.78);
+}
+.member-sidebar .ms-link:hover .ms-icon {
+  color: #e8cf83;
+}
+.member-sidebar .ms-link.is-active .ms-icon {
+  background: #e8cf83;
+  color: #14241c;
+}
+.member-sidebar .ms-link:focus-visible,
+.member-sidebar .ms-plain:focus-visible {
+  outline: 2px solid #e8cf83;
+  outline-offset: 2px;
+}
+.member-sidebar .ms-plain {
+  color: rgba(246, 241, 230, 0.7);
+}
+.member-sidebar .ms-plain:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+}

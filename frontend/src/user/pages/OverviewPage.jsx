@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react";
-import { Flame, Clock, Gauge, Sparkles, ArrowRight } from "lucide-react";
+import { Flame, Clock, Gauge, ArrowRight, Globe2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import Card from "../ui/Card";
 import IconBadge from "../ui/IconBadge";
 import ProgressRing from "../ui/ProgressRing";
 import Button from "../../components/ui/Button";
 import { memberAuthApi } from "../../lib/memberAuth";
+import JoinButton from "../ui/JoinButton";
+import { useMemberSchedule } from "../useMemberSchedule";
+import { useMemberAuth } from "../../auth/MemberAuthContext";
 
 function formatMinutes(totalMinutes) {
   const hours = Math.floor(totalMinutes / 60);
@@ -22,6 +25,10 @@ export default function OverviewPage() {
   const [overview, setOverview] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const { user } = useMemberAuth();
+  const firstName = (user?.name || "").trim().split(/\s+/)[0] || "";
+  const schedule = useMemberSchedule();
+  const nextSit = schedule.live[0] || schedule.next;
 
   useEffect(() => {
     memberAuthApi
@@ -41,84 +48,90 @@ export default function OverviewPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      {/* Greeting hero — a sand band (the same "level 2" surface the public sections alternate onto), not a glowing glass panel. */}
-      <div className="relative overflow-hidden rounded-3xl border border-[var(--color-border)] bg-[var(--color-bg-soft)] px-6 py-7 sm:px-9 sm:py-9">
+      {/* Greeting hero — deep forest panel with gold, the same night-sky band as the site's Wisdom Library. */}
+      <div className="member-hero relative overflow-hidden rounded-3xl px-6 py-7 sm:px-9 sm:py-9">
         <div className="relative flex flex-wrap items-center justify-between gap-6">
           <div>
-            <p className="text-[12.5px] font-semibold tracking-[0.14em] text-[var(--color-blue-dark)] uppercase">
-              Welcome back
-            </p>
-            <h2 className="mt-1.5 font-display text-[24px] leading-tight text-[var(--color-ink)] sm:text-[28px]">
-              Your light is{" "}
-              <span
-                style={{
-                  background: "linear-gradient(135deg, #DCC58A 20%, #C6A15B 60%, #8A6A32 100%)",
-                  WebkitBackgroundClip: "text",
-                  backgroundClip: "text",
-                  color: "transparent",
-                }}
-              >
-                growing steadily
-              </span>
+            <p className="text-[12px] font-bold tracking-[0.18em] text-[var(--mh-gold)] uppercase">Welcome back{firstName ? `, ${firstName}` : ""}</p>
+            <h2 className="mt-2 font-display text-[28px] leading-tight text-[var(--mh-ink)] sm:text-[34px]">
+              Your light is <em className="member-hero-accent not-italic">growing steadily</em>
             </h2>
-            <p className="mt-1.5 max-w-md text-[14px] text-[var(--color-ink-soft)]">
-              Here's where your practice stands today.
-            </p>
+            <p className="mt-2 max-w-md text-[14.5px] text-[var(--mh-ink-soft)]">Here's where your practice stands today.</p>
           </div>
 
           {overview && (
-            <div className="flex items-center gap-4 rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] px-5 py-4 shadow-[0_8px_24px_rgba(80,65,40,0.08)]">
-              <ProgressRing value={overview.challenge.day} max={overview.challenge.total} label={`${overview.challenge.day}/${overview.challenge.total}`} />
+            <div className="flex items-center gap-4 rounded-2xl border border-[rgba(232,207,131,0.28)] bg-[rgba(255,255,255,0.07)] px-5 py-4 backdrop-blur-sm">
+              <ProgressRing
+                value={overview.challenge.day}
+                max={overview.challenge.total}
+                label={`${overview.challenge.day}/${overview.challenge.total}`}
+                track="rgba(246,241,230,0.18)"
+                labelClass="text-[var(--mh-ink)]"
+              />
               <div>
-                <div className="text-[13.5px] font-semibold text-[var(--color-ink)]">41-day challenge</div>
-                <div className="text-[12.5px] text-[var(--color-ink-soft)]">Day {overview.challenge.day} of {overview.challenge.total}</div>
+                <div className="text-[14px] font-semibold text-[var(--mh-ink)]">41-day challenge</div>
+                <div className="text-[12.5px] text-[var(--mh-ink-soft)]">
+                  Day {overview.challenge.day} of {overview.challenge.total}
+                </div>
               </div>
             </div>
           )}
         </div>
       </div>
 
+      {nextSit && (
+        <Card accent className="!p-5 sm:!p-6">
+          <div className="flex flex-wrap items-center justify-between gap-5">
+            <div className="min-w-0">
+              <p className={`text-[11.5px] font-bold tracking-[0.16em] uppercase ${nextSit.live ? "text-[#25803F]" : "text-[var(--color-gold-deep)]"}`}>
+                {nextSit.live ? "● Live now" : `Next live session · ${nextSit.day}`}
+              </p>
+              <div className="mt-1.5 font-display text-[21px] leading-tight text-[var(--color-ink)]">{nextSit.title}</div>
+              <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-[13.5px] text-[var(--color-ink-soft)]">
+                <span className="font-semibold text-[var(--color-ink)]">
+                  {nextSit.startLocal} – {nextSit.endLocal}
+                </span>
+                {!nextSit.sameZone && (
+                  <span className="inline-flex items-center gap-1">
+                    <Globe2 size={13} /> {nextSit.home}
+                  </span>
+                )}
+                {!nextSit.live && <span className="font-semibold text-[var(--color-gold-deep)]">{nextSit.inLabel}</span>}
+              </div>
+              {overview?.upcoming_session && (
+                <p className="mt-2 text-[12.5px] text-[var(--color-ink-soft)]">
+                  Also coming up: <span className="font-semibold text-[var(--color-ink)]">{overview.upcoming_session.title}</span> · {formatSessionTime(overview.upcoming_session.starts_at)}
+                </p>
+              )}
+            </div>
+            <div className="flex flex-wrap items-center gap-2.5">
+              <JoinButton sit={nextSit} size="lg" />
+              <Button as={Link} to="/dashboard/join-live" variant="secondary" className="!px-5 !py-3">
+                All sessions
+              </Button>
+            </div>
+          </div>
+        </Card>
+      )}
+
       {error && (
         <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-[13.5px] text-red-700">{error}</p>
       )}
 
       {!error && (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <div className="grid grid-cols-3 gap-2.5 sm:gap-4">
           {loading
-            ? [0, 1, 2].map((i) => <Card key={i} className="h-[76px] animate-pulse !bg-[var(--color-bg-soft)]" />)
+            ? [0, 1, 2].map((i) => <Card key={i} className="h-[96px] animate-pulse !bg-[var(--color-bg-soft)] sm:h-[76px]" />)
             : stats.map(({ icon, tone, label, value }) => (
-                <Card key={label} className="flex items-center gap-3.5">
-                  <IconBadge icon={icon} tone={tone} size={44} iconSize={19} />
-                  <div>
-                    <div className="text-[16px] font-semibold text-[var(--color-ink)]">{value}</div>
-                    <div className="text-[12.5px] text-[var(--color-ink-soft)]">{label}</div>
+                <Card key={label} className="flex flex-col items-start gap-2.5 !p-3.5 sm:flex-row sm:items-center sm:gap-3.5 sm:!p-6">
+                  <IconBadge icon={icon} tone={tone} size={40} iconSize={18} />
+                  <div className="min-w-0">
+                    <div className="text-[14px] leading-snug font-semibold text-[var(--color-ink)] sm:text-[16px]">{value}</div>
+                    <div className="text-[11.5px] leading-snug text-[var(--color-ink-soft)] sm:text-[12.5px]">{label}</div>
                   </div>
                 </Card>
               ))}
         </div>
-      )}
-
-      {overview?.upcoming_session ? (
-        <Card accent title="Upcoming session" description={overview.upcoming_session.teacher}>
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <div className="text-[15px] font-semibold text-[var(--color-ink)]">{overview.upcoming_session.title}</div>
-              <div className="text-[13px] text-[var(--color-ink-soft)]">{formatSessionTime(overview.upcoming_session.starts_at)}</div>
-            </div>
-            <Button as={Link} to="/dashboard/join-live">
-              Join live
-            </Button>
-          </div>
-        </Card>
-      ) : (
-        !loading &&
-        !error && (
-          <Card title="No sessions scheduled" description="Check back soon, or start a solo sit in the meantime.">
-            <Button as={Link} to="/dashboard/sit-scribe" variant="secondary" className="mt-1">
-              Sit & Scribe
-            </Button>
-          </Card>
-        )
       )}
 
       <div className="grid gap-4 sm:grid-cols-2">
@@ -126,7 +139,6 @@ export default function OverviewPage() {
           <Button
             as={Link}
             to="/dashboard/sit-scribe"
-            variant="secondary"
             className="group mt-1 w-full justify-between"
           >
             Sit & Scribe
