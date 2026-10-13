@@ -25,3 +25,61 @@
     stroke-dashoffset: -520;
   }
 }
+
+/* "One living river" — a gold stream joins the numbered stages. */
+.gaw-site .wisdom-stages {
+  position: relative;
+}
+.gaw-site .wisdom-stage::before {
+  content: "";
+  position: absolute;
+  left: 15px;
+  top: 0;
+  bottom: -14px;
+  width: 2px;
+  background: linear-gradient(180deg, rgba(201, 162, 74, 0.25), rgba(201, 162, 74, 0.7));
+}
+.gaw-site .wisdom-stage:first-child::before {
+  top: 18px;
+}
+.gaw-site .wisdom-stage:last-child::before {
+  display: none;
+}
+@media (min-width: 900px) {
+  .gaw-site .wisdom-stage::before {
+    left: 19px;
+    bottom: -18px;
+  }
+}
+.gaw-site .wisdom-stage-dot {
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #f3ead3, #e8cf83);
+  border: 1px solid #c9a24a;
+  color: #5a3c0e;
+}
+.gaw-site .wisdom-stage-sea {
+  background: radial-gradient(circle at 35% 35%, #2a4a3b, #14241c);
+  border-color: #14241c;
+  color: #e8cf83;
+}
+
+.gaw-site .wisdom-divider {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 4px;
+  font-size: 12px;
+  color: #c9a24a;
+}
+.gaw-site .wisdom-divider > span {
+  width: clamp(48px, 12vw, 120px);
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #c9a24a);
+}
+.gaw-site .wisdom-divider > span:last-child {
+  background: linear-gradient(90deg, #c9a24a, transparent);
+}

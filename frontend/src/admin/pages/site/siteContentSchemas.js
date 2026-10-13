@@ -418,7 +418,7 @@ export const SITE_CONTENT_SCHEMAS = {
     label: "Wisdom",
     publicPath: "/wisdom",
     eyebrow: "Admin · Wisdom page",
-    title: "Intro, cards, the Wisdom Library & quotes",
+    title: "Intro, cards, the living river, the Wisdom Library & quotes",
     intro: "Changes publish the moment you save.",
     sections: [
       {
@@ -445,6 +445,89 @@ export const SITE_CONTENT_SCHEMAS = {
               { key: "body", label: "Body", type: "textarea", rows: 3 },
             ],
           },
+        ],
+      },
+      {
+        title: "One living river — heading & story",
+        columns: 3,
+        fields: [
+          { key: "riverKicker", label: "Kicker", type: "text" },
+          { key: "riverTitle", label: "Title", type: "text" },
+          { key: "riverTitleAccent", label: "Title accent (italic)", type: "text" },
+          { key: "riverStory", label: "Opening story", type: "textarea", rows: 3, wide: true },
+          { key: "riverIntro", label: "Intro", type: "textarea", rows: 4, wide: true },
+        ],
+      },
+      {
+        title: "The two questions",
+        fields: [
+          {
+            type: "list",
+            key: "questions",
+            itemLabel: (q) => q.title || "Question",
+            layout: "cards",
+            fields: [
+              { key: "label", label: "Sanskrit name", type: "text" },
+              { key: "title", label: "Question", type: "text" },
+              { key: "body", label: "Body", type: "textarea", rows: 3 },
+            ],
+          },
+          { key: "questionsNote", label: "Line under the questions", type: "text" },
+        ],
+      },
+      {
+        title: "River stages (Vedas → Puranas)",
+        fields: [
+          {
+            type: "list",
+            key: "stages",
+            itemLabel: (st) => st.name || "Stage",
+            layout: "cards",
+            fields: [
+              { key: "place", label: "Place on the river", type: "text" },
+              { key: "name", label: "Name", type: "text" },
+              { key: "alias", label: "Meaning (italic)", type: "text" },
+              { key: "body", label: "Body", type: "textarea", rows: 4 },
+              { key: "tryThis", label: "Try this (a small practice)", type: "textarea", rows: 2 },
+              { key: "verse", label: "Verse (transliterated)", type: "text" },
+              { key: "meaning", label: "Verse meaning", type: "text" },
+              { key: "ref", label: "Verse source", type: "text" },
+            ],
+          },
+          { key: "riverEnd", label: "Where the river ends (closing line)", type: "textarea", rows: 2 },
+        ],
+      },
+      {
+        title: "Many ghats, one water",
+        fields: [
+          { key: "ghatsKicker", label: "Kicker", type: "text" },
+          { key: "ghatsTitle", label: "Title", type: "text" },
+          { key: "ghatsIntro", label: "Intro", type: "textarea", rows: 2 },
+          {
+            type: "list",
+            key: "ghats",
+            itemLabel: (g) => g.who || "Ghat",
+            layout: "cards",
+            fields: [
+              { key: "who", label: "Who", type: "text" },
+              { key: "text", label: "Text", type: "textarea", rows: 2 },
+              { key: "verse", label: "Verse (optional)", type: "text" },
+              { key: "meaning", label: "Verse meaning", type: "text" },
+            ],
+          },
+        ],
+      },
+      {
+        title: "Closing verse & source",
+        columns: 2,
+        fields: [
+          { key: "closingVerse", label: "Verse", type: "text" },
+          { key: "closingMeaning", label: "Meaning", type: "text" },
+          { key: "closingRef", label: "Source", type: "text" },
+          { key: "closingBody", label: "Closing paragraph", type: "textarea", rows: 4, wide: true },
+          { key: "sourceNote", label: "Source note", type: "textarea", rows: 2, wide: true },
+          { key: "bookLabel", label: "Book link label", type: "text" },
+          { key: "bookHref", label: "Book link (leave empty to hide)", type: "text" },
         ],
       },
       {

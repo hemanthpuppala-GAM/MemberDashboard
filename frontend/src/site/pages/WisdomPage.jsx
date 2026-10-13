@@ -18,6 +18,26 @@ const FALLBACKS = {
   titleAccent: "Universal Understanding.",
   cards: [],
   intro: "",
+  riverKicker: "",
+  riverTitle: "",
+  riverTitleAccent: "",
+  riverStory: "",
+  riverIntro: "",
+  questions: [],
+  questionsNote: "",
+  stages: [],
+  riverEnd: "",
+  ghatsKicker: "",
+  ghatsTitle: "",
+  ghatsIntro: "",
+  ghats: [],
+  closingVerse: "",
+  closingMeaning: "",
+  closingRef: "",
+  closingBody: "",
+  sourceNote: "",
+  bookLabel: "Read the full book",
+  bookHref: "",
   libraryKicker: "Golden Age Wisdom Library",
   libraryTitle: "Explore the Golden Age Wisdom Library",
   libraryBody: "",
@@ -60,6 +80,157 @@ function ContentLink({ href, isMember, children, ...rest }) {
     <Link to={to} {...rest}>
       {children}
     </Link>
+  );
+}
+
+const INK = "#12201A";
+const BODY = "#3A3128";
+const GOLD_INK = "#7A5E22";
+
+function Kicker({ children, color = GOLD_INK }) {
+  return <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: ".26em", textTransform: "uppercase", color }}>{children}</span>;
+}
+
+/** A Sanskrit line, its meaning and its source. */
+function Verse({ verse, meaning, refText, small }) {
+  if (!verse) return null;
+  return (
+    <figure style={{ margin: 0, display: "flex", flexDirection: "column", gap: 4 }}>
+      <blockquote lang="sa-Latn" className="serif" style={{ margin: 0, fontStyle: "italic", fontSize: small ? 17 : "clamp(19px,1.6vw,23px)", lineHeight: 1.3, color: "#5A3C0E", textWrap: "balance" }}>
+        “{verse}”
+      </blockquote>
+      {meaning ? <p style={{ margin: 0, fontSize: small ? 13.5 : 14.5, lineHeight: 1.5, color: BODY }}>{meaning}</p> : null}
+      {refText ? <figcaption style={{ fontSize: 10.5, fontWeight: 700, letterSpacing: ".16em", textTransform: "uppercase", color: GOLD_INK }}>— {refText}</figcaption> : null}
+    </figure>
+  );
+}
+
+/** "One living river" — the tradition from Shruti to the Puranas (from the owner's Telugu study). */
+function RiverSection({ c, desk, mid }) {
+  const stages = c.stages || [];
+  if (!c.riverTitle && !stages.length) return null;
+  const ghats = c.ghats || [];
+  return (
+    <section aria-labelledby="wisdom-river-title" className="wisdom-river" style={{ display: "flex", flexDirection: "column", gap: "clamp(22px,3.5vh,34px)", marginTop: 8 }}>
+      <header style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12, textAlign: "center" }}>
+        <span aria-hidden="true" className="wisdom-divider">
+          <span />◈<span />
+        </span>
+        {c.riverKicker ? <Kicker>{c.riverKicker}</Kicker> : null}
+        <h2 id="wisdom-river-title" className="serif" style={{ margin: 0, fontWeight: 500, fontSize: "clamp(28px,3.2vw,46px)", lineHeight: 1.08, letterSpacing: "-.01em", color: INK, maxWidth: "26ch", textWrap: "balance" }}>
+          {c.riverTitle} {c.riverTitleAccent ? <em style={{ color: "#8A6F34" }}>{c.riverTitleAccent}</em> : null}
+        </h2>
+        {c.riverStory ? (
+          <p className="serif wisdom-story" style={{ margin: "6px 0 0", maxWidth: "52ch", padding: "16px 22px", borderRadius: 18, fontSize: "clamp(18px,1.6vw,22px)", lineHeight: 1.45, fontStyle: "italic", color: INK, background: "rgba(232,207,131,.18)", borderLeft: "3px solid #C9A24A", textAlign: "left", textWrap: "pretty" }}>
+            {c.riverStory}
+          </p>
+        ) : null}
+        {c.riverIntro ? <p style={{ margin: 0, maxWidth: "68ch", fontSize: "clamp(15px,1.1vw,17px)", lineHeight: 1.7, color: BODY, textWrap: "pretty" }}>{c.riverIntro}</p> : null}
+      </header>
+
+      {/* The two questions */}
+      {(c.questions || []).length ? (
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          <div style={{ display: "grid", gridTemplateColumns: mid ? "repeat(2,minmax(0,1fr))" : "1fr", gap: 14 }}>
+            {c.questions.map((q, i) => (
+              <article key={i} className="wisdom-card" style={{ display: "flex", flexDirection: "column", gap: 8, padding: "clamp(18px,2vw,26px)", borderRadius: 20, background: "rgba(255,253,248,.55)" }}>
+                <Kicker>{`Question ${i + 1}${q.label ? ` · ${q.label}` : ""}`}</Kicker>
+                <h3 className="serif" style={{ margin: 0, fontWeight: 500, fontSize: "clamp(24px,2.1vw,30px)", lineHeight: 1.1, color: INK }}>{q.title}</h3>
+                <p style={{ margin: 0, fontSize: 15, lineHeight: 1.6, color: BODY, textWrap: "pretty" }}>{q.body}</p>
+              </article>
+            ))}
+          </div>
+          {c.questionsNote ? <p style={{ margin: 0, textAlign: "center", fontSize: 14, fontStyle: "italic", color: GOLD_INK }}>{c.questionsNote}</p> : null}
+        </div>
+      ) : null}
+
+      {/* The river — one stage per bend */}
+      <ol className="wisdom-stages" style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: desk ? 18 : 14, maxWidth: 1040, width: "100%", alignSelf: "center" }}>
+        {stages.map((st, i) => (
+          <li key={i} className="wisdom-stage" style={{ position: "relative", paddingLeft: desk ? 64 : 44 }}>
+            <span aria-hidden="true" className="serif wisdom-stage-dot" style={{ position: "absolute", left: 0, top: 18, width: desk ? 40 : 30, height: desk ? 40 : 30, fontSize: desk ? 17 : 14 }}>
+              {i + 1}
+            </span>
+            <article
+              className="wisdom-card"
+              style={{ display: "grid", gridTemplateColumns: desk && st.verse ? "minmax(0,1.25fr) minmax(0,1fr)" : "1fr", gap: desk ? 28 : 14, alignItems: "center", padding: "clamp(18px,2vw,28px)", borderRadius: 20, background: "rgba(255,253,248,.55)", boxShadow: "0 12px 30px -18px rgba(60,42,16,.28)" }}
+            >
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                {st.place ? <Kicker>{st.place}</Kicker> : null}
+                <h3 className="serif" style={{ margin: 0, fontWeight: 500, fontSize: "clamp(23px,2vw,29px)", lineHeight: 1.12, color: INK, textWrap: "balance" }}>
+                  {st.name}
+                  {st.alias ? <span style={{ display: "block", marginTop: 2, fontSize: ".62em", fontStyle: "italic", color: "#8A6F34" }}>{st.alias}</span> : null}
+                </h3>
+                <p style={{ margin: 0, fontSize: 15, lineHeight: 1.65, color: BODY, textWrap: "pretty" }}>{st.body}</p>
+                {st.tryThis ? (
+                  <p style={{ margin: "4px 0 0", display: "flex", gap: 10, alignItems: "baseline", fontSize: 14, lineHeight: 1.55, color: "#14241C" }}>
+                    <span style={{ flex: "none", padding: "3px 9px", borderRadius: 999, fontSize: 10, fontWeight: 700, letterSpacing: ".14em", textTransform: "uppercase", color: "#F6F1E6", background: "#1B3328" }}>Try this</span>
+                    <span>{st.tryThis}</span>
+                  </p>
+                ) : null}
+              </div>
+              {st.verse ? (
+                <div style={{ padding: "16px 18px", borderRadius: 16, background: "rgba(232,207,131,.2)", border: "1px solid rgba(201,162,74,.35)" }}>
+                  <Verse verse={st.verse} meaning={st.meaning} refText={st.ref} />
+                </div>
+              ) : null}
+            </article>
+          </li>
+        ))}
+        {c.riverEnd ? (
+          <li className="wisdom-stage" style={{ position: "relative", paddingLeft: desk ? 64 : 44 }}>
+            <span aria-hidden="true" className="wisdom-stage-dot wisdom-stage-sea" style={{ position: "absolute", left: 0, top: 2, width: desk ? 40 : 30, height: desk ? 40 : 30, fontSize: desk ? 18 : 15 }}>
+              ∞
+            </span>
+            <p className="serif" style={{ margin: 0, padding: desk ? "8px 0" : "4px 0", fontSize: "clamp(20px,1.9vw,26px)", lineHeight: 1.3, fontStyle: "italic", color: INK, textWrap: "balance" }}>{c.riverEnd}</p>
+          </li>
+        ) : null}
+      </ol>
+
+      {/* Many ghats, one water */}
+      {ghats.length ? (
+        <div style={{ display: "flex", flexDirection: "column", gap: 16, marginTop: 6 }}>
+          <header style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10, textAlign: "center" }}>
+            {c.ghatsKicker ? <Kicker>{c.ghatsKicker}</Kicker> : null}
+            {c.ghatsTitle ? <h3 className="serif" style={{ margin: 0, fontWeight: 500, fontSize: "clamp(26px,2.6vw,36px)", lineHeight: 1.1, color: INK }}>{c.ghatsTitle}</h3> : null}
+            {c.ghatsIntro ? <p style={{ margin: 0, maxWidth: "62ch", fontSize: 15, lineHeight: 1.65, color: BODY, textWrap: "pretty" }}>{c.ghatsIntro}</p> : null}
+          </header>
+          <div style={{ display: "grid", gridTemplateColumns: desk ? "repeat(5,minmax(0,1fr))" : mid ? "repeat(2,minmax(0,1fr))" : "1fr", gap: 12 }}>
+            {ghats.map((g, i) => (
+              <article key={i} className="wisdom-card" style={{ display: "flex", flexDirection: "column", gap: 8, padding: "18px 18px 20px", borderRadius: 18, background: "rgba(255,253,248,.55)" }}>
+                <h4 style={{ margin: 0, fontSize: 12, fontWeight: 700, letterSpacing: ".14em", textTransform: "uppercase", color: GOLD_INK }}>{g.who}</h4>
+                {g.text ? <p style={{ margin: 0, fontSize: 14, lineHeight: 1.55, color: BODY }}>{g.text}</p> : null}
+                <Verse verse={g.verse} meaning={g.meaning} small />
+              </article>
+            ))}
+          </div>
+        </div>
+      ) : null}
+
+      {/* Closing — one truth, many paths */}
+      {c.closingVerse ? (
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10, textAlign: "center", padding: "clamp(8px,2vh,20px) 0 0" }}>
+          <span aria-hidden="true" className="serif" style={{ fontSize: 30, color: "#C9A24A", lineHeight: 1 }}>ॐ</span>
+          <p lang="sa-Latn" className="serif" style={{ margin: 0, fontStyle: "italic", fontSize: "clamp(26px,3vw,42px)", lineHeight: 1.1, color: "#5A3C0E", textWrap: "balance" }}>“{c.closingVerse}”</p>
+          {c.closingMeaning ? <p className="serif" style={{ margin: 0, fontSize: "clamp(18px,1.6vw,22px)", color: INK }}>{c.closingMeaning}</p> : null}
+          {c.closingRef ? <Kicker>— {c.closingRef}</Kicker> : null}
+          {c.closingBody ? <p style={{ margin: "6px 0 0", maxWidth: "62ch", fontSize: 15, lineHeight: 1.7, color: BODY, textWrap: "pretty" }}>{c.closingBody}</p> : null}
+          {c.sourceNote || c.bookHref ? (
+            <p style={{ margin: "4px 0 0", maxWidth: "70ch", fontSize: 12.5, lineHeight: 1.55, color: "#6B5C48" }}>
+              {c.sourceNote}
+              {c.bookHref ? (
+                <>
+                  {" "}
+                  <a href={c.bookHref} target="_blank" rel="noopener noreferrer" style={{ color: "#7A5E22", fontWeight: 600 }}>
+                    {c.bookLabel} →
+                  </a>
+                </>
+              ) : null}
+            </p>
+          ) : null}
+        </div>
+      ) : null}
+    </section>
   );
 }
 
@@ -120,6 +291,8 @@ export default function WisdomPage() {
             </article>
           ))}
         </div>
+
+        <RiverSection c={c} desk={desk} mid={mid} />
 
         {/* The Golden Age Wisdom Library */}
         <article
