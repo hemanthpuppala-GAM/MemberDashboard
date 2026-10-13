@@ -25,11 +25,11 @@ export default function Sidebar({ onNavigate }) {
   };
 
   return (
-    <aside className="relative flex h-full w-[260px] shrink-0 flex-col gap-1 border-r border-[var(--color-border)] bg-[var(--color-surface)] p-4">
+    <aside className="member-sidebar relative flex h-full w-[260px] shrink-0 flex-col gap-1 p-4">
       <button
         type="button"
         onClick={() => goTo("/")}
-        className="mb-4 flex items-center gap-2.5 px-1.5 text-left"
+        className="ms-plain mb-4 flex items-center gap-2.5 rounded-xl px-1.5 py-1 text-left"
       >
         <img
           src={logoMark}
@@ -42,7 +42,7 @@ export default function Sidebar({ onNavigate }) {
           <div
             className="font-display text-[14.5px] leading-tight tracking-[0.02em]"
             style={{
-              background: "linear-gradient(115deg, #DCC58A 10%, #C6A15B 48%, #8A6A32 90%)",
+              background: "linear-gradient(115deg, #F6E3A6 10%, #E8CF83 50%, #C9A24A 90%)",
               WebkitBackgroundClip: "text",
               backgroundClip: "text",
               color: "transparent",
@@ -50,16 +50,16 @@ export default function Sidebar({ onNavigate }) {
           >
             GOLDEN AGE
           </div>
-          <div className="text-[10px] font-semibold tracking-[0.18em] text-[var(--color-ink-soft)] uppercase">
+          <div className="text-[10px] font-semibold tracking-[0.18em] text-[rgba(246,241,230,0.6)] uppercase">
             My practice
           </div>
         </div>
       </button>
 
       {user && (
-        <div className="mb-3 rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-soft)] px-3 py-2.5">
-          <div className="truncate text-[13.5px] font-semibold text-[var(--color-ink)]">{user.name}</div>
-          <div className="truncate text-[12px] text-[var(--color-ink-soft)]">{user.email}</div>
+        <div className="mb-3 rounded-2xl border border-[rgba(232,207,131,0.22)] bg-[rgba(255,255,255,0.05)] px-3 py-2.5">
+          <div className="truncate text-[13.5px] font-semibold text-[#F6F1E6]">{user.name}</div>
+          <div className="truncate text-[12px] text-[rgba(246,241,230,0.62)]">{user.email}</div>
         </div>
       )}
 
@@ -75,10 +75,8 @@ export default function Sidebar({ onNavigate }) {
               goTo(to);
             }}
             className={({ isActive }) =>
-              `group relative flex items-center gap-3 overflow-hidden rounded-full px-3.5 py-2.5 text-[13.5px] font-medium transition-all duration-200 ${
-                isActive
-                  ? "bg-[rgba(198,161,91,0.14)] text-[var(--color-ink)]"
-                  : "text-[var(--color-ink-soft)] hover:translate-x-0.5 hover:bg-[var(--color-bg-soft)] hover:text-[var(--color-ink)]"
+              `ms-link group relative flex items-center gap-3 overflow-hidden rounded-full px-3.5 py-2.5 text-[13.5px] font-medium transition-all duration-200 ${
+                isActive ? "is-active" : "hover:translate-x-0.5"
               }`
             }
           >
@@ -87,15 +85,11 @@ export default function Sidebar({ onNavigate }) {
                 {isActive && (
                   <span
                     aria-hidden="true"
-                    className="absolute top-1.5 bottom-1.5 left-0 w-[3px] rounded-r-full bg-[var(--color-gold)]"
+                    className="absolute top-1.5 bottom-1.5 left-0 w-[3px] rounded-r-full bg-[#E8CF83]"
                   />
                 )}
                 <span
-                  className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-colors ${
-                    isActive
-                      ? "bg-[var(--color-gold)]/22 text-[var(--color-gold-deep)]"
-                      : "bg-[var(--color-bg-soft)] text-[var(--color-ink-soft)] group-hover:text-[var(--color-gold-deep)]"
-                  }`}
+                  className="ms-icon flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-colors"
                 >
                   <Icon size={16} strokeWidth={2} />
                 </span>
@@ -109,7 +103,7 @@ export default function Sidebar({ onNavigate }) {
       <button
         type="button"
         onClick={handleLogout}
-        className="rounded-full px-3.5 py-2 text-left text-[12.5px] font-medium text-[var(--color-ink-soft)] transition-colors hover:bg-[var(--color-bg-soft)] hover:text-[var(--color-ink)]"
+        className="ms-plain rounded-full px-3.5 py-2 text-left text-[12.5px] font-medium transition-colors"
       >
         Sign out
       </button>

@@ -5,6 +5,7 @@ import Sidebar from "./layout/Sidebar";
 import { NAV } from "./layout/navConfig";
 import { ActiveSitProvider } from "./ActiveSitContext";
 import BroadcastManager from "../components/layout/BroadcastManager";
+import "./member.css";
 
 export default function UserLayout() {
   const { pathname } = useLocation();
@@ -13,9 +14,9 @@ export default function UserLayout() {
 
   return (
     <ActiveSitProvider>
-      {/* Plain white working surface — a dashboard is read and scanned, not set as atmosphere;
-          the warm-ivory/textured canvas belongs to the marketing site, not here. */}
-      <div className="relative flex h-dvh overflow-hidden bg-[var(--color-surface)]">
+      {/* Warm canvas behind white cards (so cards read as objects, not white-on-white),
+          with the deeper member palette from member.css. */}
+      <div className="member-theme relative flex h-dvh overflow-hidden bg-[var(--member-canvas)]">
         <div className="relative z-10 hidden h-full lg:block">
           <Sidebar />
         </div>
