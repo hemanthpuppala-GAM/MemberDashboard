@@ -250,7 +250,7 @@ export default function HomePage() {
           style={{ ...(fit ? { gridColumn: 1, gridRow: 2, paddingRight: 0 } : {}), position: "relative", zIndex: 5, order: 1, display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "clamp(10px,1.8vh,16px)", ...(wideFit || tightFit ? { display: "grid", gridTemplateColumns: "auto minmax(0,1fr)", gridTemplateAreas: pillBeside ? '"h c" "p p"' : '"h h" "p p" "c c"', justifyContent: "start", alignItems: "center", columnGap: wideFit ? 40 : 18 } : {}), width: fit ? "auto" : desk ? "50%" : "100%", padding: desk ? "clamp(8px,2vh,28px) clamp(24px,5vw,72px) 0" : tablet ? "20px clamp(32px,6vw,56px) 16px" : "22px 20px 6px", textAlign: "left", background: ivory }}
         >
 
-          <span style={{ display: "inline-flex", alignItems: "center", gap: 10, fontSize: 11, fontWeight: 700, letterSpacing: ".3em", textTransform: "uppercase", color: "#7A5E22", animation: "gaw-rise .9s both", gridArea: "k", whiteSpace: "nowrap", ...(wideFit || tightFit ? { display: "none" } : {}) }}>
+          <span style={{ display: "inline-flex", alignItems: "center", gap: 10, fontSize: 11, fontWeight: 700, letterSpacing: ".3em", textTransform: "uppercase", color: "#7A5E22", animation: "gaw-rise .9s both", gridArea: "k", whiteSpace: "nowrap", ...(wideFit || tightFit || !desk ? { display: "none" } : {}) }}>
             <span aria-hidden="true" style={{ width: 6, height: 6, borderRadius: "50%", background: "#C9A24A" }} />
             Free meditation · every day
           </span>
@@ -317,9 +317,8 @@ export default function HomePage() {
             >
               <img src={heroImage} alt="Dr Hari Krishna" style={{ display: "block", width: "100%", height: "100%", objectFit: "cover", objectPosition: tablet ? "70% 35%" : "71% 30%" }} />
               <span style={{ position: "absolute", left: 0, right: 0, bottom: 0, display: "flex", flexDirection: "column", gap: 4, padding: "56px 20px 18px", background: "linear-gradient(180deg,rgba(20,36,28,0),rgba(20,36,28,.88))" }}>
-                <span style={{ ...CARD_KICK, color: "#E8CF83" }}>{c.heroCaption}</span>
-                <span className="serif" style={{ fontSize: tablet ? 26 : 22, lineHeight: 1.15, color: "#F6F1E6", textWrap: "balance" }}>
-                  Sit with him live — free, every day.
+                <span className="serif" style={{ fontSize: tablet ? 28 : 24, lineHeight: 1.15, color: "#F6F1E6" }}>
+                  {c.heroCaption}
                 </span>
               </span>
             </Link>
