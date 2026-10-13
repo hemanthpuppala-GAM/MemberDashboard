@@ -2,6 +2,9 @@
 
 Format: date · item · status (🟡 designed / ✅ implemented @sha / ⬅ code change to mirror in Design / ↩ mirrored in Design)
 
+## 2026-10-13 — Wisdom page: "One living river"
+- ⬅ code change: Wisdom.dc.html gains a new section between the three cards and the dark Wisdom Library, adapted from the owner's Telugu study "Bharatiya Jnana Parampara — Vedas to Puranas, one living river": kicker "Bharatiya Jnana Parampara", title "One question. Three thousand years. *One living river.*", the grandfather/child opening story (gold left-rule pull quote), intro; two question cards (Jagat-vichara "What is this creation?" / Atma-vichara "How do I know myself?"); a numbered gold-line timeline of six stages (Shruti–Vedas, Vedanta–Upanishads, Smriti, Itihasa, Gita, Puranas), each with place-on-the-river kicker, italic meaning, body, a dark "Try this" practice pill and a Sanskrit verse panel (transliteration · meaning · source); a dark ∞ node "the ocean is your own heart"; "Many ghats, one water — Which ghat will you step in from?" five cards; closing ॐ + "Ekaṁ sad viprā bahudhā vadanti" (Rig Veda 1.164.46) with source note. All copy editable in Admin → Site content → Wisdom; optional book link hidden until a URL is set.
+
 ## 2026-10-12 — Owner corrections round (code first)
 - ⬅ code change: Home one-screen layout on tall wide screens — when the caption column is what limits the Bodhi tree, the chapter caption moves under the tree and the tree uses the column's full width (1738×1300: 642→771px). Home "Upcoming" card shows the next one-off Live Session from admin (title + date · time · place); default copy is now "Gatherings & retreats / City retreats, talks and group sits with Dr. Hari Krishna — see what is coming up." (was the design placeholder "Announce your next event here").
 - ⬅ code change: header page links drop "Teachings" (it only scrolled the home page) — About · Mission · Meditation · Wisdom · Wellness · Events.
