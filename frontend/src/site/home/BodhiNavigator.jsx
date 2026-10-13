@@ -25,7 +25,23 @@ export default function BodhiNavigator({ active, chapters, desk, treeW, onActive
   };
   return (
     <>
-      <nav aria-label="Explore Golden Age Wisdom" style={{ position: "relative", width: treeW, maxWidth: "100%", aspectRatio: "1277/835", flex: "none", margin: desk ? 0 : "0 auto", overflow: "hidden", containerType: "inline-size" }}>
+      <nav
+        aria-label="Explore Golden Age Wisdom"
+        style={{
+          position: "relative",
+          width: treeW,
+          maxWidth: "100%",
+          aspectRatio: "1277/835",
+          flex: "none",
+          // Stacked layouts: the box crops the tip of the crown's top leaf. Reveal it (6% above the
+          // box, right of 46.5% only — the PNG's baked-in menu line sits to its left at that height)
+          // and reserve the same space above.
+          margin: desk ? 0 : "3.9% auto 0",
+          overflow: desk ? "hidden" : "visible",
+          clipPath: desk ? undefined : "polygon(0 0, 46.5% 0, 46.5% -6%, 100% -6%, 100% 100%, 0 100%)",
+          containerType: "inline-size",
+        }}
+      >
         <img
           src={siteAsset("assets/bodhi-tree.png")}
           alt=""

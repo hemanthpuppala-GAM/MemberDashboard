@@ -185,6 +185,10 @@ export default function HomePage() {
   const cardsPx = Math.max(320, w - 2 * gutPx - treePx - 48);
   // Wide, short screens (e.g. 1900×860): give the hero column a little more width and put the
   // meditation pill + Watch link beside the headline, so the height they used goes to the tree.
+  // Phones get roomier cards: 20px padding, larger titles and body copy.
+  const cardPad = phone ? "20px" : CARD_PAD;
+  const cardTitle = phone ? { ...CARD_TITLE, fontSize: 24 } : CARD_TITLE;
+  const cardSub = phone ? { ...CARD_SUB, fontSize: 14.5, lineHeight: 1.5 } : CARD_SUB;
   const fitOn = w >= 1024 && w >= h * 1.15 && h >= 560;
   const headPx = 6.9 * Math.max(34, Math.min(w * 0.039, h * 0.075, 64)); // two-line headline width
   const wideFit = fitOn && (w - 2 * gutPx - 48) * (1.2 / 2.2) - gutPx >= headPx + 40 + 280;
@@ -243,21 +247,21 @@ export default function HomePage() {
         <div
           id="top"
           ref={heroRef}
-          style={{ ...(fit ? { gridColumn: 1, gridRow: 2, paddingRight: 0 } : {}), position: "relative", zIndex: 5, order: 1, display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "clamp(10px,1.8vh,16px)", ...(wideFit || tightFit ? { display: "grid", gridTemplateColumns: "auto minmax(0,1fr)", gridTemplateAreas: pillBeside ? '"h c" "p p"' : '"h h" "p p" "c c"', justifyContent: "start", alignItems: "center", columnGap: wideFit ? 40 : 18 } : {}), width: fit ? "auto" : desk ? "50%" : "100%", padding: desk ? "clamp(8px,2vh,28px) clamp(24px,5vw,72px) 0" : tablet ? "20px clamp(32px,6vw,56px) 16px" : "0 22px 12px", textAlign: "left", background: ivory }}
+          style={{ ...(fit ? { gridColumn: 1, gridRow: 2, paddingRight: 0 } : {}), position: "relative", zIndex: 5, order: 1, display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "clamp(10px,1.8vh,16px)", ...(wideFit || tightFit ? { display: "grid", gridTemplateColumns: "auto minmax(0,1fr)", gridTemplateAreas: pillBeside ? '"h c" "p p"' : '"h h" "p p" "c c"', justifyContent: "start", alignItems: "center", columnGap: wideFit ? 40 : 18 } : {}), width: fit ? "auto" : desk ? "50%" : "100%", padding: desk ? "clamp(8px,2vh,28px) clamp(24px,5vw,72px) 0" : tablet ? "20px clamp(32px,6vw,56px) 16px" : "22px 20px 6px", textAlign: "left", background: ivory }}
         >
 
-          <span style={{ display: "inline-flex", alignItems: "center", gap: 10, fontSize: 11, fontWeight: 700, letterSpacing: ".3em", textTransform: "uppercase", color: "#7A5E22", animation: "gaw-rise .9s both", gridArea: "k", whiteSpace: "nowrap", ...(wideFit || tightFit ? { display: "none" } : {}) }}>
+          <span style={{ display: "inline-flex", alignItems: "center", gap: 10, fontSize: 11, fontWeight: 700, letterSpacing: ".3em", textTransform: "uppercase", color: "#7A5E22", animation: "gaw-rise .9s both", gridArea: "k", whiteSpace: "nowrap", ...(wideFit || tightFit || !desk ? { display: "none" } : {}) }}>
             <span aria-hidden="true" style={{ width: 6, height: 6, borderRadius: "50%", background: "#C9A24A" }} />
             Free meditation · every day
           </span>
           <h1
             className="serif"
-            style={{ margin: 0, fontWeight: 500, fontSize: shortFit ? "clamp(30px,6.2dvh,44px)" : desk ? "clamp(34px,min(3.9vw,7.5dvh),64px)" : tablet ? "clamp(40px,5.6vw,56px)" : "clamp(26px,7.4vw,34px)", lineHeight: 1, letterSpacing: "-.015em", textWrap: "balance", maxWidth: desk ? "14ch" : "none", color: "#12201A", animation: "gaw-rise .9s .1s both", gridArea: "h" }}
+            style={{ margin: 0, fontWeight: 500, fontSize: shortFit ? "clamp(30px,6.2dvh,44px)" : desk ? "clamp(34px,min(3.9vw,7.5dvh),64px)" : tablet ? "clamp(40px,5.6vw,56px)" : "clamp(32px,9vw,40px)", lineHeight: 1.02, letterSpacing: "-.015em", textWrap: "balance", maxWidth: desk ? "14ch" : "none", color: "#12201A", animation: "gaw-rise .9s .1s both", gridArea: "h" }}
           >
             {c.headline} <em style={{ color: "#8A6F34" }}>{c.headlineAccent}</em>
           </h1>
-          <p style={{ margin: 0, fontSize: shortFit ? 14.5 : desk ? "clamp(15px,1.2vw,18px)" : tablet ? 17 : "clamp(11.5px,3.2vw,14px)", fontWeight: 400, lineHeight: 1.45, color: "#3A3128", textWrap: "pretty", maxWidth: desk || tablet ? "48ch" : "none", animation: "gaw-rise .9s .25s both", gridArea: "p" }}>{c.subline}</p>
-          <div style={{ display: "flex", flexWrap: desk ? "nowrap" : "wrap", justifyContent: "flex-start", alignItems: "center", gap: desk ? 24 : 10, marginTop: desk ? 8 : 4, animation: "gaw-rise .9s .4s both", ...(wideFit ? { gridArea: "c", flexDirection: "column", alignItems: "flex-start", gap: 6, marginTop: 0, minWidth: 0 } : tightFit ? { gridArea: "c", marginTop: 0, minWidth: 0 } : {}) }}>
+          <p style={{ margin: 0, fontSize: shortFit ? 14.5 : desk ? "clamp(15px,1.2vw,18px)" : tablet ? 17 : "clamp(15px,4.1vw,16.5px)", fontWeight: 400, lineHeight: phone ? 1.55 : 1.45, color: "#3A3128", textWrap: "pretty", maxWidth: desk || tablet ? "48ch" : "none", animation: "gaw-rise .9s .25s both", gridArea: "p" }}>{c.subline}</p>
+          <div style={{ display: "flex", flexWrap: desk ? "nowrap" : "wrap", justifyContent: "flex-start", alignItems: "center", gap: desk ? 24 : 10, marginTop: desk ? 8 : 6, ...(phone ? { width: "100%" } : {}), animation: "gaw-rise .9s .4s both", ...(wideFit ? { gridArea: "c", flexDirection: "column", alignItems: "flex-start", gap: 6, marginTop: 0, minWidth: 0 } : tightFit ? { gridArea: "c", marginTop: 0, minWidth: 0 } : {}) }}>
             <a
               href="#film"
               onClick={openFilm}
@@ -292,7 +296,7 @@ export default function HomePage() {
             </a>
               <DailySitLink
                 className="home-sits-cta"
-                style={{ display: "inline-flex", alignItems: "center", gap: 12, height: 48, padding: "0 22px 0 16px", borderRadius: 999, background: "linear-gradient(90deg,#E8CF83,#C9A24A)", border: "1px solid rgba(255,255,255,.5)", boxShadow: "0 1px 0 rgba(255,255,255,.6) inset,0 12px 30px -10px rgba(201,162,74,.7)", whiteSpace: "nowrap", ...(tightFit ? { whiteSpace: "normal", height: "auto", minHeight: 48, padding: "8px 20px 8px 16px", maxWidth: "100%" } : {}) }}
+                style={{ display: "inline-flex", alignItems: "center", gap: 12, height: 48, padding: "0 22px 0 16px", borderRadius: 999, background: "linear-gradient(90deg,#E8CF83,#C9A24A)", border: "1px solid rgba(255,255,255,.5)", boxShadow: "0 1px 0 rgba(255,255,255,.6) inset,0 12px 30px -10px rgba(201,162,74,.7)", whiteSpace: "nowrap", ...(tightFit ? { whiteSpace: "normal", height: "auto", minHeight: 48, padding: "8px 20px 8px 16px", maxWidth: "100%" } : {}), ...(phone ? { order: 1, width: "100%", whiteSpace: "normal", height: "auto", minHeight: 56, padding: "10px 18px 10px 16px" } : {}) }}
               >
                 <span aria-hidden="true" style={{ width: 9, height: 9, borderRadius: "50%", background: sits.dot, boxShadow: sits.dotGlow, animation: sits.dotAnim }} />
                 <span style={{ display: "flex", flexDirection: "column", gap: 1, textAlign: "left" }}>
@@ -302,6 +306,24 @@ export default function HomePage() {
               </DailySitLink>
           </div>
         </div>
+
+        {/* Stacked layouts (phones, iPad portrait): Guruji gets a full-width portrait right under the hero, not a quarter tile. */}
+        {!desk && (
+          <div style={{ order: 2, background: ivory, padding: tablet ? "8px 0 18px" : "10px 0 16px" }}>
+            <Link
+              to="/meditation"
+              className="home-guru"
+              style={{ position: "relative", display: "block", width: tablet ? "min(calc(100% - 64px), 760px)" : "calc(100% - 40px)", margin: "0 auto", aspectRatio: tablet ? "16/10" : "4/5", overflow: "hidden", borderRadius: 26, background: "#14241C", boxShadow: "0 1px 0 rgba(255,255,255,.6) inset,0 28px 56px -26px rgba(60,42,16,.55)", animation: "gaw-rise .9s .3s both" }}
+            >
+              <img src={heroImage} alt="Dr Hari Krishna" style={{ display: "block", width: "100%", height: "100%", objectFit: "cover", objectPosition: tablet ? "70% 35%" : "71% 30%" }} />
+              <span style={{ position: "absolute", left: 0, right: 0, bottom: 0, display: "flex", flexDirection: "column", gap: 4, padding: "56px 20px 18px", background: "linear-gradient(180deg,rgba(20,36,28,0),rgba(20,36,28,.88))" }}>
+                <span className="serif" style={{ fontSize: tablet ? 28 : 24, lineHeight: 1.15, color: "#F6F1E6" }}>
+                  {c.heroCaption}
+                </span>
+              </span>
+            </Link>
+          </div>
+        )}
 
         {/* Bodhi-tree navigator + side cards. #teachings = the header's "Teachings" link target. */}
         <div
@@ -328,11 +350,11 @@ export default function HomePage() {
             <BodhiNavigator active={active} chapters={chapters} desk={desk} treeW={fit ? `${fitTreePx}px` : desk ? `${treePx}px` : tablet ? "min(100%, 640px)" : "100%"} onActive={setActive} onOpen={openChapter} side={fit && !treeStacked} />
           </div>
 
-          <div style={{ ...(fit ? { gridColumn: 2, gridRow: "2 / 4", position: "relative", zIndex: 6, padding: `clamp(12px,2.2vh,28px) ${gutPx}px 16px 0`, minHeight: 0 } : {}), display: "flex", flexDirection: "column", alignItems: "stretch", justifyContent: "flex-start", flex: "0 0 auto", minWidth: 0, width: fit ? "auto" : desk ? cardsPx : tablet ? "min(calc(100% - 64px), 760px)" : "calc(100% - 44px)", alignSelf: desk ? "stretch" : "center", margin: desk ? 0 : "0 auto 16px" }}>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(2,minmax(0,1fr))", gridTemplateRows: desk ? "1fr 1fr" : "auto", gap: 12, width: "100%", flex: "1 1 auto", minHeight: 0 }}>
+          <div style={{ ...(fit ? { gridColumn: 2, gridRow: "2 / 4", position: "relative", zIndex: 6, padding: `clamp(12px,2.2vh,28px) ${gutPx}px 16px 0`, minHeight: 0 } : {}), display: "flex", flexDirection: "column", alignItems: "stretch", justifyContent: "flex-start", flex: "0 0 auto", minWidth: 0, width: fit ? "auto" : desk ? cardsPx : tablet ? "min(calc(100% - 64px), 760px)" : "calc(100% - 40px)", alignSelf: desk ? "stretch" : "center", margin: desk ? 0 : "4px auto 20px" }}>
+            <div style={{ display: "grid", gridTemplateColumns: desk ? "repeat(2,minmax(0,1fr))" : phone ? "minmax(0,1fr)" : "repeat(3,minmax(0,1fr))", gridTemplateRows: desk ? "1fr 1fr" : "auto", gap: phone ? 14 : 12, width: "100%", flex: "1 1 auto", minHeight: 0 }}>
               <Link
                 to="/meditation"
-                style={{ position: "relative", display: "block", aspectRatio: desk ? "auto" : "5/4", minHeight: desk ? 160 : 0, overflow: "hidden", borderRadius: 22, background: "#14241C", boxShadow: "0 1px 0 rgba(255,255,255,.6) inset,0 24px 50px -22px rgba(60,42,16,.5)", animation: "gaw-rise .9s .4s both" }}
+                style={{ position: "relative", display: desk ? "block" : "none", aspectRatio: desk ? "auto" : "5/4", minHeight: desk ? 160 : 0, overflow: "hidden", borderRadius: 22, background: "#14241C", boxShadow: "0 1px 0 rgba(255,255,255,.6) inset,0 24px 50px -22px rgba(60,42,16,.5)", animation: "gaw-rise .9s .4s both" }}
               >
                 <img src={heroImage} alt="Dr Hari Krishna" style={{ display: "block", width: "100%", height: "100%", objectFit: "cover", objectPosition: "72% 40%", position: desk ? "absolute" : "static", inset: 0 }} />
                 <span style={{ position: "absolute", left: 0, right: 0, bottom: 0, padding: "14px 16px", background: "linear-gradient(180deg,rgba(20,36,28,0),rgba(20,36,28,.75))", ...CARD_KICK, color: "#E8CF83" }}>{c.heroCaption}</span>
@@ -341,11 +363,11 @@ export default function HomePage() {
               <SmartLink
                 to={toRoute(c.eventHref, "/events")}
                 className="home-card-light"
-                style={{ position: "relative", minHeight: 0, display: "flex", flexDirection: "column", justifyContent: "center", gap: 8, overflow: "hidden", padding: CARD_PAD, borderRadius: 22, background: "rgba(255,253,248,.55)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)", border: "1px solid rgba(255,255,255,.7)", boxShadow: "0 1px 0 rgba(255,255,255,.8) inset,0 20px 40px -14px rgba(60,42,16,.22)", animation: "gaw-rise .9s .7s both" }}
+                style={{ position: "relative", minHeight: 0, display: "flex", flexDirection: "column", justifyContent: "center", gap: 8, overflow: "hidden", padding: cardPad, borderRadius: 22, background: "rgba(255,253,248,.55)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)", border: "1px solid rgba(255,255,255,.7)", boxShadow: "0 1px 0 rgba(255,255,255,.8) inset,0 20px 40px -14px rgba(60,42,16,.22)", animation: "gaw-rise .9s .7s both" }}
               >
                 <span style={{ ...CARD_KICK, color: "#7A5E22" }}>{c.eventKicker}</span>
-                <span style={CARD_TITLE}>{nextRow ? nextRow.title : c.eventTitle}</span>
-                <span style={CARD_SUB}>{nextRow ? `${nextRow.day} ${nextRow.month} · ${nextRow.meta}` : c.eventSub}</span>
+                <span style={cardTitle}>{nextRow ? nextRow.title : c.eventTitle}</span>
+                <span style={cardSub}>{nextRow ? `${nextRow.day} ${nextRow.month} · ${nextRow.meta}` : c.eventSub}</span>
                 <span style={{ ...CARD_CTA, color: "#7A5E22" }}>
                   {c.eventCta} {ARROW}
                 </span>
@@ -354,7 +376,7 @@ export default function HomePage() {
               <Link
                 to="/about"
                 className="home-card-dark"
-                style={{ position: "relative", minHeight: 0, display: "flex", flexDirection: "column", justifyContent: "center", gap: 8, overflow: "hidden", padding: CARD_PAD, borderRadius: 22, background: "#14241C", boxShadow: "0 1px 0 rgba(255,255,255,.1) inset,0 24px 50px -22px rgba(60,42,16,.5)", animation: "gaw-rise .9s .8s both" }}
+                style={{ position: "relative", minHeight: 0, display: "flex", flexDirection: "column", justifyContent: "center", gap: 8, overflow: "hidden", padding: cardPad, borderRadius: 22, background: "#14241C", boxShadow: "0 1px 0 rgba(255,255,255,.1) inset,0 24px 50px -22px rgba(60,42,16,.5)", animation: "gaw-rise .9s .8s both" }}
               >
                 <span aria-hidden="true" style={{ position: "absolute", right: "-12%", top: "-18%", width: "60%", aspectRatio: "1", borderRadius: "50%", background: "radial-gradient(circle,rgba(232,207,131,.28),rgba(232,207,131,0) 70%)" }} />
                 <span style={{ ...CARD_KICK, color: "#E8CF83" }}>{c.testiKicker}</span>
@@ -374,14 +396,14 @@ export default function HomePage() {
                 href="#film"
                 onClick={openFilm}
                 className="home-card-light"
-                style={{ position: "relative", display: "flex", flexDirection: "column", justifyContent: "flex-end", gap: 8, overflow: "hidden", padding: CARD_PAD, borderRadius: 22, background: "linear-gradient(160deg,#E9EEDF 0%,#D6DEC8 100%)", border: "1px solid rgba(255,255,255,.7)", boxShadow: "0 1px 0 rgba(255,255,255,.8) inset,0 20px 40px -14px rgba(31,61,43,.22)", animation: "gaw-rise .9s .9s both", cursor: "pointer" }}
+                style={{ position: "relative", display: "flex", flexDirection: "column", justifyContent: "flex-end", gap: 8, overflow: "hidden", padding: cardPad, borderRadius: 22, background: "linear-gradient(160deg,#E9EEDF 0%,#D6DEC8 100%)", minHeight: desk ? 0 : 210, border: "1px solid rgba(255,255,255,.7)", boxShadow: "0 1px 0 rgba(255,255,255,.8) inset,0 20px 40px -14px rgba(31,61,43,.22)", animation: "gaw-rise .9s .9s both", cursor: "pointer" }}
               >
                 <span aria-hidden="true" style={{ position: "absolute", left: "50%", top: "38%", width: 56, height: 56, transform: "translate(-50%,-50%)", borderRadius: "50%", background: "#14241C", boxShadow: "0 0 0 8px rgba(20,36,28,.08),0 12px 24px -8px rgba(20,36,28,.5)", ...(fit && h < 760 ? { left: "auto", right: 18, top: 18, transform: "none" } : {}) }}>
                   <span style={{ position: "absolute", left: "55%", top: "50%", transform: "translate(-50%,-50%)", width: 0, height: 0, borderLeft: "16px solid #E8CF83", borderTop: "10px solid transparent", borderBottom: "10px solid transparent" }} />
                 </span>
                 <span style={{ ...CARD_KICK, color: "#1F3D2B" }}>Two minutes</span>
-                <span style={CARD_TITLE}>Watch the intro</span>
-                <span style={CARD_SUB}>What a session feels like, before you join one.</span>
+                <span style={cardTitle}>Watch the intro</span>
+                <span style={cardSub}>What a session feels like, before you join one.</span>
               </a>
             </div>
           </div>
