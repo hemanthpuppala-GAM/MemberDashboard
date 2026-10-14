@@ -29,22 +29,15 @@ function withDecodedContent(page) {
  * is rendered generically by HomePage's PageSections fallback, so it maps
  * to itself.
  */
-const PUBLIC_VIEW_BY_SLUG = {
-  home: "hub",
-  about: "about",
-  wisdom: "wisdom",
-  wellness: "wellness",
-  meditate: "practice",
-  events: "events",
-  mission: "mission",
-  contact: "contact",
-  volunteer: "volunteer",
-  donate: "donate",
-};
+/** CMS page slug → its public path (the built-in "meditate" page lives at /meditation). */
+const PUBLIC_PATH_BY_SLUG = { home: "", meditate: "meditation" };
+
+function publicPageUrl(pageSlug) {
+  return `${window.location.origin}${import.meta.env.BASE_URL}${PUBLIC_PATH_BY_SLUG[pageSlug] ?? pageSlug}`;
+}
 
 function publicSectionUrl(pageSlug, sectionId) {
-  const view = PUBLIC_VIEW_BY_SLUG[pageSlug] ?? pageSlug;
-  return `${window.location.origin}${import.meta.env.BASE_URL}#${view}:${sectionId}`;
+  return `${publicPageUrl(pageSlug)}#cms-section-${sectionId}`;
 }
 
 function SortableRow({ section, pageSlug, onDelete, onToggleStatus, canEdit, canDelete }) {
@@ -239,7 +232,7 @@ export default function PageDetailPage() {
         {page.status === "published" && (
           <Button
             as="a"
-            href={`${window.location.origin}${import.meta.env.BASE_URL}#${PUBLIC_VIEW_BY_SLUG[page.slug] ?? page.slug}`}
+            href={publicPageUrl(page.slug)}
             target="_blank"
             rel="noopener noreferrer"
             variant="secondary"

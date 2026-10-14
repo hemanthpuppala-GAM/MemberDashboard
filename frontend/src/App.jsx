@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import SiteHomePage from "./site/pages/HomePage";
+import CmsPage from "./site/pages/CmsPage";
 import AboutPage from "./site/pages/AboutPage";
 import MissionPage from "./site/pages/MissionPage";
 import MeditationPage from "./site/pages/MeditationPage";
@@ -98,12 +99,21 @@ function App() {
                 }
               />
             ))}
-            {/* Older sections (/contact) and CMS pages keep the previous public layout. */}
+            {/* /contact still uses the previous public layout. */}
+            <Route
+              path="/contact"
+              element={
+                <MaintenanceGate>
+                  <HomePage />
+                </MaintenanceGate>
+              }
+            />
+            {/* Pages built in Admin → CMS → Pages, in the site design. */}
             <Route
               path="/:slug"
               element={
                 <MaintenanceGate>
-                  <HomePage />
+                  <CmsPage />
                 </MaintenanceGate>
               }
             />

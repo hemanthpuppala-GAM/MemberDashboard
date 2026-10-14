@@ -49,6 +49,9 @@ export function useTestimonials() {
   return null;
 }
 
+/** Published pages built in Admin → CMS → Pages (not the hand-built ones): [{ slug, title }]. */
+export const useCustomPages = () => usePublic("pages", publicApi.pages);
+
 export const useContactChannels = () => usePublic("contact-channels", publicApi.contactChannels);
 export const useDonationMethods = () => usePublic("donation-methods", publicApi.donationMethods);
 
