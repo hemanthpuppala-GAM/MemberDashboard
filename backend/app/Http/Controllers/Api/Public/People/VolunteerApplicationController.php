@@ -8,6 +8,8 @@ use App\Mail\Admin\NewVolunteerApplicationMail;
 use App\Models\Content\VolunteerCategory;
 use App\Models\People\VolunteerApplication;
 use App\Models\Settings\Setting;
+use App\Services\People\MemberLinker;
+use App\Services\People\MemberNumbers;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
@@ -27,6 +29,13 @@ class VolunteerApplicationController extends Controller
         $data['lang'] = strtoupper($data['lang'] ?? 'EN');
         foreach (['occupation', 'city', 'availability'] as $key) {
             $data[$key] = $data[$key] ?? ''; // NOT NULL columns
+        }
+
+        // Like the live site's gaw_volunteer_apply: every volunteer is a member with a GAW number.
+        if (MemberNumbers::ready()) {
+            [$member] = MemberLinker::findOrCreate($data, 'volunteer');
+            $data['member_id'] = $member->id;
+            $data['member_num'] = $member->member_num;
         }
 
         $application = VolunteerApplication::create($data);

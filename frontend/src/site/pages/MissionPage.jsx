@@ -4,6 +4,7 @@ import { useMemberBadge } from "../useMemberBadge";
 import { useSiteContent } from "../useSiteContent";
 import { useViewportWidth } from "../useViewport";
 import "./mission.css";
+import CmsExtraSections from "../cms/CmsExtraSections";
 
 const PAD = "clamp(20px,5vw,72px)";
 const rise = (delay = 0) => ({ animation: `gaw-rise .9s ${delay}s both` });
@@ -123,6 +124,7 @@ export default function MissionPage() {
         </div>
       </section>
 
+      <CmsExtraSections slug="mission" />
       <SiteFooter title={c.footerTitle} sub={c.footerSub} />
       <AdminEditLink page="mission" />
     </SitePage>

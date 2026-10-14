@@ -60,6 +60,7 @@ export default function Sidebar({ onNavigate }) {
         <div className="mb-3 rounded-2xl border border-[rgba(232,207,131,0.22)] bg-[rgba(255,255,255,0.05)] px-3 py-2.5">
           <div className="truncate text-[13.5px] font-semibold text-[#F6F1E6]">{user.name}</div>
           <div className="truncate text-[12px] text-[rgba(246,241,230,0.62)]">{user.email}</div>
+          {user.member_id && <div className="mt-1 text-[11.5px] font-semibold tracking-[0.08em] text-[#E8CF83]">Member ID · {user.member_id}</div>}
         </div>
       )}
 

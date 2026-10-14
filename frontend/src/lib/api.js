@@ -101,8 +101,6 @@ export const api = {
   updateRole: (id, payload) => apiFetch(`/admin/roles/${id}`, { method: "PUT", body: payload }),
   deleteRole: (id) => apiFetch(`/admin/roles/${id}`, { method: "DELETE" }),
 
-  content: () => apiFetch("/admin/content"),
-  updateContent: (slug, payload) => apiFetch(`/admin/content/${slug}`, { method: "PUT", body: payload }),
 
   pages: () => apiFetch("/admin/pages"),
   page: (slug) => apiFetch(`/admin/pages/${slug}`),
@@ -203,6 +201,14 @@ export const api = {
   assignMember: (id, practitionerId) =>
     apiFetch(`/admin/members/${id}/assign`, { method: "POST", body: { assigned_practitioner_id: practitionerId } }),
   memberJourney: (id) => apiFetch(`/admin/members/${id}/journey`),
+  membershipDrives: () => apiFetch("/admin/membership-drives"),
+  membershipDrive: (id) => apiFetch(`/admin/membership-drives/${id}`),
+  createMembershipDrive: (payload) => apiFetch("/admin/membership-drives", { method: "POST", body: payload }),
+  updateMembershipDrive: (id, payload) => apiFetch(`/admin/membership-drives/${id}`, { method: "PUT", body: payload }),
+  deleteMembershipDrive: (id) => apiFetch(`/admin/membership-drives/${id}`, { method: "DELETE" }),
+  addDriveMembers: (id, lines, preview) => apiFetch(`/admin/membership-drives/${id}/members`, { method: "POST", body: { lines, preview } }),
+  dataSync: () => apiFetch("/admin/data-sync"),
+  runDataSync: (preview, tables) => apiFetch("/admin/data-sync", { method: "POST", body: { preview, ...(tables ? { tables } : {}) } }),
   addMemberJourneyEntry: (id, payload) => apiFetch(`/admin/members/${id}/journey`, { method: "POST", body: payload }),
 
   queries: (params = {}) => apiFetch(`/admin/queries?${new URLSearchParams({ per_page: 20, ...params })}`),
@@ -280,10 +286,10 @@ export const practitionerApi = {
 };
 
 export const publicApi = {
-  content: () => apiFetch("/content", { auth: false }),
-  contentBySlug: (slug) => apiFetch(`/content/${slug}`, { auth: false }),
   pages: () => apiFetch("/pages", { auth: false }),
   page: (slug, lang) => apiFetch(`/pages/${slug}${lang ? `?lang=${encodeURIComponent(lang)}` : ""}`, { auth: false }),
+  /** Sections the team added under a hand-built page (built-in pages: only ones made for the new site). */
+  siteSections: (slug, lang) => apiFetch(`/pages/${slug}?${new URLSearchParams({ placement: "site", ...(lang ? { lang } : {}) })}`, { auth: false }),
   languages: () => apiFetch("/languages/enabled", { auth: false }),
   uiStrings: (lang) => apiFetch(`/ui-strings${lang ? `?lang=${encodeURIComponent(lang)}` : ""}`, { auth: false }),
   events: () => apiFetch("/events", { auth: false }),

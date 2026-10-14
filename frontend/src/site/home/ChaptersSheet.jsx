@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { siteAsset } from "../siteAssets";
-import { CHAPTER_HASHES, FAQS } from "./homeData";
+import { CHAPTER_HASHES, FAQS, listOr } from "./homeData";
 
 const CHAPTER_LABELS = ["Rituals", "Daily pause", "Nourish", "One minute", "Reflect", "New here?"];
 const CHAPTER_NOW = ["Small rituals", "Daily pause", "Nourish", "One minute", "Reflect", "New here?"];
@@ -72,7 +72,15 @@ function OneMinute() {
 }
 
 /** Full-screen chapter sheet (design: #chapters dialog). Sections swap by `ch`. */
-export default function ChaptersSheet({ ch, w, joinTo, question, onNextQuestion, onChapter, onClose }) {
+/** Admin text over the design's fixed numbering / colours / links (by position). */
+const merge = (fixed, list) => fixed.map((f, i) => ({ ...f, ...((Array.isArray(list) && list[i]) || {}) }));
+
+export default function ChaptersSheet({ ch, w, joinTo, question, c = {}, chapters, onNextQuestion, onChapter, onClose }) {
+  const rituals = merge(RITUALS, c.rituals);
+  const steps = merge(STEPS, c.pauseSteps);
+  const eating = merge(EATING, c.eatingTips);
+  const faqs = listOr(c.faqs, FAQS);
+  const labels = chapters ? chapters.map((x) => x.label) : CHAPTER_LABELS;
   const sheet = useRef(null);
   const [faq, setFaq] = useState(-1);
   const [faqFor, setFaqFor] = useState(ch);
@@ -139,7 +147,7 @@ export default function ChaptersSheet({ ch, w, joinTo, question, onNextQuestion,
           <div
             style={{ maxWidth: 1200, width: "100%", margin: "clamp(28px,4vh,56px) auto 0", display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(240px,1fr))", gap: 1, background: "rgba(138,111,52,.25)", borderTop: "1px solid rgba(138,111,52,.25)", borderBottom: "1px solid rgba(138,111,52,.25)" }}
           >
-            {RITUALS.map((r) => (
+            {rituals.map((r) => (
               <a
                 key={r.num}
                 href={`#${CHAPTER_HASHES[r.ch]}`}
@@ -190,7 +198,7 @@ export default function ChaptersSheet({ ch, w, joinTo, question, onNextQuestion,
               </div>
             </div>
             <ol style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column" }}>
-              {STEPS.map((st) => (
+              {steps.map((st) => (
                 <li key={st.title} style={{ display: "grid", gridTemplateColumns: "72px 1fr", gap: 20, padding: "clamp(18px,2vw,28px) 0", borderTop: "1px solid rgba(232,207,131,.22)" }}>
                   <span style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: "clamp(28px,2.6vw,40px)", lineHeight: 1, color: "#E8CF83" }}>
                     {st.min}
@@ -236,7 +244,7 @@ export default function ChaptersSheet({ ch, w, joinTo, question, onNextQuestion,
               </h2>
               <p style={BODY}>Good food is more than what’s on your plate. It’s the way you choose, prepare and enjoy it. Make your next meal a small act of care.</p>
               <ul style={{ listStyle: "none", margin: "6px 0 0", padding: 0, display: "flex", flexDirection: "column" }}>
-                {EATING.map((e) => (
+                {eating.map((e) => (
                   <li key={e.lead} style={{ display: "grid", gridTemplateColumns: "28px 1fr", gap: 14, padding: "16px 0", borderTop: "1px solid rgba(138,111,52,.25)", fontSize: 15, lineHeight: 1.5, color: "#3A3128" }}>
                     <span aria-hidden="true" style={{ marginTop: 7, width: 8, height: 8, borderRadius: "50%", background: e.hue }} />
                     <span>
@@ -286,7 +294,7 @@ export default function ChaptersSheet({ ch, w, joinTo, question, onNextQuestion,
               </h2>
             </div>
             <div style={{ display: "flex", flexDirection: "column" }}>
-              {FAQS.map((q, i) => {
+              {faqs.map((q, i) => {
                 const open = faq === i;
                 return (
                   <div key={q.q} style={{ borderTop: "1px solid rgba(138,111,52,.3)" }}>
@@ -322,7 +330,7 @@ export default function ChaptersSheet({ ch, w, joinTo, question, onNextQuestion,
         style={{ position: "relative", zIndex: 5, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, padding: "14px clamp(24px,6vw,96px)", paddingBottom: "calc(14px + env(safe-area-inset-bottom))", background: "rgba(243,234,211,.9)", backdropFilter: "blur(16px)", WebkitBackdropFilter: "blur(16px)", borderTop: "1px solid rgba(138,111,52,.25)" }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: "6px 18px", flexWrap: "wrap", minWidth: 0 }}>
-          {CHAPTER_LABELS.map((label, i) => {
+          {labels.map((label, i) => {
             const on = ch === i;
             return (
               <button

@@ -94,7 +94,7 @@ class Ticket extends Model
         return self::firstOrCreate(
             ['source' => 'volunteer', 'source_id' => $a->id],
             [
-                'member_id' => Member::where('email', $a->email)->value('id'),
+                'member_id' => $a->member_id ?: Member::where('email', $a->email)->value('id'),
                 'requester_name' => $a->name,
                 'requester_email' => $a->email,
                 'requester_phone' => $a->phone,
@@ -163,6 +163,7 @@ class Ticket extends Model
                 'email' => $this->requester_email,
                 'phone' => $this->requester_phone,
                 'member_id' => $this->member_id,
+                'member_code' => $this->member?->member_code,
             ];
             $data['assignee'] = $this->assignee?->toPublic();
             $data['created_by'] = $this->creator?->toPublic();

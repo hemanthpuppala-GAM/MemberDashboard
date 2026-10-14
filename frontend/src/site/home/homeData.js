@@ -1,4 +1,7 @@
-/** Fixed copy for the Home chapters (design statics: HASHES, QUESTIONS, FAQS, chapterData). */
+/**
+ * Default copy for the Home chapters. The live copy comes from Admin → CMS → Pages → Home
+ * (content keys: chapters, questions, faqs, rituals, pauseSteps, eatingTips); these are the fallbacks.
+ */
 
 export const CHAPTER_HASHES = ["rituals", "daily-pause", "nourish", "one-minute", "reflect", "new-here"];
 
@@ -17,13 +20,23 @@ export const FAQS = [
   { q: "Do I have to attend every day?", a: "Come when you can. Daily is the invitation, not a rule; 41 consecutive days is simply where most people notice the change." },
 ];
 
-export function chapterData(question) {
-  return [
-    { label: "Rituals", kicker: "Small rituals", title: "Feeling better begins with being present.", cta: "Open Rituals" },
-    { label: "Daily pause", kicker: "Your daily pause", title: "30 minutes. Every day. Just for you.", cta: "Open Daily pause" },
-    { label: "Nourish", kicker: "Nourish your body", title: "Eat well. Slow down. Savor life.", cta: "Open Nourish" },
-    { label: "One minute", kicker: "A moment, right here", title: "Your next breath is a new beginning.", cta: "Start a one-minute pause" },
-    { label: "Reflect", kicker: "Meet yourself with curiosity", title: question, cta: "Take a moment to reflect" },
-    { label: "New here?", kicker: "A few things to know", title: "New here? You’re welcome.", cta: "Open New here?" },
-  ];
+export const DEFAULT_CHAPTERS = [
+  { label: "Rituals", kicker: "Small rituals", title: "Feeling better begins with being present.", cta: "Open Rituals" },
+  { label: "Daily pause", kicker: "Your daily pause", title: "30 minutes. Every day. Just for you.", cta: "Open Daily pause" },
+  { label: "Nourish", kicker: "Nourish your body", title: "Eat well. Slow down. Savor life.", cta: "Open Nourish" },
+  { label: "One minute", kicker: "A moment, right here", title: "Your next breath is a new beginning.", cta: "Start a one-minute pause" },
+  { label: "Reflect", kicker: "Meet yourself with curiosity", title: "", cta: "Take a moment to reflect" },
+  { label: "New here?", kicker: "A few things to know", title: "New here? You’re welcome.", cta: "Open New here?" },
+];
+
+/** Use the admin list when it has entries, else the default. */
+export const listOr = (list, fallback) => (Array.isArray(list) && list.length ? list : fallback);
+
+/** The six tree chapters (fixed order, matching CHAPTER_HASHES); Reflect's title is the rotating question. */
+export function chapterData(question, chapters) {
+  const list = listOr(chapters, DEFAULT_CHAPTERS);
+  return DEFAULT_CHAPTERS.map((d, i) => {
+    const c = { ...d, ...(list[i] || {}) };
+    return i === 4 ? { ...c, title: question } : c;
+  });
 }

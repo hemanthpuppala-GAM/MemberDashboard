@@ -24,6 +24,7 @@ class SiteContentController extends Controller
         return response()->json([
             'page' => $page,
             'data' => $content?->data,
+            'defaults' => SiteContent::defaults($page),
             'updated_at' => $content?->updated_at,
             'editor' => $content?->editor,
         ]);
@@ -54,6 +55,6 @@ class SiteContentController extends Controller
 
         SiteContent::where('page', $page)->delete();
 
-        return response()->json(['page' => $page, 'data' => null]);
+        return response()->json(['page' => $page, 'data' => null, 'defaults' => SiteContent::defaults($page)]);
     }
 }

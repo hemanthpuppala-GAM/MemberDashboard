@@ -104,6 +104,7 @@ export default function ProfilePage() {
               placeholder="Optional"
               className={inputClass}
             />
+            <p className="text-[12px] text-[var(--color-ink-soft)]">Joined at a membership drive? Enter the same phone number and your existing member ID is kept.</p>
           </div>
           <Banner error={profileError} success={profileSuccess} />
           <div className="flex justify-end">

@@ -5,12 +5,22 @@ import { useMemberBadge } from "./useMemberBadge";
 import { siteAsset } from "./siteAssets";
 import { useViewportWidth } from "./useViewport";
 import { useSiteEditMode } from "./useSiteAdmin";
-import { useContactChannels, useSiteSettings } from "./usePublicData";
+import { useContactChannels, useCustomPages, useSiteSettings } from "./usePublicData";
 import BroadcastManager, { BROADCAST_SLOT_ATTR } from "../components/layout/BroadcastManager";
 import { channelHref } from "../lib/contactChannels";
 import { displayNumber } from "../ask/support";
 import { useDailySitUrl } from "./useDailySit";
 import "./site.css";
+
+/** Hand-built routes a CMS page can't take over (the router sends those URLs elsewhere). */
+const RESERVED_SLUGS = new Set([...SITE_PAGES.map((p) => p.to.slice(1)), ...UTILITY_LINKS.map((l) => l.to.slice(1)), "contact", "join", "ask", "support", "dashboard", "admin", "register", "auth"]);
+
+/** Utility links = published CMS pages (Admin → CMS → Pages) followed by the fixed ones. */
+function useUtilityLinks() {
+  const pages = useCustomPages();
+  const cms = Array.isArray(pages) ? pages.filter((p) => p?.slug && !RESERVED_SLUGS.has(p.slug)).map((p) => ({ label: p.title || p.slug, to: `/${p.slug}` })) : [];
+  return [...cms, ...UTILITY_LINKS];
+}
 
 const CAPS = { textTransform: "uppercase", whiteSpace: "nowrap" };
 
@@ -49,6 +59,7 @@ function useScrollToHash() {
 
 /** Full-width dark band above the header: Member support · Volunteer · Privacy. ≥900px only. */
 export function UtilityRow({ style }) {
+  const utilityLinks = useUtilityLinks();
   return (
     <nav
       aria-label="Utility"
@@ -66,7 +77,7 @@ export function UtilityRow({ style }) {
         ...style,
       }}
     >
-      {UTILITY_LINKS.map((l) => (
+      {utilityLinks.map((l) => (
         <Link
           key={l.to}
           to={l.to}
@@ -219,6 +230,7 @@ export function MenuButton({ open, onClick }) {
 /** <900px drop-down: page links, then the utility links, then the join / dashboard pill. */
 export function MobileMenu({ active, onClose }) {
   const m = useMemberBadge();
+  const utilityLinks = useUtilityLinks();
   const row = { display: "flex", alignItems: "center", justifyContent: "space-between", minHeight: 50, padding: "0 10px", borderBottom: "1px solid rgba(246,241,230,.08)", fontSize: 13, fontWeight: 600, letterSpacing: ".14em", textTransform: "uppercase" };
   const chevron = <span aria-hidden="true" style={{ width: 6, height: 6, borderRight: "1.5px solid currentColor", borderBottom: "1.5px solid currentColor", transform: "rotate(-45deg)", opacity: 0.6 }} />;
   return (
@@ -232,7 +244,7 @@ export function MobileMenu({ active, onClose }) {
           {chevron}
         </Link>
       ))}
-      {UTILITY_LINKS.map((l) => (
+      {utilityLinks.map((l) => (
         <Link key={l.to} to={l.to} onClick={onClose} className="gaw-util-link" style={{ ...row, fontSize: 12 }}>
           {l.label}
           {chevron}
@@ -411,7 +423,7 @@ export function AdminEditLink({ page }) {
   return (
     <div style={{ position: "fixed", right: 18, bottom: 96, zIndex: 50, display: "inline-flex", alignItems: "center", borderRadius: 999, background: "#14241C", boxShadow: "0 12px 30px -12px rgba(0,0,0,.5)" }}>
       <Link
-        to={`/admin/content/${page}`}
+        to={`/admin/content/${page}`} /* redirects to CMS → Pages → {page} → Page copy */
         style={{ display: "inline-flex", alignItems: "center", gap: 8, height: 44, padding: "0 6px 0 16px", color: "#E8CF83", fontSize: 11, fontWeight: 700, letterSpacing: ".14em", textTransform: "uppercase" }}
       >
         ✎ Edit this page

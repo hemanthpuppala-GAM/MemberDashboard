@@ -81,7 +81,17 @@ class ContactSubmissionController extends Controller
         abort_if($contactSubmission->converted_to_member_id, 422, 'This query has already been converted to a member.');
 
         $member = DB::transaction(function () use ($contactSubmission, $request) {
-            $member = Member::create([
+            // Already a member (signed in, volunteered, came to a drive)? Use that record.
+            $member = \App\Services\People\MemberLinker::find($contactSubmission->email, $contactSubmission->phone);
+            if ($member) {
+                $member->fill(array_filter([
+                    'assigned_practitioner_id' => $member->assigned_practitioner_id ? null : $contactSubmission->assigned_to,
+                    'source_submission_id' => $member->source_submission_id ? null : $contactSubmission->id,
+                    'last_contact_date' => now()->toDateString(),
+                ]))->save();
+            }
+            $member ??= Member::create([
+                'source' => 'query',
                 'name' => $contactSubmission->name,
                 'email' => $contactSubmission->email,
                 'phone' => $contactSubmission->phone,

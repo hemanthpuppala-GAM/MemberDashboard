@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
-import { ArrowLeft, NotebookText } from "lucide-react";
+import { ArrowLeft, NotebookText, HeartHandshake, LifeBuoy, Flame, BookOpen, UserPlus } from "lucide-react";
+import Badge from "../../ui/Badge";
 import Card from "../../ui/Card";
 import Button from "../../ui/Button";
 import Field, { TextInput, Select } from "../../ui/Field";
@@ -98,7 +99,10 @@ export default function MemberProfilePage() {
             <h1 className="text-[22px] font-bold text-[var(--a-text-primary)]">{member.name}</h1>
             <StatusBadge status={member.status} />
           </div>
-          <p className="text-[13px] text-[var(--a-text-muted)]">{member.email} · {member.phone || "no phone"}</p>
+          <p className="text-[13px] text-[var(--a-text-muted)]">
+            <span className="font-mono font-semibold text-[var(--a-text-primary)]">{member.member_code}</span>
+            {member.role_title && <> · {member.role_title}</>} · {member.email || "no email"} · {member.phone || "no phone"}
+          </p>
         </div>
       </div>
 
@@ -111,10 +115,12 @@ export default function MemberProfilePage() {
           {member.summary ? `"${member.summary}"` : "No summary yet — add one from the records page."}
         </p>
         <p className="mt-2 text-[12px] text-[var(--a-text-faint)]">
-          {entries.length} journal {entries.length === 1 ? "entry" : "entries"}
+          {entries.length} record {entries.length === 1 ? "note" : "notes"}
           {lastEntry && <> · last update: {ENTRY_LABEL[lastEntry.entry_type] ?? lastEntry.entry_type} on {new Date(lastEntry.created_at).toLocaleDateString()}</>}
         </p>
       </Card>
+
+      {member.linked && <LinkedRecords member={member} />}
 
       <div className="grid gap-5 lg:grid-cols-3">
         <Card title="Personal info" className="lg:col-span-2">
@@ -150,5 +156,73 @@ export default function MemberProfilePage() {
         </Card>
       </div>
     </div>
+  );
+}
+
+const fmt = (d) => (d ? new Date(d).toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" }) : "—");
+const TICKET_SOURCE = { ask_web: "Ask page", member_portal: "Member area", website: "Website", call: "Phone call", whatsapp: "WhatsApp", volunteer: "Volunteer sign-up", other: "Other" };
+
+/** Everything this person has done anywhere: volunteering, support desk, practice, journal, drive. */
+function LinkedRecords({ member }) {
+  const { linked } = member;
+  const vols = linked.volunteer_applications ?? [];
+  const tiles = [
+    { icon: Flame, label: "Sits logged", value: linked.practice.sits, sub: linked.practice.minutes ? `${linked.practice.minutes} min · last ${fmt(linked.practice.last_sit_at)}` : "None yet" },
+    { icon: BookOpen, label: "Journal entries", value: linked.journal_count, sub: linked.journal_recent?.[0] ? `Latest ${fmt(linked.journal_recent[0].created_at)}` : "None yet" },
+    { icon: LifeBuoy, label: "Support tickets", value: linked.tickets_count, sub: linked.tickets?.[0] ? `Latest ${fmt(linked.tickets[0].created_at)}` : "None" },
+    { icon: HeartHandshake, label: "Volunteer", value: vols.length ? "Yes" : "No", sub: vols[0] ? `${vols[0].status} · since ${fmt(vols[0].created_at)}` : "Not signed up" },
+  ];
+
+  return (
+    <Card title="Across the platform" description="Kept in step automatically — the member area, volunteer form, support desk and membership drives all point to this one member.">
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        {tiles.map((t) => (
+          <div key={t.label} className="rounded-xl border border-[var(--a-border)] bg-[var(--a-bg-base)] p-4">
+            <div className="flex items-center gap-2 text-[12px] font-semibold text-[var(--a-text-muted)]"><t.icon size={14} /> {t.label}</div>
+            <div className="mt-1.5 text-[22px] font-bold text-[var(--a-text-primary)]">{t.value}</div>
+            <div className="text-[12px] text-[var(--a-text-faint)]">{t.sub}</div>
+          </div>
+        ))}
+      </div>
+
+      {member.drive && (
+        <p className="mt-4 flex items-center gap-2 text-[13px] text-[var(--a-text-muted)]">
+          <UserPlus size={14} /> Added at <Link to={`/admin/membership-drives/${member.drive.id}`} className="font-semibold text-[var(--a-accent)] hover:underline">{member.drive.name}</Link>
+          {member.drive.held_on && <> on {fmt(member.drive.held_on)}</>}
+        </p>
+      )}
+
+      {linked.tickets?.length > 0 && (
+        <div className="mt-4">
+          <p className="mb-2 text-[12.5px] font-semibold text-[var(--a-text-primary)]">Support tickets</p>
+          <ul className="flex flex-col divide-y divide-[var(--a-border)] rounded-xl border border-[var(--a-border)]">
+            {linked.tickets.map((t) => (
+              <li key={t.id}>
+                <a href={`${import.meta.env.BASE_URL}support/ticket/${t.id}`} className="flex flex-wrap items-center gap-x-3 gap-y-1 px-3 py-2 text-[13px] hover:bg-[var(--a-bg-surface-2)]">
+                  <span className="font-mono text-[12px] text-[var(--a-text-muted)]">{t.ref}</span>
+                  <span className="min-w-0 flex-1 truncate text-[var(--a-text-primary)]">{t.subject}</span>
+                  <span className="text-[12px] text-[var(--a-text-faint)]">{TICKET_SOURCE[t.source] ?? t.source} · {fmt(t.created_at)}</span>
+                  <Badge tone={["resolved", "closed"].includes(t.status) ? "success" : "warning"}>{t.status.replace("_", " ")}</Badge>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {linked.journal_recent?.length > 0 && (
+        <div className="mt-4">
+          <p className="mb-2 text-[12.5px] font-semibold text-[var(--a-text-primary)]">Recent journal</p>
+          <ul className="flex flex-col gap-2">
+            {linked.journal_recent.map((j) => (
+              <li key={j.id} className="rounded-xl bg-[var(--a-bg-base)] px-3 py-2 text-[13px] text-[var(--a-text-primary)]">
+                <span className="mr-2 text-[12px] text-[var(--a-text-faint)]">{fmt(j.created_at)}</span>
+                {j.content.length > 220 ? `${j.content.slice(0, 220)}…` : j.content}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </Card>
   );
 }

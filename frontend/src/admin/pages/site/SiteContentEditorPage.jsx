@@ -12,7 +12,7 @@ import { TextArea } from "../../ui/Field";
 import { api } from "../../../lib/api";
 import { usePermissions } from "../../usePermissions";
 import { SITE_DEFAULTS } from "../../../site/useSiteContent";
-import { SITE_CONTENT_SCHEMAS, SITE_CONTENT_PAGES, schemaKeys } from "./siteContentSchemas";
+import { SITE_CONTENT_SCHEMAS, SITE_CONTENT_PAGES, schemaKeys, COPY_PAGE_BY_SLUG, SLUG_BY_COPY_PAGE } from "./siteContentSchemas";
 import { FieldGrid } from "./SiteContentFields";
 
 /** Media Library folder each page's uploads/picker default to (see MEDIA_FOLDERS). */
@@ -37,7 +37,9 @@ function formatWhen(iso) {
 }
 
 export default function SiteContentEditorPage() {
-  const { page } = useParams();
+  // Opened from CMS → Pages → {page} → "Page copy" (/admin/cms/pages/:slug/copy).
+  const { page: pageParam, slug } = useParams();
+  const page = pageParam ?? COPY_PAGE_BY_SLUG[slug] ?? slug;
   const schema = SITE_CONTENT_SCHEMAS[page];
   // Remount per page so every bit of editor state starts fresh when switching editors.
   return schema ? <Editor key={page} page={page} schema={schema} /> : <UnknownPage page={page} />;
@@ -50,13 +52,22 @@ function UnknownPage({ page }) {
         icon={FileWarning}
         title={`No editor for “${page}”`}
         description="Site content editors exist for Home, About, Mission, Meditation, Wisdom, Wellness and Events."
-        action={<Button as={Link} to="/admin/content" variant="secondary">All site pages</Button>}
+        action={<Button as={Link} to="/admin/cms/pages" variant="secondary">All pages</Button>}
       />
     </Card>
   );
 }
 
-function Editor({ page, schema }) {
+/**
+ * The designed page's content, embedded in CMS → Pages → {page}: every part of the page as a
+ * collapsible row, with save/reset in a sticky bar. Same data and publishing as the full editor.
+ */
+export function SiteCopyEditor({ page }) {
+  const schema = SITE_CONTENT_SCHEMAS[page];
+  return schema ? <Editor key={page} page={page} schema={schema} embedded /> : null;
+}
+
+function Editor({ page, schema, embedded = false }) {
   const { can } = usePermissions();
   const canEdit = can("cms.edit");
   const canUpload = can("cms.create");
@@ -92,7 +103,9 @@ function Editor({ page, schema }) {
       .then((res) => {
         if (!alive) return;
         const data = res?.data && typeof res.data === "object" ? res.data : null;
-        adopt({ ...defaults, ...(data || {}) }, { isPublished: !!data, metaPatch: { updated_at: res?.updated_at ?? null, editor: res?.editor ?? null } });
+        // The backend owns the defaults (resources/site-content); the bundled copy is only a fallback.
+        const base = res?.defaults && Object.keys(res.defaults).length ? res.defaults : defaults;
+        adopt({ ...base, ...(data || {}) }, { isPublished: !!data, metaPatch: { updated_at: res?.updated_at ?? null, editor: res?.editor ?? null } });
       })
       .catch((err) => {
         if (!alive) return;
@@ -179,9 +192,9 @@ function Editor({ page, schema }) {
   const reset = async () => {
     setSaving(true);
     try {
-      await api.resetSiteContent(page);
-      adopt(defaults, { isPublished: false, metaPatch: { updated_at: null, editor: null } });
-      toast.success(`${schema.label} page reset to file defaults`);
+      const res = await api.resetSiteContent(page);
+      adopt(res?.defaults && Object.keys(res.defaults).length ? res.defaults : defaults, { isPublished: false, metaPatch: { updated_at: null, editor: null } });
+      toast.success(`${schema.label} page reset to the default copy`);
     } catch (err) {
       toast.error(err.message ?? "Reset failed");
     } finally {
@@ -195,13 +208,57 @@ function Editor({ page, schema }) {
       ? { tone: "warning", text: "Unsaved changes" }
       : published
         ? { tone: "success", text: "Published overrides active" }
-        : { tone: "neutral", text: "Showing file defaults" };
+        : { tone: "neutral", text: "Showing the default copy" };
 
   const ctx = { canUpload: canUpload && canEdit, uploading, upload, openPicker: (onSelect) => setPicker({ onSelect }) };
+  const actions = (
+    <div className="flex flex-wrap items-center gap-2.5">
+      <div className="flex flex-col items-end gap-0.5">
+        <Badge tone={status.tone} dot>{status.text}</Badge>
+        {published && meta.updated_at && !dirty && (
+          <span className="text-[11.5px] text-[var(--a-text-muted)]">
+            Last published {formatWhen(meta.updated_at)}{meta.editor?.name ? ` by ${meta.editor.name}` : ""}
+          </span>
+        )}
+      </div>
+      {dirty && (
+        <Button variant="ghost" onClick={() => adopt(baseline)} disabled={saving}>Discard</Button>
+      )}
+      <Button
+        variant="secondary"
+        onClick={() => setConfirmReset(true)}
+        disabled={!canEdit || !published || saving || loading}
+        title={canEdit ? (published ? "Delete the published overrides and go back to the default copy" : "Already showing the default copy") : "You don't have permission to edit site content"}
+      >
+        Reset to default
+      </Button>
+      <Button
+        onClick={publish}
+        disabled={!canEdit || !dirty || !!extrasError || saving || loading}
+        title={canEdit ? undefined : "You don't have permission to edit site content"}
+      >
+        {saving ? "Publishing…" : "Save & publish"}
+      </Button>
+    </div>
+  );
   const extrasCount = Object.keys(splitExtras(doc, keys)).length;
 
   return (
     <div className="flex flex-col gap-6">
+      {embedded ? (
+        <div className="sticky top-0 z-10 -mx-1 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[var(--a-border)] bg-[var(--a-bg-surface)] px-5 py-3.5 shadow-[var(--a-shadow-sm)]">
+          <div className="min-w-0">
+            <h2 className="text-[16px] font-bold text-[var(--a-text-primary)]">Page content</h2>
+            <p className="text-[12.5px] text-[var(--a-text-muted)]">
+              Every part of the {schema.label} page — open a part to edit it, then Save &amp; publish.{" "}
+              <Link to={`${schema.publicPath}${schema.publicPath.includes("?") ? "&" : "?"}edit=1`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 font-semibold text-[var(--a-accent)] hover:underline">
+                Open page <ExternalLink size={12} />
+              </Link>
+            </p>
+          </div>
+          {actions}
+        </div>
+      ) : (
       <div className="flex flex-col gap-4 border-b border-[var(--a-border)] pb-5">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div className="min-w-0">
@@ -214,42 +271,15 @@ function Editor({ page, schema }) {
               </Link>
             </p>
           </div>
-          <div className="flex flex-wrap items-center gap-2.5">
-            <div className="flex flex-col items-end gap-0.5">
-              <Badge tone={status.tone} dot>{status.text}</Badge>
-              {published && meta.updated_at && !dirty && (
-                <span className="text-[11.5px] text-[var(--a-text-muted)]">
-                  Last published {formatWhen(meta.updated_at)}{meta.editor?.name ? ` by ${meta.editor.name}` : ""}
-                </span>
-              )}
-            </div>
-            {dirty && (
-              <Button variant="ghost" onClick={() => adopt(baseline)} disabled={saving}>Discard</Button>
-            )}
-            <Button
-              variant="secondary"
-              onClick={() => setConfirmReset(true)}
-              disabled={!canEdit || !published || saving || loading}
-              title={canEdit ? (published ? "Delete the published overrides and go back to the file defaults" : "Already showing the file defaults") : "You don't have permission to edit site content"}
-            >
-              Reset to file
-            </Button>
-            <Button
-              onClick={publish}
-              disabled={!canEdit || !dirty || !!extrasError || saving || loading}
-              title={canEdit ? undefined : "You don't have permission to edit site content"}
-            >
-              {saving ? "Publishing…" : "Save & publish"}
-            </Button>
-          </div>
+          {actions}
         </div>
         <nav aria-label="Site content editors" className="flex flex-wrap items-center gap-1.5">
-          <Link to="/admin/content" className="mr-1 text-[12.5px] font-medium text-[var(--a-text-muted)] hover:text-[var(--a-text-primary)]">All pages</Link>
+          <Link to={`/admin/cms/pages/${SLUG_BY_COPY_PAGE[page] ?? page}`} className="mr-1 text-[12.5px] font-medium text-[var(--a-text-muted)] hover:text-[var(--a-text-primary)]">← {schema.label} page</Link>
           <ChevronRight size={13} className="text-[var(--a-text-faint)]" />
           {SITE_CONTENT_PAGES.map((p) => (
             <Link
               key={p}
-              to={`/admin/content/${p}`}
+              to={`/admin/cms/pages/${SLUG_BY_COPY_PAGE[p] ?? p}/copy`}
               aria-current={p === page ? "page" : undefined}
               className={`rounded-full px-3 py-1 text-[12.5px] font-medium transition-colors ${p === page ? "bg-[var(--a-accent-muted)] text-[var(--a-accent)]" : "text-[var(--a-text-muted)] hover:bg-[var(--a-bg-surface-2)] hover:text-[var(--a-text-primary)]"}`}
             >
@@ -258,6 +288,7 @@ function Editor({ page, schema }) {
           ))}
         </nav>
       </div>
+      )}
 
       {!canEdit && (
         <p className="rounded-xl border border-[var(--a-border)] bg-[var(--a-bg-surface-2)] px-4 py-3 text-[13px] text-[var(--a-text-muted)]">
@@ -266,11 +297,27 @@ function Editor({ page, schema }) {
       )}
 
       <fieldset disabled={loading || !canEdit} className="m-0 flex min-w-0 flex-col gap-6 border-0 p-0">
-        {schema.sections.map((section) => (
-          <Card key={section.title} title={section.title} description={section.description}>
-            <FieldGrid idPrefix={`${page}-${section.title}`} fields={section.fields} value={doc} onChange={setDoc} columns={section.columns} ctx={ctx} />
-          </Card>
-        ))}
+        {schema.sections.map((section) =>
+          embedded ? (
+            <details key={section.title} className="group rounded-2xl border border-[var(--a-border)] bg-[var(--a-bg-surface)] shadow-[var(--a-shadow-sm)]">
+              <summary className="flex cursor-pointer list-none items-center gap-3 px-5 py-4 sm:px-6">
+                <span className="rounded bg-[var(--a-accent-muted)] px-1.5 py-0.5 text-[10.5px] font-semibold text-[var(--a-accent)] uppercase">Designed</span>
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-[14px] font-semibold text-[var(--a-text-primary)]">{section.title}</span>
+                  {section.description && <span className="block truncate text-[12px] text-[var(--a-text-muted)]">{section.description}</span>}
+                </span>
+                <ChevronRight size={15} className="shrink-0 text-[var(--a-text-muted)] transition-transform group-open:rotate-90" />
+              </summary>
+              <div className="border-t border-[var(--a-border)] px-5 pt-4 pb-5 sm:px-6">
+                <FieldGrid idPrefix={`${page}-${section.title}`} fields={section.fields} value={doc} onChange={setDoc} columns={section.columns} ctx={ctx} />
+              </div>
+            </details>
+          ) : (
+            <Card key={section.title} title={section.title} description={section.description}>
+              <FieldGrid idPrefix={`${page}-${section.title}`} fields={section.fields} value={doc} onChange={setDoc} columns={section.columns} ctx={ctx} />
+            </Card>
+          ),
+        )}
 
         <details className="group rounded-2xl border border-[var(--a-border)] bg-[var(--a-bg-surface)] shadow-[var(--a-shadow-sm)]">
           <summary className="flex cursor-pointer list-none items-center gap-2 p-5 text-[14px] font-semibold text-[var(--a-text-primary)] sm:px-6">
@@ -308,9 +355,9 @@ function Editor({ page, schema }) {
         open={confirmReset}
         onClose={() => setConfirmReset(false)}
         onConfirm={reset}
-        title={`Reset the ${schema.label} page to the file defaults?`}
-        description="This deletes the published overrides; the public page goes back to the copy bundled with the site."
-        confirmLabel="Reset to file"
+        title={`Reset the ${schema.label} page to the default copy?`}
+        description="This deletes the published overrides; the public page goes back to the default copy stored on the server."
+        confirmLabel="Reset to default"
       />
     </div>
   );

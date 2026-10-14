@@ -1,0 +1,68 @@
+/* CMS sections in the site design (SiteCmsSection.jsx). */
+.gaw-site .cms-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  gap: clamp(24px, 4vw, 56px);
+  align-items: center;
+}
+.gaw-site .cms-split.no-media {
+  grid-template-columns: minmax(0, 1fr);
+  max-width: 820px;
+}
+.gaw-site .cms-split.media-left > :first-child {
+  order: 2;
+}
+@media (max-width: 760px) {
+  .gaw-site .cms-split {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .gaw-site .cms-split.media-left > :first-child {
+    order: 0;
+  }
+}
+.gaw-site .cms-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
+  gap: clamp(12px, 1.6vw, 18px);
+}
+.gaw-site .cms-grid.wide {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+}
+.gaw-site .cms-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: clamp(18px, 2vw, 26px);
+  border-radius: 20px;
+  background: rgba(255, 253, 248, 0.6);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.8) inset, 0 12px 30px -16px rgba(60, 42, 16, 0.28);
+}
+.gaw-site .cms-rich p {
+  margin: 0 0 0.9em;
+}
+.gaw-site .cms-rich p:last-child {
+  margin-bottom: 0;
+}
+.gaw-site .cms-rich a {
+  color: #7a5e22;
+  text-decoration: underline;
+}
+.gaw-site .cms-rich ul,
+.gaw-site .cms-rich ol {
+  margin: 0 0 0.9em;
+  padding-left: 1.3em;
+}
+.gaw-site .cms-rich h2,
+.gaw-site .cms-rich h3 {
+  font-family: "Cormorant Garamond", serif;
+  font-weight: 500;
+  color: #12201a;
+  margin: 0.6em 0 0.3em;
+}
+.gaw-site .cms-card {
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  transition: border-color 0.2s;
+}
+.gaw-site .cms-card:hover {
+  border-color: #c9a24a;
+}

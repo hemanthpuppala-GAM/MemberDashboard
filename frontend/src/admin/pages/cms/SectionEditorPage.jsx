@@ -198,9 +198,8 @@ export default function SectionEditorPage() {
 function SectionFields({ type, content, set, openPicker, pageSlug }) {
   switch (type) {
         case "hero": {
-      // Home's hero is the locked Sri Yantra composition — layout, portrait and mandala
-      // live in code (HeroSection/SriYantra), so admin only edits copy. Other pages use
-      // HeroBannerSection, which still reads a background image + focal point.
+      // Home's own hero is hand-built (a CMS hero isn't drawn there), so only copy fields show
+      // for it. Elsewhere the CMS hero card takes a background image + focal point.
       const isHome = pageSlug === "home";
 
       return (

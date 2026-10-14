@@ -22,10 +22,41 @@ class SiteContentTest extends TestCase
         return $user;
     }
 
-    public function test_unpublished_page_returns_null_so_frontend_uses_defaults(): void
+    public function test_unedited_page_serves_the_backend_defaults(): void
     {
-        $this->getJson('/api/v1/site-content/about')->assertOk()->assertJson(['page' => 'about', 'data' => null]);
+        $defaults = json_decode(file_get_contents(resource_path('site-content/about.json')), true);
+
+        $this->getJson('/api/v1/site-content/about')->assertOk()
+            ->assertJson(['page' => 'about', 'customized' => false])
+            ->assertJsonPath('data.title', $defaults['title']);
         $this->getJson('/api/v1/site-content/nope')->assertNotFound();
+    }
+
+    public function test_backend_defaults_match_the_websites_offline_copy(): void
+    {
+        $frontend = base_path('../frontend/src/site/content');
+        if (! is_dir($frontend)) {
+            $this->markTestSkipped('frontend/ not checked out next to backend/');
+        }
+        foreach (\App\Models\Site\SiteContent::PAGES as $page) {
+            $this->assertSame(
+                json_decode(file_get_contents("{$frontend}/{$page}.json"), true),
+                json_decode(file_get_contents(resource_path("site-content/{$page}.json")), true),
+                "backend/resources/site-content/{$page}.json differs from frontend/src/site/content/{$page}.json",
+            );
+        }
+    }
+
+    public function test_sync_command_stores_full_copy_without_touching_admin_edits(): void
+    {
+        \App\Models\Site\SiteContent::create(['page' => 'wisdom', 'data' => ['title' => 'Edited by admin']]);
+
+        $this->artisan('site-content:sync')->assertSuccessful();
+
+        $wisdom = \App\Models\Site\SiteContent::where('page', 'wisdom')->first()->data;
+        $this->assertSame('Edited by admin', $wisdom['title']);
+        $this->assertArrayHasKey('stages', $wisdom);
+        $this->assertSame(count(\App\Models\Site\SiteContent::PAGES), \App\Models\Site\SiteContent::count());
     }
 
     public function test_admin_can_publish_and_reset_a_page(): void
@@ -36,11 +67,15 @@ class SiteContentTest extends TestCase
             ->assertOk();
 
         $this->getJson('/api/v1/site-content/home')->assertOk()
+            ->assertJson(['customized' => true])
             ->assertJsonPath('data.headline', 'Sit with us')
-            ->assertJsonPath('data.sessions.0.time', '6 AM');
+            ->assertJsonPath('data.sessions.0.time', '6 AM')
+            ->assertJsonPath('data.sitsTitle', 'Sits around the world'); // untouched keys keep their defaults
+
+        $this->getJson('/api/v1/admin/site-content/home')->assertOk()->assertJsonPath('defaults.sitsTitle', 'Sits around the world');
 
         $this->deleteJson('/api/v1/admin/site-content/home')->assertOk();
-        $this->getJson('/api/v1/site-content/home')->assertJson(['data' => null]);
+        $this->getJson('/api/v1/site-content/home')->assertJson(['customized' => false]);
     }
 
     public function test_publishing_requires_staff_auth_and_a_known_page(): void

@@ -11,6 +11,8 @@ class PageController extends Controller
 {
     public function index()
     {
+        Page::ensureSitePages();
+
         return response()->json(
             Page::withCount('sections')->orderBy('sort_order')->orderBy('title')->get(),
         );
@@ -28,7 +30,11 @@ class PageController extends Controller
 
     public function show(Page $page)
     {
-        return response()->json($page->load(['sections.content.language', 'translations']));
+        return response()->json([
+            ...$page->load(['sections.content.language', 'translations'])->toArray(),
+            // Built-in pages: sections created before this only showed on the previous site.
+            'site_sections_since' => $page->is_builtin ? Page::SITE_SECTIONS_SINCE : null,
+        ]);
     }
 
     public function update(PageRequest $request, Page $page)

@@ -91,6 +91,7 @@ class OAuthService
             ->first()
             ?? Member::where('email', $email)->first()
             ?? new Member([
+                'source' => $provider,
                 'category' => 'general',
                 'status' => 'active',
                 'join_date' => now(),

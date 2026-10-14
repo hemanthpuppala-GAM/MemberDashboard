@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Public\Member\PasswordUpdateRequest;
 use App\Http\Requests\Public\Member\ProfileUpdateRequest;
 use App\Models\People\Member;
+use App\Services\People\MemberLinker;
+use App\Services\People\MemberNumbers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
@@ -17,7 +19,13 @@ class ProfileController extends Controller
         $member = $request->user();
         $member->fill($request->validated())->save();
 
-        return response()->json(['user' => $member->only('id', 'name', 'email', 'phone')]);
+        // Added at a membership drive by phone, now signed in with Google: one member, the
+        // drive's (older) member number.
+        if (MemberNumbers::ready() && $member->wasChanged('phone_key')) {
+            $member = MemberLinker::absorbPhoneTwin($member) ?? $member;
+        }
+
+        return response()->json(['user' => $member->only('id', 'name', 'email', 'phone') + ['member_id' => $member->member_code]]);
     }
 
     public function updatePassword(PasswordUpdateRequest $request)

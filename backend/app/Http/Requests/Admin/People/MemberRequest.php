@@ -17,7 +17,7 @@ class MemberRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['nullable', 'email', 'max:255'],
+            'email' => ['nullable', 'email', 'max:255', Rule::unique('members', 'email')->ignore($this->route('member'))],
             'phone' => ['nullable', 'string', 'max:50'],
             'category' => ['required', Rule::in(Member::CATEGORIES)],
             'summary' => ['nullable', 'string', 'max:5000'],

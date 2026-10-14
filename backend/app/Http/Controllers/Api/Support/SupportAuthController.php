@@ -14,7 +14,7 @@ class SupportAuthController extends Controller
     {
         $data = $request->validate([
             'phone' => ['required', 'string', 'max:30'],
-            'pin' => ['required', 'string', 'min:4', 'max:12'],
+            'pin' => ['required', 'string', 'min:4', 'max:64'],
         ]);
 
         $agent = SupportAgent::where('phone', SupportAgent::normalizePhone($data['phone']))

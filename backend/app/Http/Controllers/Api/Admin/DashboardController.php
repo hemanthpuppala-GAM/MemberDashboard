@@ -8,7 +8,6 @@ use App\Models\Auth\User;
 use App\Models\Cms\Media;
 use App\Models\Cms\Page;
 use App\Models\Cms\Event;
-use App\Models\Cms\PageContent;
 use App\Models\Content\DonationMethod;
 use App\Models\Content\MusicTrack;
 use App\Models\Content\Testimonial;
@@ -29,7 +28,6 @@ class DashboardController extends Controller
         'pages_total' => 'cms.view',
         'media_total' => 'cms.view',
         'events_upcoming' => 'cms.view',
-        'content_blocks' => 'cms.view',
         'queries_new' => 'members.view',
         'queries_total' => 'members.view',
         'tickets_open' => 'members.view',
@@ -56,7 +54,6 @@ class DashboardController extends Controller
             'pages_total' => Page::count(),
             'media_total' => Media::count(),
             'events_upcoming' => Event::where('is_published', true)->where('starts_at', '>=', now())->count(),
-            'content_blocks' => PageContent::count(),
             'queries_new' => ContactSubmission::where('status', 'new')->count(),
             'queries_total' => ContactSubmission::count(),
             // Support desk: every query plus calls, WhatsApp chats and volunteer sign-ups.

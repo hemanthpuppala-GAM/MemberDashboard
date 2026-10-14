@@ -6,6 +6,7 @@ import { OFFICIAL_EMAIL } from "../sitePages";
 import { storageUrl } from "../../lib/api";
 import { displayNumber } from "../../ask/support";
 import "./donate.css";
+import CmsExtraSections from "../cms/CmsExtraSections";
 
 const PAD = "clamp(20px,5vw,72px)";
 const KICKER = { display: "inline-flex", alignItems: "center", gap: 10, fontSize: 11, fontWeight: 700, letterSpacing: ".3em", textTransform: "uppercase", color: "#7A5E22" };
@@ -168,6 +169,7 @@ export default function DonatePage() {
         </p>
       </main>
 
+      <CmsExtraSections slug="donate" />
       <SiteFooter title="With gratitude" sub="Every sit stays free because someone, somewhere, chose to give." />
     </SitePage>
   );

@@ -16,6 +16,8 @@ import { api } from "../../../lib/api";
 import { SECTION_TYPES } from "../../mock/mockData";
 import { contentArrayToByLang } from "./sectionContentUtil";
 import { usePermissions } from "../../usePermissions";
+import { COPY_PAGE_BY_SLUG } from "../site/siteContentSchemas";
+import { SiteCopyEditor } from "../site/SiteContentEditorPage";
 
 function withDecodedContent(page) {
   return { ...page, sections: page.sections.map((s) => ({ ...s, contentByLang: contentArrayToByLang(s.content) })) };
@@ -29,31 +31,31 @@ function withDecodedContent(page) {
  * is rendered generically by HomePage's PageSections fallback, so it maps
  * to itself.
  */
-const PUBLIC_VIEW_BY_SLUG = {
-  home: "hub",
-  about: "about",
-  wisdom: "wisdom",
-  wellness: "wellness",
-  meditate: "practice",
-  events: "events",
-  mission: "mission",
-  contact: "contact",
-  volunteer: "volunteer",
-  donate: "donate",
-};
+/** CMS page slug → its public path (the built-in "meditate" page lives at /meditation). */
+const PUBLIC_PATH_BY_SLUG = { home: "", meditate: "meditation" };
 
-function publicSectionUrl(pageSlug, sectionId) {
-  const view = PUBLIC_VIEW_BY_SLUG[pageSlug] ?? pageSlug;
-  return `${window.location.origin}${import.meta.env.BASE_URL}#${view}:${sectionId}`;
+function publicPageUrl(pageSlug) {
+  return `${window.location.origin}${import.meta.env.BASE_URL}${PUBLIC_PATH_BY_SLUG[pageSlug] ?? pageSlug}`;
 }
 
-function SortableRow({ section, pageSlug, onDelete, onToggleStatus, canEdit, canDelete }) {
+function publicSectionUrl(pageSlug, sectionId) {
+  return `${publicPageUrl(pageSlug)}#cms-section-${sectionId}`;
+}
+
+/** Built-in pages: sections created for the previous site (before Page::SITE_SECTIONS_SINCE). */
+function isOldSiteSection(section, siteSince) {
+  return !!siteSince && !!section.created_at && new Date(section.created_at) < new Date(`${siteSince.replace(" ", "T")}Z`);
+}
+
+function SortableRow({ section, pageSlug, onDelete, onToggleStatus, canEdit, canDelete, siteSince }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: section.id, disabled: !canEdit });
   const style = { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.6 : 1 };
   const meta = SECTION_TYPES.find((t) => t.type === section.type);
   const heading = section.contentByLang?.en?.heading || section.contentByLang?.en?.eyebrow || meta?.label;
   const viewUrl = publicSectionUrl(pageSlug, section.id);
   const isHidden = section.status === "hidden";
+  // Built-in pages: sections made for the previous site don't show on the new one (see Page::SITE_SECTIONS_SINCE).
+  const oldSiteOnly = isOldSiteSection(section, siteSince);
 
   return (
     <div ref={setNodeRef} style={style} className={`flex items-center gap-3 border-b border-[var(--a-border)] py-3.5 last:border-0 ${isHidden ? "opacity-60" : ""}`}>
@@ -71,6 +73,11 @@ function SortableRow({ section, pageSlug, onDelete, onToggleStatus, canEdit, can
           <span className="rounded bg-[var(--a-accent-muted)] px-1.5 py-0.5 text-[10.5px] font-semibold text-[var(--a-accent)] uppercase">{meta?.label}</span>
           <span className="truncate text-[13.5px] font-medium text-[var(--a-text-primary)]">{heading}</span>
           {isHidden && <StatusBadge status="hidden" />}
+          {oldSiteOnly && (
+            <span title="Made for the previous website — the new site doesn't show it. Delete it here, or remove them all at once with: php artisan cms:delete-old-site --force" className="shrink-0 rounded bg-[var(--a-bg-surface-2)] px-1.5 py-0.5 text-[10.5px] font-semibold text-[var(--a-text-muted)] uppercase">
+              Old site only
+            </span>
+          )}
         </div>
       </div>
       <IconButton
@@ -86,7 +93,7 @@ function SortableRow({ section, pageSlug, onDelete, onToggleStatus, canEdit, can
         disabled={!canEdit}
         onClick={() => onToggleStatus(section)}
       />
-      {viewUrl && !isHidden && (
+      {viewUrl && !isHidden && !oldSiteOnly && (
         <a
           href={viewUrl}
           target="_blank"
@@ -158,6 +165,10 @@ export default function PageDetailPage() {
       </div>
     );
   }
+
+  // Sections left over from the previous website are never shown on the site — keep them out of the list.
+  const shownSections = page.sections.filter((s) => !isOldSiteSection(s, page.site_sections_since));
+  const oldSiteCount = page.sections.length - shownSections.length;
 
   const handleDragEnd = async (event) => {
     const { active, over } = event;
@@ -239,7 +250,7 @@ export default function PageDetailPage() {
         {page.status === "published" && (
           <Button
             as="a"
-            href={`${window.location.origin}${import.meta.env.BASE_URL}#${PUBLIC_VIEW_BY_SLUG[page.slug] ?? page.slug}`}
+            href={publicPageUrl(page.slug)}
             target="_blank"
             rel="noopener noreferrer"
             variant="secondary"
@@ -270,9 +281,16 @@ export default function PageDetailPage() {
         </div>
       </Card>
 
+      {/* Designed pages: all of the page's own content, editable right here. */}
+      {COPY_PAGE_BY_SLUG[page.slug] && <SiteCopyEditor page={COPY_PAGE_BY_SLUG[page.slug]} />}
+
       <Card
-        title="Sections"
-        description="Drag to reorder. Each section renders on the public page in this order."
+        title={COPY_PAGE_BY_SLUG[page.slug] ? "Extra sections" : "Sections"}
+        description={
+          COPY_PAGE_BY_SLUG[page.slug]
+            ? "Add text, cards, videos, FAQs and more below the designed part of this page. Drag to reorder."
+            : "Drag to reorder. Each section renders on the public page in this order."
+        }
         actions={
           <Button
             as="button"
@@ -286,16 +304,24 @@ export default function PageDetailPage() {
           </Button>
         }
       >
-        {page.sections.length === 0 ? (
-          <p className="py-8 text-center text-[13.5px] text-[var(--a-text-muted)]">No sections yet — add one to start building this page.</p>
+        {shownSections.length === 0 ? (
+          <p className="py-8 text-center text-[13.5px] text-[var(--a-text-muted)]">
+            {COPY_PAGE_BY_SLUG[page.slug] ? "No extra sections yet — add one to put new content below the designed part of this page." : "No sections yet — add one to start building this page."}
+          </p>
         ) : (
           <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-            <SortableContext items={page.sections.map((s) => s.id)} strategy={verticalListSortingStrategy}>
-              {page.sections.map((section) => (
-                <SortableRow key={section.id} section={section} pageSlug={page.slug} onDelete={setToDelete} onToggleStatus={handleToggleStatus} canEdit={canEdit} canDelete={canDelete} />
+            <SortableContext items={shownSections.map((s) => s.id)} strategy={verticalListSortingStrategy}>
+              {shownSections.map((section) => (
+                <SortableRow key={section.id} section={section} pageSlug={page.slug} siteSince={page.site_sections_since} onDelete={setToDelete} onToggleStatus={handleToggleStatus} canEdit={canEdit} canDelete={canDelete} />
               ))}
             </SortableContext>
           </DndContext>
+        )}
+        {oldSiteCount > 0 && (
+          <p className="mt-3 text-[12px] text-[var(--a-text-muted)]">
+            {oldSiteCount} section{oldSiteCount === 1 ? "" : "s"} left over from the previous website {oldSiteCount === 1 ? "is" : "are"} hidden here and never shown on the site. Remove them for good on the server with{" "}
+            <code className="rounded bg-[var(--a-bg-surface-2)] px-1">php artisan cms:delete-old-site --force</code>.
+          </p>
         )}
       </Card>
 

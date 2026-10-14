@@ -35,6 +35,7 @@ class MemberAuthController extends Controller
                 'name' => $data['name'],
                 'email' => $data['email'],
                 'password' => $data['password'],
+                'source' => 'password',
                 'category' => 'general',
                 'status' => 'active',
                 'join_date' => now(),

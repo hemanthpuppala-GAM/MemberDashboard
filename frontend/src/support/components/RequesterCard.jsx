@@ -8,7 +8,7 @@ const linkBtn =
 
 /** Who asked: tap-to-call, WhatsApp, email, and their earlier tickets. */
 export default function RequesterCard({ requester = {}, history = [] }) {
-  const { name, phone, email, member_id: memberId } = requester;
+  const { name, phone, email, member_id: memberId, member_code: memberCode } = requester;
   const wa = phone ? whatsappDigits(phone) : "";
 
   return (
@@ -19,7 +19,7 @@ export default function RequesterCard({ requester = {}, history = [] }) {
         </span>
         <div className="min-w-0">
           <p className="truncate text-[16px] font-semibold text-[#14241C]">{name || "Name not given"}</p>
-          <p className="text-[12.5px] text-[#5A5546]">{memberId ? "Has a member account" : "No member account"}</p>
+          <p className="text-[12.5px] text-[#5A5546]">{memberId ? `Member ${memberCode ?? ""}`.trim() : "No member account"}</p>
         </div>
       </div>
 

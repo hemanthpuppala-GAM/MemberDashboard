@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Admin\People;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\People\MemberRequest;
 use App\Models\People\Member;
+use App\Services\People\MemberNumbers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
 
@@ -13,8 +14,9 @@ class MemberController extends Controller
     public function index(Request $request)
     {
         $query = Member::query()
-            ->select(['id', 'name', 'email', 'phone', 'category', 'status', 'join_date', 'assigned_practitioner_id'])
-            ->with('practitioner:id,name')
+            ->select(['id', 'member_num', 'name', 'email', 'phone', 'category', 'status', 'source', 'drive_id', 'join_date', 'assigned_practitioner_id'])
+            ->with(['practitioner:id,name', 'drive:id,name'])
+            ->withCount(['volunteerApplications', 'tickets'])
             ->latest();
 
         if ($category = $request->query('category')) {
@@ -26,8 +28,18 @@ class MemberController extends Controller
         if ($practitionerId = $request->query('assigned_practitioner_id')) {
             $query->where('assigned_practitioner_id', $practitionerId);
         }
-        if ($search = $request->query('search')) {
-            $query->where(fn ($q) => $q->where('name', 'like', "{$search}%")->orWhere('email', 'like', "{$search}%"));
+        if ($driveId = $request->query('drive_id')) {
+            $query->where('drive_id', $driveId);
+        }
+        if ($source = $request->query('source')) {
+            $query->where('source', $source);
+        }
+        if ($search = trim((string) $request->query('search'))) {
+            $num = MemberNumbers::parse($search);
+            $phone = MemberNumbers::phoneKey($search);
+            $query->where(fn ($q) => $q->where('name', 'like', "{$search}%")->orWhere('email', 'like', "{$search}%")
+                ->when($num, fn ($q) => $q->orWhere('member_num', $num))
+                ->when($phone, fn ($q) => $q->orWhere('phone_key', $phone)));
         }
 
         return response()->json($query->paginate((int) $request->query('per_page', 20)));
@@ -37,6 +49,7 @@ class MemberController extends Controller
     {
         $member = Member::create([
             ...$request->validated(),
+            'source' => 'admin',
             'join_date' => now()->toDateString(),
         ]);
 
@@ -45,7 +58,27 @@ class MemberController extends Controller
 
     public function show(Member $member)
     {
-        return response()->json($member->load('practitioner:id,name', 'sourceSubmission:id,message'));
+        $member->load('practitioner:id,name', 'sourceSubmission:id,message', 'drive:id,name,held_on');
+
+        // Everything this person has done anywhere — volunteer, support desk, practice, journal.
+        return response()->json([
+            ...$member->toArray(),
+            'linked' => [
+                'volunteer_applications' => $member->volunteerApplications()->with('category:id,name')
+                    ->get(['id', 'member_id', 'name', 'status', 'teams', 'availability', 'city', 'category_id', 'created_at']),
+                'tickets' => $member->tickets()->limit(20)
+                    ->get(['id', 'member_id', 'source', 'subject', 'status', 'priority', 'created_at'])
+                    ->map(fn ($t) => ['id' => $t->id, 'ref' => $t->ref, 'source' => $t->source, 'subject' => $t->subject, 'status' => $t->status, 'priority' => $t->priority, 'created_at' => $t->created_at]),
+                'tickets_count' => $member->tickets()->count(),
+                'practice' => [
+                    'sits' => $member->practiceSessions()->count(),
+                    'minutes' => (int) $member->practiceSessions()->sum('duration_minutes'),
+                    'last_sit_at' => $member->practiceSessions()->max('completed_at'),
+                ],
+                'journal_count' => $member->journalEntries()->count(),
+                'journal_recent' => $member->journalEntries()->limit(3)->get(['id', 'member_id', 'content', 'created_at']),
+            ],
+        ]);
     }
 
     public function update(MemberRequest $request, Member $member)
@@ -73,13 +106,13 @@ class MemberController extends Controller
 
     public function export()
     {
-        $rows = Member::with('practitioner:id,name')->get();
+        $rows = Member::with(['practitioner:id,name', 'drive:id,name'])->orderBy('member_num')->get();
 
-        $csv = "Name,Email,Phone,Category,Status,Practitioner,Joined\n";
+        $csv = "Member ID,Name,Email,Phone,Category,Status,Source,Drive,Practitioner,Joined\n";
         foreach ($rows as $row) {
             $csv .= implode(',', array_map(
                 fn ($v) => '"'.str_replace('"', '""', (string) $v).'"',
-                [$row->name, $row->email, $row->phone, $row->category, $row->status, $row->practitioner?->name, $row->join_date],
+                [$row->member_code, $row->name, $row->email, $row->phone, $row->category, $row->status, $row->source, $row->drive?->name, $row->practitioner?->name, $row->join_date?->toDateString()],
             ))."\n";
         }
 

@@ -6,6 +6,7 @@ import { OFFICIAL_EMAIL } from "../sitePages";
 import { publicApi } from "../../lib/api";
 import { useLanguage } from "../../lib/LanguageContext";
 import "./volunteer.css";
+import CmsExtraSections from "../cms/CmsExtraSections";
 
 const PAD = "clamp(20px,5vw,72px)";
 const KICKER = { display: "inline-flex", alignItems: "center", gap: 10, fontSize: 11, fontWeight: 700, letterSpacing: ".3em", textTransform: "uppercase", color: "#7A5E22" };
@@ -399,6 +400,7 @@ export default function VolunteerPage() {
         )}
       </main>
 
+      <CmsExtraSections slug="volunteer" />
       <SiteFooter title="Seva is the movement" sub="Every hour offered keeps the sits free and the doors open." />
     </SitePage>
   );
