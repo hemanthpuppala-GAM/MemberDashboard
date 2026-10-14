@@ -12,7 +12,7 @@ import { TextArea } from "../../ui/Field";
 import { api } from "../../../lib/api";
 import { usePermissions } from "../../usePermissions";
 import { SITE_DEFAULTS } from "../../../site/useSiteContent";
-import { SITE_CONTENT_SCHEMAS, SITE_CONTENT_PAGES, schemaKeys } from "./siteContentSchemas";
+import { SITE_CONTENT_SCHEMAS, SITE_CONTENT_PAGES, schemaKeys, COPY_PAGE_BY_SLUG, SLUG_BY_COPY_PAGE } from "./siteContentSchemas";
 import { FieldGrid } from "./SiteContentFields";
 
 /** Media Library folder each page's uploads/picker default to (see MEDIA_FOLDERS). */
@@ -37,7 +37,9 @@ function formatWhen(iso) {
 }
 
 export default function SiteContentEditorPage() {
-  const { page } = useParams();
+  // Opened from CMS → Pages → {page} → "Page copy" (/admin/cms/pages/:slug/copy).
+  const { page: pageParam, slug } = useParams();
+  const page = pageParam ?? COPY_PAGE_BY_SLUG[slug] ?? slug;
   const schema = SITE_CONTENT_SCHEMAS[page];
   // Remount per page so every bit of editor state starts fresh when switching editors.
   return schema ? <Editor key={page} page={page} schema={schema} /> : <UnknownPage page={page} />;
@@ -50,7 +52,7 @@ function UnknownPage({ page }) {
         icon={FileWarning}
         title={`No editor for “${page}”`}
         description="Site content editors exist for Home, About, Mission, Meditation, Wisdom, Wellness and Events."
-        action={<Button as={Link} to="/admin/content" variant="secondary">All site pages</Button>}
+        action={<Button as={Link} to="/admin/cms/pages" variant="secondary">All pages</Button>}
       />
     </Card>
   );
@@ -234,7 +236,7 @@ function Editor({ page, schema }) {
               disabled={!canEdit || !published || saving || loading}
               title={canEdit ? (published ? "Delete the published overrides and go back to the default copy" : "Already showing the default copy") : "You don't have permission to edit site content"}
             >
-              Reset to file
+              Reset to default
             </Button>
             <Button
               onClick={publish}
@@ -246,12 +248,12 @@ function Editor({ page, schema }) {
           </div>
         </div>
         <nav aria-label="Site content editors" className="flex flex-wrap items-center gap-1.5">
-          <Link to="/admin/content" className="mr-1 text-[12.5px] font-medium text-[var(--a-text-muted)] hover:text-[var(--a-text-primary)]">All pages</Link>
+          <Link to={`/admin/cms/pages/${SLUG_BY_COPY_PAGE[page] ?? page}`} className="mr-1 text-[12.5px] font-medium text-[var(--a-text-muted)] hover:text-[var(--a-text-primary)]">← {schema.label} page</Link>
           <ChevronRight size={13} className="text-[var(--a-text-faint)]" />
           {SITE_CONTENT_PAGES.map((p) => (
             <Link
               key={p}
-              to={`/admin/content/${p}`}
+              to={`/admin/cms/pages/${SLUG_BY_COPY_PAGE[p] ?? p}/copy`}
               aria-current={p === page ? "page" : undefined}
               className={`rounded-full px-3 py-1 text-[12.5px] font-medium transition-colors ${p === page ? "bg-[var(--a-accent-muted)] text-[var(--a-accent)]" : "text-[var(--a-text-muted)] hover:bg-[var(--a-bg-surface-2)] hover:text-[var(--a-text-primary)]"}`}
             >
@@ -312,7 +314,7 @@ function Editor({ page, schema }) {
         onConfirm={reset}
         title={`Reset the ${schema.label} page to the default copy?`}
         description="This deletes the published overrides; the public page goes back to the default copy stored on the server."
-        confirmLabel="Reset to file"
+        confirmLabel="Reset to default"
       />
     </div>
   );

@@ -65,4 +65,17 @@ class CmsPageTest extends TestCase
         $this->getJson('/api/v1/pages/about?placement=site')->assertOk()
             ->assertJsonCount(1, 'sections')->assertJsonPath('sections.0.type', 'card_grid');
     }
+
+    public function test_pages_list_includes_every_hand_built_site_page(): void
+    {
+        $this->actingAsSuperAdmin();
+        Page::create(['slug' => 'about', 'title' => 'About us', 'status' => 'draft', 'is_builtin' => true]);
+
+        $slugs = collect($this->getJson('/api/v1/admin/pages')->assertOk()->json())->pluck('slug');
+
+        foreach (array_keys(Page::SITE_PAGES) as $slug) {
+            $this->assertContains($slug, $slugs);
+        }
+        $this->assertSame('About us', Page::where('slug', 'about')->value('title')); // existing pages untouched
+    }
 }

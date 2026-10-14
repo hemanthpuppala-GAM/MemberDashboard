@@ -25,6 +25,21 @@ class Page extends Model
      */
     public const SITE_SECTIONS_SINCE = '2026-10-14 00:00:00';
 
+    /** Hand-built site pages: CMS slug => title. Their copy is edited from the page in CMS → Pages. */
+    public const SITE_PAGES = [
+        'home' => 'Home', 'about' => 'About', 'mission' => 'Mission', 'meditate' => 'Meditation',
+        'wisdom' => 'Wisdom', 'wellness' => 'Wellness', 'events' => 'Events',
+    ];
+
+    /** Make sure every hand-built site page has its CMS page (so its copy and extra sections are reachable). */
+    public static function ensureSitePages(): void
+    {
+        $existing = static::whereIn('slug', array_keys(self::SITE_PAGES))->pluck('slug')->all();
+        foreach (array_diff(array_keys(self::SITE_PAGES), $existing) as $slug) {
+            static::create(['slug' => $slug, 'title' => self::SITE_PAGES[$slug], 'is_builtin' => true, 'status' => 'published', 'sort_order' => 0]);
+        }
+    }
+
     protected function casts(): array
     {
         return [

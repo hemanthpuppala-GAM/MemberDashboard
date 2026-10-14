@@ -4,7 +4,7 @@ import toast from "react-hot-toast";
 import { DndContext, closestCenter, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy, useSortable, arrayMove } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { GripVertical, Plus, Pencil, Trash2, ArrowLeft, Lock, Eye, EyeOff, ExternalLink } from "lucide-react";
+import { GripVertical, Plus, Pencil, Trash2, ArrowLeft, Lock, Eye, EyeOff, ExternalLink, PanelsTopLeft } from "lucide-react";
 import Card from "../../ui/Card";
 import Button from "../../ui/Button";
 import IconButton from "../../ui/IconButton";
@@ -16,6 +16,7 @@ import { api } from "../../../lib/api";
 import { SECTION_TYPES } from "../../mock/mockData";
 import { contentArrayToByLang } from "./sectionContentUtil";
 import { usePermissions } from "../../usePermissions";
+import { COPY_PAGE_BY_SLUG, SITE_CONTENT_SCHEMAS } from "../site/siteContentSchemas";
 
 function withDecodedContent(page) {
   return { ...page, sections: page.sections.map((s) => ({ ...s, contentByLang: contentArrayToByLang(s.content) })) };
@@ -270,9 +271,25 @@ export default function PageDetailPage() {
         </div>
       </Card>
 
+      {COPY_PAGE_BY_SLUG[page.slug] && (
+        <Card
+          title="Page copy"
+          description={`Text, images and links in the designed part of the ${page.title} page — ${SITE_CONTENT_SCHEMAS[COPY_PAGE_BY_SLUG[page.slug]]?.title ?? "its headings, cards and quotes"}.`}
+          actions={
+            <Button as={Link} to={`/admin/cms/pages/${page.slug}/copy`} size="sm" icon={PanelsTopLeft}>
+              Edit page copy
+            </Button>
+          }
+        />
+      )}
+
       <Card
-        title="Sections"
-        description="Drag to reorder. Each section renders on the public page in this order."
+        title={COPY_PAGE_BY_SLUG[page.slug] ? "Extra sections" : "Sections"}
+        description={
+          COPY_PAGE_BY_SLUG[page.slug]
+            ? "Add text, cards, videos, FAQs and more below the designed part of this page. Drag to reorder."
+            : "Drag to reorder. Each section renders on the public page in this order."
+        }
         actions={
           <Button
             as="button"

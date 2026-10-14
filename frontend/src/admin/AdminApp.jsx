@@ -1,4 +1,5 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate, useParams } from "react-router-dom";
+import { SLUG_BY_COPY_PAGE } from "./pages/site/siteContentSchemas";
 import { AuthProvider } from "./AuthContext";
 import { AdminThemeProvider } from "./theme/AdminThemeProvider";
 import { AdminDataProvider } from "./store/AdminDataProvider";
@@ -26,7 +27,6 @@ import MusicLibraryPage from "./pages/cms/MusicLibraryPage";
 import SitPresetsPage from "./pages/cms/SitPresetsPage";
 import EventsPage from "./pages/cms/EventsPage";
 import TestimonialsPage from "./pages/cms/TestimonialsPage";
-import SiteContentIndexPage from "./pages/site/SiteContentIndexPage";
 import SiteContentEditorPage from "./pages/site/SiteContentEditorPage";
 
 import QueryInboxPage from "./pages/people/QueryInboxPage";
@@ -72,6 +72,7 @@ export default function AdminApp() {
                 <Route path="cms/pages" element={guarded("cms.view", <PagesListPage />)} />
                 <Route path="cms/pages/new" element={guarded("cms.create", <NewPageWizard />)} />
                 <Route path="cms/pages/:slug" element={guarded("cms.view", <PageDetailPage />)} />
+                <Route path="cms/pages/:slug/copy" element={guarded("cms.view", <SiteContentEditorPage />)} />
                 <Route path="cms/pages/:slug/sections/:id" element={guarded("cms.view", <SectionEditorPage />)} />
                 <Route path="cms/media" element={guarded("cms.view", <MediaLibraryPage />)} />
                 <Route path="cms/contact" element={guarded("contact_channels.view", <ContactInfoPage />)} />
@@ -80,8 +81,9 @@ export default function AdminApp() {
                 <Route path="cms/sit-presets" element={guarded("music.view", <SitPresetsPage />)} />
                 <Route path="cms/events" element={guarded("cms.view", <EventsPage />)} />
                 <Route path="cms/testimonials" element={guarded("testimonials.view", <TestimonialsPage />)} />
-                <Route path="content" element={guarded("cms.view", <SiteContentIndexPage />)} />
-                <Route path="content/:page" element={guarded("cms.view", <SiteContentEditorPage />)} />
+                {/* Old "Site content" URLs → the page copy editor now lives inside CMS → Pages. */}
+                <Route path="content" element={<Navigate to="/admin/cms/pages" replace />} />
+                <Route path="content/:page" element={<LegacyCopyRedirect />} />
 
                 <Route path="queries" element={guarded("members.view", <QueryInboxPage />)} />
                 <Route path="members" element={guarded("members.view", <MembersListPage />)} />
@@ -120,4 +122,10 @@ export default function AdminApp() {
       </AdminDataProvider>
     </AdminThemeProvider>
   );
+}
+
+/** /admin/content/{page} (old "Site content" links, e.g. bookmarks) → CMS → Pages → {page} → Page copy. */
+function LegacyCopyRedirect() {
+  const { page } = useParams();
+  return <Navigate to={`/admin/cms/pages/${SLUG_BY_COPY_PAGE[page] ?? page}/copy`} replace />;
 }

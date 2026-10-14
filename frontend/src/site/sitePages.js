@@ -16,7 +16,7 @@ export const UTILITY_LINKS = [
   { label: "Donate", to: "/donate" },
 ];
 
-/** Pages whose copy is editable at /admin/content/{page}. */
+/** Pages whose copy is editable in Admin → CMS → Pages → {page} → Page copy. */
 export const EDITABLE_PAGES = ["home", "about", "mission", "meditation", "wisdom", "wellness", "events"];
 
 export const OFFICIAL_EMAIL = "goldenageguruteachings@gmail.com";

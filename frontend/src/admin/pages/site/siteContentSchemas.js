@@ -790,3 +790,7 @@ export function schemaKeys(schema) {
   }
   return keys;
 }
+
+/** CMS page slug ↔ copy-editor page (the built-in "meditate" CMS page is the /meditation site page). */
+export const COPY_PAGE_BY_SLUG = { home: "home", about: "about", mission: "mission", meditate: "meditation", wisdom: "wisdom", wellness: "wellness", events: "events" };
+export const SLUG_BY_COPY_PAGE = Object.fromEntries(Object.entries(COPY_PAGE_BY_SLUG).map(([slug, page]) => [page, slug]));

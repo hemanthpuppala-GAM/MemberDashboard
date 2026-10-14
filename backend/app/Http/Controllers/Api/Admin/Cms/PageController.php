@@ -11,6 +11,8 @@ class PageController extends Controller
 {
     public function index()
     {
+        Page::ensureSitePages();
+
         return response()->json(
             Page::withCount('sections')->orderBy('sort_order')->orderBy('title')->get(),
         );

@@ -423,7 +423,7 @@ export function AdminEditLink({ page }) {
   return (
     <div style={{ position: "fixed", right: 18, bottom: 96, zIndex: 50, display: "inline-flex", alignItems: "center", borderRadius: 999, background: "#14241C", boxShadow: "0 12px 30px -12px rgba(0,0,0,.5)" }}>
       <Link
-        to={`/admin/content/${page}`}
+        to={`/admin/content/${page}`} /* redirects to CMS → Pages → {page} → Page copy */
         style={{ display: "inline-flex", alignItems: "center", gap: 8, height: 44, padding: "0 6px 0 16px", color: "#E8CF83", fontSize: 11, fontWeight: 700, letterSpacing: ".14em", textTransform: "uppercase" }}
       >
         ✎ Edit this page
