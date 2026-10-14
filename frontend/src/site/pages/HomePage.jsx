@@ -9,7 +9,7 @@ import FilmOverlay from "../home/FilmOverlay";
 import ChaptersSheet from "../home/ChaptersSheet";
 import BodhiNavigator from "../home/BodhiNavigator";
 import { WorldSitsFooter } from "../home/WorldSits";
-import { CHAPTER_HASHES, QUESTIONS, chapterData } from "../home/homeData";
+import { CHAPTER_HASHES, QUESTIONS, chapterData, listOr } from "../home/homeData";
 import { useSits } from "../home/sits";
 import { eventRow, useEventSessions, useHomeSessions } from "../liveSessions";
 import { useHomeVoices } from "../siteQuotes";
@@ -125,8 +125,9 @@ export default function HomePage() {
   const sits = useSits(useHomeSessions(c.sessions));
   const voices = useHomeVoices(VOICES);
 
-  const question = QUESTIONS[qi % QUESTIONS.length];
-  const chapters = chapterData(question);
+  const questions = listOr(c.questions, QUESTIONS);
+  const question = questions[qi % questions.length];
+  const chapters = chapterData(question, c.chapters);
 
   const openChapter = useCallback((i) => {
     setCh(i);
@@ -421,7 +422,7 @@ export default function HomePage() {
       </div>
 
       {film && <FilmOverlay src={filmSrc} onClose={() => setFilm(false)} />}
-      {chOpen && <ChaptersSheet ch={ch} w={w} joinTo={joinTo} question={question} onNextQuestion={() => setQi((q) => q + 1)} onChapter={openChapter} onClose={closeChapters} />}
+      {chOpen && <ChaptersSheet ch={ch} w={w} joinTo={joinTo} question={question} c={c} chapters={chapters} onNextQuestion={() => setQi((q) => q + 1)} onChapter={openChapter} onClose={closeChapters} />}
 
       <AdminEditLink page="home" />
     </SitePage>

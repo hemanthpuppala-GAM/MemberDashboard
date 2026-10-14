@@ -1,5 +1,4 @@
 {
-  "tagline": "A spiritual movement",
   "headline": "Never meditated?",
   "headlineAccent": "Perfect. Start here.",
   "subline": "Free guided meditation, every day. No experience needed — just sit, breathe, and feel the difference in one session.",
@@ -8,12 +7,10 @@
   "volunteerNavLabel": "Join as volunteer",
   "volunteerHintTitle": "Give a little time",
   "volunteerHint": "Host a local sit, welcome newcomers on Zoom, translate talks, or help with events. A few hours a month, wherever you are.",
-  "phoneJoinLabel": "Daily sessions · by time zone",
   "watchLabel": "Watch the intro",
   "sitsTitle": "Sits around the world",
   "qrEyebrow": "Members",
   "qrSub": "Scan to join the group",
-  "volunteerLabel": "Volunteer",
   "filmSrc": "assets/peace-film.mp4",
   "zoom": {
     "id": "817 8362 7692",
@@ -66,77 +63,127 @@
   ],
   "joinShortLabel": "Join",
   "privacyLabel": "Privacy",
-  "chipKicker": "The 41-day practice",
-  "chipLine": "Sit every day for 41 days — and watch yourself change.",
-  "pillars": [
-    {
-      "key": "wisdom",
-      "kicker": "Wisdom",
-      "line": "You are the master of your destiny.",
-      "quote": "“One sky above, one earth below, one breath of life — through all we flow.”",
-      "cta": "Read the teachings",
-      "href": "#wisdom",
-      "image": ""
-    },
-    {
-      "key": "wellness",
-      "kicker": "Wellness",
-      "line": "Eat pure. Move daily. Rest deeply.",
-      "quote": "“The body is the first temple. Keep it clean, light and kind.”",
-      "cta": "Daily practices",
-      "href": "#wellness",
-      "image": ""
-    },
-    {
-      "key": "meditation",
-      "kicker": "Meditation",
-      "line": "Sit with Dr Hari Krishna.",
-      "quote": "Free daily meditation and wisdom sessions, guided by Dr Hari Krishna and his team.",
-      "cta": "Join today’s session",
-      "href": "#meditate",
-      "image": ""
-    }
-  ],
   "heroImage": "",
   "heroCaption": "Dr Hari Krishna, MD",
-  "promoKicker": "Free · worldwide · daily Zoom sessions",
-  "promoTitle": "Sit with us for 41 days and see the change.",
-  "promoBody": "Free guided Zoom sessions every day, at different times around the world. Come as you are — join any sit.",
-  "promoCta": "Join a sit",
   "eventKicker": "Upcoming",
   "eventTitle": "Gatherings & retreats",
   "eventSub": "City retreats, talks and group sits with Dr. Hari Krishna — see what is coming up.",
   "eventCta": "See all events",
   "eventHref": "#events",
-  "tipSunGazing": "A few minutes facing the rising sun, eyes soft, fills the body with light-energy and resets the sleep rhythm.",
-  "tipAlkaline": "Clean, mineral-rich water keeps the blood gently alkaline — easing fatigue, acidity and foggy thinking.",
-  "tipEarthing": "Bare feet on grass or soil for twenty minutes discharges stress and grounds a scattered mind.",
-  "rulesKicker": "Five golden rules · for a healthy life and oneness",
-  "rule1": "Sit in silence every day.",
-  "rule2": "Eat prana — fresh, vegetarian food.",
-  "rule3": "Greet the rising sun.",
-  "rule4": "Drink clean, alkaline water.",
-  "rule5": "Walk barefoot on the earth.",
-  "freeKicker": "Always free",
-  "freeLine": "We ask for nothing — only a better world.",
-  "subPages": [
+  "testiKicker": "What members say",
+  "testiCta": "More stories",
+  "chapters": [
     {
-      "label": "About",
-      "href": "#about"
+      "label": "Rituals",
+      "kicker": "Small rituals",
+      "title": "Feeling better begins with being present.",
+      "cta": "Open Rituals"
     },
     {
-      "label": "Mission",
-      "href": "#mission"
+      "label": "Daily pause",
+      "kicker": "Your daily pause",
+      "title": "30 minutes. Every day. Just for you.",
+      "cta": "Open Daily pause"
     },
     {
-      "label": "Teachings",
-      "href": "#wisdom"
+      "label": "Nourish",
+      "kicker": "Nourish your body",
+      "title": "Eat well. Slow down. Savor life.",
+      "cta": "Open Nourish"
     },
     {
-      "label": "Events",
-      "href": "#events"
+      "label": "One minute",
+      "kicker": "A moment, right here",
+      "title": "Your next breath is a new beginning.",
+      "cta": "Start a one-minute pause"
+    },
+    {
+      "label": "Reflect",
+      "kicker": "Meet yourself with curiosity",
+      "title": "",
+      "cta": "Take a moment to reflect"
+    },
+    {
+      "label": "New here?",
+      "kicker": "A few things to know",
+      "title": "New here? You’re welcome.",
+      "cta": "Open New here?"
     }
   ],
-  "testiKicker": "What members say",
-  "testiCta": "More stories"
+  "questions": [
+    "What makes you feel most like yourself?",
+    "What are you ready to let go of?",
+    "When did you last feel truly rested?",
+    "Who would you be without the hurry?",
+    "What restores you — and how often do you allow it?"
+  ],
+  "faqs": [
+    {
+      "q": "Do I need meditation experience?",
+      "a": "No. Every sit is guided from the first breath. Beginners and long-time practitioners sit together."
+    },
+    {
+      "q": "Is the daily program really free?",
+      "a": "Yes — always. There is no fee, no upsell and no membership wall. We ask for nothing but a better world."
+    },
+    {
+      "q": "What if my mind keeps wandering?",
+      "a": "That is the practice. Noticing the wander and gently returning is the whole exercise — not a failure of it."
+    },
+    {
+      "q": "Do I have to attend every day?",
+      "a": "Come when you can. Daily is the invitation, not a rule; 41 consecutive days is simply where most people notice the change."
+    }
+  ],
+  "rituals": [
+    {
+      "kicker": "Mind",
+      "title": "Make room for stillness",
+      "body": "Give your thoughts a little space. Meditation is a practice of returning to the moment, one breath at a time.",
+      "cta": "Try a moment of calm"
+    },
+    {
+      "kicker": "Body",
+      "title": "Nourish with intention",
+      "body": "Enjoy food that brings colour to your plate and care to your day. Slow down and savour what’s in front of you.",
+      "cta": "Discover mindful eating"
+    },
+    {
+      "kicker": "Self",
+      "title": "Get to know you",
+      "body": "Notice what matters to you, what restores you, and what you’re ready to let go of. Curiosity is a lovely place to start.",
+      "cta": "Take a moment to reflect"
+    }
+  ],
+  "pauseSteps": [
+    {
+      "min": "05",
+      "title": "Arrive & settle",
+      "body": "Find a comfortable seat and ease into the moment."
+    },
+    {
+      "min": "20",
+      "title": "Guided meditation",
+      "body": "Practice attention, awareness and gentle breathing."
+    },
+    {
+      "min": "05",
+      "title": "Reflect & reconnect",
+      "body": "Carry one quiet intention into the rest of your day."
+    }
+  ],
+  "eatingTips": [
+    {
+      "lead": "Bring colour to your plate.",
+      "text": "Explore fresh vegetables, whole grains and foods you enjoy."
+    },
+    {
+      "lead": "Give your meal your attention.",
+      "text": "Put your phone aside and notice taste, texture and aroma."
+    },
+    {
+      "lead": "Listen with kindness.",
+      "text": "Notice your hunger and fullness without rules or judgment."
+    }
+  ]
 }
