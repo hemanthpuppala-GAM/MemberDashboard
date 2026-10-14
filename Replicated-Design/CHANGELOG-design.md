@@ -2,6 +2,9 @@
 
 Format: date · item · status (🟡 designed / ✅ implemented @sha / ⬅ code change to mirror in Design / ↩ mirrored in Design)
 
+## 2026-10-14 — Content is backend-owned (team request: change content without code)
+- ⬅ code change (no visual change): page copy for Home/About/Mission/Meditation/Wisdom/Wellness/Events now lives in the backend (`backend/resources/site-content/*.json` + Admin edits in the database); the public API always returns the full page. The website's bundled JSON is only an offline fallback. `php artisan site-content:sync` stores every page's full copy in the database. Next: CMS Pages in the new design, CMS sections under existing pages, one admin menu.
+
 ## 2026-10-13 — Home on phones (user feedback: "not on par with desktop")
 - ⬅ code change: Home Bodhi Tree v2 stacked layout (phones + iPad portrait). Guruji gets a full-width portrait right under the hero (phone 4:5, tablet 16:10, radius 26) with "DR HARI KRISHNA, MD" + "Sit with him live — free, every day." on a dark gradient; the quarter-size photo tile is dropped from the card grid there. Phone: hero padding 22/20px, H1 clamp(32px,9vw,40px), subline 15–16.5px (was 11.5–14px), "Next group meditation" pill full-width and wrapping (no overflow), cards single column with 20px padding, 24px titles, 14.5px body, 14px gaps, 20px side gutters. Tablet: the three cards sit in one row. Desktop unchanged.
 - ⬅ code change (owner review): stacked layouts drop the "Free meditation · every day" kicker; the portrait shows the name once ("Dr Hari Krishna, MD", serif 24/28px, no second line); the Bodhi tree shows the full tip of its top leaf (the box no longer crops it; the PNG's baked-in menu line and tagline stay hidden). Desktop unchanged.

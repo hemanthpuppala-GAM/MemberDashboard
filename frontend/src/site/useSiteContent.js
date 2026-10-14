@@ -8,7 +8,12 @@ import wisdom from "./content/wisdom.json";
 import wellness from "./content/wellness.json";
 import events from "./content/events.json";
 
-/** Default copy per page, straight from the design handoff (design/content/*.json). */
+/**
+ * Offline fallback copy per page. The backend owns the content (backend/resources/site-content
+ * + Admin edits) and GET /site-content/{page} always returns the full page; these bundled files
+ * only cover first paint and a backend outage. Keep them identical to the backend copies —
+ * backend SiteContentTest fails if they drift.
+ */
 export const SITE_DEFAULTS = { home, about, mission, meditation, wisdom, wellness, events };
 
 export function fetchPublishedContent(page) {
@@ -16,9 +21,8 @@ export function fetchPublishedContent(page) {
 }
 
 /**
- * Page copy = bundled defaults (+ optional page-level fallbacks) overlaid with
- * whatever an admin published (GET /site-content/{page}). Renders the defaults
- * immediately; the published record swaps in when it arrives.
+ * Page copy = the backend's full page (GET /site-content/{page}: defaults + admin edits),
+ * over the bundled fallback while it loads.
  */
 export function useSiteContent(page, fallbacks = {}) {
   const [published, setPublished] = useState(null);

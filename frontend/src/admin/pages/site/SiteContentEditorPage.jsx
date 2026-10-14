@@ -92,7 +92,9 @@ function Editor({ page, schema }) {
       .then((res) => {
         if (!alive) return;
         const data = res?.data && typeof res.data === "object" ? res.data : null;
-        adopt({ ...defaults, ...(data || {}) }, { isPublished: !!data, metaPatch: { updated_at: res?.updated_at ?? null, editor: res?.editor ?? null } });
+        // The backend owns the defaults (resources/site-content); the bundled copy is only a fallback.
+        const base = res?.defaults && Object.keys(res.defaults).length ? res.defaults : defaults;
+        adopt({ ...base, ...(data || {}) }, { isPublished: !!data, metaPatch: { updated_at: res?.updated_at ?? null, editor: res?.editor ?? null } });
       })
       .catch((err) => {
         if (!alive) return;
@@ -179,9 +181,9 @@ function Editor({ page, schema }) {
   const reset = async () => {
     setSaving(true);
     try {
-      await api.resetSiteContent(page);
-      adopt(defaults, { isPublished: false, metaPatch: { updated_at: null, editor: null } });
-      toast.success(`${schema.label} page reset to file defaults`);
+      const res = await api.resetSiteContent(page);
+      adopt(res?.defaults && Object.keys(res.defaults).length ? res.defaults : defaults, { isPublished: false, metaPatch: { updated_at: null, editor: null } });
+      toast.success(`${schema.label} page reset to the default copy`);
     } catch (err) {
       toast.error(err.message ?? "Reset failed");
     } finally {
@@ -195,7 +197,7 @@ function Editor({ page, schema }) {
       ? { tone: "warning", text: "Unsaved changes" }
       : published
         ? { tone: "success", text: "Published overrides active" }
-        : { tone: "neutral", text: "Showing file defaults" };
+        : { tone: "neutral", text: "Showing the default copy" };
 
   const ctx = { canUpload: canUpload && canEdit, uploading, upload, openPicker: (onSelect) => setPicker({ onSelect }) };
   const extrasCount = Object.keys(splitExtras(doc, keys)).length;
@@ -230,7 +232,7 @@ function Editor({ page, schema }) {
               variant="secondary"
               onClick={() => setConfirmReset(true)}
               disabled={!canEdit || !published || saving || loading}
-              title={canEdit ? (published ? "Delete the published overrides and go back to the file defaults" : "Already showing the file defaults") : "You don't have permission to edit site content"}
+              title={canEdit ? (published ? "Delete the published overrides and go back to the default copy" : "Already showing the default copy") : "You don't have permission to edit site content"}
             >
               Reset to file
             </Button>
@@ -308,8 +310,8 @@ function Editor({ page, schema }) {
         open={confirmReset}
         onClose={() => setConfirmReset(false)}
         onConfirm={reset}
-        title={`Reset the ${schema.label} page to the file defaults?`}
-        description="This deletes the published overrides; the public page goes back to the copy bundled with the site."
+        title={`Reset the ${schema.label} page to the default copy?`}
+        description="This deletes the published overrides; the public page goes back to the default copy stored on the server."
         confirmLabel="Reset to file"
       />
     </div>
