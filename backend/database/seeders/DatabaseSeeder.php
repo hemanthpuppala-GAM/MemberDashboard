@@ -19,8 +19,6 @@ class DatabaseSeeder extends Seeder
             LanguagesSeeder::class,
             UiStringsSeeder::class,
             AdminUserSeeder::class,
-            PageContentSeeder::class,
-            BuiltInPagesSeeder::class,
             SettingSeeder::class,
             EventSeeder::class,
             TestimonialSeeder::class,

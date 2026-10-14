@@ -68,7 +68,7 @@ function SortableRow({ section, pageSlug, onDelete, onToggleStatus, canEdit, can
           <span className="truncate text-[13.5px] font-medium text-[var(--a-text-primary)]">{heading}</span>
           {isHidden && <StatusBadge status="hidden" />}
           {oldSiteOnly && (
-            <span title="Made for the previous website — the new site doesn't show it. Add a new section instead, or delete this one." className="shrink-0 rounded bg-[var(--a-bg-surface-2)] px-1.5 py-0.5 text-[10.5px] font-semibold text-[var(--a-text-muted)] uppercase">
+            <span title="Made for the previous website — the new site doesn't show it. Delete it here, or remove them all at once with: php artisan cms:delete-old-site --force" className="shrink-0 rounded bg-[var(--a-bg-surface-2)] px-1.5 py-0.5 text-[10.5px] font-semibold text-[var(--a-text-muted)] uppercase">
               Old site only
             </span>
           )}

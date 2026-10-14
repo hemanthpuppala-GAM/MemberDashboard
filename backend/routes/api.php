@@ -8,7 +8,6 @@ use App\Http\Controllers\Api\Admin\Content\ContactChannelController as AdminCont
 use App\Http\Controllers\Api\Admin\Content\VolunteerCategoryController as AdminVolunteerCategoryController;
 use App\Http\Controllers\Api\Admin\People\ContactSubmissionController;
 use App\Http\Controllers\Api\Admin\People\VolunteerApplicationController as AdminVolunteerApplicationController;
-use App\Http\Controllers\Api\Admin\Cms\ContentController as AdminContentController;
 use App\Http\Controllers\Api\Admin\DashboardController;
 use App\Http\Controllers\Api\Admin\DashboardLayoutController;
 use App\Http\Controllers\Api\Admin\Content\DonationMethodController as AdminDonationMethodController;
@@ -45,7 +44,6 @@ use App\Http\Controllers\Api\Public\Content\ContactChannelController;
 use App\Http\Controllers\Api\Public\Content\VolunteerCategoryController;
 use App\Http\Controllers\Api\Public\People\ContactController;
 use App\Http\Controllers\Api\Public\People\VolunteerApplicationController;
-use App\Http\Controllers\Api\Public\Cms\ContentController;
 use App\Http\Controllers\Api\Public\Content\DonationMethodController;
 use App\Http\Controllers\Api\Public\Cms\EventController;
 use App\Http\Controllers\Api\Public\Languages\LanguageController;
@@ -72,8 +70,6 @@ Route::prefix('v1')->group(function () {
     // Legacy flat content blocks (page_contents) — kept working alongside the
     // newer pages/sections system below; see ADMIN_PANEL_PLAN.md §16 and
     // BACKEND_DB_API_PLAN.md for why both exist for now.
-    Route::get('/content', [ContentController::class, 'index']);
-    Route::get('/content/{slug}', [ContentController::class, 'show']);
 
     // Public site pages (home, about, …): published JSON copy, defaults ship with the frontend.
     Route::get('/site-content/{page}', [SiteContentController::class, 'show']);
@@ -167,8 +163,6 @@ Route::prefix('v1')->group(function () {
         Route::get('/permissions', [PermissionController::class, 'index']);
 
         // ---- Legacy flat content blocks ----
-        Route::middleware('permission:cms.view')->get('/content', [AdminContentController::class, 'index']);
-        Route::middleware('permission:cms.edit')->put('/content/{slug}', [AdminContentController::class, 'update']);
 
         // ---- Support team (who can sign in to the support desk) ----
         Route::middleware('permission:members.view')->get('/support-agents', [SupportAgentController::class, 'index']);

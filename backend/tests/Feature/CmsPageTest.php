@@ -78,4 +78,22 @@ class CmsPageTest extends TestCase
         }
         $this->assertSame('About us', Page::where('slug', 'about')->value('title')); // existing pages untouched
     }
+
+    public function test_delete_old_site_command_is_a_dry_run_unless_forced(): void
+    {
+        $about = Page::create(['slug' => 'about', 'title' => 'About', 'status' => 'published', 'is_builtin' => true]);
+        $retreats = Page::create(['slug' => 'retreats', 'title' => 'Retreats', 'status' => 'published', 'is_builtin' => false]);
+        $old = PageSection::create(['page_id' => $about->id, 'type' => 'content_block', 'sort_order' => 1, 'status' => 'active']);
+        $old->forceFill(['created_at' => '2026-01-01 00:00:00'])->save();
+        $new = PageSection::create(['page_id' => $about->id, 'type' => 'card_grid', 'sort_order' => 2, 'status' => 'active']);
+        $custom = PageSection::create(['page_id' => $retreats->id, 'type' => 'hero', 'sort_order' => 1, 'status' => 'active']);
+        $custom->forceFill(['created_at' => '2026-01-01 00:00:00'])->save();
+
+        $this->artisan('cms:delete-old-site')->assertSuccessful();
+        $this->assertSame(3, PageSection::count());
+
+        $this->artisan('cms:delete-old-site', ['--force' => true])->assertSuccessful();
+        $this->assertEqualsCanonicalizing([$new->id, $custom->id], PageSection::pluck('id')->all());
+        $this->assertFalse(\Illuminate\Support\Facades\Schema::hasTable('page_contents'));
+    }
 }

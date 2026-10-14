@@ -2,7 +2,6 @@ import {
   Files,
   Image,
   CalendarDays,
-  LayoutGrid,
   Inbox,
   MessageSquareText,
   UsersRound,
@@ -34,7 +33,6 @@ export const DASHBOARD_WIDGETS = [
   { id: "pages_total", label: "Website pages", icon: Files, permission: "cms.view", to: "/admin/cms/pages" },
   { id: "media_total", label: "Media items", icon: Image, permission: "cms.view", to: "/admin/cms/media" },
   { id: "events_upcoming", label: "Upcoming events", icon: CalendarDays, permission: "cms.view", to: "/admin/cms/events" },
-  { id: "content_blocks", label: "Legacy content blocks", icon: LayoutGrid, permission: "cms.view" },
   { id: "queries_new", label: "New queries", icon: Inbox, permission: "members.view", to: "/admin/queries" },
   { id: "queries_total", label: "Total queries", icon: MessageSquareText, permission: "members.view", to: "/admin/queries" },
   // Support desk (/support): every query plus calls, WhatsApp chats and volunteer sign-ups.

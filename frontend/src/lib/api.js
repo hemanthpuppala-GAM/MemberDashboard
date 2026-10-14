@@ -101,8 +101,6 @@ export const api = {
   updateRole: (id, payload) => apiFetch(`/admin/roles/${id}`, { method: "PUT", body: payload }),
   deleteRole: (id) => apiFetch(`/admin/roles/${id}`, { method: "DELETE" }),
 
-  content: () => apiFetch("/admin/content"),
-  updateContent: (slug, payload) => apiFetch(`/admin/content/${slug}`, { method: "PUT", body: payload }),
 
   pages: () => apiFetch("/admin/pages"),
   page: (slug) => apiFetch(`/admin/pages/${slug}`),
@@ -280,8 +278,6 @@ export const practitionerApi = {
 };
 
 export const publicApi = {
-  content: () => apiFetch("/content", { auth: false }),
-  contentBySlug: (slug) => apiFetch(`/content/${slug}`, { auth: false }),
   pages: () => apiFetch("/pages", { auth: false }),
   page: (slug, lang) => apiFetch(`/pages/${slug}${lang ? `?lang=${encodeURIComponent(lang)}` : ""}`, { auth: false }),
   /** Sections the team added under a hand-built page (built-in pages: only ones made for the new site). */

@@ -10,7 +10,8 @@ import { usePage } from "../../hooks/usePage";
  */
 export default function CmsPage() {
   const { slug } = useParams();
-  const { page, loading } = usePage(slug);
+  const { page: raw, loading } = usePage(slug);
+  const page = raw?.slug ? raw : null; // anything that isn't a published page renders "not found"
   const sections = page?.sections || [];
   const title = page?.title || "";
   const firstIsHero = sections[0]?.type === "hero";
