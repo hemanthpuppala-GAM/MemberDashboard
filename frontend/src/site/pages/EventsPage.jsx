@@ -8,6 +8,7 @@ import { useEventSessions, eventRow, visitorZone } from "../liveSessions";
 import { useViewportWidth } from "../useViewport";
 import { YOUTUBE_LIVE_URL } from "../sitePages";
 import "./events.css";
+import CmsExtraSections from "../cms/CmsExtraSections";
 
 const PAD = "clamp(20px,5vw,72px)";
 const rise = (delay = 0) => ({ animation: `gaw-rise .9s ${delay}s both` });
@@ -294,6 +295,7 @@ export default function EventsPage() {
         </div>
       </section>
 
+      <CmsExtraSections slug="events" />
       <SiteFooter title={c.footerTitle} sub={c.footerSub}>
         <a href={YOUTUBE_LIVE_URL} target="_blank" rel="noopener noreferrer" className="gaw-pill-ghost-light" style={{ ...PILL, gap: 10, padding: "0 20px", fontWeight: 600 }}>
           Watch live

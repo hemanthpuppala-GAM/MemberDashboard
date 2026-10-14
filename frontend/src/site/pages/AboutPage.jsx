@@ -3,6 +3,7 @@ import { useSiteContent } from "../useSiteContent";
 import { usePageQuotes } from "../siteQuotes";
 import { useViewportWidth } from "../useViewport";
 import { siteAsset } from "../siteAssets";
+import CmsExtraSections from "../cms/CmsExtraSections";
 
 const PAD = "clamp(20px,5vw,72px)";
 const KICKER = { display: "inline-flex", alignItems: "center", gap: 10, fontSize: 11, fontWeight: 700, letterSpacing: ".3em", textTransform: "uppercase", color: "#7A5E22" };
@@ -96,6 +97,7 @@ export default function AboutPage() {
         </div>
       </section>
 
+      <CmsExtraSections slug="about" />
       <SiteFooter title={c.footerTitle} sub={c.footerSub} />
       <AdminEditLink page="about" />
     </SitePage>

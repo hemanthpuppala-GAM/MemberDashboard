@@ -7,6 +7,7 @@ import { usePageQuotes } from "../siteQuotes";
 import { useViewportWidth } from "../useViewport";
 import { siteAsset } from "../siteAssets";
 import "./wellness.css";
+import CmsExtraSections from "../cms/CmsExtraSections";
 
 const PAD = "clamp(20px,5vw,72px)";
 const SERIF = "'Cormorant Garamond',serif";
@@ -273,6 +274,7 @@ export default function WellnessPage() {
         </div>
       </section>
 
+      <CmsExtraSections slug="wellness" />
       <SiteFooter title={c.footerTitle} sub={c.footerSub} />
       <AdminEditLink page="wellness" />
     </SitePage>

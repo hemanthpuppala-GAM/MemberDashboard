@@ -14,6 +14,7 @@ import { useSits } from "../home/sits";
 import { eventRow, useEventSessions, useHomeSessions } from "../liveSessions";
 import { useHomeVoices } from "../siteQuotes";
 import "../home/home.css";
+import CmsExtraSections from "../cms/CmsExtraSections";
 
 /** Design DEFAULTS keys that content/home.json doesn't carry. */
 const FALLBACKS = {
@@ -413,6 +414,11 @@ export default function HomePage() {
           <WorldSitsFooter c={c} s={sits} compact={!desk} />
         </div>
       </main>
+
+      {/* Sections the team adds to the Home page in Admin → CMS → Pages appear below the one-screen hero. */}
+      <div style={{ background: "#F3EAD3" }}>
+        <CmsExtraSections slug="home" />
+      </div>
 
       {film && <FilmOverlay src={filmSrc} onClose={() => setFilm(false)} />}
       {chOpen && <ChaptersSheet ch={ch} w={w} joinTo={joinTo} question={question} onNextQuestion={() => setQi((q) => q + 1)} onChapter={openChapter} onClose={closeChapters} />}

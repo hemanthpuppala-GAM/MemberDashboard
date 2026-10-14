@@ -284,6 +284,8 @@ export const publicApi = {
   contentBySlug: (slug) => apiFetch(`/content/${slug}`, { auth: false }),
   pages: () => apiFetch("/pages", { auth: false }),
   page: (slug, lang) => apiFetch(`/pages/${slug}${lang ? `?lang=${encodeURIComponent(lang)}` : ""}`, { auth: false }),
+  /** Sections the team added under a hand-built page (built-in pages: only ones made for the new site). */
+  siteSections: (slug, lang) => apiFetch(`/pages/${slug}?${new URLSearchParams({ placement: "site", ...(lang ? { lang } : {}) })}`, { auth: false }),
   languages: () => apiFetch("/languages/enabled", { auth: false }),
   uiStrings: (lang) => apiFetch(`/ui-strings${lang ? `?lang=${encodeURIComponent(lang)}` : ""}`, { auth: false }),
   events: () => apiFetch("/events", { auth: false }),

@@ -52,4 +52,17 @@ class CmsPageTest extends TestCase
             ->assertJsonPath('sections.0.fields.heading', 'Silent retreat');
         $this->getJson('/api/v1/pages/draft-page')->assertNotFound();
     }
+
+    public function test_built_in_pages_show_only_new_sections_on_the_new_site(): void
+    {
+        $en = Language::create(['name' => 'English', 'native_name' => 'English', 'code' => 'en', 'direction' => 'ltr', 'is_enabled' => true, 'is_default' => true]);
+        $about = Page::create(['slug' => 'about', 'title' => 'About', 'status' => 'published', 'is_builtin' => true]);
+        $legacy = PageSection::create(['page_id' => $about->id, 'type' => 'content_block', 'sort_order' => 1, 'status' => 'active']);
+        $legacy->forceFill(['created_at' => '2026-01-01 00:00:00'])->save();
+        PageSection::create(['page_id' => $about->id, 'type' => 'card_grid', 'sort_order' => 2, 'status' => 'active']);
+
+        $this->getJson('/api/v1/pages/about')->assertOk()->assertJsonCount(2, 'sections');
+        $this->getJson('/api/v1/pages/about?placement=site')->assertOk()
+            ->assertJsonCount(1, 'sections')->assertJsonPath('sections.0.type', 'card_grid');
+    }
 }

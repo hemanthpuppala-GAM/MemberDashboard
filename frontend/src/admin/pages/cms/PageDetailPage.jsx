@@ -40,13 +40,15 @@ function publicSectionUrl(pageSlug, sectionId) {
   return `${publicPageUrl(pageSlug)}#cms-section-${sectionId}`;
 }
 
-function SortableRow({ section, pageSlug, onDelete, onToggleStatus, canEdit, canDelete }) {
+function SortableRow({ section, pageSlug, onDelete, onToggleStatus, canEdit, canDelete, siteSince }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: section.id, disabled: !canEdit });
   const style = { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.6 : 1 };
   const meta = SECTION_TYPES.find((t) => t.type === section.type);
   const heading = section.contentByLang?.en?.heading || section.contentByLang?.en?.eyebrow || meta?.label;
   const viewUrl = publicSectionUrl(pageSlug, section.id);
   const isHidden = section.status === "hidden";
+  // Built-in pages: sections made for the previous site don't show on the new one (see Page::SITE_SECTIONS_SINCE).
+  const oldSiteOnly = !!siteSince && !!section.created_at && new Date(section.created_at) < new Date(`${siteSince.replace(" ", "T")}Z`);
 
   return (
     <div ref={setNodeRef} style={style} className={`flex items-center gap-3 border-b border-[var(--a-border)] py-3.5 last:border-0 ${isHidden ? "opacity-60" : ""}`}>
@@ -64,6 +66,11 @@ function SortableRow({ section, pageSlug, onDelete, onToggleStatus, canEdit, can
           <span className="rounded bg-[var(--a-accent-muted)] px-1.5 py-0.5 text-[10.5px] font-semibold text-[var(--a-accent)] uppercase">{meta?.label}</span>
           <span className="truncate text-[13.5px] font-medium text-[var(--a-text-primary)]">{heading}</span>
           {isHidden && <StatusBadge status="hidden" />}
+          {oldSiteOnly && (
+            <span title="Made for the previous website — the new site doesn't show it. Add a new section instead, or delete this one." className="shrink-0 rounded bg-[var(--a-bg-surface-2)] px-1.5 py-0.5 text-[10.5px] font-semibold text-[var(--a-text-muted)] uppercase">
+              Old site only
+            </span>
+          )}
         </div>
       </div>
       <IconButton
@@ -79,7 +86,7 @@ function SortableRow({ section, pageSlug, onDelete, onToggleStatus, canEdit, can
         disabled={!canEdit}
         onClick={() => onToggleStatus(section)}
       />
-      {viewUrl && !isHidden && (
+      {viewUrl && !isHidden && !oldSiteOnly && (
         <a
           href={viewUrl}
           target="_blank"
@@ -285,7 +292,7 @@ export default function PageDetailPage() {
           <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
             <SortableContext items={page.sections.map((s) => s.id)} strategy={verticalListSortingStrategy}>
               {page.sections.map((section) => (
-                <SortableRow key={section.id} section={section} pageSlug={page.slug} onDelete={setToDelete} onToggleStatus={handleToggleStatus} canEdit={canEdit} canDelete={canDelete} />
+                <SortableRow key={section.id} section={section} pageSlug={page.slug} siteSince={page.site_sections_since} onDelete={setToDelete} onToggleStatus={handleToggleStatus} canEdit={canEdit} canDelete={canDelete} />
               ))}
             </SortableContext>
           </DndContext>

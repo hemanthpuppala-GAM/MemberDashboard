@@ -6,6 +6,7 @@ import { usePageQuotes } from "../siteQuotes";
 import { useViewportWidth } from "../useViewport";
 import { YOUTUBE_URL } from "../sitePages";
 import "./wisdom.css";
+import CmsExtraSections from "../cms/CmsExtraSections";
 
 const PAD = "clamp(20px,5vw,72px)";
 const rise = (delay = 0) => ({ animation: `gaw-rise .9s ${delay}s both` });
@@ -357,6 +358,7 @@ export default function WisdomPage() {
         </div>
       </section>
 
+      <CmsExtraSections slug="wisdom" />
       <SiteFooter title={c.footerTitle} sub={c.footerSub} />
       <AdminEditLink page="wisdom" />
     </SitePage>

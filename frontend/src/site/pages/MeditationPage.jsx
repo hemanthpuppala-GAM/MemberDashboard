@@ -6,6 +6,7 @@ import { useSiteContent } from "../useSiteContent";
 import { useViewportWidth } from "../useViewport";
 import { siteAsset } from "../siteAssets";
 import "./meditation.css";
+import CmsExtraSections from "../cms/CmsExtraSections";
 
 const PAD = "clamp(20px,5vw,72px)";
 const rise = (delay = 0) => ({ animation: `gaw-rise .9s ${delay}s both` });
@@ -358,6 +359,7 @@ export default function MeditationPage() {
         </div>
       </section>
 
+      <CmsExtraSections slug="meditate" />
       <SiteFooter title={c.footerTitle} sub={c.footerSub}>
         <a href={c.watchHref} target="_blank" rel="noopener noreferrer" className="gaw-pill-ghost-light" style={{ ...FOOTER_PILL, gap: 10, padding: "0 20px", fontWeight: 600 }}>
           Watch live

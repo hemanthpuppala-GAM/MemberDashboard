@@ -18,6 +18,13 @@ class Page extends Model
 
     public const STATUSES = ['draft', 'published'];
 
+    /**
+     * The new website shows CMS sections under its hand-built pages (About, Wisdom, …), but the
+     * built-in CMS pages still carry sections seeded for the previous site, which repeat old copy.
+     * On built-in pages the site therefore shows only sections added from this moment on.
+     */
+    public const SITE_SECTIONS_SINCE = '2026-10-14 00:00:00';
+
     protected function casts(): array
     {
         return [

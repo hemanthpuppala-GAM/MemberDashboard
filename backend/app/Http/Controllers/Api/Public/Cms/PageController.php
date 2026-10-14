@@ -33,6 +33,8 @@ class PageController extends Controller
 
         $sections = $page->sections()
             ->where('status', 'active')
+            // ?placement=site: the extra sections the new site draws under a hand-built page.
+            ->when($request->query('placement') === 'site' && $page->is_builtin, fn ($q) => $q->where('created_at', '>=', Page::SITE_SECTIONS_SINCE))
             ->with(['content' => fn ($q) => $q->whereIn('language_id', array_filter([$language->id, $fallback?->id]))])
             ->get()
             ->map(function ($section) use ($language, $fallback) {
