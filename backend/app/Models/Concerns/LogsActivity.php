@@ -28,10 +28,13 @@ trait LogsActivity
 
     protected function writeActivityLog(string $verb): void
     {
-        $userId = auth('sanctum')->id();
-        if (! $userId) {
+        // Only admin-panel users are logged; a member or support agent token has its own id
+        // space (a member updating their profile must not be logged as admin user #N).
+        $actor = auth('sanctum')->user();
+        if (! $actor instanceof \App\Models\Auth\User) {
             return;
         }
+        $userId = $actor->id;
 
         ActivityLog::create([
             'user_id' => $userId,

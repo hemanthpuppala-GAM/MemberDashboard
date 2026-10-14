@@ -29,6 +29,8 @@ use App\Http\Controllers\Api\Admin\Cms\SectionController;
 use App\Http\Controllers\Api\Admin\Settings\SettingController as AdminSettingController;
 use App\Http\Controllers\Api\Admin\Content\TestimonialController as AdminTestimonialController;
 use App\Http\Controllers\Api\Admin\Auth\UserController;
+use App\Http\Controllers\Api\Admin\People\DataSyncController;
+use App\Http\Controllers\Api\Admin\People\MembershipDriveController;
 use App\Http\Controllers\Api\Public\Auth\AuthController;
 use App\Http\Controllers\Api\Public\Auth\OAuthController;
 use App\Http\Controllers\Api\Public\Auth\MemberAuthController;
@@ -162,8 +164,6 @@ Route::prefix('v1')->group(function () {
         Route::put('/dashboard/layout', [DashboardLayoutController::class, 'update']);
         Route::get('/permissions', [PermissionController::class, 'index']);
 
-        // ---- Legacy flat content blocks ----
-
         // ---- Support team (who can sign in to the support desk) ----
         Route::middleware('permission:members.view')->get('/support-agents', [SupportAgentController::class, 'index']);
         Route::middleware('permission:members.edit')->group(function () {
@@ -291,6 +291,23 @@ Route::prefix('v1')->group(function () {
         Route::middleware('permission:roles.delete')->delete('/roles/{role}', [RoleController::class, 'destroy']);
 
         // ---- Members ----
+        // ---- Membership drives (bulk sign-up by phone) ----
+        Route::middleware('permission:members.view')->group(function () {
+            Route::get('/membership-drives', [MembershipDriveController::class, 'index']);
+            Route::get('/membership-drives/{drive}', [MembershipDriveController::class, 'show']);
+            Route::get('/membership-drives/{drive}/export', [MembershipDriveController::class, 'export']);
+        });
+        Route::middleware('permission:members.edit')->group(function () {
+            Route::post('/membership-drives', [MembershipDriveController::class, 'store']);
+            Route::put('/membership-drives/{drive}', [MembershipDriveController::class, 'update']);
+            Route::post('/membership-drives/{drive}/members', [MembershipDriveController::class, 'addMembers']);
+        });
+        Route::middleware('permission:members.delete')->delete('/membership-drives/{drive}', [MembershipDriveController::class, 'destroy']);
+
+        // ---- Supabase (live site) data sync ----
+        Route::middleware('permission:members.view')->get('/data-sync', [DataSyncController::class, 'show']);
+        Route::middleware('permission:members.edit')->post('/data-sync', [DataSyncController::class, 'run']);
+
         Route::middleware('permission:members.view')->group(function () {
             Route::get('/members/export', [MemberController::class, 'export']);
             Route::get('/members', [MemberController::class, 'index']);

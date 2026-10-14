@@ -43,7 +43,10 @@ class VolunteerApplicationTest extends TestCase
         $app = VolunteerApplication::sole();
         $this->assertSame('A few hours a week', $app->availability);
         $this->assertSame(VolunteerCategory::where('slug', 'helpline')->value('id'), $app->category_id);
-        $this->assertNull($app->member_id);
+        // Every volunteer is a member with a GAW number, like the live site.
+        $this->assertNotNull($app->member_id);
+        $this->assertSame($app->member->member_num, $app->member_num);
+        $this->assertMatchesRegularExpression('/^GAW-\d{6}$/', $app->member_code);
     }
 
     public function test_older_clients_sending_only_category_id_still_work(): void
@@ -77,10 +80,10 @@ class VolunteerApplicationTest extends TestCase
         $this->assertSame('kitchen-seva-2', $b->slug);
     }
 
-    public function test_member_id_is_derived_from_member_num(): void
+    public function test_member_code_is_derived_from_member_num(): void
     {
         $app = VolunteerApplication::create($this->payload(['member_num' => 100023, 'category_id' => null]));
 
-        $this->assertSame('GAW-100023', $app->fresh()->member_id);
+        $this->assertSame('GAW-100023', $app->fresh()->member_code);
     }
 }

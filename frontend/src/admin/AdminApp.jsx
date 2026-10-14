@@ -36,6 +36,9 @@ import MemberJourneyPage from "./pages/people/MemberJourneyPage";
 import UsersListPage from "./pages/people/UsersListPage";
 import RolesPage from "./pages/people/RolesPage";
 import SupportTeamPage from "./pages/people/SupportTeamPage";
+import MembershipDrivesPage from "./pages/people/MembershipDrivesPage";
+import MembershipDrivePage from "./pages/people/MembershipDrivePage";
+import DataSyncPage from "./pages/people/DataSyncPage";
 
 import AnnouncementsPage from "./pages/engage/AnnouncementsPage";
 import BroadcastsPage from "./pages/engage/BroadcastsPage";
@@ -92,6 +95,9 @@ export default function AdminApp() {
                 <Route path="users" element={guarded("users.view", <UsersListPage />)} />
                 <Route path="roles" element={guarded("roles.view", <RolesPage />)} />
                 <Route path="support-team" element={guarded("members.view", <SupportTeamPage />)} />
+                <Route path="membership-drives" element={guarded("members.view", <MembershipDrivesPage />)} />
+                <Route path="membership-drives/:id" element={guarded("members.view", <MembershipDrivePage />)} />
+                <Route path="data-sync" element={guarded("members.view", <DataSyncPage />)} />
 
                 <Route path="announcements" element={guarded("announcements.view", <AnnouncementsPage />)} />
                 <Route path="broadcasts" element={guarded("broadcast.view", <BroadcastsPage />)} />

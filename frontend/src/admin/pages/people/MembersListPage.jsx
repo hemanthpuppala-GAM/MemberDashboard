@@ -14,6 +14,8 @@ import { api, downloadAuthed } from "../../../lib/api";
 import { CATEGORIES, CATEGORY_LABELS } from "../../mock/mockData";
 import { usePermissions } from "../../usePermissions";
 
+const SOURCE_LABELS = { google: "Google sign-in", microsoft: "Microsoft sign-in", facebook: "Facebook sign-in", password: "Email sign-up", volunteer: "Volunteer form", drive: "Membership drive", admin: "Added by admin", query: "From a query", import: "Live site (Supabase)", demo: "Demo" };
+
 const EMPTY = { name: "", email: "", phone: "", category: "general", status: "new", assigned_practitioner_id: "" };
 
 export default function MembersListPage() {
@@ -69,11 +71,27 @@ export default function MembersListPage() {
 
   const columns = useMemo(
     () => [
-      { accessorKey: "name", header: "Name", cell: ({ getValue }) => <span className="font-semibold text-[var(--a-text-primary)]">{getValue()}</span> },
-      { accessorKey: "email", header: "Email" },
+      { accessorKey: "member_code", header: "Member ID", cell: ({ getValue }) => <span className="font-mono text-[12.5px] font-semibold whitespace-nowrap text-[var(--a-text-primary)]">{getValue() || "—"}</span> },
+      { accessorKey: "name", header: "Name", cell: ({ getValue }) => (getValue() ? <span className="font-semibold text-[var(--a-text-primary)]">{getValue()}</span> : <span className="text-[var(--a-text-faint)]">No name yet</span>) },
+      { accessorKey: "email", header: "Email", cell: ({ getValue }) => getValue() || "—" },
       { accessorKey: "phone", header: "Phone", cell: ({ getValue }) => getValue() || "—" },
       { id: "practitioner", header: "Practitioner", accessorFn: (m) => m.practitioner?.name ?? "Unassigned", cell: ({ getValue }) => getValue() },
-      { accessorKey: "category", header: "Category", cell: ({ getValue }) => CATEGORY_LABELS[getValue()] ?? getValue() },
+      {
+        id: "source", header: "Joined via",
+        cell: ({ row }) => {
+          const m = row.original;
+          return (
+            <div className="flex flex-col">
+              <span>{m.drive?.name ? `Drive · ${m.drive.name}` : SOURCE_LABELS[m.source] ?? "—"}</span>
+              {(m.volunteer_applications_count > 0 || m.tickets_count > 0) && (
+                <span className="text-[11.5px] text-[var(--a-text-faint)]">
+                  {[m.volunteer_applications_count > 0 && "Volunteer", m.tickets_count > 0 && `${m.tickets_count} ticket${m.tickets_count === 1 ? "" : "s"}`].filter(Boolean).join(" · ")}
+                </span>
+              )}
+            </div>
+          );
+        },
+      },
       { accessorKey: "join_date", header: "Joined", cell: ({ getValue }) => (getValue() ? new Date(getValue()).toLocaleDateString() : "—") },
       { accessorKey: "status", header: "Status", cell: ({ getValue }) => <StatusBadge status={getValue()} /> },
       {
@@ -89,11 +107,13 @@ export default function MembersListPage() {
   );
 
   const handleCreate = async () => {
-    if (!form.name || !form.email) return;
+    if (!form.name || (!form.email && !form.phone)) return;
     setSaving(true);
     try {
       await api.createMember({
         ...form,
+        email: form.email || null,
+        phone: form.phone || null,
         assigned_practitioner_id: form.assigned_practitioner_id ? Number(form.assigned_practitioner_id) : null,
       });
       toast.success(`${form.name} added`);
@@ -124,7 +144,7 @@ export default function MembersListPage() {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-[24px] font-bold text-[var(--a-text-primary)]">Members</h1>
-          <p className="mt-1 text-[13.5px] text-[var(--a-text-muted)]">People converted from queries and actively guided by a practitioner.</p>
+          <p className="mt-1 text-[13.5px] text-[var(--a-text-muted)]">Everyone with a member ID — from Google sign-in, the volunteer form, membership drives, queries and the live site.</p>
         </div>
         <div className="flex items-center gap-2">
           <Button as="button" variant="secondary" icon={Download} onClick={() => downloadAuthed("/admin/members/export", "members.csv").catch((err) => toast.error(err.message ?? "Export failed"))}>
@@ -139,7 +159,7 @@ export default function MembersListPage() {
           <DataTable
             columns={columns}
             data={members}
-            searchPlaceholder="Search members..."
+            searchPlaceholder="Search name, email, phone or GAW ID…"
             onRowClick={(m) => navigate(`/admin/members/${m.id}`)}
             emptyIcon={UsersRound}
             emptyTitle={loading ? "Loading members…" : "No members yet"}
@@ -158,11 +178,11 @@ export default function MembersListPage() {
         open={createOpen}
         onClose={() => setCreateOpen(false)}
         title="New member"
-        footer={<Button as="button" onClick={handleCreate} disabled={!form.name || !form.email || saving}>Add member</Button>}
+        footer={<Button as="button" onClick={handleCreate} disabled={!form.name || (!form.email && !form.phone) || saving}>Add member</Button>}
       >
         <div className="flex flex-col gap-4">
           <Field label="Name" required><TextInput value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} /></Field>
-          <Field label="Email" required><TextInput type="email" value={form.email} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))} /></Field>
+          <Field label="Email" hint="Email or phone — at least one"><TextInput type="email" value={form.email} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))} /></Field>
           <Field label="Phone"><TextInput value={form.phone} onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))} /></Field>
           <div className="grid grid-cols-2 gap-4">
             <Field label="Category">

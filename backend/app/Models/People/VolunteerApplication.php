@@ -8,8 +8,8 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[Appends(['member_id'])]
-#[Fillable(['name', 'email', 'phone', 'occupation', 'city', 'lang', 'category_id', 'teams', 'availability', 'member_num', 'notes', 'status'])]
+#[Appends(['member_code'])]
+#[Fillable(['name', 'email', 'phone', 'occupation', 'city', 'lang', 'category_id', 'teams', 'availability', 'member_num', 'member_id', 'notes', 'status'])]
 class VolunteerApplication extends Model
 {
     public const STATUSES = ['new', 'reviewing', 'contacted', 'approved', 'archived'];
@@ -26,9 +26,14 @@ class VolunteerApplication extends Model
     }
 
     /** "GAW-100023", or null when no member number is linked yet. */
-    public function getMemberIdAttribute(): ?string
+    public function getMemberCodeAttribute(): ?string
     {
         return $this->member_num ? 'GAW-'.$this->member_num : null;
+    }
+
+    public function member(): BelongsTo
+    {
+        return $this->belongsTo(Member::class);
     }
 
     public function category(): BelongsTo

@@ -3,6 +3,7 @@
 namespace App\Models\People;
 
 use App\Models\Concerns\LogsActivity;
+use Illuminate\Database\Eloquent\Attributes\Appends;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -13,9 +14,13 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
 use Laravel\Sanctum\HasApiTokens;
 use App\Models\Auth\User;
+use App\Models\Support\Ticket;
+use App\Services\People\MemberLinker;
+use App\Services\People\MemberNumbers;
 
-#[Fillable(['name', 'email', 'password', 'phone', 'category', 'summary', 'assigned_practitioner_id', 'source_submission_id', 'status', 'join_date', 'last_contact_date', 'referred_by_code', 'oauth_provider', 'oauth_provider_id', 'avatar_url'])]
+#[Fillable(['name', 'email', 'password', 'phone', 'category', 'summary', 'assigned_practitioner_id', 'source_submission_id', 'status', 'join_date', 'last_contact_date', 'referred_by_code', 'oauth_provider', 'oauth_provider_id', 'avatar_url', 'role_title', 'source', 'drive_id'])]
 #[Hidden(['password', 'remember_token'])]
+#[Appends(['member_code'])]
 class Member extends Authenticatable
 {
     use LogsActivity, SoftDeletes, Notifiable, HasApiTokens;
@@ -33,7 +38,30 @@ class Member extends Authenticatable
                 } while (static::where('referral_code', $code)->exists());
                 $member->referral_code = $code;
             }
+            if (MemberNumbers::ready() && ! $member->member_num) {
+                $member->member_num = MemberNumbers::numberFor($member);
+            }
         });
+
+        static::saving(function (Member $member) {
+            if (MemberNumbers::ready() && ($member->isDirty('phone') || ! $member->exists)) {
+                $member->phone_key = MemberNumbers::phoneKey($member->phone);
+            }
+        });
+
+        // Questions and volunteer sign-ups that arrived before the member existed (or under
+        // their phone number) attach to them as soon as the email or phone is known.
+        static::saved(function (Member $member) {
+            if (MemberNumbers::ready() && ($member->wasRecentlyCreated || $member->wasChanged(['email', 'phone_key']))) {
+                MemberLinker::adoptRecords($member);
+            }
+        });
+    }
+
+    /** "GAW-100023". */
+    public function getMemberCodeAttribute(): ?string
+    {
+        return MemberNumbers::format($this->member_num);
     }
 
     protected function casts(): array
@@ -42,6 +70,7 @@ class Member extends Authenticatable
             'join_date' => 'date',
             'last_contact_date' => 'date',
             'password' => 'hashed',
+            'member_num' => 'integer',
         ];
     }
 
@@ -70,11 +99,27 @@ class Member extends Authenticatable
         return $this->hasMany(MemberJournalEntry::class)->latest();
     }
 
+    public function volunteerApplications(): HasMany
+    {
+        return $this->hasMany(VolunteerApplication::class)->latest();
+    }
+
+    public function tickets(): HasMany
+    {
+        return $this->hasMany(Ticket::class)->latest();
+    }
+
+    public function drive(): BelongsTo
+    {
+        return $this->belongsTo(MembershipDrive::class, 'drive_id');
+    }
+
     /** Shape returned to the member portal by every /auth and /member endpoint. */
     public function toPortalArray(): array
     {
         return [
             'id' => $this->id,
+            'member_id' => $this->member_code,
             'name' => $this->name,
             'email' => $this->email,
             'phone' => $this->phone,

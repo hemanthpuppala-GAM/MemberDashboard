@@ -201,6 +201,14 @@ export const api = {
   assignMember: (id, practitionerId) =>
     apiFetch(`/admin/members/${id}/assign`, { method: "POST", body: { assigned_practitioner_id: practitionerId } }),
   memberJourney: (id) => apiFetch(`/admin/members/${id}/journey`),
+  membershipDrives: () => apiFetch("/admin/membership-drives"),
+  membershipDrive: (id) => apiFetch(`/admin/membership-drives/${id}`),
+  createMembershipDrive: (payload) => apiFetch("/admin/membership-drives", { method: "POST", body: payload }),
+  updateMembershipDrive: (id, payload) => apiFetch(`/admin/membership-drives/${id}`, { method: "PUT", body: payload }),
+  deleteMembershipDrive: (id) => apiFetch(`/admin/membership-drives/${id}`, { method: "DELETE" }),
+  addDriveMembers: (id, lines, preview) => apiFetch(`/admin/membership-drives/${id}/members`, { method: "POST", body: { lines, preview } }),
+  dataSync: () => apiFetch("/admin/data-sync"),
+  runDataSync: (preview, tables) => apiFetch("/admin/data-sync", { method: "POST", body: { preview, ...(tables ? { tables } : {}) } }),
   addMemberJourneyEntry: (id, payload) => apiFetch(`/admin/members/${id}/journey`, { method: "POST", body: payload }),
 
   queries: (params = {}) => apiFetch(`/admin/queries?${new URLSearchParams({ per_page: 20, ...params })}`),

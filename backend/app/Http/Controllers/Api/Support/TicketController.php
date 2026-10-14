@@ -23,7 +23,7 @@ class TicketController extends Controller
     public function index(Request $request)
     {
         $agent = $this->agent($request);
-        $q = Ticket::query()->with('assignee')->withCount('comments');
+        $q = Ticket::query()->with(['assignee', 'member:id,member_num'])->withCount('comments');
 
         match ($request->query('scope', 'open')) {
             'mine' => $q->where('assigned_agent_id', $agent->id)->whereIn('status', Ticket::OPEN_STATUSES),
@@ -53,6 +53,9 @@ class TicketController extends Controller
                     ->orWhere('requester_phone', 'like', $like);
                 if ($id > 0) {
                     $w->orWhere('id', $id);
+                }
+                if ($num = \App\Services\People\MemberNumbers::parse($term)) {
+                    $w->orWhereHas('member', fn ($m) => $m->where('member_num', $num)); // "GAW-100023"
                 }
             });
         }

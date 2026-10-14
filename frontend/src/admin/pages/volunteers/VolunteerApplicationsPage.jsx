@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import { HeartHandshake, Trash2 } from "lucide-react";
 import Card from "../../ui/Card";
@@ -75,6 +76,7 @@ export default function VolunteerApplicationsPage() {
 
   const columns = useMemo(
     () => [
+      { accessorKey: "member_code", header: "Member ID", cell: ({ getValue }) => <span className="font-mono text-[12.5px] whitespace-nowrap">{getValue() || "—"}</span> },
       { accessorKey: "name", header: "Name", cell: ({ getValue }) => <span className="font-semibold text-[var(--a-text-primary)]">{getValue()}</span> },
       { accessorKey: "email", header: "Email", cell: ({ getValue }) => <span className="text-[var(--a-text-muted)]">{getValue()}</span> },
       { accessorKey: "phone", header: "Mobile", cell: ({ getValue }) => getValue() || "—" },
@@ -157,7 +159,9 @@ export default function VolunteerApplicationsPage() {
           <div className="flex flex-col gap-5">
             <div className="flex flex-wrap items-center gap-2">
               <StatusBadge status={active.status} />
-              {active.member_id && <span className="text-[12px] font-semibold text-[var(--a-text-primary)]">{active.member_id}</span>}
+              {active.member_code && (active.member_id
+                ? <Link to={`/admin/members/${active.member_id}`} className="text-[12px] font-semibold text-[var(--a-accent)] hover:underline">{active.member_code}</Link>
+                : <span className="text-[12px] font-semibold text-[var(--a-text-primary)]">{active.member_code}</span>)}
               <span className="text-[12px] text-[var(--a-text-faint)]">· {new Date(active.created_at).toLocaleString()}</span>
             </div>
 

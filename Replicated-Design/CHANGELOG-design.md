@@ -2,6 +2,12 @@
 
 Format: date · item · status (🟡 designed / ✅ implemented @sha / ⬅ code change to mirror in Design / ↩ mirrored in Design)
 
+## 2026-10-15 — One member, one ID, everywhere (team request: admin in sync with desk, volunteers, Supabase)
+- ⬅ code change: every member has a member ID `GAW-nnnnnn` (same scheme as the live site's Supabase `gaw_signup`: from 100001, reserved seats skipped). Shown in admin Members (column + search), member profile, Volunteers, the support desk requester card, and the member-area sidebar ("Member ID · GAW-…"). Design: Member Flow.dc.html sidebar, Support Desk.dc.html requester card.
+- ⬅ code change: one person = one member across Google sign-in, volunteer form, membership drives and desk calls (matched by email, else phone). Admin member profile has an "Across the platform" card: sits, journal, tickets, volunteer status, drive.
+- ⬅ code change: new admin pages People → Membership drives (paste phone numbers → Preview → Add; each new person gets a member ID; CSV export) and People → Data sync (Preview / Sync now from the live Supabase). Member Profile shows a hint under Phone: "Joined at a membership drive? Enter the same phone number and your existing member ID is kept."
+- ⬅ code change: admin "New member" accepts email or phone (email no longer required).
+
 ## 2026-10-14 — Content is backend-owned (team request: change content without code)
 - ⬅ code change (no visual change): page copy for Home/About/Mission/Meditation/Wisdom/Wellness/Events now lives in the backend (`backend/resources/site-content/*.json` + Admin edits in the database); the public API always returns the full page. The website's bundled JSON is only an offline fallback. `php artisan site-content:sync` stores every page's full copy in the database. Next: CMS Pages in the new design, CMS sections under existing pages, one admin menu.
 - ⬅ code change: pages built in Admin → CMS → Pages now render at /{slug} in the site design (SiteHeader/Breadcrumb/SiteFooter, cream + forest/gold): hero = dark forest card (optional photo + focal point), content block = text + image split with gold bullets, card grid / quick answers = cream cards (auto-fit ≥250px), media = 16:9 videos (single video max 880px), event list = date chips, custom HTML. Published CMS pages appear in the utility row and mobile menu automatically. Slugs used by hand-built pages are reserved. /contact keeps the old layout.

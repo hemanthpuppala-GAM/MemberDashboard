@@ -53,3 +53,27 @@ Artisan::command('cms:delete-old-site {--force : Actually delete}', function () 
     \Illuminate\Support\Facades\Schema::dropIfExists('page_contents');
     $this->info("Deleted {$sections} old-site sections and the page_contents table.");
 })->purpose('Delete the previous site\'s CMS sections and legacy content table (dry run unless --force)');
+
+Artisan::command('supabase:sync {--write : Save the changes (default is a dry run)} {--from= : Folder of exported members.json/.csv, volunteers…, instead of the Supabase API} {--only=* : Only these tables}', function () {
+    $from = $this->option('from');
+    if (! $from && ! \App\Services\People\SupabaseSync::configured()) {
+        $this->error('Set SUPABASE_URL and SUPABASE_SERVICE_KEY in .env, or pass --from=<folder of exports>.');
+
+        return 1;
+    }
+    $report = (new \App\Services\People\SupabaseSync($from ?: null))->run(! $this->option('write'), $this->option('only') ?: null);
+
+    $this->table(['Table', 'Rows', 'Created', 'Updated', 'Unchanged', 'Skipped'], collect($report['counts'])
+        ->map(fn ($c, $t) => [$t, $c['rows'], $c['created'], $c['updated'], $c['unchanged'], $c['skipped']])->values()->all());
+    foreach ($report['notes'] as $note) {
+        $this->line('  · '.$note);
+    }
+    if ($report['dry_run']) {
+        $this->warn('Dry run — nothing saved. Run again with --write to apply.');
+    } else {
+        \Illuminate\Support\Facades\Cache::forever(\App\Http\Controllers\Api\Admin\People\DataSyncController::CACHE_KEY, $report + ['by' => 'artisan']);
+        $this->info('Saved. Safe to run again any time — nothing is duplicated.');
+    }
+
+    return 0;
+})->purpose('Copy members, volunteers, practice, journal and support-desk data from the live Supabase');

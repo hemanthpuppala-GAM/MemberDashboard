@@ -13,7 +13,7 @@ class VolunteerApplicationController extends Controller
     public function index(Request $request)
     {
         $query = VolunteerApplication::query()
-            ->select(['id', 'name', 'email', 'phone', 'occupation', 'city', 'lang', 'category_id', 'teams', 'availability', 'member_num', 'notes', 'status', 'created_at'])
+            ->select(['id', 'name', 'email', 'phone', 'occupation', 'city', 'lang', 'category_id', 'teams', 'availability', 'member_num', 'member_id', 'notes', 'status', 'created_at'])
             ->with('category')
             ->latest();
 
@@ -27,7 +27,9 @@ class VolunteerApplicationController extends Controller
                 ->when($slug, fn ($q) => $q->orWhereJsonContains('teams', $slug)));
         }
         if ($search = $request->query('search')) {
-            $query->where(fn ($q) => $q->where('name', 'like', "{$search}%")->orWhere('email', 'like', "{$search}%"));
+            $num = \App\Services\People\MemberNumbers::parse($search);
+            $query->where(fn ($q) => $q->where('name', 'like', "{$search}%")->orWhere('email', 'like', "{$search}%")
+                ->orWhere('phone', 'like', "%{$search}%")->when($num, fn ($q) => $q->orWhere('member_num', $num)));
         }
 
         return response()->json($query->paginate((int) $request->query('per_page', 20)));

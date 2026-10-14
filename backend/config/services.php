@@ -84,4 +84,11 @@ return [
         'redirect' => env('APPLE_REDIRECT_URI'),
     ],
 
+    // Live site's Supabase project — read-only source for `php artisan supabase:sync` and
+    // Admin → People → Data sync. The service key bypasses row security: keep it in .env only.
+    'supabase' => [
+        'url' => env('SUPABASE_URL'),
+        'service_key' => env('SUPABASE_SERVICE_KEY'),
+    ],
+
 ];

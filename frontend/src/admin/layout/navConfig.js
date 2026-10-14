@@ -2,7 +2,7 @@ import {
   LayoutDashboard, FileText, Image, Inbox, UsersRound, UserCog, ShieldCheck,
   Megaphone, Radio, QrCode, BarChart3, Globe, Settings, Files, Phone, Landmark,
   Music2, MessageSquareQuote, HeartHandshake, ListChecks, CalendarClock, Timer,
-  ClipboardList, Headset, LifeBuoy,
+  ClipboardList, Headset, LifeBuoy, UserPlus, RefreshCw,
 } from "lucide-react";
 
 /**
@@ -35,6 +35,8 @@ export const NAV = [
       // Leaves the admin panel: the desk (/support) shares this app's router and accepts the admin sign-in.
       { to: "/support", label: "Support desk", icon: LifeBuoy, permission: "members.view" },
       { to: "/admin/members", label: "Members", icon: UsersRound, permission: "members.view" },
+      { to: "/admin/membership-drives", label: "Membership drives", icon: UserPlus, permission: "members.view" },
+      { to: "/admin/data-sync", label: "Data sync", icon: RefreshCw, permission: "members.view" },
       { to: "/admin/users", label: "Users", icon: UserCog, permission: "users.view" },
       { to: "/admin/roles", label: "Roles", icon: ShieldCheck, permission: "roles.view" },
       { to: "/admin/support-team", label: "Support team", icon: Headset, permission: "members.view" },
@@ -77,6 +79,9 @@ export const BREADCRUMB_RULES = [
   { pattern: /^\/admin\/cms\/contact\/?$/, crumbs: () => ["CMS", "Contact Info"] },
   { pattern: /^\/admin\/cms\/donations\/?$/, crumbs: () => ["CMS", "Donations"] },
   { pattern: /^\/admin\/queries\/?$/, crumbs: () => ["People", "Queries"] },
+  { pattern: /^\/admin\/membership-drives\/([^/]+)\/?$/, crumbs: () => ["People", "Membership drives", "Drive"] },
+  { pattern: /^\/admin\/membership-drives\/?$/, crumbs: () => ["People", "Membership drives"] },
+  { pattern: /^\/admin\/data-sync\/?$/, crumbs: () => ["People", "Data sync"] },
   { pattern: /^\/admin\/members\/([^/]+)\/journey\/?$/, crumbs: (m) => ["People", "Members", m[1], "Records"] },
   { pattern: /^\/admin\/members\/([^/]+)\/?$/, crumbs: (m) => ["People", "Members", m[1]] },
   { pattern: /^\/admin\/members\/?$/, crumbs: () => ["People", "Members"] },
