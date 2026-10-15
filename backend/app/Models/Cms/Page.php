@@ -29,6 +29,7 @@ class Page extends Model
     public const SITE_PAGES = [
         'home' => 'Home', 'about' => 'About', 'mission' => 'Mission', 'meditate' => 'Meditation',
         'wisdom' => 'Wisdom', 'wellness' => 'Wellness', 'events' => 'Events',
+        'volunteer' => 'Volunteer', 'donate' => 'Donate',
     ];
 
     /** Make sure every hand-built site page has its CMS page (so its copy and extra sections are reachable). */

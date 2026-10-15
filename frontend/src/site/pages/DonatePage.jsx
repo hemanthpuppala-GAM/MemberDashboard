@@ -7,6 +7,7 @@ import { storageUrl } from "../../lib/api";
 import { displayNumber } from "../../ask/support";
 import "./donate.css";
 import CmsExtraSections from "../cms/CmsExtraSections";
+import { useSiteContent } from "../useSiteContent";
 
 const PAD = "clamp(20px,5vw,72px)";
 const KICKER = { display: "inline-flex", alignItems: "center", gap: 10, fontSize: 11, fontWeight: 700, letterSpacing: ".3em", textTransform: "uppercase", color: "#7A5E22" };
@@ -97,6 +98,7 @@ function MethodCard({ m, delay }) {
 
 /** /donate — ways to give, from Admin → Donations (active methods, in the admin's order). */
 export default function DonatePage() {
+  const c = useSiteContent("donate");
   const methods = useDonationMethods();
   const settings = useSiteSettings();
   const web = String(settings?.["support.web"] || "").replace(/\D/g, "");
@@ -137,13 +139,13 @@ export default function DonatePage() {
         <header style={{ display: "flex", flexDirection: "column", gap: 14, maxWidth: 660 }}>
           <span style={{ ...KICKER, ...rise() }}>
             <span aria-hidden="true" style={{ width: 6, height: 6, borderRadius: "50%", background: "#C9A24A" }} />
-            Support the mission
+            {c.kicker}
           </span>
           <h1 className="serif" style={{ margin: 0, fontWeight: 500, fontSize: "clamp(34px,4.2vw,58px)", lineHeight: 1.02, letterSpacing: "-.015em", textWrap: "balance", color: "#12201A", ...rise(0.1) }}>
-            The teachings are free. <em style={{ color: "#8A6F34" }}>Help keep them so.</em>
+            {c.title} <em style={{ color: "#8A6F34" }}>{c.titleAccent}</em>
           </h1>
           <p style={{ margin: 0, fontSize: "clamp(15px,1.15vw,17px)", lineHeight: 1.6, color: "#3A3128", textWrap: "pretty", ...rise(0.2) }}>
-            Every sit, talk and retreat is offered without charge. If you feel moved to give, any of the ways below reaches the work directly — whatever the amount, it is received with gratitude.
+            {c.intro}
           </p>
         </header>
 
@@ -159,18 +161,18 @@ export default function DonatePage() {
           </p>
         ) : (
           <div style={{ maxWidth: 660, padding: "22px 24px", borderRadius: 20, background: "rgba(255,253,248,.6)", border: "1px solid rgba(138,111,52,.22)", fontSize: 14.5, lineHeight: 1.65, color: "#3A3128", ...rise(0.25) }}>
-            Ways to give are not listed here just yet. If you would like to support the work, please {contact} and a volunteer will gladly help.
+            {c.emptyLead} {contact} {c.emptyTail}
           </div>
         )}
 
         <p style={{ margin: 0, maxWidth: 660, fontSize: 13.5, lineHeight: 1.65, color: "#5A5546", textWrap: "pretty" }}>
-          {list.length > 0 && <>Questions about giving? Please {contact}. </>}
-          Not in a position to give? Sitting with us is enough — or offer an hour of <Link to="/volunteer">seva</Link>.
+          {list.length > 0 && <>{c.questionsLead} {contact}. </>}
+          {c.noGiveLead} <Link to="/volunteer">{c.sevaLabel}</Link>.
         </p>
       </main>
 
       <CmsExtraSections slug="donate" />
-      <SiteFooter title="With gratitude" sub="Every sit stays free because someone, somewhere, chose to give." />
+      <SiteFooter title={c.footerTitle} sub={c.footerSub} />
     </SitePage>
   );
 }

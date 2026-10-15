@@ -5,6 +5,7 @@ import { useViewportWidth } from "../useViewport";
 import { OFFICIAL_EMAIL } from "../sitePages";
 import { publicApi } from "../../lib/api";
 import { useLanguage } from "../../lib/LanguageContext";
+import { useSiteContent } from "../useSiteContent";
 import "./volunteer.css";
 import CmsExtraSections from "../cms/CmsExtraSections";
 
@@ -27,7 +28,7 @@ const inputStyle = (bad) => ({
   fontSize: 15,
 });
 
-/** Team cards from the design; slugs = volunteer_categories.slug (migration 2026_10_10_000001). */
+/** Offline fallback team cards; the live wording comes from page content (`teams`). Slugs = volunteer_categories.slug. */
 const TEAMS = [
   { id: "events-setup", glyph: "△", title: "Events — on the ground", desc: "Setting up halls, chairs, mats, sound and signage. Arrive early, leave last." },
   { id: "helpline", glyph: "☎", title: "Helpline — first level", desc: "Answer the first message or call, understand what is being asked, and pass it to the right team." },
@@ -42,16 +43,10 @@ const TEAMS = [
   { id: "social-media", glyph: "☾", title: "Social media", desc: "Write, film, edit and post — carry the work to people who have not heard of it." },
   { id: "tech", glyph: "▽", title: "Tech", desc: "The website, the streams, the member tools. Anything that has to keep working." },
 ];
-const TEAM_BY_ID = Object.fromEntries(TEAMS.map((t) => [t.id, t]));
 
 /** Same strings as VolunteerApplication::AVAILABILITY. */
 const AVAILS = ["An hour or two a week", "A few hours a week", "Events only", "Whenever I am needed"];
 
-const STEPS = [
-  { n: "1", body: "Your note reaches a coordinator for each team you chose — not a queue, a person." },
-  { n: "2", body: "They write back to understand what you enjoy and what you would rather not do." },
-  { n: "3", body: "You are added to that team’s circle and start at whatever pace suits you." },
-];
 
 const EMPTY = { name: "", email: "", phone: "", city: "", note: "", honey: "" };
 
@@ -68,6 +63,8 @@ function fieldErrors(errors) {
 /** /volunteer — design: Volunteer.dc.html */
 export default function VolunteerPage() {
   const { language } = useLanguage();
+  const c = useSiteContent("volunteer");
+  const steps = (Array.isArray(c.steps) ? c.steps : []).filter(Boolean);
   const w = useViewportWidth();
   const twoCol = w > 860;
   const twoRow = w > 620;
@@ -94,10 +91,12 @@ export default function VolunteerPage() {
 
   // Active categories from the API (admin order) with the design's glyph + copy for known slugs; design list as fallback.
   const teams = useMemo(() => {
-    const active = (categories || []).filter((c) => c.slug && c.is_active !== false);
-    if (!active.length) return TEAMS;
-    return active.map((c) => TEAM_BY_ID[c.slug] || { id: c.slug, glyph: "✦", title: c.name, desc: c.description || "" });
-  }, [categories]);
+    const copy = Array.isArray(c.teams) && c.teams.length ? c.teams : TEAMS;
+    const byId = Object.fromEntries(copy.map((t) => [t.id, t]));
+    const active = (categories || []).filter((cat) => cat.slug && cat.is_active !== false);
+    if (!active.length) return copy;
+    return active.map((cat) => byId[cat.slug] || { id: cat.slug, glyph: "✦", title: cat.name, desc: cat.description || "" });
+  }, [categories, c.teams]);
 
   const clearErr = (k) => setErrs((e) => (e[k] ? { ...e, [k]: undefined } : e));
   const set = (k) => (e) => {
@@ -133,7 +132,7 @@ export default function VolunteerPage() {
     // Honeypot filled → a bot. Pretend success, send nothing.
     if (form.honey) {
       setBusy(false);
-      setSent("Thank you — we have your note.");
+      setSent(c.sentBody);
       return;
     }
 
@@ -149,7 +148,7 @@ export default function VolunteerPage() {
         lang: (language || "en").toUpperCase(),
       });
       setBusy(false);
-      setSent("Thank you — we have your note.");
+      setSent(c.sentBody);
     } catch (err) {
       setBusy(false);
       if (err?.status === 422) {
@@ -199,13 +198,13 @@ export default function VolunteerPage() {
         <header style={{ display: "flex", flexDirection: "column", gap: 14, maxWidth: 660 }}>
           <span style={{ ...KICKER, ...rise() }}>
             <span aria-hidden="true" style={{ width: 6, height: 6, borderRadius: "50%", background: "#C9A24A" }} />
-            Seva · service
+            {c.kicker}
           </span>
           <h1 className="serif" style={{ margin: 0, fontWeight: 500, fontSize: "clamp(34px,4.2vw,58px)", lineHeight: 1.02, letterSpacing: "-.015em", textWrap: "balance", color: "#12201A", ...rise(0.1) }}>
-            The work is quiet, <em style={{ color: "#8A6F34" }}>and there is a lot of it.</em>
+            {c.title} <em style={{ color: "#8A6F34" }}>{c.titleAccent}</em>
           </h1>
           <p style={{ margin: 0, fontSize: "clamp(15px,1.15vw,17px)", lineHeight: 1.6, color: "#3A3128", textWrap: "pretty", ...rise(0.2) }}>
-            Chairs get carried, calls get answered, someone new writes at midnight frightened by what they felt in meditation. None of it is glamorous. All of it is the movement. Tell us where you would like to stand.
+            {c.intro}
           </p>
         </header>
 
@@ -216,7 +215,7 @@ export default function VolunteerPage() {
               Received
             </span>
             <h2 className="serif" style={{ fontWeight: 500, fontSize: "clamp(26px,3vw,34px)", lineHeight: 1.1, margin: "12px 0 0", color: "#12201A" }}>
-              Thank you for offering to serve.
+              {c.sentTitle}
             </h2>
             <p style={{ margin: "10px 0 0", fontSize: 15, lineHeight: 1.6, color: "#3A3128" }}>{sent}</p>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 12, marginTop: 22 }}>
@@ -234,9 +233,9 @@ export default function VolunteerPage() {
               <fieldset style={{ margin: 0, padding: 0, border: 0, minWidth: 0 }}>
                 <legend style={{ ...LABEL, padding: 0 }}>
                   <span aria-hidden="true" style={{ width: 18, height: 1, background: "#C9A24A" }} />
-                  Where you would like to serve
+                  {c.serveLabel}
                 </legend>
-                <div style={{ fontSize: 13.5, color: "#5A5546", marginTop: 8 }}>Choose as many as you mean. Somebody will read this by hand.</div>
+                <div style={{ fontSize: 13.5, color: "#5A5546", marginTop: 8 }}>{c.serveHint}</div>
                 <div style={{ display: "flex", flexDirection: "column", gap: 12, marginTop: 16 }}>
                   {teams.map((t) => {
                     const on = picked.includes(t.id);
@@ -277,18 +276,18 @@ export default function VolunteerPage() {
               <fieldset style={{ margin: 0, padding: 0, border: 0, minWidth: 0 }}>
                 <legend style={{ ...LABEL, padding: 0 }}>
                   <span aria-hidden="true" style={{ width: 18, height: 1, background: "#C9A24A" }} />
-                  About you
+                  {c.aboutLabel}
                 </legend>
                 <div style={{ display: "grid", gridTemplateColumns: twoRow ? "1fr 1fr" : "1fr", gap: 14, marginTop: 16 }}>
-                  {field("name", "Your name", { type: "text", autoComplete: "name", placeholder: "Full name", required: true })}
-                  {field("email", "Email", { type: "email", autoComplete: "email", placeholder: "you@example.com", required: true })}
-                  {field("phone", "Phone or WhatsApp", { type: "tel", autoComplete: "tel", placeholder: "With country code, e.g. +91", required: true })}
-                  {field("city", "City", { type: "text", autoComplete: "address-level2", placeholder: "Hyderabad, Pune, anywhere" })}
+                  {field("name", c.nameLabel, { type: "text", autoComplete: "name", placeholder: c.namePlaceholder, required: true })}
+                  {field("email", c.emailLabel, { type: "email", autoComplete: "email", placeholder: "you@example.com", required: true })}
+                  {field("phone", c.phoneLabel, { type: "tel", autoComplete: "tel", placeholder: c.phonePlaceholder, required: true })}
+                  {field("city", c.cityLabel, { type: "text", autoComplete: "address-level2", placeholder: c.cityPlaceholder })}
                 </div>
               </fieldset>
 
               <fieldset style={{ margin: 0, padding: 0, border: 0, minWidth: 0 }}>
-                <legend style={{ ...FIELD_LABEL, padding: 0, marginBottom: 10 }}>How much time can you give?</legend>
+                <legend style={{ ...FIELD_LABEL, padding: 0, marginBottom: 10 }}>{c.availLabel}</legend>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
                   {AVAILS.map((a) => {
                     const on = avail === a;
@@ -312,12 +311,12 @@ export default function VolunteerPage() {
               </fieldset>
 
               <label style={{ display: "flex", flexDirection: "column", gap: 7 }}>
-                <span style={FIELD_LABEL}>Anything you want us to know</span>
+                <span style={FIELD_LABEL}>{c.noteLabel}</span>
                 <textarea
                   value={form.note}
                   onChange={set("note")}
                   rows={4}
-                  placeholder="Skills, languages you speak, when you are usually free, or why this matters to you."
+                  placeholder={c.notePlaceholder}
                   aria-invalid={errs.notes ? true : undefined}
                   aria-describedby={errs.notes ? "vol-err-notes" : undefined}
                   style={{ ...inputStyle(!!errs.notes), padding: "13px 15px", borderRadius: 16, lineHeight: 1.55, resize: "vertical" }}
@@ -353,7 +352,7 @@ export default function VolunteerPage() {
                   className="gaw-pill-gold vol-submit"
                   style={{ ...PILL, padding: "0 34px", border: 0, fontSize: 12, cursor: busy ? "default" : "pointer", opacity: busy ? 0.6 : 1 }}
                 >
-                  {busy ? "Sending…" : "Count me in"}
+                  {busy ? "Sending…" : c.submitLabel}
                 </button>
                 <span aria-live="polite" style={{ fontSize: 13, lineHeight: 1.5, color: "#5A5546" }}>
                   {pickedSummary}
@@ -363,18 +362,18 @@ export default function VolunteerPage() {
 
             <aside style={{ display: "flex", flexDirection: "column", gap: 16, position: twoCol ? "sticky" : "static", top: 130, minWidth: 0 }}>
               <div style={{ ...CARD, padding: "22px 24px" }}>
-                <span style={LABEL}>What happens next</span>
+                <span style={LABEL}>{c.nextLabel}</span>
                 <div style={{ display: "flex", flexDirection: "column", gap: 16, marginTop: 16 }}>
-                  {STEPS.map((s) => (
-                    <div key={s.n} style={{ display: "flex", gap: 14, alignItems: "flex-start" }}>
+                  {steps.map((body, i) => (
+                    <div key={i} style={{ display: "flex", gap: 14, alignItems: "flex-start" }}>
                       <span
                         aria-hidden="true"
                         className="serif"
                         style={{ width: 30, height: 30, flexShrink: 0, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", background: "#F3EAD3", boxShadow: "0 0 0 1px rgba(138,111,52,.3)", fontSize: 16, fontWeight: 600, color: "#7A5E22" }}
                       >
-                        {s.n}
+                        {i + 1}
                       </span>
-                      <span style={{ fontSize: 14, lineHeight: 1.55, color: "#3A3128", textWrap: "pretty" }}>{s.body}</span>
+                      <span style={{ fontSize: 14, lineHeight: 1.55, color: "#3A3128", textWrap: "pretty" }}>{body}</span>
                     </div>
                   ))}
                 </div>
@@ -382,15 +381,15 @@ export default function VolunteerPage() {
 
               <div style={{ padding: "22px 24px", borderRadius: 22, background: "#14241C", color: "#F6F1E6", boxShadow: "0 18px 40px -20px rgba(0,0,0,.5)" }}>
                 <div className="serif" style={{ fontSize: 24, lineHeight: 1.15 }}>
-                  No commitment is too small
+                  {c.smallTitle}
                 </div>
                 <p style={{ margin: "8px 0 0", fontSize: 13.5, lineHeight: 1.6, color: "rgba(246,241,230,.8)", textWrap: "pretty" }}>
-                  One event a year is help. Answering three messages a week is help. Say what is true and we will never ask for more than that.
+                  {c.smallBody}
                 </p>
               </div>
 
               <div style={{ padding: "18px 24px", borderRadius: 22, background: "rgba(255,253,248,.45)", border: "1px solid rgba(138,111,52,.22)", fontSize: 13.5, lineHeight: 1.6, color: "#3A3128", overflowWrap: "anywhere" }}>
-                Rather write to a person?{" "}
+                {c.writeLabel}{" "}
                 <a href={`mailto:${OFFICIAL_EMAIL}?subject=Volunteering`} style={{ fontWeight: 600 }}>
                   {OFFICIAL_EMAIL}
                 </a>
@@ -401,7 +400,7 @@ export default function VolunteerPage() {
       </main>
 
       <CmsExtraSections slug="volunteer" />
-      <SiteFooter title="Seva is the movement" sub="Every hour offered keeps the sits free and the doors open." />
+      <SiteFooter title={c.footerTitle} sub={c.footerSub} />
     </SitePage>
   );
 }

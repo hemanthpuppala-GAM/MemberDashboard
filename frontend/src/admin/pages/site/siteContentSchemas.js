@@ -834,10 +834,115 @@ export const SITE_CONTENT_SCHEMAS = {
       },
     ],
   },
+  volunteer: {
+    label: "Volunteer",
+    publicPath: "/volunteer",
+    eyebrow: "Admin · Volunteer page",
+    title: "The seva sign-up page",
+    intro: "Changes publish the moment you save. Which teams appear (and their order) is set in Volunteers → Categories; the wording for each team is here.",
+    sections: [
+      {
+        title: "Heading",
+        columns: 3,
+        fields: [
+          { key: "kicker", label: "Eyebrow", type: "text" },
+          { key: "title", label: "Title", type: "text" },
+          { key: "titleAccent", label: "Title accent (italic)", type: "text" },
+          { key: "intro", label: "Intro", type: "textarea", rows: 3, wide: true },
+        ],
+      },
+      {
+        title: "Teams",
+        description: "One card per team. The id must match the team's slug in Volunteers → Categories.",
+        fields: [
+          { key: "serveLabel", label: "Section label", type: "text" },
+          { key: "serveHint", label: "Hint under the label", type: "text" },
+          {
+            type: "list",
+            key: "teams",
+            itemLabel: (t) => t.title || t.id || "Team",
+            addable: true,
+            newItem: { id: "", glyph: "✦", title: "", desc: "" },
+            layout: "cards",
+            fields: [
+              { key: "id", label: "Slug (id)", type: "text" },
+              { key: "glyph", label: "Symbol", type: "text" },
+              { key: "title", label: "Title", type: "text" },
+              { key: "desc", label: "Description", type: "textarea", rows: 2 },
+            ],
+          },
+        ],
+      },
+      {
+        title: "Form",
+        columns: 2,
+        fields: [
+          { key: "aboutLabel", label: "\"About you\" label", type: "text" },
+          { key: "nameLabel", label: "Name · label", type: "text" },
+          { key: "namePlaceholder", label: "Name · placeholder", type: "text" },
+          { key: "emailLabel", label: "Email · label", type: "text" },
+          { key: "phoneLabel", label: "Phone · label", type: "text" },
+          { key: "phonePlaceholder", label: "Phone · placeholder", type: "text" },
+          { key: "cityLabel", label: "City · label", type: "text" },
+          { key: "cityPlaceholder", label: "City · placeholder", type: "text" },
+          { key: "availLabel", label: "Time question", type: "text" },
+          { key: "noteLabel", label: "Note · label", type: "text" },
+          { key: "notePlaceholder", label: "Note · placeholder", type: "textarea", rows: 2, wide: true },
+          { key: "submitLabel", label: "Submit button", type: "text" },
+        ],
+      },
+      {
+        title: "Side cards & thank-you",
+        columns: 2,
+        fields: [
+          { key: "nextLabel", label: "\"What happens next\" title", type: "text" },
+          { key: "steps", label: "Steps (one per line)", type: "lines", wide: true },
+          { key: "smallTitle", label: "Dark card · title", type: "text" },
+          { key: "smallBody", label: "Dark card · text", type: "textarea", rows: 3 },
+          { key: "writeLabel", label: "Email line · lead-in", type: "text" },
+          { key: "sentTitle", label: "Thank-you · title", type: "text" },
+          { key: "sentBody", label: "Thank-you · text", type: "text" },
+        ],
+      },
+      { title: "Footer", columns: 2, fields: FOOTER_FIELDS },
+    ],
+  },
+  donate: {
+    label: "Donate",
+    publicPath: "/donate",
+    eyebrow: "Admin · Donate page",
+    title: "The ways-to-give page",
+    intro: "The payment methods themselves (UPI, bank, QR) are managed in CMS → Donations. The words around them are here.",
+    sections: [
+      {
+        title: "Heading",
+        columns: 3,
+        fields: [
+          { key: "kicker", label: "Eyebrow", type: "text" },
+          { key: "title", label: "Title", type: "text" },
+          { key: "titleAccent", label: "Title accent (italic)", type: "text" },
+          { key: "intro", label: "Intro", type: "textarea", rows: 3, wide: true },
+        ],
+      },
+      {
+        title: "Notes under the methods",
+        description: "The WhatsApp number or email is added automatically between the lead-in and the rest.",
+        columns: 2,
+        fields: [
+          { key: "emptyLead", label: "No methods yet · lead-in", type: "textarea", rows: 2 },
+          { key: "emptyTail", label: "No methods yet · ending", type: "text" },
+          { key: "questionsLead", label: "Questions · lead-in", type: "text" },
+          { key: "noGiveLead", label: "Not giving · lead-in", type: "textarea", rows: 2 },
+          { key: "sevaLabel", label: "Seva link text", type: "text" },
+        ],
+      },
+      { title: "Footer", columns: 2, fields: FOOTER_FIELDS },
+    ],
+  },
 };
 
 /** Index order (matches the public nav). */
-export const SITE_CONTENT_PAGES = ["home", "about", "mission", "meditation", "wisdom", "wellness", "events"];
+export const SITE_CONTENT_PAGES = ["home", "about", "mission", "meditation", "wisdom", "wellness", "events", "volunteer", "donate"];
 
 /** Top-level document keys a schema edits — everything else goes to the raw-JSON fallback. */
 export function schemaKeys(schema) {
@@ -849,5 +954,5 @@ export function schemaKeys(schema) {
 }
 
 /** CMS page slug ↔ copy-editor page (the built-in "meditate" CMS page is the /meditation site page). */
-export const COPY_PAGE_BY_SLUG = { home: "home", about: "about", mission: "mission", meditate: "meditation", wisdom: "wisdom", wellness: "wellness", events: "events" };
+export const COPY_PAGE_BY_SLUG = { home: "home", about: "about", mission: "mission", meditate: "meditation", wisdom: "wisdom", wellness: "wellness", events: "events", volunteer: "volunteer", donate: "donate" };
 export const SLUG_BY_COPY_PAGE = Object.fromEntries(Object.entries(COPY_PAGE_BY_SLUG).map(([slug, page]) => [page, slug]));
