@@ -149,7 +149,7 @@ class SupabaseSync
 
                 continue;
             }
-            $values = ['name' => (string) ($r['name'] ?? ''), 'email' => self::email($r['email'] ?? null), 'role' => (string) ($r['role'] ?? '')];
+            $values = ['name' => self::cut($r['name'] ?? '', 120), 'email' => self::email($r['email'] ?? null), 'role' => self::cut($r['role'] ?? '', 60)];
             $existing = DB::table('reserved_member_numbers')->where('member_num', $num)->first();
             if (! $existing) {
                 DB::table('reserved_member_numbers')->insert(['member_num' => $num, ...$values, 'created_at' => now(), 'updated_at' => now()]);
@@ -187,13 +187,13 @@ class SupabaseSync
             $joined = self::date($r['created_at'] ?? null);
             if (! $member) {
                 $member = new Member([
-                    'name' => trim((string) ($r['name'] ?? '')),
+                    'name' => self::cut($r['name'] ?? '', 255),
                     'email' => $email,
                     'category' => 'general',
                     'status' => 'active',
                     'source' => 'import',
                     'join_date' => $joined?->toDateString() ?? now()->toDateString(),
-                    'role_title' => ($r['role'] ?? '') ?: null,
+                    'role_title' => self::cut($r['role'] ?? '', 60) ?: null,
                 ]);
                 $member->forceFill(['member_num' => $num])->save();
                 $this->count('members', 'created');
@@ -203,8 +203,8 @@ class SupabaseSync
 
             $changes = array_filter([
                 'member_num' => $member->member_num !== $num ? $num : null,
-                'name' => ! $member->name && ($r['name'] ?? '') ? trim($r['name']) : null,
-                'role_title' => ! $member->role_title && ($r['role'] ?? '') ? $r['role'] : null,
+                'name' => ! $member->name && ($r['name'] ?? '') ? self::cut($r['name'], 255) : null,
+                'role_title' => ! $member->role_title && ($r['role'] ?? '') ? self::cut($r['role'], 60) : null,
                 'join_date' => $joined && (! $member->join_date || $joined->lt($member->join_date)) && $joined->toDateString() !== $member->join_date?->toDateString() ? $joined->toDateString() : null,
             ]);
             if (isset($changes['member_num']) && $member->member_num) {
@@ -245,18 +245,18 @@ class SupabaseSync
             $num = (int) ($r['member_num'] ?? 0) ?: null;
 
             $member = ($num ? Member::where('member_num', $num)->first() : null)
-                ?? MemberLinker::findOrCreate(['email' => $email, 'name' => $r['name'] ?? '', 'phone' => $r['phone'] ?? ''], 'volunteer')[0];
+                ?? MemberLinker::findOrCreate(['email' => $email, 'name' => self::cut($r['name'] ?? '', 255), 'phone' => self::cut($r['phone'] ?? '', 50)], 'volunteer')[0];
             if (! $member->phone && ($r['phone'] ?? '')) {
-                $member->fill(['phone' => $r['phone']])->save();
+                $member->fill(['phone' => self::cut($r['phone'], 50)])->save();
             }
 
             $values = [
-                'name' => trim((string) ($r['name'] ?? '')) ?: $member->name,
-                'phone' => (string) ($r['phone'] ?? ''),
-                'occupation' => (string) ($r['occupation'] ?? ''),
-                'city' => (string) ($r['city'] ?? ''),
-                'lang' => strtoupper((string) ($r['lang'] ?? 'EN')) ?: 'EN',
-                'availability' => (string) ($r['avail'] ?? ''),
+                'name' => self::cut($r['name'] ?? '', 255) ?: $member->name,
+                'phone' => self::cut($r['phone'] ?? '', 50),
+                'occupation' => self::cut($r['occupation'] ?? '', 120),
+                'city' => self::cut($r['city'] ?? '', 120),
+                'lang' => strtoupper(self::cut($r['lang'] ?? 'EN', 20)) ?: 'EN',
+                'availability' => self::cut($r['avail'] ?? '', 120),
                 'notes' => ($r['note'] ?? '') ?: null,
             ];
 
@@ -323,7 +323,7 @@ class SupabaseSync
                     continue;
                 }
                 $s = new PracticeSession(['member_id' => $member->id, 'duration_minutes' => min(600, max(1, (int) ($sit['mins'] ?? 1))), 'completed_at' => $at]);
-                $s->forceFill(['via' => Str::limit((string) ($sit['via'] ?? ''), 20, '') ?: null, 'import_key' => $key])->save();
+                $s->forceFill(['via' => self::cut($sit['via'] ?? '', 20) ?: null, 'import_key' => $key])->save();
                 $added++;
             }
 
@@ -368,14 +368,14 @@ class SupabaseSync
             }
 
             if (! $agent) {
-                $agent = new SupportAgent(['kind' => 'core', 'name' => (string) ($r['name'] ?? $phone), 'phone' => $phone, 'email' => $email, 'is_active' => $active]);
+                $agent = new SupportAgent(['kind' => 'core', 'name' => self::cut($r['name'] ?? $phone, 120) ?: $phone, 'phone' => $phone, 'email' => $email, 'is_active' => $active]);
                 $agent->pin_hash = $hash;
                 $agent->save();
                 $this->count('support_agents', 'created');
 
                 continue;
             }
-            $agent->fill(array_filter(['name' => $agent->name ? null : ($r['name'] ?? null), 'email' => $agent->email ? null : $email]));
+            $agent->fill(array_filter(['name' => $agent->name ? null : (self::cut($r['name'] ?? '', 120) ?: null), 'email' => $agent->email ? null : $email]));
             if (! $agent->pin_hash && $hash) {
                 $agent->pin_hash = $hash;
             }
@@ -423,12 +423,12 @@ class SupabaseSync
             $ticket = new Ticket([
                 'source' => 'call',
                 'member_id' => $num ? Member::where('member_num', $num)->value('id') : null,
-                'requester_name' => Str::limit((string) ($r['name'] ?? ''), 120, '') ?: null,
+                'requester_name' => self::cut($r['name'] ?? '', 120) ?: null,
                 'requester_phone' => $phone ? '+'.$phone : null,
-                'subject' => Str::limit($topic.': '.trim((string) ($r['asked'] ?? '')), 200, '…'),
+                'subject' => self::cut(preg_replace('/\s+/u', ' ', $topic.': '.($r['asked'] ?? '')), 200),
                 'body' => trim("Asked: ".($r['asked'] ?? '')."\n\nHow we helped: ".($r['helped'] ?? '')),
-                'category' => Str::limit(Str::slug($topic), 40, '') ?: 'general',
-                'lang' => ($r['lang'] ?? '') ? Str::limit(strtolower($r['lang']), 10, '') : null,
+                'category' => self::cut(Str::slug($topic), 40) ?: 'general',
+                'lang' => ($r['lang'] ?? '') ? self::cut(strtolower($r['lang']), 10) : null,
                 'created_by_agent_id' => $agent?->id,
                 'assigned_agent_id' => $agent?->id,
             ]);
@@ -461,11 +461,22 @@ class SupabaseSync
         $this->counts[$table][$what]++;
     }
 
+    /**
+     * Trim to at most $max characters (MySQL varchar counts characters). Str::limit measures
+     * display width, so Telugu/Kannada text with zero-width marks could still overflow.
+     */
+    private static function cut(mixed $value, int $max): string
+    {
+        $v = trim((string) $value);
+
+        return mb_strlen($v) <= $max ? $v : rtrim(mb_substr($v, 0, $max - 1)).'…';
+    }
+
     private static function email(mixed $value): ?string
     {
         $e = strtolower(trim((string) $value));
 
-        return $e !== '' && str_contains($e, '@') ? Str::limit($e, 190, '') : null;
+        return $e !== '' && str_contains($e, '@') && mb_strlen($e) <= 190 ? $e : null;
     }
 
     private static function date(mixed $value, ?string $tz = null): ?Carbon

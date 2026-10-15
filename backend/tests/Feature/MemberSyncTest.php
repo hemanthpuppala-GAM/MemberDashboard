@@ -178,6 +178,7 @@ class MemberSyncTest extends TestCase
         file_put_contents("$dir/support_agents.json", json_encode([['phone' => '7396112111', 'name' => 'Raman Kumar', 'email' => null, 'pass_hash' => $hash, 'active' => true]]));
         file_put_contents("$dir/support_calls.json", json_encode([
             ['id' => 7, 'called_at' => '2026-10-05T05:00:00Z', 'name' => 'Caller', 'phone' => '9876511111', 'topic' => 'Meditation', 'asked' => 'How long to sit?', 'helped' => 'Explained 20 min', 'outcome' => 'Resolved', 'follow_done' => false, 'by_phone' => '7396112111', 'by_name' => 'Raman Kumar', 'helper' => 'self'],
+            ['id' => 9, 'called_at' => '2026-10-07T05:00:00Z', 'name' => str_repeat('సీత ', 60), 'phone' => '9000022222', 'topic' => 'Experiences during meditation', 'asked' => str_repeat('ధ్యానంలో శరీరం తిరుగుతున్నట్లు అనిపించింది. ', 40), 'helped' => 'Shared in the group', 'outcome' => 'Resolved', 'lang' => 'telugu', 'by_phone' => '7396112111', 'by_name' => 'Raman Kumar'],
             ['id' => 8, 'called_at' => '2026-10-06T05:00:00Z', 'name' => 'Caller 2', 'phone' => '9000011111', 'topic' => 'Health', 'asked' => 'Back pain', 'helped' => 'Will call back', 'outcome' => 'Follow-up', 'follow_date' => '2026-10-20', 'follow_done' => false, 'by_phone' => '7396112111', 'by_name' => 'Raman Kumar'],
         ]));
 
@@ -200,7 +201,12 @@ class MemberSyncTest extends TestCase
         $this->assertSame(['tech', 'helpline'], $vol->teams);
         $this->assertSame(0, Ticket::where('source', 'volunteer')->count()); // past sign-ups don't flood the desk
 
-        $this->assertSame(2, Ticket::where('source', 'call')->count());
+        $this->assertSame(3, Ticket::where('source', 'call')->count());
+        // MySQL varchar(200)/(120) count characters; long Telugu text must fit.
+        $long = Ticket::where('import_key', 'sb-call-9')->first();
+        $this->assertLessThanOrEqual(200, mb_strlen($long->subject));
+        $this->assertLessThanOrEqual(120, mb_strlen($long->requester_name));
+        $this->assertStringEndsWith('…', $long->subject);
         $resolved = Ticket::where('import_key', 'sb-call-7')->first();
         $this->assertSame('resolved', $resolved->status);
         $this->assertSame($lata->id, $resolved->member_id); // the call came from her (volunteer) phone

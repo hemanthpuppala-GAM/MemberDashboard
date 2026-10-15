@@ -110,7 +110,7 @@ class Ticket extends Model
     {
         $t = trim(preg_replace('/\s+/', ' ', (string) $text));
 
-        return $t === '' ? 'Question' : Str::limit($t, 90);
+        return $t === '' ? 'Question' : (mb_strlen($t) <= 90 ? $t : rtrim(mb_substr($t, 0, 89)).'…');
     }
 
     // ---- State changes ----

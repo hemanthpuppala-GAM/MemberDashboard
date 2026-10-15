@@ -35,7 +35,10 @@ class DataSyncController extends Controller
         } catch (\Throwable $e) {
             report($e);
 
-            return response()->json(['message' => 'Sync failed: '.$e->getMessage()], 502);
+            // The full error (with the row's data) goes to the log; the admin sees the first line.
+            $first = strtok($e->getMessage(), "\n");
+
+            return response()->json(['message' => 'Sync failed — nothing was saved. '.\Illuminate\Support\Str::limit($first, 240)], 502);
         }
         $report['by'] = $request->user()->name;
         if (! $report['dry_run']) {
