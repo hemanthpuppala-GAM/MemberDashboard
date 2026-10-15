@@ -9,10 +9,12 @@ import DataTable from "../../ui/DataTable";
 import Modal from "../../ui/Modal";
 import ConfirmModal from "../../ui/ConfirmModal";
 import Field, { TextInput, Select } from "../../ui/Field";
-import { StatusBadge } from "../../ui/Badge";
+import Badge, { StatusBadge } from "../../ui/Badge";
 import { api, downloadAuthed } from "../../../lib/api";
 import { CATEGORIES, CATEGORY_LABELS } from "../../mock/mockData";
 import { usePermissions } from "../../usePermissions";
+
+const TEAM_LABELS = { "events-setup": "Events", helpline: "Helpline", "local-event": "Local events", "kundalini-share": "Experiences", donor: "Donor", "social-media": "Social media", tech: "Tech" };
 
 const SOURCE_LABELS = { google: "Google sign-in", microsoft: "Microsoft sign-in", facebook: "Facebook sign-in", password: "Email sign-up", volunteer: "Volunteer form", drive: "Membership drive", admin: "Added by admin", query: "From a query", import: "Live site (Supabase)", demo: "Demo" };
 
@@ -37,11 +39,12 @@ export default function MembersListPage() {
   const [toDelete, setToDelete] = useState(null);
 
   const [search, setSearch] = useState("");
+  const [volunteer, setVolunteer] = useState("");
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 20 });
 
   const loadMembers = () =>
     api
-      .members({ page: pagination.pageIndex + 1, per_page: pagination.pageSize, ...(search ? { search } : {}) })
+      .members({ page: pagination.pageIndex + 1, per_page: pagination.pageSize, ...(search ? { search } : {}), ...(volunteer ? { volunteer } : {}) })
       .then((res) => {
         setMembers(res.data);
         setLastPage(res.last_page ?? 1);
@@ -67,7 +70,7 @@ export default function MembersListPage() {
       .catch((err) => toast.error(err.message ?? "Failed to load members"))
       .finally(() => setLoading(false));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pagination.pageIndex, pagination.pageSize, search]);
+  }, [pagination.pageIndex, pagination.pageSize, search, volunteer]);
 
   const columns = useMemo(
     () => [
@@ -83,11 +86,23 @@ export default function MembersListPage() {
           return (
             <div className="flex flex-col">
               <span>{m.drive?.name ? `Drive · ${m.drive.name}` : SOURCE_LABELS[m.source] ?? "—"}</span>
-              {(m.volunteer_applications_count > 0 || m.tickets_count > 0) && (
-                <span className="text-[11.5px] text-[var(--a-text-faint)]">
-                  {[m.volunteer_applications_count > 0 && "Volunteer", m.tickets_count > 0 && `${m.tickets_count} ticket${m.tickets_count === 1 ? "" : "s"}`].filter(Boolean).join(" · ")}
-                </span>
+              {m.tickets_count > 0 && (
+                <span className="text-[11.5px] text-[var(--a-text-faint)]">{`${m.tickets_count} support ticket${m.tickets_count === 1 ? "" : "s"}`}</span>
               )}
+            </div>
+          );
+        },
+      },
+      {
+        id: "volunteer", header: "Volunteer",
+        cell: ({ row }) => {
+          const app = row.original.volunteer_applications?.[0];
+          if (!app) return <span className="text-[var(--a-text-faint)]">—</span>;
+          const teams = (app.teams || []).map((t) => TEAM_LABELS[t] ?? t).join(", ");
+          return (
+            <div className="flex flex-col gap-0.5">
+              <Badge tone="success">Volunteer · {app.status}</Badge>
+              {teams && <span className="max-w-[180px] truncate text-[11.5px] text-[var(--a-text-faint)]" title={teams}>{teams}</span>}
             </div>
           );
         },
@@ -157,6 +172,13 @@ export default function MembersListPage() {
       <Card padded={false}>
         <div className="p-5 sm:p-6">
           <DataTable
+            toolbar={
+              <Select value={volunteer} onChange={(e) => { setVolunteer(e.target.value); setPagination((p) => ({ ...p, pageIndex: 0 })); }} aria-label="Volunteer filter" className="w-auto!">
+                <option value="">Everyone</option>
+                <option value="1">Volunteers only</option>
+                <option value="0">Not volunteers</option>
+              </Select>
+            }
             columns={columns}
             data={members}
             searchPlaceholder="Search name, email, phone or GAW ID…"

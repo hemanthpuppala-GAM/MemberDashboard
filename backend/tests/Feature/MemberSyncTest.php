@@ -130,6 +130,55 @@ class MemberSyncTest extends TestCase
         $this->assertSame(6, Member::count());
     }
 
+    public function test_support_desk_registers_people_at_an_event_by_name_and_phone(): void
+    {
+        $agent = new SupportAgent(['kind' => 'core', 'name' => 'Lakshmi', 'phone' => SupportAgent::normalizePhone('7396112111')]);
+        $agent->save();
+        $existing = $this->member(['phone' => '9876511111', 'name' => 'Old']);
+        Sanctum::actingAs($agent, [], 'sanctum');
+
+        $this->postJson('/api/v1/support/events/check', ['people' => [['name' => 'A', 'phone' => '9876544444']]])->assertOk()->assertJsonPath('summary.new', 1);
+        $this->assertSame(1, Member::count()); // checking saves nothing
+        $event = $this->postJson('/api/v1/support/events', ['name' => 'Guntur satsang'])->assertCreated()->json();
+        $this->assertSame(now()->toDateString(), substr($event['held_on'], 0, 10));
+
+        $people = [
+            ['name' => 'Ravi, Kumar', 'phone' => '98765 22222'],
+            ['name' => 'Old friend', 'phone' => '+91 98765 11111'],
+            ['name' => 'No phone', 'phone' => ''],
+            ['name' => 'Asha', 'phone' => '9876533333', 'email' => 'asha@example.com'],
+        ];
+        $preview = $this->postJson("/api/v1/support/events/{$event['id']}/register", ['people' => $people, 'preview' => true])->assertOk()->json();
+        $this->assertSame(2, $preview['summary']['new']);
+        $this->assertSame(1, $preview['summary']['existing']);
+        $this->assertSame(1, $preview['summary']['invalid']);
+
+        $done = $this->postJson("/api/v1/support/events/{$event['id']}/register", ['people' => $people])->assertOk()->json();
+        $this->assertSame(2, $done['summary']['created']);
+        $ravi = Member::where('phone_key', '919876522222')->first();
+        $this->assertSame('Ravi Kumar', $ravi->name);
+        $this->assertNull($ravi->email); // no made-up emails: phone alone identifies them
+        $this->assertSame($event['id'], $ravi->drive_id);
+        $this->assertSame($existing->member_code, collect($done['rows'])->firstWhere('status', 'existing')['member_code']);
+
+        // Registering the same phones again never creates a second member.
+        $this->postJson("/api/v1/support/events/{$event['id']}/register", ['people' => $people])->assertJsonPath('summary.created', 0);
+        $this->getJson('/api/v1/support/events')->assertJsonPath('0.members_count', 2);
+    }
+
+    public function test_admin_members_can_be_filtered_to_volunteers(): void
+    {
+        $this->admin();
+        $vol = $this->member(['email' => 'vol@example.com']);
+        $this->member(['email' => 'plain@example.com']);
+        VolunteerApplication::create(['name' => 'Vol', 'email' => 'vol@example.com', 'phone' => '1', 'occupation' => '', 'city' => '', 'availability' => '', 'teams' => ['tech']]);
+
+        $res = $this->getJson('/api/v1/admin/members?volunteer=1')->assertOk();
+        $this->assertSame([$vol->id], array_column($res->json('data'), 'id'));
+        $this->assertSame(['tech'], $res->json('data.0.volunteer_applications.0.teams'));
+        $this->assertCount(1, $this->getJson('/api/v1/admin/members?volunteer=0')->json('data'));
+    }
+
     public function test_google_member_adding_the_drive_phone_merges_and_keeps_the_drive_number(): void
     {
         $drive = MembershipDrive::create(['name' => 'Camp']);

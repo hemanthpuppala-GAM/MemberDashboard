@@ -9,6 +9,7 @@ import { memberAuthApi } from "../../lib/memberAuth";
 import JoinButton from "../ui/JoinButton";
 import { useMemberSchedule } from "../useMemberSchedule";
 import { useMemberAuth } from "../../auth/MemberAuthContext";
+import AddPhoneCard from "../ui/AddPhoneCard";
 
 function formatMinutes(totalMinutes) {
   const hours = Math.floor(totalMinutes / 60);
@@ -48,6 +49,8 @@ export default function OverviewPage() {
 
   return (
     <div className="flex flex-col gap-6">
+      <AddPhoneCard />
+
       {/* Greeting hero — deep forest panel with gold, the same night-sky band as the site's Wisdom Library. */}
       <div className="member-hero relative overflow-hidden rounded-3xl px-6 py-7 sm:px-9 sm:py-9">
         <div className="relative flex flex-wrap items-center justify-between gap-6">

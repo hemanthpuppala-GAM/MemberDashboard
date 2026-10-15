@@ -152,6 +152,10 @@ export const supportApi = {
   ticket: (id) => supportFetch(`/support/tickets/${id}`),
   createTicket: (payload) => supportFetch("/support/tickets", { method: "POST", body: payload }),
   updateTicket: (id, payload) => supportFetch(`/support/tickets/${id}`, { method: "PATCH", body: payload }),
+  events: () => supportFetch("/support/events"),
+  createEvent: (payload) => supportFetch("/support/events", { method: "POST", body: payload }),
+  registerAtEvent: (id, payload) => supportFetch(`/support/events/${id}/register`, { method: "POST", body: payload }),
+  checkRegistrations: (payload) => supportFetch("/support/events/check", { method: "POST", body: payload }),
   addComment: (id, body, internal) =>
     supportFetch(`/support/tickets/${id}/comments`, { method: "POST", body: { body, internal } }),
 };

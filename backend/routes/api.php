@@ -58,6 +58,7 @@ use App\Http\Controllers\Api\Public\Settings\SettingController;
 use App\Http\Controllers\Api\Public\Content\TestimonialController;
 use App\Http\Controllers\Api\Public\Site\SiteContentController;
 use App\Http\Controllers\Api\Admin\Site\SiteContentController as AdminSiteContentController;
+use App\Http\Controllers\Api\Support\EventRegistrationController as SupportEventRegistrationController;
 use App\Http\Controllers\Api\Support\SupportAuthController;
 use App\Http\Controllers\Api\Support\TicketController as SupportTicketController;
 use App\Http\Controllers\Api\Support\SupportDashboardController;
@@ -151,6 +152,12 @@ Route::prefix('v1')->group(function () {
         Route::get('/tickets/{ticket}', [SupportTicketController::class, 'show']);
         Route::patch('/tickets/{ticket}', [SupportTicketController::class, 'update']);
         Route::post('/tickets/{ticket}/comments', [SupportTicketController::class, 'comment']);
+
+        // Event registration: sign people up as members by name + phone at a satsang or camp.
+        Route::get('/events', [SupportEventRegistrationController::class, 'index']);
+        Route::post('/events', [SupportEventRegistrationController::class, 'store']);
+        Route::post('/events/check', [SupportEventRegistrationController::class, 'check'])->middleware('throttle:30,1');
+        Route::post('/events/{drive}/register', [SupportEventRegistrationController::class, 'register'])->middleware('throttle:30,1');
     });
 
     // ---- Admin auth ----
