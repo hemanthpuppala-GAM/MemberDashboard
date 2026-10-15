@@ -13,7 +13,10 @@ class VolunteerApplicationController extends Controller
     public function index(Request $request)
     {
         $query = VolunteerApplication::query()
-            ->select(['id', 'name', 'email', 'phone', 'occupation', 'city', 'lang', 'category_id', 'teams', 'availability', 'member_num', 'member_id', 'notes', 'status', 'created_at'])
+            ->select(array_merge(
+                ['id', 'name', 'email', 'phone', 'occupation', 'city', 'lang', 'category_id', 'teams', 'availability', 'member_num', 'notes', 'status', 'created_at'],
+                \App\Services\People\MemberNumbers::ready() ? ['member_id'] : [],
+            ))
             ->with('category')
             ->latest();
 

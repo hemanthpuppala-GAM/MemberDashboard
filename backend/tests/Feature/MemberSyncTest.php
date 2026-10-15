@@ -35,6 +35,18 @@ class MemberSyncTest extends TestCase
         return Member::create($attrs + ['name' => 'Asha', 'category' => 'general', 'join_date' => now()]);
     }
 
+    public function test_sign_up_still_works_before_the_migration_has_run(): void
+    {
+        \App\Services\People\MemberNumbers::assumeReady(false);
+        try {
+            $m = Member::create(['name' => 'Early', 'email' => 'early@example.com', 'category' => 'general', 'join_date' => now(), 'source' => 'google']);
+            $this->assertTrue($m->exists);
+            $this->assertNull($m->fresh()->source); // not written while the column "doesn't exist"
+        } finally {
+            \App\Services\People\MemberNumbers::assumeReady(null);
+        }
+    }
+
     public function test_members_get_sequential_gaw_numbers_and_reserved_seats(): void
     {
         $a = $this->member(['email' => 'a@example.com']);

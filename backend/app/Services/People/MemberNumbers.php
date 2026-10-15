@@ -26,6 +26,12 @@ class MemberNumbers
         return self::$ready ??= Schema::hasColumn('members', 'member_num');
     }
 
+    /** Tests only: pretend the migration has / hasn't run (null = check again). */
+    public static function assumeReady(?bool $ready): void
+    {
+        self::$ready = $ready;
+    }
+
     public static function format(?int $num): ?string
     {
         return $num ? 'GAW-'.$num : null;
