@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
-import { ArrowLeft, Download, Eye, UserPlus, Trash2, MapPin, CalendarDays, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, Download, Eye, UserPlus, Trash2, MapPin, CalendarDays, CheckCircle2, Upload } from "lucide-react";
 import Card from "../../ui/Card";
 import Button from "../../ui/Button";
 import Badge from "../../ui/Badge";
@@ -41,6 +41,29 @@ export default function MembershipDrivePage() {
   const [result, setResult] = useState(null); // { rows, summary, preview }
   const [busy, setBusy] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const fileInput = useRef(null);
+  const [reading, setReading] = useState(false);
+  const [readNote, setReadNote] = useState("");
+
+  // CSV, or a photo / PDF of the sign-up sheet → lines in the box, to check before adding.
+  const readFile = async (file) => {
+    if (!file) return;
+    setReading(true);
+    setReadNote("");
+    try {
+      const res = await api.readDriveFile(file);
+      const found = (res.people || []).map((p) => [p.name, p.phone, p.email].filter(Boolean).map((v) => v.replace(/,/g, " ")).join(", "));
+      if (!found.length) throw new Error("No names or numbers found in that file.");
+      setLines((l) => [l.trim(), ...found].filter(Boolean).join("\n"));
+      setResult(null);
+      setReadNote(`Read ${found.length} ${found.length === 1 ? "person" : "people"} from the ${res.source === "photo" ? "photo" : "file"} — check them, then Preview.${res.note ? ` ${res.note}` : ""}`);
+    } catch (err) {
+      toast.error(errorText(err, "Could not read that file"));
+    } finally {
+      setReading(false);
+      if (fileInput.current) fileInput.current.value = "";
+    }
+  };
 
   const load = useCallback(
     () =>
@@ -122,8 +145,17 @@ export default function MembershipDrivePage() {
 
       <Card
         title="Add members"
-        description="Paste the numbers you collected. Check first with Preview — nothing is saved until you press Add. People already in the system keep their existing member ID."
+        description="Paste the numbers you collected, or upload a CSV or a photo of the sign-up sheet. Check first with Preview — nothing is saved until you press Add. People already in the system keep their existing member ID."
+        actions={
+          <>
+            <Button variant="secondary" icon={Upload} onClick={() => fileInput.current?.click()} disabled={!canEdit || reading}>
+              {reading ? "Reading…" : "Upload CSV or photo"}
+            </Button>
+            <input ref={fileInput} type="file" accept=".csv,.tsv,.txt,text/csv,image/*,application/pdf" className="hidden" onChange={(e) => readFile(e.target.files?.[0])} />
+          </>
+        }
       >
+        {readNote && <p className="mb-3 rounded-lg bg-[var(--a-accent-muted)] px-3.5 py-2.5 text-[13px] text-[var(--a-text-primary)]">{readNote}</p>}
         <TextArea rows={9} value={lines} onChange={(e) => { setLines(e.target.value); setResult(null); }} placeholder={PLACEHOLDER} disabled={!canEdit} className="font-mono text-[13px]" />
         <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
           <span className="text-[12.5px] text-[var(--a-text-faint)]">{lineCount} line{lineCount === 1 ? "" : "s"} · a bare 10-digit number is read as India (+91)</span>

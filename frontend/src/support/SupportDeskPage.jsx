@@ -7,6 +7,7 @@ import DeskHeader from "./components/DeskHeader";
 import KpiTiles from "./components/KpiTiles";
 import LogCallDialog from "./components/LogCallDialog";
 import TeamPanel from "./components/TeamPanel";
+import RegisterPanel from "./components/RegisterPanel";
 import TicketDetail from "./components/TicketDetail";
 import { TicketFilters, TicketList } from "./components/TicketList";
 import { Button, ErrorNote, Loading, Segmented } from "./components/ui";
@@ -33,6 +34,7 @@ function DeskGate() {
 
 const VIEWS = [
   { value: "tickets", label: "Tickets" },
+  { value: "register", label: "Event registration" },
   { value: "team", label: "Team & reviews" },
 ];
 
@@ -102,7 +104,9 @@ function Desk() {
           <Segmented label="Show" value={view} options={VIEWS} onChange={setView} />
         </div>
 
-        {view === "team" ? (
+        {view === "register" ? (
+          <RegisterPanel />
+        ) : view === "team" ? (
           <TeamPanel team={dash.data?.team} reviews={dash.data?.latest_reviews} meId={me?.id} />
         ) : (
           <div className={`grid items-start gap-5 ${selectedId ? "lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)]" : ""}`}>

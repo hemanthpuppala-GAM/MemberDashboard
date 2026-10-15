@@ -35,6 +35,17 @@ class MemberSyncTest extends TestCase
         return Member::create($attrs + ['name' => 'Asha', 'category' => 'general', 'join_date' => now()]);
     }
 
+    public function test_live_data_sync_is_scheduled_daily_at_3am_ist_after_the_backup(): void
+    {
+        $events = collect(app(\Illuminate\Console\Scheduling\Schedule::class)->events());
+        $sync = $events->first(fn ($e) => str_contains($e->command, 'supabase:sync --write --scheduled'));
+        $backup = $events->first(fn ($e) => str_contains($e->command, 'db:backup'));
+
+        $this->assertSame('0 3 * * *', $sync->expression);
+        $this->assertSame('Asia/Kolkata', $sync->timezone);
+        $this->assertSame('45 2 * * *', $backup->expression);
+    }
+
     public function test_sign_up_still_works_before_the_migration_has_run(): void
     {
         \App\Services\People\MemberNumbers::assumeReady(false);
@@ -117,6 +128,83 @@ class MemberSyncTest extends TestCase
         $again = $this->postJson("/api/v1/admin/membership-drives/{$drive['id']}/members", ['lines' => $lines])->json();
         $this->assertSame(0, $again['summary']['created']);
         $this->assertSame(6, Member::count());
+    }
+
+    public function test_support_desk_registers_people_at_an_event_by_name_and_phone(): void
+    {
+        $agent = new SupportAgent(['kind' => 'core', 'name' => 'Lakshmi', 'phone' => SupportAgent::normalizePhone('7396112111')]);
+        $agent->save();
+        $existing = $this->member(['phone' => '9876511111', 'name' => 'Old']);
+        Sanctum::actingAs($agent, [], 'sanctum');
+
+        $this->postJson('/api/v1/support/events/check', ['people' => [['name' => 'A', 'phone' => '9876544444']]])->assertOk()->assertJsonPath('summary.new', 1);
+        $this->assertSame(1, Member::count()); // checking saves nothing
+        $event = $this->postJson('/api/v1/support/events', ['name' => 'Guntur satsang'])->assertCreated()->json();
+        $this->assertSame(now()->toDateString(), substr($event['held_on'], 0, 10));
+
+        $people = [
+            ['name' => 'Ravi, Kumar', 'phone' => '98765 22222'],
+            ['name' => 'Old friend', 'phone' => '+91 98765 11111'],
+            ['name' => 'No phone', 'phone' => ''],
+            ['name' => 'Asha', 'phone' => '9876533333', 'email' => 'asha@example.com'],
+        ];
+        $preview = $this->postJson("/api/v1/support/events/{$event['id']}/register", ['people' => $people, 'preview' => true])->assertOk()->json();
+        $this->assertSame(2, $preview['summary']['new']);
+        $this->assertSame(1, $preview['summary']['existing']);
+        $this->assertSame(1, $preview['summary']['invalid']);
+
+        $done = $this->postJson("/api/v1/support/events/{$event['id']}/register", ['people' => $people])->assertOk()->json();
+        $this->assertSame(2, $done['summary']['created']);
+        $ravi = Member::where('phone_key', '919876522222')->first();
+        $this->assertSame('Ravi Kumar', $ravi->name);
+        $this->assertNull($ravi->email); // no made-up emails: phone alone identifies them
+        $this->assertSame($event['id'], $ravi->drive_id);
+        $this->assertSame($existing->member_code, collect($done['rows'])->firstWhere('status', 'existing')['member_code']);
+
+        // Registering the same phones again never creates a second member.
+        $this->postJson("/api/v1/support/events/{$event['id']}/register", ['people' => $people])->assertJsonPath('summary.created', 0);
+        $this->getJson('/api/v1/support/events')->assertJsonPath('0.members_count', 2);
+    }
+
+    public function test_csv_upload_and_photo_reading_feed_the_registration_list(): void
+    {
+        $agent = new SupportAgent(['kind' => 'core', 'name' => 'Lakshmi', 'phone' => SupportAgent::normalizePhone('7396112111')]);
+        $agent->save();
+        Sanctum::actingAs($agent, [], 'sanctum');
+
+        // Excel-style CSV: BOM, header in any order, semicolons.
+        $csv = "\xEF\xBB\xBFMobile No;Full Name;E-mail\n98765 22222;Ravi Kumar;\n9876533333;Sita;sita@example.com\n";
+        $file = \Illuminate\Http\UploadedFile::fake()->createWithContent('list.csv', $csv);
+        $this->post('/api/v1/support/events/read-file', ['file' => $file], ['Accept' => 'application/json'])
+            ->assertOk()
+            ->assertJsonPath('source', 'csv')
+            ->assertJsonPath('people.0', ['name' => 'Ravi Kumar', 'phone' => '98765 22222', 'email' => ''])
+            ->assertJsonPath('people.1.email', 'sita@example.com');
+
+        // No header: the phone-looking cell is the phone.
+        $this->assertSame([['name' => 'Asha Rao', 'phone' => '9876544444', 'email' => '']], \App\Services\People\SheetReader::fromCsv("Asha Rao,9876544444\n"));
+
+        // Photo without an API key: a clear message, not an error page.
+        config(['services.anthropic.key' => null]);
+        $this->post('/api/v1/support/events/read-file', ['file' => \Illuminate\Http\UploadedFile::fake()->image('sheet.jpg')], ['Accept' => 'application/json'])
+            ->assertStatus(422)->assertJsonPath('message', fn ($m) => str_contains($m, 'ANTHROPIC_API_KEY'));
+
+        // A number with digits the photo reader couldn't make out is never registered.
+        $res = $this->postJson('/api/v1/support/events/check', ['people' => [['name' => 'Sita', 'phone' => '98765 4??10']]])->json();
+        $this->assertSame('invalid', $res['rows'][0]['status']);
+    }
+
+    public function test_admin_members_can_be_filtered_to_volunteers(): void
+    {
+        $this->admin();
+        $vol = $this->member(['email' => 'vol@example.com']);
+        $this->member(['email' => 'plain@example.com']);
+        VolunteerApplication::create(['name' => 'Vol', 'email' => 'vol@example.com', 'phone' => '1', 'occupation' => '', 'city' => '', 'availability' => '', 'teams' => ['tech']]);
+
+        $res = $this->getJson('/api/v1/admin/members?volunteer=1')->assertOk();
+        $this->assertSame([$vol->id], array_column($res->json('data'), 'id'));
+        $this->assertSame(['tech'], $res->json('data.0.volunteer_applications.0.teams'));
+        $this->assertCount(1, $this->getJson('/api/v1/admin/members?volunteer=0')->json('data'));
     }
 
     public function test_google_member_adding_the_drive_phone_merges_and_keeps_the_drive_number(): void

@@ -131,6 +131,26 @@ async function supportFetch(path, { method = "GET", body, auth = true, token } =
   return data;
 }
 
+/** Multipart upload (a CSV or a photo of a list) with the same auth as supportFetch. */
+async function supportUpload(path, file) {
+  const kind = currentTokenKind();
+  const bearer = kind === "support" ? getSupportToken() : kind === "admin" ? usableAdminToken() : kind === "member" ? getMemberToken() : null;
+  const body = new FormData();
+  body.append("file", file);
+  let res;
+  try {
+    res = await fetch(`${API_URL}${path}`, { method: "POST", headers: { Accept: "application/json", ...(bearer ? { Authorization: `Bearer ${bearer}` } : {}) }, body });
+  } catch {
+    throw new SupportApiError("Can't reach the server. Check your internet connection and try again.", 0);
+  }
+  const data = res.headers.get("content-type")?.includes("application/json") ? await res.json().catch(() => null) : null;
+  if (!res.ok) {
+    const msg = res.status === 413 ? "That file is too large for the server. Try a smaller photo." : firstMessage(data) ?? `Something went wrong (${res.status}).`;
+    throw new SupportApiError(msg, res.status, data?.errors);
+  }
+  return data;
+}
+
 function firstMessage(data) {
   if (!data) return null;
   const errs = data.errors && Object.values(data.errors).flat();
@@ -152,6 +172,11 @@ export const supportApi = {
   ticket: (id) => supportFetch(`/support/tickets/${id}`),
   createTicket: (payload) => supportFetch("/support/tickets", { method: "POST", body: payload }),
   updateTicket: (id, payload) => supportFetch(`/support/tickets/${id}`, { method: "PATCH", body: payload }),
+  events: () => supportFetch("/support/events"),
+  createEvent: (payload) => supportFetch("/support/events", { method: "POST", body: payload }),
+  registerAtEvent: (id, payload) => supportFetch(`/support/events/${id}/register`, { method: "POST", body: payload }),
+  checkRegistrations: (payload) => supportFetch("/support/events/check", { method: "POST", body: payload }),
+  readListFile: (file) => supportUpload("/support/events/read-file", file),
   addComment: (id, body, internal) =>
     supportFetch(`/support/tickets/${id}/comments`, { method: "POST", body: { body, internal } }),
 };

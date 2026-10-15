@@ -84,11 +84,20 @@ return [
         'redirect' => env('APPLE_REDIRECT_URI'),
     ],
 
+    // Claude reads photos / PDFs of sign-up sheets (SheetReader). Without a key, CSV upload still works.
+    'anthropic' => [
+        'key' => env('ANTHROPIC_API_KEY'),
+        'model' => env('ANTHROPIC_MODEL', 'claude-opus-5-5'),
+        'base_url' => env('ANTHROPIC_BASE_URL'),
+    ],
+
     // Live site's Supabase project — read-only source for `php artisan supabase:sync` and
     // Admin → People → Data sync. The service key bypasses row security: keep it in .env only.
     'supabase' => [
         'url' => env('SUPABASE_URL'),
         'service_key' => env('SUPABASE_SERVICE_KEY'),
+        // Daily 03:00 IST pull (routes/console.php). Set false at go-live.
+        'auto_sync' => (bool) env('SUPABASE_AUTO_SYNC', true),
     ],
 
 ];

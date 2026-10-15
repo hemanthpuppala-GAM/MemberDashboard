@@ -18,7 +18,7 @@ class MemberController extends Controller
             ->select($ready
                 ? ['id', 'member_num', 'name', 'email', 'phone', 'category', 'status', 'source', 'drive_id', 'join_date', 'assigned_practitioner_id']
                 : ['id', 'name', 'email', 'phone', 'category', 'status', 'join_date', 'assigned_practitioner_id'])
-            ->with($ready ? ['practitioner:id,name', 'drive:id,name'] : ['practitioner:id,name'])
+            ->with($ready ? ['practitioner:id,name', 'drive:id,name', 'volunteerApplications:id,member_id,status,teams'] : ['practitioner:id,name'])
             ->withCount($ready ? ['volunteerApplications', 'tickets'] : ['tickets'])
             ->latest();
 
@@ -33,6 +33,9 @@ class MemberController extends Controller
         }
         if ($ready && ($driveId = $request->query('drive_id'))) {
             $query->where('drive_id', $driveId);
+        }
+        if ($ready && ($vol = $request->query('volunteer')) !== null && $vol !== '') {
+            $vol === '1' ? $query->has('volunteerApplications') : $query->doesntHave('volunteerApplications');
         }
         if ($ready && ($source = $request->query('source'))) {
             $query->where('source', $source);

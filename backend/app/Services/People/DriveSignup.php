@@ -54,7 +54,7 @@ class DriveSignup
                 }
                 if (! $email && str_contains($part, '@')) {
                     $email = strtolower($part);
-                } elseif (! $phone && preg_match('/^[+\d][\d\s\-().]{6,}$/', $part)) {
+                } elseif (! $phone && preg_match('/^[+\d?][\d\s\-().?]{6,}$/', $part)) {
                     $phone = $part;
                 } else {
                     $name[] = $part;
@@ -76,6 +76,13 @@ class DriveSignup
 
         $work = function () use ($drive, $text, $dryRun, &$rows, &$seen) {
             foreach (self::parse($text) as $p) {
+                // "98765 4??10": digits a photo reader couldn't make out — never register a guessed number.
+                if (str_contains((string) $p['phone'], '?')) {
+                    $rows[] = ['line' => $p['line'], 'name' => $p['name'], 'phone' => $p['phone'], 'email' => $p['email'], 'member_id' => null, 'member_code' => null,
+                        'status' => 'invalid', 'message' => 'Some digits unreadable — fix the number'];
+
+                    continue;
+                }
                 $key = MemberNumbers::phoneKey($p['phone']);
                 $email = $p['email'] && filter_var($p['email'], FILTER_VALIDATE_EMAIL) ? $p['email'] : null;
                 $row = ['line' => $p['line'], 'name' => $p['name'], 'phone' => $key ? '+'.$key : $p['phone'], 'email' => $email, 'member_id' => null, 'member_code' => null];
