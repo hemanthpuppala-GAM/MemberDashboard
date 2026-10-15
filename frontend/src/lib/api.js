@@ -48,7 +48,8 @@ export async function apiFetch(path, { method = "GET", body, auth = true } = {})
   const data = isJson ? await res.json().catch(() => null) : null;
 
   if (!res.ok) {
-    throw new ApiError(data?.message ?? `Request failed (${res.status})`, res.status, data?.errors);
+    const message = res.status === 413 ? "That file is larger than the server accepts. Try a smaller (lower-bitrate) file." : data?.message ?? `Request failed (${res.status})`;
+    throw new ApiError(message, res.status, data?.errors);
   }
 
   return data;
@@ -130,6 +131,7 @@ export const api = {
   deleteMedia: (id) => apiFetch(`/admin/media/${id}`, { method: "DELETE" }),
 
   music: () => apiFetch("/admin/music"),
+  musicLimits: () => apiFetch("/admin/music/limits"),
   createMusic: (formData) => apiUpload("/admin/music", formData),
   updateMusic: (id, formData) => apiUpload(`/admin/music/${id}`, formData, { method: "PUT" }),
   deleteMusic: (id) => apiFetch(`/admin/music/${id}`, { method: "DELETE" }),

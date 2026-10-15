@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { Plus, Pencil, Trash2, Music2, ChevronUp, ChevronDown, FileAudio } from "lucide-react";
+import { Plus, Pencil, Trash2, Music2, ChevronUp, ChevronDown } from "lucide-react";
 import Card from "../../ui/Card";
 import Button from "../../ui/Button";
 import IconButton from "../../ui/IconButton";
@@ -10,6 +10,8 @@ import Field, { TextInput, TextArea, Select } from "../../ui/Field";
 import { StatusBadge } from "../../ui/Badge";
 import EmptyState from "../../ui/EmptyState";
 import ImageUploader from "../../ui/ImageUploader";
+import AudioUploader from "../../ui/AudioUploader";
+import useUploadLimit from "../../ui/useUploadLimit";
 import { api } from "../../../lib/api";
 import { MUSIC_CATEGORIES } from "../../mock/mockData";
 import { usePermissions } from "../../usePermissions";
@@ -21,51 +23,6 @@ function formatDuration(sec) {
   const m = Math.floor(sec / 60);
   const s = Math.round(sec % 60);
   return `${m}:${String(s).padStart(2, "0")}`;
-}
-
-function AudioUploader({ fileUrl, fileName, onChange }) {
-  const fileInput = useRef(null);
-  const [dragOver, setDragOver] = useState(false);
-
-  const ingest = (files) => {
-    const file = files?.[0];
-    if (!file) return;
-    onChange({ file, fileUrl: URL.createObjectURL(file), fileName: file.name, durationSec: 0 });
-  };
-
-  return (
-    <div
-      onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
-      onDragLeave={() => setDragOver(false)}
-      onDrop={(e) => { e.preventDefault(); setDragOver(false); if (e.dataTransfer.files.length) ingest(e.dataTransfer.files); }}
-      className={`flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed p-6 text-center transition-colors ${
-        dragOver ? "border-[var(--a-accent)] bg-[var(--a-accent-muted)]" : "border-[var(--a-border)]"
-      }`}
-    >
-      <FileAudio size={22} className="text-[var(--a-accent)]" />
-      {fileUrl ? (
-        <div className="flex w-full flex-col items-center gap-2">
-          <p className="truncate text-[13px] font-medium text-[var(--a-text-primary)]">{fileName || "Audio file attached"}</p>
-          <audio
-            controls
-            src={fileUrl}
-            className="h-8 w-full max-w-xs"
-            onLoadedMetadata={(e) => {
-              const d = e.currentTarget.duration;
-              if (Number.isFinite(d)) onChange({ durationSec: Math.round(d) });
-            }}
-          />
-        </div>
-      ) : (
-        <p className="text-[13px] font-medium text-[var(--a-text-primary)]">Drag & drop an audio file</p>
-      )}
-      <p className="text-[12px] text-[var(--a-text-muted)]">or</p>
-      <Button as="button" size="sm" variant="secondary" onClick={() => fileInput.current?.click()}>
-        {fileUrl ? "Replace file" : "Browse files"}
-      </Button>
-      <input ref={fileInput} type="file" accept="audio/*" className="hidden" onChange={(e) => e.target.files.length && ingest(e.target.files)} />
-    </div>
-  );
 }
 
 function toFormData(form) {
@@ -93,6 +50,7 @@ export default function MusicLibraryPage() {
   const [toDelete, setToDelete] = useState(null);
   const [form, setForm] = useState(EMPTY);
   const [saving, setSaving] = useState(false);
+  const maxMb = useUploadLimit();
 
   const loadTracks = () => api.music().then(setMusicTracks);
 
@@ -167,7 +125,7 @@ export default function MusicLibraryPage() {
         <div>
           <h1 className="text-[24px] font-bold text-[var(--a-text-primary)]">Music library</h1>
           <p className="mt-1 text-[13.5px] text-[var(--a-text-muted)]">
-            Meditation and chanting tracks played on the public site. Draft tracks stay hidden until published.
+            Audio for the member area's Sit & Scribe sessions (and anywhere else tracks play). To swap a session's audio, edit the track here and replace its file — every session using it updates. Draft tracks stay hidden until published.
           </p>
         </div>
         <Button as="button" icon={Plus} onClick={openNew} disabled={loading || !canCreate} title={canCreate ? undefined : "You don't have permission to upload tracks"}>Upload track</Button>
@@ -220,7 +178,7 @@ export default function MusicLibraryPage() {
       >
         <div className="flex flex-col gap-5">
           <Field label="Audio file" required>
-            <AudioUploader fileUrl={form.fileUrl} fileName={form.fileName} onChange={set} />
+            <AudioUploader fileUrl={form.fileUrl} fileName={form.fileName} onChange={set} maxMb={maxMb} />
           </Field>
 
           <div className="grid gap-4 sm:grid-cols-2">

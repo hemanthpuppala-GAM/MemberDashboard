@@ -2,6 +2,9 @@
 
 Format: date · item · status (🟡 designed / ✅ implemented @sha / ⬅ code change to mirror in Design / ↩ mirrored in Design)
 
+## 2026-10-15 — Sit & Scribe tracks managed from admin
+- ⬅ code change: admin "Meditation Presets" is now "Sit & Scribe sessions"; a session can upload a new track in the same dialog (saved to the Music library, published) or pick one from the library, or be silent. Replacing a track's file in CMS → Music updates every session using it. Upload limit shown from the server. Member empty state: "Sessions will appear here soon." Design: Member Flow.dc.html Sit & Scribe.
+
 ## 2026-10-15 — Volunteer & Donate copy editable in CMS → Pages
 - ⬅ code change: Volunteer and Donate page wording moved from code into page content (backend `volunteer.json` / `donate.json`), editable in CMS → Pages → Volunteer / Donate. Same default copy, so nothing changes visually. Team cards' wording is per slug; which teams show stays in Volunteers → Categories. Design: Volunteer.dc.html, Donate page.
 

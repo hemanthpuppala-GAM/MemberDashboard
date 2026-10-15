@@ -209,6 +209,7 @@ Route::prefix('v1')->group(function () {
 
         // ---- Music ----
         Route::middleware('permission:music.view')->get('/music', [AdminMusicController::class, 'index']);
+        Route::middleware('permission:music.view')->get('/music/limits', [AdminMusicController::class, 'limits']);
         Route::middleware('permission:music.create')->post('/music', [AdminMusicController::class, 'store']);
         Route::middleware('permission:music.edit')->group(function () {
             Route::put('/music/reorder', [AdminMusicController::class, 'reorder']);

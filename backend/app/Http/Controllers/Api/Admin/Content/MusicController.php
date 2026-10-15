@@ -17,6 +17,21 @@ class MusicController extends Controller
         return response()->json(MusicTrack::orderBy('sort_order')->get());
     }
 
+    /** Largest upload this server accepts (the stricter of PHP's two limits and the 50 MB rule). */
+    public function limits()
+    {
+        $toMb = function (string $v): float {
+            $v = trim($v);
+            $n = (float) $v;
+            return match (strtolower(substr($v, -1))) {
+                'g' => $n * 1024, 'm' => $n, 'k' => $n / 1024, default => $n / 1048576,
+            };
+        };
+        $limits = array_filter([$toMb((string) ini_get('upload_max_filesize')), $toMb((string) ini_get('post_max_size')), 50.0], fn ($v) => $v > 0);
+
+        return response()->json(['max_mb' => (int) floor(min($limits))]);
+    }
+
     public function store(MusicTrackRequest $request)
     {
         $disk = config('filesystems.uploads_disk', 'public');
