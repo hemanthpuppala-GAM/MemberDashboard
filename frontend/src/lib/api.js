@@ -137,6 +137,11 @@ export const api = {
   deleteMusic: (id) => apiFetch(`/admin/music/${id}`, { method: "DELETE" }),
   reorderMusic: (trackIds) => apiFetch("/admin/music/reorder", { method: "PUT", body: { track_ids: trackIds } }),
 
+  dailyQuotes: () => apiFetch("/admin/daily-quotes"),
+  createDailyQuotes: (formData) => apiUpload("/admin/daily-quotes", formData),
+  updateDailyQuote: (id, payload) => apiFetch(`/admin/daily-quotes/${id}`, { method: "PUT", body: payload }),
+  deleteDailyQuote: (id) => apiFetch(`/admin/daily-quotes/${id}`, { method: "DELETE" }),
+
   sitPresets: () => apiFetch("/admin/sit-presets"),
   createSitPreset: (payload) => apiFetch("/admin/sit-presets", { method: "POST", body: payload }),
   updateSitPreset: (id, payload) => apiFetch(`/admin/sit-presets/${id}`, { method: "PUT", body: payload }),
@@ -302,6 +307,7 @@ export const publicApi = {
   events: () => apiFetch("/events", { auth: false }),
   music: () => apiFetch("/music", { auth: false }),
   sitPresets: () => apiFetch("/sit-presets", { auth: false }),
+  dailyQuote: () => apiFetch("/daily-quote", { auth: false }),
   testimonials: () => apiFetch("/testimonials", { auth: false }),
   featuredTestimonials: () => apiFetch("/testimonials/featured", { auth: false }),
   settings: () => apiFetch("/settings", { auth: false }),

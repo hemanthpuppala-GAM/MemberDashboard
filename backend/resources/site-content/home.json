@@ -72,6 +72,8 @@
   "eventHref": "#events",
   "testiKicker": "What members say",
   "testiCta": "More stories",
+  "quoteKicker": "Quote of the day",
+  "quoteCta": "Read today’s musing",
   "chapters": [
     {
       "label": "Rituals",

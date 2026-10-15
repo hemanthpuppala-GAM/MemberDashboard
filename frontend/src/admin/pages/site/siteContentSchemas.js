@@ -179,7 +179,7 @@ export const SITE_CONTENT_SCHEMAS = {
       },
       {
         title: "Cards beside the tree",
-        description: "Upcoming card (shows the next Live Session when there is one) and the members-say card.",
+        description: "Upcoming card (shows the next Live Session when there is one), the members-say card, and the Quote of the day card (posters are uploaded in CMS → Quote of the day; with none, it shows Watch the intro).",
         columns: 2,
         fields: [
           { key: "eventKicker", label: "Upcoming · kicker", type: "text" },
@@ -189,6 +189,8 @@ export const SITE_CONTENT_SCHEMAS = {
           { key: "eventHref", label: "Upcoming · link", type: "text" },
           { key: "testiKicker", label: "Members say · kicker", type: "text" },
           { key: "testiCta", label: "Members say · link label", type: "text" },
+          { key: "quoteKicker", label: "Quote of the day · kicker", type: "text" },
+          { key: "quoteCta", label: "Quote of the day · link label", type: "text" },
         ],
       },
       {

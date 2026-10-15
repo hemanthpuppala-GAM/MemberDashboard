@@ -25,6 +25,7 @@ import ContactInfoPage from "./pages/cms/ContactInfoPage";
 import DonationsPage from "./pages/cms/DonationsPage";
 import MusicLibraryPage from "./pages/cms/MusicLibraryPage";
 import SitPresetsPage from "./pages/cms/SitPresetsPage";
+import DailyQuotesPage from "./pages/cms/DailyQuotesPage";
 import EventsPage from "./pages/cms/EventsPage";
 import TestimonialsPage from "./pages/cms/TestimonialsPage";
 import SiteContentEditorPage from "./pages/site/SiteContentEditorPage";
@@ -82,6 +83,7 @@ export default function AdminApp() {
                 <Route path="cms/donations" element={guarded("donations.view", <DonationsPage />)} />
                 <Route path="cms/music" element={guarded("music.view", <MusicLibraryPage />)} />
                 <Route path="cms/sit-presets" element={guarded("music.view", <SitPresetsPage />)} />
+                <Route path="cms/quotes" element={guarded("cms.view", <DailyQuotesPage />)} />
                 <Route path="cms/events" element={guarded("cms.view", <EventsPage />)} />
                 <Route path="cms/testimonials" element={guarded("testimonials.view", <TestimonialsPage />)} />
                 {/* Old "Site content" URLs → the page copy editor now lives inside CMS → Pages. */}
