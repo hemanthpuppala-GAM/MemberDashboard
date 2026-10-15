@@ -171,7 +171,7 @@ export default function SitScribePage() {
 
       {!presetsError && presets && presets.length === 0 && (
         <Card padded={false}>
-          <EmptyState icon={Music2} title="No sessions available yet" description="Ask an admin to add meditation presets in CMS → Meditation Presets." />
+          <EmptyState icon={Music2} title="No sessions available yet" description="Sessions will appear here soon." />
         </Card>
       )}
 
