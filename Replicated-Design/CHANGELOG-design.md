@@ -2,6 +2,9 @@
 
 Format: date · item · status (🟡 designed / ✅ implemented @sha / ⬅ code change to mirror in Design / ↩ mirrored in Design)
 
+## 2026-10-15 — Volunteer & Donate copy editable in CMS → Pages
+- ⬅ code change: Volunteer and Donate page wording moved from code into page content (backend `volunteer.json` / `donate.json`), editable in CMS → Pages → Volunteer / Donate. Same default copy, so nothing changes visually. Team cards' wording is per slug; which teams show stays in Volunteers → Categories. Design: Volunteer.dc.html, Donate page.
+
 ## 2026-10-15 — One member, one ID, everywhere (team request: admin in sync with desk, volunteers, Supabase)
 - ⬅ code change: every member has a member ID `GAW-nnnnnn` (same scheme as the live site's Supabase `gaw_signup`: from 100001, reserved seats skipped). Shown in admin Members (column + search), member profile, Volunteers, the support desk requester card, and the member-area sidebar ("Member ID · GAW-…"). Design: Member Flow.dc.html sidebar, Support Desk.dc.html requester card.
 - ⬅ code change: one person = one member across Google sign-in, volunteer form, membership drives and desk calls (matched by email, else phone). Admin member profile has an "Across the platform" card: sits, journal, tickets, volunteer status, drive.

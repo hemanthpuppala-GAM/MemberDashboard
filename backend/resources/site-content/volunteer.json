@@ -1,0 +1,77 @@
+{
+  "kicker": "Seva · service",
+  "title": "The work is quiet,",
+  "titleAccent": "and there is a lot of it.",
+  "intro": "Chairs get carried, calls get answered, someone new writes at midnight frightened by what they felt in meditation. None of it is glamorous. All of it is the movement. Tell us where you would like to stand.",
+  "serveLabel": "Where you would like to serve",
+  "serveHint": "Choose as many as you mean. Somebody will read this by hand.",
+  "teams": [
+    {
+      "id": "events-setup",
+      "glyph": "△",
+      "title": "Events — on the ground",
+      "desc": "Setting up halls, chairs, mats, sound and signage. Arrive early, leave last."
+    },
+    {
+      "id": "helpline",
+      "glyph": "☎",
+      "title": "Helpline — first level",
+      "desc": "Answer the first message or call, understand what is being asked, and pass it to the right team."
+    },
+    {
+      "id": "local-event",
+      "glyph": "◎",
+      "title": "Local event volunteer",
+      "desc": "Host or help run sits and gatherings in your own city."
+    },
+    {
+      "id": "kundalini-share",
+      "glyph": "✦",
+      "title": "Experiences & doubts — for seasoned meditators",
+      "desc": "Members write in about what rose in meditation — kundalini stirrings, heat, fear, something they cannot name. You have sat long enough to answer plainly and leave them unworried."
+    },
+    {
+      "id": "donor",
+      "glyph": "❋",
+      "title": "Donor member",
+      "desc": "Give regularly so the teachings stay free for everyone else."
+    },
+    {
+      "id": "social-media",
+      "glyph": "☾",
+      "title": "Social media",
+      "desc": "Write, film, edit and post — carry the work to people who have not heard of it."
+    },
+    {
+      "id": "tech",
+      "glyph": "▽",
+      "title": "Tech",
+      "desc": "The website, the streams, the member tools. Anything that has to keep working."
+    }
+  ],
+  "aboutLabel": "About you",
+  "nameLabel": "Your name",
+  "namePlaceholder": "Full name",
+  "emailLabel": "Email",
+  "phoneLabel": "Phone or WhatsApp",
+  "phonePlaceholder": "With country code, e.g. +91",
+  "cityLabel": "City",
+  "cityPlaceholder": "Hyderabad, Pune, anywhere",
+  "availLabel": "How much time can you give?",
+  "noteLabel": "Anything you want us to know",
+  "notePlaceholder": "Skills, languages you speak, when you are usually free, or why this matters to you.",
+  "submitLabel": "Count me in",
+  "nextLabel": "What happens next",
+  "steps": [
+    "Your note reaches a coordinator for each team you chose — not a queue, a person.",
+    "They write back to understand what you enjoy and what you would rather not do.",
+    "You are added to that team’s circle and start at whatever pace suits you."
+  ],
+  "smallTitle": "No commitment is too small",
+  "smallBody": "One event a year is help. Answering three messages a week is help. Say what is true and we will never ask for more than that.",
+  "writeLabel": "Rather write to a person?",
+  "sentTitle": "Thank you for offering to serve.",
+  "sentBody": "Thank you — we have your note.",
+  "footerTitle": "Seva is the movement",
+  "footerSub": "Every hour offered keeps the sits free and the doors open."
+}

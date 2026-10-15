@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 class SiteContent extends Model
 {
     /** Public pages whose copy is editable from Admin → Site content. */
-    public const PAGES = ['home', 'about', 'mission', 'meditation', 'wisdom', 'wellness', 'events'];
+    public const PAGES = ['home', 'about', 'mission', 'meditation', 'wisdom', 'wellness', 'events', 'volunteer', 'donate'];
 
     /**
      * Default copy for a page (resources/site-content/{page}.json). The backend owns these:
