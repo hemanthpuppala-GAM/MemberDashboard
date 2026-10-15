@@ -23,7 +23,8 @@ class TicketController extends Controller
     public function index(Request $request)
     {
         $agent = $this->agent($request);
-        $q = Ticket::query()->with(['assignee', 'member:id,member_num'])->withCount('comments');
+        $ready = \App\Services\People\MemberNumbers::ready();
+        $q = Ticket::query()->with($ready ? ['assignee', 'member:id,member_num'] : ['assignee'])->withCount('comments');
 
         match ($request->query('scope', 'open')) {
             'mine' => $q->where('assigned_agent_id', $agent->id)->whereIn('status', Ticket::OPEN_STATUSES),
@@ -44,7 +45,7 @@ class TicketController extends Controller
         }
         if ($term = trim((string) $request->query('q'))) {
             $id = (int) preg_replace('/\D+/', '', $term);
-            $q->where(function ($w) use ($term, $id) {
+            $q->where(function ($w) use ($term, $id, $ready) {
                 $like = '%'.$term.'%';
                 $w->where('subject', 'like', $like)
                     ->orWhere('body', 'like', $like)
@@ -54,7 +55,7 @@ class TicketController extends Controller
                 if ($id > 0) {
                     $w->orWhere('id', $id);
                 }
-                if ($num = \App\Services\People\MemberNumbers::parse($term)) {
+                if ($ready && ($num = \App\Services\People\MemberNumbers::parse($term))) {
                     $w->orWhereHas('member', fn ($m) => $m->where('member_num', $num)); // "GAW-100023"
                 }
             });

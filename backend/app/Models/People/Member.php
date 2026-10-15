@@ -44,7 +44,16 @@ class Member extends Authenticatable
         });
 
         static::saving(function (Member $member) {
-            if (MemberNumbers::ready() && ($member->isDirty('phone') || ! $member->exists)) {
+            // Before `php artisan migrate` adds these columns (deploys don't migrate), drop them so
+            // sign-ups and sign-ins keep working instead of failing on an unknown column.
+            if (! MemberNumbers::ready()) {
+                foreach (['member_num', 'phone_key', 'role_title', 'source', 'drive_id'] as $column) {
+                    unset($member->attributes[$column]);
+                }
+
+                return;
+            }
+            if ($member->isDirty('phone') || ! $member->exists) {
                 $member->phone_key = MemberNumbers::phoneKey($member->phone);
             }
         });

@@ -13,10 +13,13 @@ class MemberController extends Controller
 {
     public function index(Request $request)
     {
+        $ready = MemberNumbers::ready(); // false until `php artisan migrate` has run
         $query = Member::query()
-            ->select(['id', 'member_num', 'name', 'email', 'phone', 'category', 'status', 'source', 'drive_id', 'join_date', 'assigned_practitioner_id'])
-            ->with(['practitioner:id,name', 'drive:id,name'])
-            ->withCount(['volunteerApplications', 'tickets'])
+            ->select($ready
+                ? ['id', 'member_num', 'name', 'email', 'phone', 'category', 'status', 'source', 'drive_id', 'join_date', 'assigned_practitioner_id']
+                : ['id', 'name', 'email', 'phone', 'category', 'status', 'join_date', 'assigned_practitioner_id'])
+            ->with($ready ? ['practitioner:id,name', 'drive:id,name'] : ['practitioner:id,name'])
+            ->withCount($ready ? ['volunteerApplications', 'tickets'] : ['tickets'])
             ->latest();
 
         if ($category = $request->query('category')) {
@@ -28,15 +31,15 @@ class MemberController extends Controller
         if ($practitionerId = $request->query('assigned_practitioner_id')) {
             $query->where('assigned_practitioner_id', $practitionerId);
         }
-        if ($driveId = $request->query('drive_id')) {
+        if ($ready && ($driveId = $request->query('drive_id'))) {
             $query->where('drive_id', $driveId);
         }
-        if ($source = $request->query('source')) {
+        if ($ready && ($source = $request->query('source'))) {
             $query->where('source', $source);
         }
         if ($search = trim((string) $request->query('search'))) {
-            $num = MemberNumbers::parse($search);
-            $phone = MemberNumbers::phoneKey($search);
+            $num = $ready ? MemberNumbers::parse($search) : null;
+            $phone = $ready ? MemberNumbers::phoneKey($search) : null;
             $query->where(fn ($q) => $q->where('name', 'like', "{$search}%")->orWhere('email', 'like', "{$search}%")
                 ->when($num, fn ($q) => $q->orWhere('member_num', $num))
                 ->when($phone, fn ($q) => $q->orWhere('phone_key', $phone)));
@@ -58,14 +61,15 @@ class MemberController extends Controller
 
     public function show(Member $member)
     {
-        $member->load('practitioner:id,name', 'sourceSubmission:id,message', 'drive:id,name,held_on');
+        $ready = MemberNumbers::ready();
+        $member->load(array_filter(['practitioner:id,name', 'sourceSubmission:id,message', $ready ? 'drive:id,name,held_on' : null]));
 
         // Everything this person has done anywhere — volunteer, support desk, practice, journal.
         return response()->json([
             ...$member->toArray(),
             'linked' => [
-                'volunteer_applications' => $member->volunteerApplications()->with('category:id,name')
-                    ->get(['id', 'member_id', 'name', 'status', 'teams', 'availability', 'city', 'category_id', 'created_at']),
+                'volunteer_applications' => $ready ? $member->volunteerApplications()->with('category:id,name')
+                    ->get(['id', 'member_id', 'name', 'status', 'teams', 'availability', 'city', 'category_id', 'created_at']) : [],
                 'tickets' => $member->tickets()->limit(20)
                     ->get(['id', 'member_id', 'source', 'subject', 'status', 'priority', 'created_at'])
                     ->map(fn ($t) => ['id' => $t->id, 'ref' => $t->ref, 'source' => $t->source, 'subject' => $t->subject, 'status' => $t->status, 'priority' => $t->priority, 'created_at' => $t->created_at]),
@@ -106,7 +110,9 @@ class MemberController extends Controller
 
     public function export()
     {
-        $rows = Member::with(['practitioner:id,name', 'drive:id,name'])->orderBy('member_num')->get();
+        $rows = MemberNumbers::ready()
+            ? Member::with(['practitioner:id,name', 'drive:id,name'])->orderBy('member_num')->get()
+            : Member::with('practitioner:id,name')->orderBy('id')->get();
 
         $csv = "Member ID,Name,Email,Phone,Category,Status,Source,Drive,Practitioner,Joined\n";
         foreach ($rows as $row) {
