@@ -12,12 +12,16 @@ class DataSyncController extends Controller
 {
     public const CACHE_KEY = 'data_sync.last_report';
 
+    public const ERROR_KEY = 'data_sync.last_error';
+
     public function show()
     {
         return response()->json([
             'configured' => SupabaseSync::configured(),
             'tables' => SupabaseSync::TABLES,
             'last' => Cache::get(self::CACHE_KEY),
+            'last_error' => Cache::get(self::ERROR_KEY),
+            'auto' => (bool) config('services.supabase.auto_sync'),
         ]);
     }
 
@@ -43,6 +47,7 @@ class DataSyncController extends Controller
         $report['by'] = $request->user()->name;
         if (! $report['dry_run']) {
             Cache::forever(self::CACHE_KEY, $report);
+            Cache::forget(self::ERROR_KEY);
         }
 
         return response()->json($report);

@@ -8,8 +8,13 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
-// Runs via the cPanel cron `php artisan schedule:run` (see DEPLOY.md).
-Schedule::command('db:backup')->dailyAt('03:30');
+// Runs via the cPanel cron `php artisan schedule:run` every minute (see DEPLOY.md).
+// Back up first, then pull the live site's Supabase data (until go-live; SUPABASE_AUTO_SYNC=false stops it).
+Schedule::command('db:backup')->dailyAt('02:45')->timezone('Asia/Kolkata');
+Schedule::command('supabase:sync --write --scheduled')
+    ->dailyAt('03:00')->timezone('Asia/Kolkata')
+    ->withoutOverlapping()
+    ->when(fn () => config('services.supabase.auto_sync') && \App\Services\People\SupabaseSync::configured());
 
 // Store every page's full copy (defaults + any admin edits) in the database, so the DB alone
 // holds the site's content. Never overwrites an admin edit; only fills keys the DB lacks.
@@ -54,14 +59,27 @@ Artisan::command('cms:delete-old-site {--force : Actually delete}', function () 
     $this->info("Deleted {$sections} old-site sections and the page_contents table.");
 })->purpose('Delete the previous site\'s CMS sections and legacy content table (dry run unless --force)');
 
-Artisan::command('supabase:sync {--write : Save the changes (default is a dry run)} {--from= : Folder of exported members.json/.csv, volunteers…, instead of the Supabase API} {--only=* : Only these tables}', function () {
+Artisan::command('supabase:sync {--write : Save the changes (default is a dry run)} {--from= : Folder of exported members.json/.csv, volunteers…, instead of the Supabase API} {--only=* : Only these tables} {--scheduled : Run by the daily schedule}', function () {
     $from = $this->option('from');
     if (! $from && ! \App\Services\People\SupabaseSync::configured()) {
         $this->error('Set SUPABASE_URL and SUPABASE_SERVICE_KEY in .env, or pass --from=<folder of exports>.');
 
         return 1;
     }
-    $report = (new \App\Services\People\SupabaseSync($from ?: null))->run(! $this->option('write'), $this->option('only') ?: null);
+    $cache = \Illuminate\Support\Facades\Cache::store();
+    try {
+        $report = (new \App\Services\People\SupabaseSync($from ?: null))->run(! $this->option('write'), $this->option('only') ?: null);
+    } catch (\Throwable $e) {
+        report($e);
+        // Shown on Admin → People → Data sync so a failed nightly run doesn't go unnoticed.
+        $cache->forever(\App\Http\Controllers\Api\Admin\People\DataSyncController::ERROR_KEY, [
+            'at' => now()->toIso8601String(),
+            'message' => \Illuminate\Support\Str::limit(strtok($e->getMessage(), "\n"), 240),
+        ]);
+        $this->error('Sync failed — nothing was saved. '.$e->getMessage());
+
+        return 1;
+    }
 
     $this->table(['Table', 'Rows', 'Created', 'Updated', 'Unchanged', 'Skipped'], collect($report['counts'])
         ->map(fn ($c, $t) => [$t, $c['rows'], $c['created'], $c['updated'], $c['unchanged'], $c['skipped']])->values()->all());
@@ -71,7 +89,8 @@ Artisan::command('supabase:sync {--write : Save the changes (default is a dry ru
     if ($report['dry_run']) {
         $this->warn('Dry run — nothing saved. Run again with --write to apply.');
     } else {
-        \Illuminate\Support\Facades\Cache::forever(\App\Http\Controllers\Api\Admin\People\DataSyncController::CACHE_KEY, $report + ['by' => 'artisan']);
+        $cache->forever(\App\Http\Controllers\Api\Admin\People\DataSyncController::CACHE_KEY, $report + ['by' => $this->option('scheduled') ? 'daily schedule' : 'artisan']);
+        $cache->forget(\App\Http\Controllers\Api\Admin\People\DataSyncController::ERROR_KEY);
         $this->info('Saved. Safe to run again any time — nothing is duplicated.');
     }
 

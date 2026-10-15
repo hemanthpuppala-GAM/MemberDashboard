@@ -115,6 +115,10 @@ Zip everything in `backend/` **except** `.env`, `node_modules/`, `storage/logs/*
 - *Run workflow* → **production** → deploys to the live root and `backend/`. Production is never automatic.
 - The server's `.env`, `storage/logs`, sessions/cache and `storage/app` are never overwritten. Uploads are incremental (only changed files).
 - Still manual after a backend deploy: `php artisan migrate --force` and the cache commands from §3 in cPanel Terminal.
+- **Cron (once per server):** cPanel → Cron Jobs → every minute:
+  `php /home/<cpanel-user>/public_html/goldenagewisdom.org/staging/backend/artisan schedule:run >> /dev/null 2>&1`
+  This runs the 2:45 AM IST database backup and the 3:00 AM IST Supabase → staging sync (until go-live; set
+  `SUPABASE_AUTO_SYNC=false` in `.env` and re-run `php artisan config:cache` to stop it).
 - Optional repo variables: `FTP_ROOT` (default `public_html/goldenagewisdom.org/` — set if the FTP account starts somewhere other than the home folder), `FTP_PROTOCOL` (`ftps` default; `ftp` if FTPS fails).
 
 ## 6. Backend `.env` checklist (staging → production differences)

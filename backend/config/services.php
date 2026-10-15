@@ -89,6 +89,8 @@ return [
     'supabase' => [
         'url' => env('SUPABASE_URL'),
         'service_key' => env('SUPABASE_SERVICE_KEY'),
+        // Daily 03:00 IST pull (routes/console.php). Set false at go-live.
+        'auto_sync' => (bool) env('SUPABASE_AUTO_SYNC', true),
     ],
 
 ];

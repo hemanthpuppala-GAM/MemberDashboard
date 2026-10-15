@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { Eye, RefreshCw, KeyRound, CheckCircle2 } from "lucide-react";
+import { Eye, RefreshCw, KeyRound, CheckCircle2, Clock, AlertTriangle } from "lucide-react";
 import Card from "../../ui/Card";
 import Button from "../../ui/Button";
 import Badge from "../../ui/Badge";
@@ -77,7 +77,7 @@ export default function DataSyncPage() {
       setReport(res);
       if (!preview) {
         toast.success("Synced — safe to run again any time");
-        setState((s) => ({ ...s, last: res }));
+        setState((s) => ({ ...s, last: res, last_error: null }));
       }
     } catch (err) {
       toast.error(err.message ?? "Sync failed");
@@ -98,6 +98,23 @@ export default function DataSyncPage() {
           here is deleted.
         </p>
       </div>
+
+      {state.configured && (
+        <div className="flex flex-col gap-2">
+          <p className="inline-flex items-center gap-2 text-[13px] text-[var(--a-text-muted)]">
+            <Clock size={15} className="text-[var(--a-accent)]" />
+            {state.auto
+              ? "Runs automatically every day at 3:00 AM IST (after the 2:45 AM database backup). You can also sync any time below."
+              : "Automatic daily sync is off (SUPABASE_AUTO_SYNC=false) — sync by hand below."}
+          </p>
+          {state.last_error && (
+            <p className="flex items-start gap-2 rounded-xl border border-[var(--a-danger)]/30 bg-[var(--a-danger-muted)] px-3.5 py-2.5 text-[13px] text-[var(--a-danger)]">
+              <AlertTriangle size={15} className="mt-0.5 shrink-0" />
+              <span>Last sync failed on {fmt(state.last_error.at)} — nothing was saved. {state.last_error.message}</span>
+            </p>
+          )}
+        </div>
+      )}
 
       {!state.configured ? (
         <Card>

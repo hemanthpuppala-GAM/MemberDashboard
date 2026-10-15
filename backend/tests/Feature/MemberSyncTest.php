@@ -35,6 +35,17 @@ class MemberSyncTest extends TestCase
         return Member::create($attrs + ['name' => 'Asha', 'category' => 'general', 'join_date' => now()]);
     }
 
+    public function test_live_data_sync_is_scheduled_daily_at_3am_ist_after_the_backup(): void
+    {
+        $events = collect(app(\Illuminate\Console\Scheduling\Schedule::class)->events());
+        $sync = $events->first(fn ($e) => str_contains($e->command, 'supabase:sync --write --scheduled'));
+        $backup = $events->first(fn ($e) => str_contains($e->command, 'db:backup'));
+
+        $this->assertSame('0 3 * * *', $sync->expression);
+        $this->assertSame('Asia/Kolkata', $sync->timezone);
+        $this->assertSame('45 2 * * *', $backup->expression);
+    }
+
     public function test_sign_up_still_works_before_the_migration_has_run(): void
     {
         \App\Services\People\MemberNumbers::assumeReady(false);
