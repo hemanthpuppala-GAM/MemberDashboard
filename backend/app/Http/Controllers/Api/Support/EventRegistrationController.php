@@ -50,6 +50,17 @@ class EventRegistrationController extends Controller
         return response()->json(DriveSignup::run($drive, $text, $preview));
     }
 
+    /** Read an uploaded CSV, or a photo / PDF of a sign-up sheet, into rows to check (nothing is saved). */
+    public function readFile(Request $request)
+    {
+        $request->validate(['file' => ['required', 'file', 'max:15360']]); // 15 MB
+        try {
+            return response()->json(\App\Services\People\SheetReader::read($request->file('file')));
+        } catch (\RuntimeException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
+    }
+
     /** Check a list before the event exists (nothing is saved). */
     public function check(Request $request)
     {

@@ -166,6 +166,34 @@ class MemberSyncTest extends TestCase
         $this->getJson('/api/v1/support/events')->assertJsonPath('0.members_count', 2);
     }
 
+    public function test_csv_upload_and_photo_reading_feed_the_registration_list(): void
+    {
+        $agent = new SupportAgent(['kind' => 'core', 'name' => 'Lakshmi', 'phone' => SupportAgent::normalizePhone('7396112111')]);
+        $agent->save();
+        Sanctum::actingAs($agent, [], 'sanctum');
+
+        // Excel-style CSV: BOM, header in any order, semicolons.
+        $csv = "\xEF\xBB\xBFMobile No;Full Name;E-mail\n98765 22222;Ravi Kumar;\n9876533333;Sita;sita@example.com\n";
+        $file = \Illuminate\Http\UploadedFile::fake()->createWithContent('list.csv', $csv);
+        $this->post('/api/v1/support/events/read-file', ['file' => $file], ['Accept' => 'application/json'])
+            ->assertOk()
+            ->assertJsonPath('source', 'csv')
+            ->assertJsonPath('people.0', ['name' => 'Ravi Kumar', 'phone' => '98765 22222', 'email' => ''])
+            ->assertJsonPath('people.1.email', 'sita@example.com');
+
+        // No header: the phone-looking cell is the phone.
+        $this->assertSame([['name' => 'Asha Rao', 'phone' => '9876544444', 'email' => '']], \App\Services\People\SheetReader::fromCsv("Asha Rao,9876544444\n"));
+
+        // Photo without an API key: a clear message, not an error page.
+        config(['services.anthropic.key' => null]);
+        $this->post('/api/v1/support/events/read-file', ['file' => \Illuminate\Http\UploadedFile::fake()->image('sheet.jpg')], ['Accept' => 'application/json'])
+            ->assertStatus(422)->assertJsonPath('message', fn ($m) => str_contains($m, 'ANTHROPIC_API_KEY'));
+
+        // A number with digits the photo reader couldn't make out is never registered.
+        $res = $this->postJson('/api/v1/support/events/check', ['people' => [['name' => 'Sita', 'phone' => '98765 4??10']]])->json();
+        $this->assertSame('invalid', $res['rows'][0]['status']);
+    }
+
     public function test_admin_members_can_be_filtered_to_volunteers(): void
     {
         $this->admin();

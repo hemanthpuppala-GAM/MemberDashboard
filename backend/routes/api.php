@@ -157,6 +157,7 @@ Route::prefix('v1')->group(function () {
         Route::get('/events', [SupportEventRegistrationController::class, 'index']);
         Route::post('/events', [SupportEventRegistrationController::class, 'store']);
         Route::post('/events/check', [SupportEventRegistrationController::class, 'check'])->middleware('throttle:30,1');
+        Route::post('/events/read-file', [SupportEventRegistrationController::class, 'readFile'])->middleware('throttle:10,1');
         Route::post('/events/{drive}/register', [SupportEventRegistrationController::class, 'register'])->middleware('throttle:30,1');
     });
 
@@ -307,6 +308,7 @@ Route::prefix('v1')->group(function () {
         });
         Route::middleware('permission:members.edit')->group(function () {
             Route::post('/membership-drives', [MembershipDriveController::class, 'store']);
+            Route::post('/membership-drives/read-file', [MembershipDriveController::class, 'readFile'])->middleware('throttle:10,1');
             Route::put('/membership-drives/{drive}', [MembershipDriveController::class, 'update']);
             Route::post('/membership-drives/{drive}/members', [MembershipDriveController::class, 'addMembers']);
         });

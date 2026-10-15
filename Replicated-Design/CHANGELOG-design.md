@@ -6,6 +6,7 @@ Format: date · item · status (🟡 designed / ✅ implemented @sha / ⬅ code 
 - ⬅ code change: admin Members has a "Volunteer" column (status + teams) and an Everyone / Volunteers only / Not volunteers filter.
 - ⬅ code change: member dashboard Overview shows a dismissible "Add your phone number" card when the account has no phone (Google gives none); saving it joins an event-registered (phone-only) member to this account, keeping the older member ID. Design: Member Flow.dc.html overview.
 - ⬅ code change: Support desk has an "Event registration" tab: pick or create an event, type name + phone per person (or paste a list), Check first, Register. Email optional; one member per phone/email, each with a GAW ID. Design: Support Desk.dc.html.
+- ⬅ code change: Event registration (desk) and Membership drives (admin) accept a CSV upload or a photo/PDF of a sign-up sheet (read by Claude); the rows appear for checking before Register. Digits the reader couldn't make out show as "?" in red and are never registered. Design: Support Desk.dc.html.
 
 ## 2026-10-15 — Sit & Scribe tracks managed from admin
 - ⬅ code change: admin "Meditation Presets" is now "Sit & Scribe sessions"; a session can upload a new track in the same dialog (saved to the Music library, published) or pick one from the library, or be silent. Replacing a track's file in CMS → Music updates every session using it. Upload limit shown from the server. Member empty state: "Sessions will appear here soon." Design: Member Flow.dc.html Sit & Scribe.

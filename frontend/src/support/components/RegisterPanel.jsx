@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Plus, Trash2, UserPlus, Eye, ClipboardList, CheckCircle2 } from "lucide-react";
+import { Plus, Trash2, UserPlus, Eye, ClipboardList, CheckCircle2, FileSpreadsheet, Camera, Info } from "lucide-react";
 import { supportApi } from "../supportApi";
 import { Button, ErrorNote, inputClass, cardClass } from "./ui";
 
-const NEW_ROW = () => ({ key: Math.random().toString(36).slice(2), name: "", phone: "" });
+const NEW_ROW = () => ({ key: Math.random().toString(36).slice(2), name: "", phone: "", email: "" });
 const today = () => new Date().toISOString().slice(0, 10);
 
 const RESULT = {
@@ -30,6 +30,32 @@ export default function RegisterPanel() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const lastPhone = useRef(null);
+  const csvInput = useRef(null);
+  const photoInput = useRef(null);
+  const [reading, setReading] = useState("");
+  const [readNote, setReadNote] = useState("");
+
+  // CSV or a photo of the sign-up sheet → rows below, to check before registering.
+  const readFile = async (file, kind) => {
+    if (!file) return;
+    setReading(kind);
+    setError("");
+    setReadNote("");
+    try {
+      const res = await supportApi.readListFile(file);
+      const found = (res.people || []).map((p) => ({ ...NEW_ROW(), name: p.name || "", phone: p.phone || "", email: p.email || "" }));
+      if (!found.length) throw new Error("No names or numbers found in that file.");
+      setRows((rs) => [...rs.filter((r) => r.name.trim() || r.phone.trim() || r.email), ...found, NEW_ROW()]);
+      setResult(null);
+      setReadNote(`Read ${found.length} ${found.length === 1 ? "person" : "people"} from the ${res.source === "photo" ? "photo" : "file"} — check the names and numbers, then press Check first.${res.note ? ` ${res.note}` : ""}`);
+    } catch (e) {
+      setError(e.message || "Could not read that file.");
+    } finally {
+      setReading("");
+      if (csvInput.current) csvInput.current.value = "";
+      if (photoInput.current) photoInput.current.value = "";
+    }
+  };
 
   useEffect(() => {
     supportApi
@@ -41,7 +67,7 @@ export default function RegisterPanel() {
       .catch(() => setEvents([]));
   }, []);
 
-  const people = useMemo(() => rows.filter((r) => r.name.trim() || r.phone.trim()).map(({ name, phone }) => ({ name, phone })), [rows]);
+  const people = useMemo(() => rows.filter((r) => r.name.trim() || r.phone.trim() || r.email).map(({ name, phone, email }) => ({ name, phone, email })), [rows]);
   const hasInput = people.length > 0 || paste.trim() !== "";
   const creatingEvent = eventId === "new" || (events && events.length === 0);
 
@@ -127,6 +153,22 @@ export default function RegisterPanel() {
       </div>
 
       <div className={`${cardClass} flex flex-col gap-3 p-4 sm:p-5`}>
+        <div className="flex flex-wrap items-center gap-2">
+          <Button onClick={() => photoInput.current?.click()} busy={reading === "photo"} disabled={!!reading}>
+            {reading !== "photo" && <Camera size={16} aria-hidden />} {reading === "photo" ? "Reading the photo…" : "Photo of a list"}
+          </Button>
+          <Button onClick={() => csvInput.current?.click()} busy={reading === "csv"} disabled={!!reading}>
+            {reading !== "csv" && <FileSpreadsheet size={16} aria-hidden />} Upload CSV
+          </Button>
+          <span className="text-[12.5px] text-[#5A5546]">A sign-up sheet photo (handwritten is fine) or a CSV fills the rows below.</span>
+          <input ref={photoInput} type="file" accept="image/*,application/pdf" className="hidden" onChange={(e) => readFile(e.target.files?.[0], "photo")} />
+          <input ref={csvInput} type="file" accept=".csv,.tsv,.txt,text/csv" className="hidden" onChange={(e) => readFile(e.target.files?.[0], "csv")} />
+        </div>
+        {readNote && (
+          <p className="flex items-start gap-2 rounded-xl bg-[rgba(201,162,74,0.14)] px-3.5 py-2.5 text-[13.5px] text-[#5C4718]" role="status">
+            <Info size={16} className="mt-0.5 shrink-0" aria-hidden /> {readNote}
+          </p>
+        )}
         <div className="hidden grid-cols-[1.3fr_1fr_44px] gap-2 px-1 text-[12px] font-semibold uppercase tracking-[0.12em] text-[#5A5546] sm:grid">
           <span>Name</span>
           <span>Phone</span>
@@ -144,7 +186,8 @@ export default function RegisterPanel() {
             />
             <input
               ref={i === rows.length - 1 ? lastPhone : undefined}
-              className={`${inputClass} col-start-1 sm:col-start-auto`}
+              className={`${inputClass} col-start-1 sm:col-start-auto ${r.phone.includes("?") ? "border-[#A33A2A]! bg-[rgba(163,58,42,0.05)]!" : ""}`}
+              title={r.phone.includes("?") ? "Some digits couldn't be read — fix them from the sheet" : undefined}
               placeholder="Phone (10 digits = India)"
               inputMode="tel"
               autoComplete="off"
@@ -166,6 +209,7 @@ export default function RegisterPanel() {
             >
               <Trash2 size={17} aria-hidden />
             </button>
+            {r.email && <p className="col-span-full m-0 px-1 text-[12.5px] text-[#5A5546]">Email: {r.email}</p>}
           </div>
         ))}
         <div className="flex flex-wrap gap-2">

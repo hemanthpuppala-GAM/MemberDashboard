@@ -64,6 +64,17 @@ class MembershipDriveController extends Controller
         return response()->json(DriveSignup::run($drive, $data['lines'], (bool) ($data['preview'] ?? false)));
     }
 
+    /** Read an uploaded CSV, or a photo / PDF of a sign-up sheet, into rows to check (nothing is saved). */
+    public function readFile(Request $request)
+    {
+        $request->validate(['file' => ['required', 'file', 'max:15360']]); // 15 MB
+        try {
+            return response()->json(\App\Services\People\SheetReader::read($request->file('file')));
+        } catch (\RuntimeException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
+    }
+
     public function export(MembershipDrive $drive)
     {
         $csv = "Member ID,Name,Phone,Email,Signed in,Added\n";

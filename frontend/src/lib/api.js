@@ -208,6 +208,11 @@ export const api = {
   createMembershipDrive: (payload) => apiFetch("/admin/membership-drives", { method: "POST", body: payload }),
   updateMembershipDrive: (id, payload) => apiFetch(`/admin/membership-drives/${id}`, { method: "PUT", body: payload }),
   deleteMembershipDrive: (id) => apiFetch(`/admin/membership-drives/${id}`, { method: "DELETE" }),
+  readDriveFile: (file) => {
+    const fd = new FormData();
+    fd.append("file", file);
+    return apiUpload("/admin/membership-drives/read-file", fd);
+  },
   addDriveMembers: (id, lines, preview) => apiFetch(`/admin/membership-drives/${id}/members`, { method: "POST", body: { lines, preview } }),
   dataSync: () => apiFetch("/admin/data-sync"),
   runDataSync: (preview, tables) => apiFetch("/admin/data-sync", { method: "POST", body: { preview, ...(tables ? { tables } : {}) } }),
