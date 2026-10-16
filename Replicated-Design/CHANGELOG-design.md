@@ -121,3 +121,8 @@ Format: date · item · status (🟡 designed / ✅ implemented @sha / ⬅ code 
 - ↩ 2026-10-09 code change mirrored: Telugu/Kannada copy uses Noto Sans Telugu / Noto Sans Kannada (Manrope has no Indic glyphs). Design: Ask, QR Ask Poster, QR Ask Zoom.
 - ⬅ code change: topic → admin category mapping: Health & food → health, Feelings in meditation → kundalini, Trouble sitting → meditation, Money & daily life / Something else → general. Public `/ask` questions → general. (No design impact.)
 - Not built (not in the README spec): the "Serve, once you have walked it" volunteer card shown under the member Ask tab in Member Flow.dc.html.
+
+## 2026-10-16 — Home: Quote of the day replaces the intro-film card
+- ⬅ code change: the fourth card beside the tree ("Two minutes · Watch the intro") now shows today's **Golden Age Daily Musings** poster when one is uploaded (CMS → Quote of the day). Dark card (#1C2F24→#14241C) with the 9:16 poster on the left, kicker "Quote of the day", the quote title (Cormorant), "— author", CTA "Read today's musing →". Tapping opens the full poster with ‹ › for earlier days and Share. With no poster for today or earlier, the old "Watch the intro" card is shown.
+- ⬅ code change: when the quote card shows, the hero "Watch the intro" link is no longer hidden on short laptop screens (it was hidden there only because the card duplicated it).
+- ⬅ code change: new Home copy keys `quoteKicker` ("Quote of the day") and `quoteCta` ("Read today's musing"), editable in CMS → Pages → Home → Cards beside the tree. Design: Home Mandala / index.html cards grid.

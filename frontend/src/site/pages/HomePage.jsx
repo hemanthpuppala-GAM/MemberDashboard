@@ -6,6 +6,8 @@ import { useSiteContent } from "../useSiteContent";
 import { siteAsset } from "../siteAssets";
 import HomeHeader from "../home/HomeHeader";
 import FilmOverlay from "../home/FilmOverlay";
+import QuoteOverlay from "../home/QuoteOverlay";
+import { useDailyQuote } from "../home/dailyQuote";
 import ChaptersSheet from "../home/ChaptersSheet";
 import BodhiNavigator from "../home/BodhiNavigator";
 import { WorldSitsFooter } from "../home/WorldSits";
@@ -20,6 +22,8 @@ import CmsExtraSections from "../cms/CmsExtraSections";
 const FALLBACKS = {
   testiKicker: "What members say",
   testiCta: "More stories",
+  quoteKicker: "Quote of the day",
+  quoteCta: "Read today’s musing",
   joinShortLabel: "Join",
   privacyLabel: "Privacy",
   filmSrc: "assets/peace-film.mp4",
@@ -223,6 +227,11 @@ export default function HomePage() {
     setFilm(true);
   };
   const voice = voices[vi % voices.length];
+  // Fourth card: today's Daily Musings poster (CMS → Quote of the day); "Watch the intro" when there is none.
+  const quotes = useDailyQuote();
+  const quote = quotes.today;
+  const [quoteOpen, setQuoteOpen] = useState(false);
+  const closeQuote = useCallback(() => setQuoteOpen(false), []);
   // "Upcoming" card: the next one-off Live Session from admin, else the editable default copy.
   const nextEvent = useEventSessions().upcoming?.[0];
   const nextRow = nextEvent ? eventRow(nextEvent) : null;
@@ -290,7 +299,7 @@ export default function HomePage() {
                 minWidth: 0,
                 justifyContent: "center",
                 order: 2,
-                ...(tightFit ? { display: "none" } : {}),
+                ...(tightFit && !quote ? { display: "none" } : {}),
               }}
             >
               <span aria-hidden="true" style={{ display: "inline-block", width: 0, height: 0, borderLeft: "7px solid currentColor", borderTop: "4.5px solid transparent", borderBottom: "4.5px solid transparent" }} />
@@ -394,19 +403,37 @@ export default function HomePage() {
                 </span>
               </Link>
 
-              <a
-                href="#film"
-                onClick={openFilm}
-                className="home-card-light"
-                style={{ position: "relative", display: "flex", flexDirection: "column", justifyContent: "flex-end", gap: 8, overflow: "hidden", padding: cardPad, borderRadius: 22, background: "linear-gradient(160deg,#E9EEDF 0%,#D6DEC8 100%)", minHeight: desk ? 0 : 210, border: "1px solid rgba(255,255,255,.7)", boxShadow: "0 1px 0 rgba(255,255,255,.8) inset,0 20px 40px -14px rgba(31,61,43,.22)", animation: "gaw-rise .9s .9s both", cursor: "pointer" }}
-              >
-                <span aria-hidden="true" style={{ position: "absolute", left: "50%", top: "38%", width: 56, height: 56, transform: "translate(-50%,-50%)", borderRadius: "50%", background: "#14241C", boxShadow: "0 0 0 8px rgba(20,36,28,.08),0 12px 24px -8px rgba(20,36,28,.5)", ...(fit && h < 760 ? { left: "auto", right: 18, top: 18, transform: "none" } : {}) }}>
-                  <span style={{ position: "absolute", left: "55%", top: "50%", transform: "translate(-50%,-50%)", width: 0, height: 0, borderLeft: "16px solid #E8CF83", borderTop: "10px solid transparent", borderBottom: "10px solid transparent" }} />
-                </span>
-                <span style={{ ...CARD_KICK, color: "#1F3D2B" }}>Two minutes</span>
-                <span style={cardTitle}>Watch the intro</span>
-                <span style={cardSub}>What a session feels like, before you join one.</span>
-              </a>
+              {quote ? (
+                <button
+                  type="button"
+                  onClick={() => setQuoteOpen(true)}
+                  className="home-card-dark"
+                  aria-label={`${c.quoteKicker}: ${quote.title || c.quoteCta}`}
+                  style={{ position: "relative", display: "flex", alignItems: "stretch", gap: "clamp(10px,1vw,16px)", overflow: "hidden", padding: phone ? 14 : "clamp(10px,1vw,14px)", borderRadius: 22, border: "none", background: "linear-gradient(160deg,#1C2F24 0%,#14241C 100%)", color: "#F6F1E6", minHeight: desk ? 0 : 210, boxShadow: "0 1px 0 rgba(255,255,255,.1) inset,0 24px 50px -22px rgba(60,42,16,.5)", animation: "gaw-rise .9s .9s both", cursor: "pointer", textAlign: "left", font: "inherit" }}
+                >
+                  <img src={quote.image_url} alt="" loading="lazy" style={{ display: "block", flex: "0 0 auto", height: desk ? "100%" : 182, maxHeight: desk ? "100%" : 182, aspectRatio: "9/16", width: "auto", objectFit: "cover", objectPosition: "top", borderRadius: 12, boxShadow: "0 0 0 1px rgba(201,162,74,.45)" }} />
+                  <span style={{ display: "flex", flexDirection: "column", justifyContent: "center", gap: 6, minWidth: 0, flex: "1 1 auto" }}>
+                    <span style={{ ...CARD_KICK, color: "#E8CF83", letterSpacing: ".18em" }}>{c.quoteKicker}</span>
+                    {quote.title && <span style={{ ...cardTitle, color: "#F6F1E6", ...(desk ? { fontSize: "clamp(16px,1.3vw,22px)" } : {}), ...(fit ? { display: "-webkit-box", WebkitBoxOrient: "vertical", WebkitLineClamp: 4, overflow: "hidden" } : {}) }}>{quote.title}</span>}
+                    {quote.author && <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: ".08em", color: "rgba(246,241,230,.75)" }}>— {quote.author}</span>}
+                    <span style={{ ...CARD_CTA, color: "#E8CF83", letterSpacing: ".14em" }}>{c.quoteCta} {ARROW}</span>
+                  </span>
+                </button>
+              ) : (
+                <a
+                  href="#film"
+                  onClick={openFilm}
+                  className="home-card-light"
+                  style={{ position: "relative", display: "flex", flexDirection: "column", justifyContent: "flex-end", gap: 8, overflow: "hidden", padding: cardPad, borderRadius: 22, background: "linear-gradient(160deg,#E9EEDF 0%,#D6DEC8 100%)", minHeight: desk ? 0 : 210, border: "1px solid rgba(255,255,255,.7)", boxShadow: "0 1px 0 rgba(255,255,255,.8) inset,0 20px 40px -14px rgba(31,61,43,.22)", animation: "gaw-rise .9s .9s both", cursor: "pointer" }}
+                >
+                  <span aria-hidden="true" style={{ position: "absolute", left: "50%", top: "38%", width: 56, height: 56, transform: "translate(-50%,-50%)", borderRadius: "50%", background: "#14241C", boxShadow: "0 0 0 8px rgba(20,36,28,.08),0 12px 24px -8px rgba(20,36,28,.5)", ...(fit && h < 760 ? { left: "auto", right: 18, top: 18, transform: "none" } : {}) }}>
+                    <span style={{ position: "absolute", left: "55%", top: "50%", transform: "translate(-50%,-50%)", width: 0, height: 0, borderLeft: "16px solid #E8CF83", borderTop: "10px solid transparent", borderBottom: "10px solid transparent" }} />
+                  </span>
+                  <span style={{ ...CARD_KICK, color: "#1F3D2B" }}>Two minutes</span>
+                  <span style={cardTitle}>Watch the intro</span>
+                  <span style={cardSub}>What a session feels like, before you join one.</span>
+                </a>
+              )}
             </div>
           </div>
         </div>
@@ -422,6 +449,7 @@ export default function HomePage() {
       </div>
 
       {film && <FilmOverlay src={filmSrc} onClose={() => setFilm(false)} />}
+      {quoteOpen && quote && <QuoteOverlay quotes={quotes.recent.length ? quotes.recent : [quote]} onClose={closeQuote} />}
       {chOpen && <ChaptersSheet ch={ch} w={w} joinTo={joinTo} question={question} c={c} chapters={chapters} onNextQuestion={() => setQi((q) => q + 1)} onChapter={openChapter} onClose={closeChapters} />}
 
       <AdminEditLink page="home" />

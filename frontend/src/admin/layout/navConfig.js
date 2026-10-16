@@ -2,7 +2,7 @@ import {
   LayoutDashboard, FileText, Image, Inbox, UsersRound, UserCog, ShieldCheck,
   Megaphone, Radio, QrCode, BarChart3, Globe, Settings, Files, Phone, Landmark,
   Music2, MessageSquareQuote, HeartHandshake, ListChecks, CalendarClock, Timer,
-  ClipboardList, Headset, LifeBuoy, UserPlus, RefreshCw,
+  ClipboardList, Headset, LifeBuoy, UserPlus, RefreshCw, Quote,
 } from "lucide-react";
 
 /**
@@ -22,6 +22,7 @@ export const NAV = [
       { to: "/admin/cms/media", label: "Media", icon: Image, permission: "cms.view" },
       { to: "/admin/cms/music", label: "Music", icon: Music2, permission: "music.view" },
       { to: "/admin/cms/sit-presets", label: "Sit & Scribe sessions", icon: Timer, permission: "music.view" },
+      { to: "/admin/cms/quotes", label: "Quote of the day", icon: Quote, permission: "cms.view" },
       { to: "/admin/cms/events", label: "Live Sessions", icon: CalendarClock, permission: "cms.view" },
       { to: "/admin/cms/testimonials", label: "Testimonials", icon: MessageSquareQuote, permission: "testimonials.view" },
       { to: "/admin/cms/contact", label: "Contact Info", icon: Phone, permission: "contact_channels.view" },
@@ -74,6 +75,7 @@ export const BREADCRUMB_RULES = [
   { pattern: /^\/admin\/cms\/media\/?$/, crumbs: () => ["CMS", "Media"] },
   { pattern: /^\/admin\/cms\/music\/?$/, crumbs: () => ["CMS", "Music"] },
   { pattern: /^\/admin\/cms\/sit-presets\/?$/, crumbs: () => ["CMS", "Sit & Scribe sessions"] },
+  { pattern: /^\/admin\/cms\/quotes\/?$/, crumbs: () => ["CMS", "Quote of the day"] },
   { pattern: /^\/admin\/cms\/events\/?$/, crumbs: () => ["CMS", "Live Sessions"] },
   { pattern: /^\/admin\/cms\/testimonials\/?$/, crumbs: () => ["CMS", "Testimonials"] },
   { pattern: /^\/admin\/cms\/contact\/?$/, crumbs: () => ["CMS", "Contact Info"] },
