@@ -8,7 +8,7 @@
 </IfModule>
 
 # Nothing but public/ should ever be readable over HTTP
-<FilesMatch "^(\.env|artisan|composer\.(json|lock)|package\.json)$">
+<FilesMatch "^(\.env|artisan|composer\.(json|lock)|package\.json|vendor\.zip|unpack-vendor\.sh)$">
   Require all denied
 </FilesMatch>
 Options -Indexes

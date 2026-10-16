@@ -75,6 +75,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
       - uses: shivammathur/setup-php@v2
         with: { php-version: "8.3", tools: composer:v2 }
       - run: composer install --no-dev --optimize-autoloader --no-interaction
@@ -92,6 +93,28 @@ jobs:
                    storage/logs storage/app/public storage/app/private bootstrap/cache; do
             mkdir -p "backend/$d" && echo "Keeps this folder on the server (FTP skips empty folders)." > "backend/$d/.deploy-keep"
           done
+      - name: Pack vendor/ as one zip
+        # vendor/ is thousands of files; FTP sends them one by one (an hour+ for one new
+        # SDK). It goes up as vendor.zip instead and is swapped in on the server with
+        # `bash unpack-vendor.sh`. Fixed timestamps + sorted entries make the zip
+        # byte-identical while composer.lock is unchanged, so FTP skips re-uploading it.
+        run: |
+          tmp=$(mktemp -d)
+          cp -a backend/vendor "$tmp/vendor-new"
+          find "$tmp/vendor-new" -exec touch -h -d '2000-01-01 00:00:00 UTC' {} +
+          (cd "$tmp" && find vendor-new \( -type f -o -type l \) | LC_ALL=C sort | TZ=UTC zip -q -X -y -D -@ "$GITHUB_WORKSPACE/backend/vendor.zip")
+          cp deploy/unpack-vendor.sh backend/unpack-vendor.sh
+          ls -lh backend/vendor.zip
+      - name: Did the PHP libraries change?
+        run: |
+          before="${{ github.event.before }}"
+          if [ -n "$before" ] && [ "$before" != "0000000000000000000000000000000000000000" ] && git cat-file -e "$before" 2>/dev/null \
+             && git diff --quiet "$before" HEAD -- backend/composer.lock; then
+            echo "PHP libraries unchanged — nothing to do on the server for vendor/." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "### PHP libraries changed (or unknown)" >> "$GITHUB_STEP_SUMMARY"
+            echo 'After this deploy, run in the cPanel terminal: `cd <backend folder> && bash unpack-vendor.sh`' >> "$GITHUB_STEP_SUMMARY"
+          fi
       - uses: actions/upload-artifact@v4
         with:
           name: backend
@@ -119,3 +142,4 @@ jobs:
             **/.git*
             **/.git*/**
             .env
+            vendor/**
