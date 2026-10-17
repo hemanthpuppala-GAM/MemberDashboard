@@ -83,3 +83,178 @@
 .gaw-site .wisdom-divider > span:last-child {
   background: linear-gradient(90deg, #c9a24a, transparent);
 }
+
+/* Chapters — the page in four tabs instead of one long scroll. */
+.gaw-site .wisdom-chapters-wrap {
+  display: flex;
+  justify-content: center;
+  scroll-margin-top: 96px;
+}
+.gaw-site .wisdom-chapters {
+  display: flex;
+  gap: 6px;
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 6px;
+  border-radius: 999px;
+  background: rgba(255, 253, 248, 0.6);
+  border: 1px solid rgba(201, 162, 74, 0.35);
+  box-shadow: 0 12px 30px -18px rgba(60, 42, 16, 0.35);
+}
+.gaw-site .wisdom-chapters::-webkit-scrollbar {
+  display: none;
+}
+.gaw-site .wisdom-chapter {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: #3a3128;
+  font: inherit;
+  font-size: 13.5px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.gaw-site .wisdom-chapter:hover {
+  background: rgba(232, 207, 131, 0.3);
+}
+.gaw-site .wisdom-chapter.is-on {
+  background: #14241c;
+  color: #f6f1e6;
+}
+.gaw-site .wisdom-chapter-num {
+  font-size: 15px;
+  color: #a8842f;
+}
+.gaw-site .wisdom-chapter.is-on .wisdom-chapter-num {
+  color: #e8cf83;
+}
+.gaw-site .wisdom-chapter:focus-visible,
+.gaw-site .wisdom-stop:focus-visible,
+.gaw-site .wisdom-step:focus-visible,
+.gaw-site .wisdom-next:focus-visible {
+  outline: 2px solid #c9a24a;
+  outline-offset: 2px;
+}
+
+/* The river walk — numbered stops on a gold stream, one stage shown at a time. */
+.gaw-site .wisdom-walk {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  gap: 4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 4px 2px 6px;
+}
+.gaw-site .wisdom-walk::-webkit-scrollbar {
+  display: none;
+}
+.gaw-site .wisdom-walk::before {
+  content: "";
+  position: absolute;
+  left: 40px;
+  right: 40px;
+  top: 25px;
+  height: 2px;
+  background: linear-gradient(90deg, rgba(201, 162, 74, 0.3), rgba(201, 162, 74, 0.8));
+}
+.gaw-site .wisdom-stop {
+  position: relative;
+  flex: 1 0 84px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 0 4px;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+}
+.gaw-site .wisdom-stop-dot {
+  z-index: 1;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 17px;
+  color: #5a3c0e;
+  background: #f7f1e3;
+  border: 1.5px solid rgba(201, 162, 74, 0.6);
+  transition: background 0.2s, transform 0.2s, color 0.2s;
+}
+.gaw-site .wisdom-stop.is-past .wisdom-stop-dot {
+  background: radial-gradient(circle at 35% 35%, #f3ead3, #e8cf83);
+}
+.gaw-site .wisdom-stop.is-on .wisdom-stop-dot {
+  background: #14241c;
+  color: #e8cf83;
+  border-color: #14241c;
+  transform: scale(1.12);
+}
+.gaw-site .wisdom-stop:hover .wisdom-stop-dot {
+  border-color: #c9a24a;
+}
+.gaw-site .wisdom-stop-name {
+  max-width: 13ch;
+  font-size: 11.5px;
+  font-weight: 600;
+  line-height: 1.25;
+  text-align: center;
+  color: #6b5c48;
+}
+.gaw-site .wisdom-stop.is-on .wisdom-stop-name {
+  color: #12201a;
+}
+.gaw-site .wisdom-step {
+  min-height: 44px;
+  padding: 0 18px;
+  border-radius: 999px;
+  border: 1px solid rgba(20, 36, 28, 0.25);
+  background: rgba(255, 253, 248, 0.6);
+  color: #14241c;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.gaw-site .wisdom-step:hover:not(:disabled) {
+  background: #14241c;
+  color: #f6f1e6;
+}
+.gaw-site .wisdom-step:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* "Next chapter" — the way on, at the end of every chapter. */
+.gaw-site .wisdom-next {
+  align-self: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 16px 32px;
+  border-radius: 20px;
+  border: 1px dashed rgba(201, 162, 74, 0.6);
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+.gaw-site .wisdom-next:hover {
+  background: rgba(232, 207, 131, 0.2);
+  border-color: #c9a24a;
+}

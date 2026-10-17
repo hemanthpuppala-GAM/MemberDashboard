@@ -491,6 +491,17 @@ export const SITE_CONTENT_SCHEMAS = {
         ],
       },
       {
+        title: "Chapters (the tabs under the heading)",
+        description: "The page is shown in four chapters. A chapter with no content is hidden.",
+        columns: 4,
+        fields: [
+          { key: "chapterOverview", label: "I · cards & Library", type: "text" },
+          { key: "chapterRiver", label: "II · the living river", type: "text" },
+          { key: "chapterGhats", label: "III · ghats", type: "text" },
+          { key: "chapterTruth", label: "IV · closing & quotes", type: "text" },
+        ],
+      },
+      {
         title: "Wisdom cards",
         fields: [
           {
