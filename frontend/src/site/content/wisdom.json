@@ -1,153 +1,153 @@
 {
-  "eyebrow": "Wisdom without boundaries",
-  "title": "Ancient Wisdom. Modern Science.",
-  "titleAccent": "Universal Understanding.",
-  "intro": "Wisdom transcends time, cultures, and traditions. At Golden Age, Dr. Hari Krishna brings together ancient Indian scriptures, teachings of spiritual masters from the East and West, and modern scientific perspectives to explore life's deepest questions. Through simple explanations and practical examples, he makes profound spiritual knowledge accessible to everyone, encouraging curiosity, awareness, and self-discovery.",
+  "eyebrow": "Wisdom for everyone",
+  "title": "Old Wisdom. New Science.",
+  "titleAccent": "Simple Understanding.",
+  "intro": "Long ago, wise people in India asked the biggest questions in life: Who am I? Why am I here? How can I be truly happy? Their answers are still with us. Dr. Hari Krishna explains them in plain words, puts them next to what science knows today, and shows how to use them in daily life. You don't need any background — just curiosity.",
   "cards": [
     {
       "glyph": "ॐ",
-      "title": "Ancient Scriptures & Timeless Teachings",
-      "body": "From the Upanishads, Bhagavad Gita, Ashtavakra Gita, and Yoga Sutras to other sacred texts, Dr. Hari Krishna explores ancient wisdom in a way that connects with modern life. His teachings help seekers understand concepts such as karma, dharma, consciousness, self-realization, and the true nature of existence."
+      "title": "India's Old Books, Made Simple",
+      "body": "India has some of the oldest wisdom books in the world — like the Upanishads and the Bhagavad Gita. Dr. Hari Krishna takes their big ideas and explains them like a friend would: why we feel what we feel, how our actions come back to us (karma), what is right to do (dharma), and who we really are inside."
     },
     {
       "glyph": "✦",
-      "title": "Wisdom of Spiritual Masters",
-      "body": "Spiritual wisdom is not limited to one tradition or culture. Dr. Hari Krishna explores the teachings of great masters such as Buddha, Mahavatar Babaji, Adi Shankaracharya, Swami Vivekananda, Ramana Maharshi, and many others. Drawing from both Eastern and Western philosophies, he highlights different perspectives on meditation, awareness, inner transformation, and the search for truth."
+      "title": "Great Teachers, One Message",
+      "body": "Many great teachers — the Buddha, Adi Shankaracharya, Swami Vivekananda, Ramana Maharshi and others — lived in different times and places. Yet they pointed to the same things: a calm mind, kind actions, and knowing yourself. Dr. Hari Krishna shows what each of them can teach us today."
     },
     {
       "glyph": "⚛",
-      "title": "Where Science Meets Spirituality",
-      "body": "Can modern science help us understand ancient spiritual ideas? Dr. Hari Krishna explores the fascinating relationship between meditation, consciousness, neuroscience, psychology, physics, and spirituality. By examining scientific understanding alongside traditional spiritual teachings, he encourages deeper inquiry into the mind, body, energy, and human experience."
+      "title": "What Science Says",
+      "body": "Can science explain why meditation works? Today, doctors and scientists study how a calm mind changes the brain, our health and our moods. Dr. Hari Krishna puts these findings side by side with the old teachings — so you can understand them, not just believe them."
     }
   ],
-  "riverKicker": "Bharatiya Jnana Parampara",
+  "riverKicker": "India's river of wisdom",
   "riverTitle": "One question. Three thousand years.",
-  "riverTitleAccent": "One living river.",
-  "riverStory": "A little boy once asked his grandfather, “Thatha, where do we go when we die?” The grandfather smiled: “To heaven, if we do good.” “But where is heaven, Thatha?” The grandfather had no answer — and the question never left the boy.",
-  "riverIntro": "India's sages have walked with questions like that for over three thousand years. Their answers became the Vedas, the Upanishads, the Ramayana, the Mahabharata, the Gita and the Puranas. We grow up hearing these names — but rarely how they connect. Here is the secret: they are not a pile of separate books. They are one river, flowing from a mountain spring to the sea. Walk along it with us.",
+  "riverTitleAccent": "One flowing river.",
+  "riverStory": "A little boy once asked his grandfather, “Thatha, where do we go when we die?” The grandfather smiled: “To heaven, if we do good.” “But where is heaven, Thatha?” The grandfather had no answer — and the question stayed with the boy.",
+  "riverIntro": "Wise people in India lived with questions like that for over three thousand years. Their answers became famous books: the Vedas, the Upanishads, the Ramayana, the Mahabharata, the Bhagavad Gita and the Puranas. Most of us have heard these names, but not how they fit together. Here is the simple secret: they are not separate books. They are like one river, starting as a small spring in the mountains and flowing all the way to the sea. Let's walk along it, one stop at a time.",
   "questions": [
     {
-      "label": "Jagat-vichara",
-      "title": "What is this creation?",
-      "body": "Where did this world come from? Who sustains it? Is it real or a dream? Does it end — and what is my relationship to it?"
+      "label": "about the world",
+      "title": "What is this world?",
+      "body": "Where did everything come from? What keeps it going? Is it real, or like a dream? Will it end — and how am I connected to it?"
     },
     {
-      "label": "Atma-vichara",
-      "title": "How do I know myself?",
-      "body": "Who am I? Where did I come from, and where am I going? What is the purpose of my life, and how do I find lasting happiness?"
+      "label": "about yourself",
+      "title": "Who am I, really?",
+      "body": "Who am I, beyond my name and my body? Where did I come from, and where am I going? What is my life for, and how do I find a happiness that lasts?"
     }
   ],
-  "questionsNote": "These two questions set the river flowing. Every stage below answers them — in its own language.",
+  "questionsNote": "These two questions started the river. Every stop below answers them in its own way.",
   "stages": [
     {
-      "place": "The source in the snows",
-      "name": "Shruti — the Vedas",
-      "alias": "That which was heard",
-      "body": "The rishis didn't write the mantras — they heard them, sitting in silence by forests and rivers. That is why the Vedas are called Shruti: “what was heard.” And the very first thing they heard was a question, full of wonder: what was there before anything was?",
+      "place": "Stop 1 · The spring in the mountains",
+      "name": "The Vedas",
+      "alias": "Shruti — “what was heard”",
+      "body": "The Vedas are India's oldest songs, thousands of years old. The wise people who received them — called rishis — said they didn't make them up. They heard them, sitting in silence in forests and by rivers. That is why the Vedas are called Shruti, “what was heard.” And one of the first things they asked was a question full of wonder: what was there before anything existed?",
       "verse": "Nāsad āsīn no sad āsīt tadānīm",
-      "meaning": "Then there was neither non-being nor being.",
+      "meaning": "In the beginning, there was neither something nor nothing.",
       "ref": "Rig Veda 10.129",
-      "tryThis": "Close your eyes for two minutes and just listen — every sound, near and far, without naming any of them. Listening was the first spiritual practice."
+      "tryThis": "Close your eyes for two minutes and just listen to every sound, near and far, without naming them. Simply listening was the very first practice."
     },
     {
-      "place": "Through the forest — deep and clear",
-      "name": "Vedanta — the Upanishads",
+      "place": "Stop 2 · Through the quiet forest",
+      "name": "The Upanishads",
       "alias": "The question turns inward",
-      "body": "Then the river went quiet and deep. In forest hermitages, teachers whispered to students, and the question turned around. Not “what is the world?” but “who is the one asking?” The outer fire-ritual became an inner fire of inquiry.",
+      "body": "Next, the river became quiet and deep. In small forest schools, teachers sat close to their students and talked softly. The question changed. Instead of “What is the world?” they asked, “Who is the one asking?” Looking outside turned into looking inside.",
       "verse": "Keneṣitaṁ patati preṣitaṁ manaḥ",
-      "meaning": "By whose will does the mind go forth?",
+      "meaning": "What makes the mind think and move?",
       "ref": "Kena Upanishad 1.1",
-      "tryThis": "The next time a thought arises, ask gently: “Who is aware of this thought?” Don't answer — just look."
+      "tryThis": "The next time a thought comes up, gently ask: “Who is noticing this thought?” Don't try to answer — just look."
     },
     {
-      "place": "The river finds its banks",
-      "name": "Smriti",
-      "alias": "That which is remembered",
-      "body": "A truth that is only heard can be forgotten. So the sages remembered it — and retold it in words every generation could understand. Smriti is the bridge between the forest and the home.",
+      "place": "Stop 3 · The river gets its banks",
+      "name": "Remembered teachings",
+      "alias": "Smriti — “what was remembered”",
+      "body": "Something that is only heard can be forgotten. So the wise people remembered these teachings and wrote them down in simpler words, as guides for everyday life — how to live well in a family and a community. These are called Smriti, “what was remembered.” They are the bridge from the forest to our homes.",
       "verse": "Śrutis tu vedo vijñeyo dharma-śāstraṁ tu vai smṛtiḥ",
-      "meaning": "Shruti is the Veda; Smriti is the teaching of dharma.",
+      "meaning": "What was heard is the Veda; what was remembered is the guide to right living.",
       "ref": "Manusmriti 2.10",
-      "tryThis": "Recall one value your grandparents lived by. Live by it once today."
+      "tryThis": "Think of one good habit or value your grandparents lived by. Try living by it once today."
     },
     {
-      "place": "Across the plains",
-      "name": "Itihasa — Ramayana & Mahabharata",
-      "alias": "Wisdom that is lived",
-      "body": "Now the river reached the people — Ayodhya, Mithila, Hastinapura, Kurukshetra. The Ramayana shows how to live; the Mahabharata teaches how to think when right and wrong are not black and white. Truth stopped being a sutra and became a person you could love.",
+      "place": "Stop 4 · Across the open land",
+      "name": "The great stories",
+      "alias": "Ramayana & Mahabharata — wisdom you can see",
+      "body": "Now the river reached ordinary people — through stories. The Ramayana shows how to live a good life through Rama. The Mahabharata shows how to think when right and wrong are not clear. Big ideas became people you could know and love.",
       "verse": "Itihāsa-purāṇaṁ pañcamaṁ vedānāṁ vedam",
-      "meaning": "The epics and Puranas are the fifth Veda.",
+      "meaning": "The great stories are like a fifth Veda — for everyone.",
       "ref": "Chandogya Upanishad 7.1.2",
-      "tryThis": "Facing a hard choice this week? Ask what dharma asks of you — not what is easiest."
+      "tryThis": "Facing a hard choice this week? Ask yourself what is the right thing to do — not just the easy thing."
     },
     {
-      "place": "The deepest pool — Kurukshetra",
+      "place": "Stop 5 · The deepest pool",
       "name": "The Bhagavad Gita",
-      "alias": "Wisdom in the moment of crisis",
-      "body": "On a battlefield, a great warrior drops his bow and weeps. In that darkest moment, Krishna speaks — and the essence of every Upanishad pours into eighteen chapters. Crisis didn't stop the river. It made it deeper.",
+      "alias": "Wisdom for your hardest moment",
+      "body": "On a battlefield, a great warrior named Arjuna is so upset that he drops his bow and cries. In that dark moment, his friend and guide Krishna talks to him. Their conversation — the Gita — puts the best of all the old teachings into 18 short chapters. A crisis didn't stop the river. It made it deeper.",
       "verse": "Na jāyate mriyate vā kadācit",
-      "meaning": "The Self is never born and never dies.",
+      "meaning": "The real you is never born and never dies.",
       "ref": "Bhagavad Gita 2.20",
-      "tryThis": "Do one task today completely — and let go of how it turns out."
+      "tryThis": "Do one task today with all your attention — and then let go of worrying about how it turns out."
     },
     {
-      "place": "The delta — a thousand streams",
+      "place": "Stop 6 · A thousand small streams",
       "name": "The Puranas",
-      "alias": "Truth sung for everyone",
-      "body": "Finally the river split into a thousand streams and reached every village. A temple in every village, a story in every temple — and in every story, the same water. What only scholars understood, the Puranas sang to every heart.",
+      "alias": "Stories and songs for everyone",
+      "body": "At last the river split into a thousand small streams and reached every village. The Puranas are collections of stories, songs and festivals. A temple in every village, a story in every temple — and in every story, the same water. What only scholars understood before, now reached every heart.",
       "verse": "Satyaṁ paraṁ dhīmahi",
-      "meaning": "We meditate on the Supreme Truth.",
+      "meaning": "We think about the highest truth.",
       "ref": "Bhagavatam 1.1.1",
-      "tryThis": "Choose one Name and repeat it quietly for five minutes. No hurry, no comparison."
+      "tryThis": "Pick one name of God or one word that brings you peace, and repeat it quietly for five minutes. No hurry."
     }
   ],
   "riverEnd": "And where does the river end? In the ocean — and that ocean is your own heart. The whole journey was flowing toward you.",
-  "ghatsKicker": "Many ghats, one water",
-  "ghatsTitle": "Which ghat will you step in from?",
-  "ghatsIntro": "A river has many ghats — bathing steps — but the water is the same. The river never asks which steps you came down. Start wherever you are.",
+  "ghatsKicker": "Many ways in, one river",
+  "ghatsTitle": "Where will you step in?",
+  "ghatsIntro": "A river has many ghats — steps leading down to the water — but the water is the same. The river doesn't care which steps you use. Start wherever you are today.",
   "ghats": [
     {
-      "who": "The one devoted to action",
-      "text": "The Veda gives the Gayatri:",
+      "who": "If you like to do things",
+      "text": "The Vedas give a short prayer, the Gayatri:",
       "verse": "Dhiyo yo naḥ pracodayāt",
-      "meaning": "May that light inspire our understanding."
+      "meaning": "May that light make our thinking clear."
     },
     {
-      "who": "The seeker",
-      "text": "The Upanishad gives the great saying:",
+      "who": "If you like to ask questions",
+      "text": "The Upanishads give a famous saying:",
       "verse": "Tat tvam asi",
-      "meaning": "That you are."
+      "meaning": "You are that — what you are looking for is in you."
     },
     {
-      "who": "The householder",
-      "text": "Rama's life shows the way; Yudhishthira's dilemmas teach discernment.",
+      "who": "If you have a family to care for",
+      "text": "Rama's life shows how to live well, and the Mahabharata shows how to make hard choices.",
       "verse": "",
       "meaning": ""
     },
     {
-      "who": "The one in crisis",
-      "text": "Arjuna's ghat gives the Gita:",
+      "who": "If you are going through a hard time",
+      "text": "The Gita gives this line:",
       "verse": "Karmaṇy evādhikāras te mā phaleṣu kadācana",
-      "meaning": "Your duty is in your hands — the fruit is not."
+      "meaning": "Your effort is in your hands — the result is not."
     },
     {
-      "who": "The devotee",
-      "text": "The Puranas give the path of love — hearing the story, singing the name, the heart melting into surrender.",
+      "who": "If you are led by your heart",
+      "text": "The Puranas give the way of love — listening to the stories, singing the names, and letting your heart open.",
       "verse": "",
       "meaning": ""
     }
   ],
   "closingVerse": "Ekaṁ sad viprā bahudhā vadanti",
-  "closingMeaning": "Truth is one; the wise speak of it in many ways.",
+  "closingMeaning": "Truth is one; wise people describe it in many ways.",
   "closingRef": "Rig Veda 1.164.46",
-  "closingBody": "Because truth is one, the paths had to be many — that is not contradiction, it is compassion. Like a mother who sings to her baby, tells stories to her child and gives advice to her grown son: the language changes, the love does not. These are not six shelves in a library. They are six rooms in one heart — yours.",
-  "sourceNote": "Adapted from the Telugu study “Bharatiya Jnana Parampara — from the Vedas to the Puranas, one living river.” Read the source texts yourself, find a teacher, and let one mantra walk with you.",
+  "closingBody": "Because people are different, the ways had to be many — that is not confusion, it is kindness. Think of a mother: she sings to her baby, tells stories to her child and gives advice to her grown son. The words change; the love doesn't. These are not six separate books on a shelf. They are six rooms in one home — and that home is you.",
+  "sourceNote": "Based on the Telugu study “Bharatiya Jnana Parampara — from the Vedas to the Puranas, one living river.” Read the books yourself, learn from a good teacher, and let one simple line walk with you every day.",
   "bookLabel": "Read the full book (Telugu, PDF)",
   "bookHref": "",
   "libraryKicker": "Golden Age Wisdom Library",
   "libraryTitle": "Explore the Golden Age Wisdom Library",
-  "libraryBody": "Our vision is to make Golden Age a growing hub for spiritual knowledge — a place where anyone can discover ancient scriptures, learn about spiritual masters, explore different philosophies, and deepen their understanding. Through Dr. Hari Krishna's wisdom talks and educational resources, we aim to make this knowledge freely accessible to everyone.",
-  "libraryClose": "Explore. Question. Understand. Experience.",
-  "libraryCloseSub": "One place to discover wisdom from across the world.",
+  "libraryBody": "We are building one simple place where anyone can learn about India's wisdom books, the great teachers and different ways of thinking — explained clearly, without difficult words. Dr. Hari Krishna's talks and our learning resources are free for everyone.",
+  "libraryClose": "Explore. Ask. Understand. Experience.",
+  "libraryCloseSub": "One place to learn wisdom from around the world.",
   "quotes": [
     {
       "text": "“He explains spiritual principles in a simple, logical and scientific way.”",
@@ -162,9 +162,9 @@
   "filmHref": "https://www.youtube.com/@GoldenAgeGurus",
   "cta": "Join the live sessions — free",
   "ctaHref": "Member Flow.dc.html",
-  "chapterOverview": "Overview",
-  "chapterRiver": "The living river",
-  "chapterGhats": "Many ghats",
+  "chapterOverview": "Start here",
+  "chapterRiver": "The river of wisdom",
+  "chapterGhats": "Many ways in",
   "chapterTruth": "One truth",
   "footerTitle": "Sit with us — free, every day.",
   "footerSub": "Guided live on YouTube, Monday to Saturday. No experience needed."

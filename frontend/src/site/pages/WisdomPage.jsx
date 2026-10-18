@@ -50,9 +50,9 @@ const FALLBACKS = {
   filmHref: YOUTUBE_URL,
   cta: "Join the live sessions — free",
   ctaHref: "Member Flow.dc.html",
-  chapterOverview: "Overview",
-  chapterRiver: "The living river",
-  chapterGhats: "Many ghats",
+  chapterOverview: "Start here",
+  chapterRiver: "The river of wisdom",
+  chapterGhats: "Many ways in",
   chapterTruth: "One truth",
   footerTitle: "Sit with us — free, every day.",
   footerSub: "Guided live on YouTube, Monday to Saturday. No experience needed.",
@@ -339,9 +339,9 @@ export default function WisdomPage() {
   // Four chapters instead of one long scroll; a chapter with no content is left out.
   const stages = c.stages || [];
   const chapters = [
-    { key: "overview", label: c.chapterOverview || "Overview", show: (c.cards || []).length > 0 || !!c.libraryTitle },
-    { key: "river", label: c.chapterRiver || "The living river", show: stages.length > 0 || !!c.riverTitle },
-    { key: "ghats", label: c.chapterGhats || "Many ghats", show: (c.ghats || []).length > 0 },
+    { key: "overview", label: c.chapterOverview || "Start here", show: (c.cards || []).length > 0 || !!c.libraryTitle },
+    { key: "river", label: c.chapterRiver || "The river of wisdom", show: stages.length > 0 || !!c.riverTitle },
+    { key: "ghats", label: c.chapterGhats || "Many ways in", show: (c.ghats || []).length > 0 },
     { key: "truth", label: c.chapterTruth || "One truth", show: !!c.closingVerse || quotes.length > 0 },
   ].filter((ch) => ch.show);
 
