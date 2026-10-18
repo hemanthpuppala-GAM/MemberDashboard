@@ -86,7 +86,7 @@ export default function AboutPage() {
           </span>
           <div style={{ display: "grid", gridTemplateColumns: desk ? "repeat(4,minmax(0,1fr))" : mid ? "repeat(2,minmax(0,1fr))" : "1fr", gap: 16 }}>
             {quotes.map((t, i) => (
-              <blockquote key={i} style={{ margin: 0, display: "flex", flexDirection: "column", justifyContent: "space-between", gap: 16, padding: 22, borderRadius: 18, background: "#14241C", color: "#F6F1E6", boxShadow: "0 18px 40px -20px rgba(0,0,0,.5)" }}>
+              <blockquote key={t.key ?? i} style={{ animation: "gaw-rise .6s both", margin: 0, display: "flex", flexDirection: "column", justifyContent: "space-between", gap: 16, padding: 22, borderRadius: 18, background: "#14241C", color: "#F6F1E6", boxShadow: "0 18px 40px -20px rgba(0,0,0,.5)" }}>
                 <p className="serif" style={{ margin: 0, fontSize: "clamp(18px,1.4vw,22px)", lineHeight: 1.3, textWrap: "pretty" }}>
                   {t.text}
                 </p>
