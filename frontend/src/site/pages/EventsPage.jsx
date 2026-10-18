@@ -5,10 +5,11 @@ import { useMemberBadge } from "../useMemberBadge";
 import { useSiteContent } from "../useSiteContent";
 import { usePageQuotes } from "../siteQuotes";
 import { useEventSessions, eventRow, visitorZone } from "../liveSessions";
-import { useViewportWidth } from "../useViewport";
 import { YOUTUBE_LIVE_URL } from "../sitePages";
 import "./events.css";
 import CmsExtraSections from "../cms/CmsExtraSections";
+import { useViewportWidth } from "../useViewport";
+import Chapters from "../chapters/Chapters";
 
 const PAD = "clamp(20px,5vw,72px)";
 const rise = (delay = 0) => ({ animation: `gaw-rise .9s ${delay}s both` });
@@ -141,9 +142,8 @@ function SessionCard({ kicker, note, sessions }) {
 export default function EventsPage() {
   const c = useSiteContent("events", FALLBACKS);
   const quotes = usePageQuotes("events", c.quotes);
+  const desk = useViewportWidth() >= 900;
   const { isMember } = useMemberBadge();
-  const w = useViewportWidth();
-  const desk = w >= 900;
   const [now, setNow] = useState(() => Date.now());
   const [tz] = useState(visitorZone);
 
@@ -194,105 +194,125 @@ export default function EventsPage() {
           </span>
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: desk ? "minmax(0,1.15fr) minmax(300px,.85fr)" : "1fr", gap: 18, alignItems: "start", ...rise(0.3) }}>
-          {/* Left: daily sessions */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 18, minWidth: 0 }}>
-            {india.length > 0 && <SessionCard kicker={c.indiaKicker} note={c.indiaNote} sessions={india} />}
-            {abroad.length > 0 && <SessionCard kicker={abroadKicker} note={c.abroadNote} sessions={abroad} />}
-
-            <DesignLink
-              href={c.watchHref}
-              isMember={isMember}
-              className="gaw-pill-gold"
-              style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: 50, padding: "0 24px", borderRadius: 999, fontSize: 12.5, fontWeight: 700, letterSpacing: ".08em", textTransform: "uppercase", textAlign: "center", boxShadow: "0 12px 30px -10px rgba(201,162,74,.7)" }}
-            >
-              {c.watchLabel}
-            </DesignLink>
-
-            <div
-              style={{ display: "grid", gridTemplateColumns: "38px minmax(0,1fr) auto", alignItems: "center", gap: 13, padding: "14px 16px", borderRadius: 18, border: "1px dashed rgba(201,162,74,.6)", background: "rgba(232,207,131,.14)" }}
-            >
-              <span aria-hidden="true" style={{ width: 38, height: 38, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", background: "#14241C" }}>
-                <svg viewBox="0 0 24 24" style={{ width: 15, height: 15, display: "block" }}>
-                  <rect x="5" y="11" width="14" height="9" rx="2.5" fill="none" stroke="#E8CF83" strokeWidth="1.6" />
-                  <path d="M8 11V8a4 4 0 0 1 8 0v3" fill="none" stroke="#E8CF83" strokeWidth="1.6" />
-                </svg>
-              </span>
-              <span style={{ display: "flex", flexDirection: "column", gap: 2, minWidth: 0 }}>
-                <span style={{ fontWeight: 600, fontSize: 14, color: "#12201A" }}>{c.zoomTitle}</span>
-                <span style={{ fontSize: 12.5, lineHeight: 1.45, color: "#5A4E3C" }}>{c.zoomBody}</span>
-              </span>
-              <DesignLink href={c.zoomHref} isMember={isMember} style={{ display: "inline-flex", alignItems: "center", minHeight: 44, fontSize: 12.5, fontWeight: 600, whiteSpace: "nowrap" }}>
-                {c.zoomCta}
-              </DesignLink>
-            </div>
-          </div>
-
-          {/* Right: gatherings + testimonials */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 18, minWidth: 0 }}>
-            <article
-              style={{ display: "flex", flexDirection: "column", gap: 14, padding: "clamp(22px,2.6vw,30px)", borderRadius: 24, background: "linear-gradient(170deg,#1B3328 0%,#14241C 100%)", color: "#F6F1E6", boxShadow: "0 30px 60px -30px rgba(20,14,6,.6)" }}
-            >
-              <h2 className="serif" style={{ margin: 0, fontWeight: 500, fontSize: 26, lineHeight: 1.1, color: "#E8CF83" }}>
-                {c.upcomingTitle}
-              </h2>
-              {!upcoming.length && <p style={{ margin: 0, fontSize: 14, lineHeight: 1.6, color: "rgba(246,241,230,.78)", textWrap: "pretty" }}>{c.upcomingEmpty}</p>}
-              {upcoming.map((e, i) => (
-                <div key={i} style={{ display: "grid", gridTemplateColumns: "56px minmax(0,1fr)", gap: 16, padding: "12px 0", borderBottom: "1px solid rgba(246,241,230,.1)" }}>
-                  <span style={{ display: "flex", flexDirection: "column", alignItems: "center", alignSelf: "start", padding: "7px 0", borderRadius: 14, background: "rgba(232,207,131,.14)", border: "1px solid rgba(201,162,74,.5)" }}>
-                    <span className="serif" style={{ fontSize: 22, lineHeight: 1.1, color: "#E8CF83" }}>
-                      {e.day}
-                    </span>
-                    <span style={{ fontSize: 10.5, fontWeight: 700, letterSpacing: ".1em", color: "#C9A24A" }}>{e.month}</span>
-                  </span>
-                  <span style={{ display: "flex", flexDirection: "column", gap: 3, minWidth: 0 }}>
-                    <span style={{ fontWeight: 600, fontSize: 15, color: "#F6F1E6" }}>{e.title}</span>
-                    <span style={{ fontSize: 13, lineHeight: 1.45, color: "rgba(246,241,230,.72)" }}>{e.meta}</span>
-                    {e.desc && <span style={{ fontSize: 12.5, lineHeight: 1.45, color: "rgba(246,241,230,.6)", textWrap: "pretty" }}>{e.desc}</span>}
-                    {e.joinUrl && (
-                      <a href={e.joinUrl} target="_blank" rel="noopener noreferrer" className="gaw-ev-register" style={{ display: "inline-flex", alignItems: "center", alignSelf: "flex-start", minHeight: 32, fontSize: 12, fontWeight: 700, letterSpacing: ".12em", textTransform: "uppercase" }}>
-                        Join →
-                      </a>
-                    )}
-                  </span>
+        <Chapters
+          label="Events chapters"
+          names={c.chapterNames}
+          chapters={[
+            {
+              key: "daily",
+              label: "Daily sits",
+              content: (
+                  <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: 18, minWidth: 0 }}>
+                    <div style={{ display: "grid", gridTemplateColumns: desk && india.length && abroad.length ? "repeat(2,minmax(0,1fr))" : "1fr", gap: 18, alignItems: "start" }}>
+                  {india.length > 0 && <SessionCard kicker={c.indiaKicker} note={c.indiaNote} sessions={india} />}
+                    {abroad.length > 0 && <SessionCard kicker={abroadKicker} note={c.abroadNote} sessions={abroad} />}
                 </div>
-              ))}
-              <DesignLink href={c.registerHref} isMember={isMember} className="gaw-ev-register" style={{ display: "inline-flex", alignItems: "center", alignSelf: "flex-start", minHeight: 44, fontSize: 13.5, fontWeight: 600 }}>
-                {c.registerLabel}
-              </DesignLink>
-            </article>
 
-            <article style={{ ...CARD, display: "flex", flexDirection: "column", gap: 12, padding: "clamp(20px,2.4vw,28px)" }}>
-              <h2 className="serif" style={{ margin: 0, fontWeight: 500, fontSize: 22, lineHeight: 1.1, color: "#12201A" }}>
-                {c.pastTitle}
-              </h2>
-              {past.map((p, i) => (
-                <div key={i} style={{ display: "grid", gridTemplateColumns: "56px minmax(0,1fr) auto", alignItems: "center", gap: 14, padding: "10px 0", borderBottom: "1px solid rgba(138,111,52,.15)" }}>
-                  <span style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "7px 0", borderRadius: 14, background: "rgba(232,207,131,.25)", border: "1px solid rgba(201,162,74,.4)" }}>
-                    <span className="serif" style={{ fontSize: 20, lineHeight: 1.1, color: "#12201A" }}>
-                      {p.day}
-                    </span>
-                    <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: ".1em", color: "#7A5E22" }}>{p.month}</span>
-                  </span>
-                  <span style={{ display: "flex", flexDirection: "column", gap: 2, minWidth: 0 }}>
-                    <span style={{ fontWeight: 600, fontSize: 14.5, color: "#12201A" }}>{p.title}</span>
-                    <span style={{ fontSize: 12.5, lineHeight: 1.45, color: "#5A4E3C" }}>{p.meta}</span>
-                  </span>
-                  <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: ".14em", textTransform: "uppercase", color: "#7A5E22", whiteSpace: "nowrap" }}>Complete</span>
+                    <DesignLink
+                      href={c.watchHref}
+                      isMember={isMember}
+                      className="gaw-pill-gold"
+                      style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: 50, padding: "0 24px", borderRadius: 999, fontSize: 12.5, fontWeight: 700, letterSpacing: ".08em", textTransform: "uppercase", textAlign: "center", boxShadow: "0 12px 30px -10px rgba(201,162,74,.7)" }}
+                    >
+                      {c.watchLabel}
+                    </DesignLink>
+
+                    <div
+                      style={{ display: "grid", gridTemplateColumns: "38px minmax(0,1fr) auto", alignItems: "center", gap: 13, padding: "14px 16px", borderRadius: 18, border: "1px dashed rgba(201,162,74,.6)", background: "rgba(232,207,131,.14)" }}
+                    >
+                      <span aria-hidden="true" style={{ width: 38, height: 38, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", background: "#14241C" }}>
+                        <svg viewBox="0 0 24 24" style={{ width: 15, height: 15, display: "block" }}>
+                          <rect x="5" y="11" width="14" height="9" rx="2.5" fill="none" stroke="#E8CF83" strokeWidth="1.6" />
+                          <path d="M8 11V8a4 4 0 0 1 8 0v3" fill="none" stroke="#E8CF83" strokeWidth="1.6" />
+                        </svg>
+                      </span>
+                      <span style={{ display: "flex", flexDirection: "column", gap: 2, minWidth: 0 }}>
+                        <span style={{ fontWeight: 600, fontSize: 14, color: "#12201A" }}>{c.zoomTitle}</span>
+                        <span style={{ fontSize: 12.5, lineHeight: 1.45, color: "#5A4E3C" }}>{c.zoomBody}</span>
+                      </span>
+                      <DesignLink href={c.zoomHref} isMember={isMember} style={{ display: "inline-flex", alignItems: "center", minHeight: 44, fontSize: 12.5, fontWeight: 600, whiteSpace: "nowrap" }}>
+                        {c.zoomCta}
+                      </DesignLink>
+                    </div>
+                  </div>
+              ),
+            },
+            {
+              key: "gatherings",
+              label: c.upcomingTitle || "Gatherings",
+              content: (
+                    <article
+                      style={{ maxWidth: 820, width: "100%", alignSelf: "center", display: "flex", flexDirection: "column", gap: 14, padding: "clamp(22px,2.6vw,30px)", borderRadius: 24, background: "linear-gradient(170deg,#1B3328 0%,#14241C 100%)", color: "#F6F1E6", boxShadow: "0 30px 60px -30px rgba(20,14,6,.6)" }}
+                    >
+                      <h2 className="serif" style={{ margin: 0, fontWeight: 500, fontSize: 26, lineHeight: 1.1, color: "#E8CF83" }}>
+                        {c.upcomingTitle}
+                      </h2>
+                      {!upcoming.length && <p style={{ margin: 0, fontSize: 14, lineHeight: 1.6, color: "rgba(246,241,230,.78)", textWrap: "pretty" }}>{c.upcomingEmpty}</p>}
+                      {upcoming.map((e, i) => (
+                        <div key={i} style={{ display: "grid", gridTemplateColumns: "56px minmax(0,1fr)", gap: 16, padding: "12px 0", borderBottom: "1px solid rgba(246,241,230,.1)" }}>
+                          <span style={{ display: "flex", flexDirection: "column", alignItems: "center", alignSelf: "start", padding: "7px 0", borderRadius: 14, background: "rgba(232,207,131,.14)", border: "1px solid rgba(201,162,74,.5)" }}>
+                            <span className="serif" style={{ fontSize: 22, lineHeight: 1.1, color: "#E8CF83" }}>
+                              {e.day}
+                            </span>
+                            <span style={{ fontSize: 10.5, fontWeight: 700, letterSpacing: ".1em", color: "#C9A24A" }}>{e.month}</span>
+                          </span>
+                          <span style={{ display: "flex", flexDirection: "column", gap: 3, minWidth: 0 }}>
+                            <span style={{ fontWeight: 600, fontSize: 15, color: "#F6F1E6" }}>{e.title}</span>
+                            <span style={{ fontSize: 13, lineHeight: 1.45, color: "rgba(246,241,230,.72)" }}>{e.meta}</span>
+                            {e.desc && <span style={{ fontSize: 12.5, lineHeight: 1.45, color: "rgba(246,241,230,.6)", textWrap: "pretty" }}>{e.desc}</span>}
+                            {e.joinUrl && (
+                              <a href={e.joinUrl} target="_blank" rel="noopener noreferrer" className="gaw-ev-register" style={{ display: "inline-flex", alignItems: "center", alignSelf: "flex-start", minHeight: 32, fontSize: 12, fontWeight: 700, letterSpacing: ".12em", textTransform: "uppercase" }}>
+                                Join →
+                              </a>
+                            )}
+                          </span>
+                        </div>
+                      ))}
+                      <DesignLink href={c.registerHref} isMember={isMember} className="gaw-ev-register" style={{ display: "inline-flex", alignItems: "center", alignSelf: "flex-start", minHeight: 44, fontSize: 13.5, fontWeight: 600 }}>
+                        {c.registerLabel}
+                      </DesignLink>
+                    </article>
+              ),
+            },
+            {
+              key: "past",
+              label: c.pastTitle || "Past events",
+              show: past.length > 0 || quotes.length > 0,
+              content: (
+                <div style={{ maxWidth: 820, width: "100%", alignSelf: "center", display: "flex", flexDirection: "column", gap: 18 }}>
+                      <article style={{ ...CARD, display: "flex", flexDirection: "column", gap: 12, padding: "clamp(20px,2.4vw,28px)" }}>
+                        <h2 className="serif" style={{ margin: 0, fontWeight: 500, fontSize: 22, lineHeight: 1.1, color: "#12201A" }}>
+                          {c.pastTitle}
+                        </h2>
+                        {past.map((p, i) => (
+                          <div key={i} style={{ display: "grid", gridTemplateColumns: "56px minmax(0,1fr) auto", alignItems: "center", gap: 14, padding: "10px 0", borderBottom: "1px solid rgba(138,111,52,.15)" }}>
+                            <span style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "7px 0", borderRadius: 14, background: "rgba(232,207,131,.25)", border: "1px solid rgba(201,162,74,.4)" }}>
+                              <span className="serif" style={{ fontSize: 20, lineHeight: 1.1, color: "#12201A" }}>
+                                {p.day}
+                              </span>
+                              <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: ".1em", color: "#7A5E22" }}>{p.month}</span>
+                            </span>
+                            <span style={{ display: "flex", flexDirection: "column", gap: 2, minWidth: 0 }}>
+                              <span style={{ fontWeight: 600, fontSize: 14.5, color: "#12201A" }}>{p.title}</span>
+                              <span style={{ fontSize: 12.5, lineHeight: 1.45, color: "#5A4E3C" }}>{p.meta}</span>
+                            </span>
+                            <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: ".14em", textTransform: "uppercase", color: "#7A5E22", whiteSpace: "nowrap" }}>Complete</span>
+                          </div>
+                        ))}
+                      </article>
+                      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                        {quotes.map((t, i) => (
+                          <blockquote key={t.key ?? i} style={{ animation: "gaw-rise .6s both", margin: 0, padding: "12px 16px", borderRadius: 14, background: "rgba(232,207,131,.22)", border: "1px solid rgba(201,162,74,.4)", fontSize: 13, lineHeight: 1.5, fontStyle: "italic", color: "#3A3128" }}>
+                            {t.text}{" "}
+                            <span style={{ fontStyle: "normal", fontSize: 10.5, fontWeight: 600, letterSpacing: ".08em", textTransform: "uppercase", color: "#7A5E22" }}>— {t.name}</span>
+                          </blockquote>
+                        ))}
+                      </div>
                 </div>
-              ))}
-            </article>
-
-            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              {quotes.map((t, i) => (
-                <blockquote key={t.key ?? i} style={{ animation: "gaw-rise .6s both", margin: 0, padding: "12px 16px", borderRadius: 14, background: "rgba(232,207,131,.22)", border: "1px solid rgba(201,162,74,.4)", fontSize: 13, lineHeight: 1.5, fontStyle: "italic", color: "#3A3128" }}>
-                  {t.text}{" "}
-                  <span style={{ fontStyle: "normal", fontSize: 10.5, fontWeight: 600, letterSpacing: ".08em", textTransform: "uppercase", color: "#7A5E22" }}>— {t.name}</span>
-                </blockquote>
-              ))}
-            </div>
-          </div>
-        </div>
+              ),
+            },
+          ]}
+        />
       </section>
 
       <CmsExtraSections slug="events" />

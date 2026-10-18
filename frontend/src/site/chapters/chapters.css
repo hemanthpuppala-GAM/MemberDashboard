@@ -1,0 +1,116 @@
+/* Chapters — a page in tabs instead of one long scroll (shared by the sub-pages). */
+.gaw-site .gaw-ch {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(18px, 3vh, 28px);
+  min-width: 0;
+}
+.gaw-site .gaw-ch.is-compact {
+  gap: 16px;
+}
+.gaw-site .gaw-ch-wrap {
+  display: flex;
+  justify-content: center;
+  scroll-margin-top: 96px;
+  min-width: 0;
+}
+.gaw-site .gaw-ch.is-compact .gaw-ch-wrap {
+  justify-content: flex-start;
+}
+.gaw-site .gaw-ch-bar {
+  display: flex;
+  gap: 6px;
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 6px;
+  border-radius: 999px;
+  background: rgba(255, 253, 248, 0.6);
+  border: 1px solid rgba(201, 162, 74, 0.35);
+  box-shadow: 0 12px 30px -18px rgba(60, 42, 16, 0.35);
+}
+.gaw-site .gaw-ch-bar::-webkit-scrollbar {
+  display: none;
+}
+.gaw-site .gaw-ch-tab {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: #3a3128;
+  font: inherit;
+  font-size: 13.5px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.gaw-site .gaw-ch.is-compact .gaw-ch-tab {
+  min-height: 40px;
+  padding: 0 14px;
+  font-size: 13px;
+}
+.gaw-site .gaw-ch-tab:hover {
+  background: rgba(232, 207, 131, 0.3);
+}
+.gaw-site .gaw-ch-tab.is-on {
+  background: #14241c;
+  color: #f6f1e6;
+}
+.gaw-site .gaw-ch-num {
+  font-size: 15px;
+  color: #a8842f;
+}
+.gaw-site .gaw-ch-tab.is-on .gaw-ch-num {
+  color: #e8cf83;
+}
+.gaw-site .gaw-ch-panel {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(18px, 3vh, 28px);
+  min-width: 0;
+  animation: gaw-rise 0.5s both;
+}
+.gaw-site .gaw-ch-next {
+  align-self: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 14px 30px;
+  border-radius: 20px;
+  border: 1px dashed rgba(201, 162, 74, 0.6);
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+.gaw-site .gaw-ch.is-compact .gaw-ch-next {
+  align-self: flex-start;
+  padding: 10px 22px;
+}
+.gaw-site .gaw-ch-next:hover {
+  background: rgba(232, 207, 131, 0.2);
+  border-color: #c9a24a;
+}
+.gaw-site .gaw-ch-next-kicker {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #7a5e22;
+}
+.gaw-site .gaw-ch-next-title {
+  font-size: clamp(20px, 1.8vw, 26px);
+  color: #12201a;
+}
+.gaw-site .gaw-ch-tab:focus-visible,
+.gaw-site .gaw-ch-next:focus-visible {
+  outline: 2px solid #c9a24a;
+  outline-offset: 2px;
+}

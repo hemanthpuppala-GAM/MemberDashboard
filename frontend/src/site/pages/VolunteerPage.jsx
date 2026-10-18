@@ -77,6 +77,7 @@ export default function VolunteerPage() {
   const [error, setError] = useState("");
   const [errs, setErrs] = useState({});
   const [sent, setSent] = useState(null);
+  const [step, setStep] = useState(1); // 1: how you'd like to help, 2: about you
 
   useEffect(() => {
     let alive = true;
@@ -111,6 +112,7 @@ export default function VolunteerPage() {
 
   const again = () => {
     setSent(null);
+    setStep(1);
     setPicked([]);
     setAvail("");
     setForm(EMPTY);
@@ -121,7 +123,10 @@ export default function VolunteerPage() {
   const submit = async (e) => {
     e.preventDefault();
     if (busy) return;
-    if (!picked.length) return setError("Choose at least one team — that is the only part we cannot guess.");
+    if (!picked.length) {
+      setStep(1);
+      return setError("Choose at least one team — that is the only part we cannot guess.");
+    }
     if (!form.name.trim()) return setError("We need a name to write back to.");
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(form.email.trim())) return setError("That email does not look right — check it once?");
     if (!form.phone.trim()) return setError("Leave a phone or WhatsApp number so a coordinator can reach you.");
@@ -156,6 +161,7 @@ export default function VolunteerPage() {
         setErrs(fe);
         // Field messages show beside their field; the box carries what has no field of its own.
         setError(fe.teams || fe.availability || fe.lang || (Object.keys(fe).length ? "" : err.message));
+        if (fe.teams || fe.availability) setStep(1);
       } else if (err?.status) {
         setError(err.message || "Something went wrong. Please try again.");
       } else {
@@ -182,6 +188,14 @@ export default function VolunteerPage() {
       )}
     </label>
   );
+
+  // Step 1 → 2: a team is the one thing we need before the details.
+  const toDetails = () => {
+    if (!picked.length) return setError("Choose at least one team — that is the only part we cannot guess.");
+    setError("");
+    setStep(2);
+    document.querySelector(".vol-steps")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   const pickedSummary = picked.length ? (picked.length === 1 ? "1 team chosen" : `${picked.length} teams chosen`) : "Nothing chosen yet";
 
@@ -228,105 +242,117 @@ export default function VolunteerPage() {
             </div>
           </div>
         ) : (
-          <form noValidate onSubmit={submit} style={{ display: "grid", gridTemplateColumns: twoCol ? "minmax(0,1.15fr) minmax(0,.85fr)" : "1fr", gap: "clamp(20px,3vw,36px)", alignItems: "start", ...rise(0.25) }}>
+          <form noValidate onSubmit={submit} style={{ display: "grid", gridTemplateColumns: twoCol && step === 2 ? "minmax(0,1.15fr) minmax(0,.85fr)" : "1fr", gap: "clamp(20px,3vw,36px)", alignItems: "start", ...rise(0.25) }}>
             <div style={{ display: "flex", flexDirection: "column", gap: 28, minWidth: 0 }}>
-              <fieldset style={{ margin: 0, padding: 0, border: 0, minWidth: 0 }}>
-                <legend style={{ ...LABEL, padding: 0 }}>
-                  <span aria-hidden="true" style={{ width: 18, height: 1, background: "#C9A24A" }} />
-                  {c.serveLabel}
-                </legend>
-                <div style={{ fontSize: 13.5, color: "#5A5546", marginTop: 8 }}>{c.serveHint}</div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 12, marginTop: 16 }}>
-                  {teams.map((t) => {
-                    const on = picked.includes(t.id);
-                    return (
-                      <button
-                        key={t.id}
-                        type="button"
-                        onClick={() => toggle(t.id)}
-                        aria-pressed={on}
-                        className={`vol-team${on ? " is-on" : ""}`}
-                        style={{ display: "flex", alignItems: "flex-start", gap: 14, width: "100%", minHeight: 44, padding: "16px 18px", borderRadius: 18, fontFamily: "inherit", textAlign: "left", cursor: "pointer" }}
-                      >
-                        <span
-                          aria-hidden="true"
-                          className="serif"
-                          style={{ width: 36, height: 36, flexShrink: 0, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", background: on ? "#14241C" : "#F3EAD3", color: on ? "#E8CF83" : "#8A6F34", fontSize: 17 }}
+              {/* Two short steps instead of one long form */}
+              <ol aria-label="Sign-up steps" className="vol-steps">
+                {[c.serveLabel || "How you'd like to help", c.aboutLabel || "About you"].map((label, i) => (
+                  <li key={i} className={`vol-step${step === i + 1 ? " is-on" : ""}${step > i + 1 ? " is-done" : ""}`} aria-current={step === i + 1 ? "step" : undefined}>
+                    <span aria-hidden="true" className="serif">{step > i + 1 ? "✓" : i + 1}</span>
+                    {label}
+                  </li>
+                ))}
+              </ol>
+
+              {step === 1 ? (
+                <>
+                <fieldset style={{ margin: 0, padding: 0, border: 0, minWidth: 0 }}>
+                  <legend className="vol-sr">
+                    {c.serveLabel}
+                  </legend>
+                  <div style={{ fontSize: 13.5, color: "#5A5546" }}>{c.serveHint}</div>
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(300px,1fr))", gap: 12, marginTop: 16 }}>
+                    {teams.map((t) => {
+                      const on = picked.includes(t.id);
+                      return (
+                        <button
+                          key={t.id}
+                          type="button"
+                          onClick={() => toggle(t.id)}
+                          aria-pressed={on}
+                          className={`vol-team${on ? " is-on" : ""}`}
+                          style={{ display: "flex", alignItems: "flex-start", gap: 14, width: "100%", minHeight: 44, padding: "16px 18px", borderRadius: 18, fontFamily: "inherit", textAlign: "left", cursor: "pointer" }}
                         >
-                          {t.glyph}
-                        </span>
-                        <span style={{ display: "flex", flexDirection: "column", gap: 3, minWidth: 0 }}>
-                          <span className="serif" style={{ fontSize: 20, fontWeight: 600, lineHeight: 1.15, color: "#12201A" }}>
-                            {t.title}
+                          <span
+                            aria-hidden="true"
+                            className="serif"
+                            style={{ width: 36, height: 36, flexShrink: 0, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", background: on ? "#14241C" : "#F3EAD3", color: on ? "#E8CF83" : "#8A6F34", fontSize: 17 }}
+                          >
+                            {t.glyph}
                           </span>
-                          <span style={{ fontSize: 13.5, lineHeight: 1.55, color: "#3A3128", textWrap: "pretty" }}>{t.desc}</span>
-                        </span>
-                        <span
-                          aria-hidden="true"
-                          style={{ flexShrink: 0, marginLeft: "auto", width: 24, height: 24, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", border: on ? 0 : "1px solid rgba(138,111,52,.4)", background: on ? "linear-gradient(90deg,#E8CF83,#C9A24A)" : "transparent", color: "#14241C", fontSize: 13, fontWeight: 700 }}
+                          <span style={{ display: "flex", flexDirection: "column", gap: 3, minWidth: 0 }}>
+                            <span className="serif" style={{ fontSize: 20, fontWeight: 600, lineHeight: 1.15, color: "#12201A" }}>
+                              {t.title}
+                            </span>
+                            <span style={{ fontSize: 13.5, lineHeight: 1.55, color: "#3A3128", textWrap: "pretty" }}>{t.desc}</span>
+                          </span>
+                          <span
+                            aria-hidden="true"
+                            style={{ flexShrink: 0, marginLeft: "auto", width: 24, height: 24, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", border: on ? 0 : "1px solid rgba(138,111,52,.4)", background: on ? "linear-gradient(90deg,#E8CF83,#C9A24A)" : "transparent", color: "#14241C", fontSize: 13, fontWeight: 700 }}
+                          >
+                            {on ? "✓" : ""}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </fieldset>
+                <fieldset style={{ margin: 0, padding: 0, border: 0, minWidth: 0 }}>
+                  <legend style={{ ...FIELD_LABEL, padding: 0, marginBottom: 10 }}>{c.availLabel}</legend>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                    {AVAILS.map((a) => {
+                      const on = avail === a;
+                      return (
+                        <button
+                          key={a}
+                          type="button"
+                          aria-pressed={on}
+                          onClick={() => {
+                            setAvail(on ? "" : a);
+                            clearErr("availability");
+                          }}
+                          className={`vol-avail${on ? " is-on" : ""}`}
+                          style={{ minHeight: 44, padding: "0 18px", borderRadius: 999, fontFamily: "inherit", fontSize: 13, fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap" }}
                         >
-                          {on ? "✓" : ""}
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </fieldset>
-
-              <fieldset style={{ margin: 0, padding: 0, border: 0, minWidth: 0 }}>
-                <legend style={{ ...LABEL, padding: 0 }}>
-                  <span aria-hidden="true" style={{ width: 18, height: 1, background: "#C9A24A" }} />
-                  {c.aboutLabel}
-                </legend>
-                <div style={{ display: "grid", gridTemplateColumns: twoRow ? "1fr 1fr" : "1fr", gap: 14, marginTop: 16 }}>
-                  {field("name", c.nameLabel, { type: "text", autoComplete: "name", placeholder: c.namePlaceholder, required: true })}
-                  {field("email", c.emailLabel, { type: "email", autoComplete: "email", placeholder: "you@example.com", required: true })}
-                  {field("phone", c.phoneLabel, { type: "tel", autoComplete: "tel", placeholder: c.phonePlaceholder, required: true })}
-                  {field("city", c.cityLabel, { type: "text", autoComplete: "address-level2", placeholder: c.cityPlaceholder })}
-                </div>
-              </fieldset>
-
-              <fieldset style={{ margin: 0, padding: 0, border: 0, minWidth: 0 }}>
-                <legend style={{ ...FIELD_LABEL, padding: 0, marginBottom: 10 }}>{c.availLabel}</legend>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                  {AVAILS.map((a) => {
-                    const on = avail === a;
-                    return (
-                      <button
-                        key={a}
-                        type="button"
-                        aria-pressed={on}
-                        onClick={() => {
-                          setAvail(on ? "" : a);
-                          clearErr("availability");
-                        }}
-                        className={`vol-avail${on ? " is-on" : ""}`}
-                        style={{ minHeight: 44, padding: "0 18px", borderRadius: 999, fontFamily: "inherit", fontSize: 13, fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap" }}
-                      >
-                        {a}
-                      </button>
-                    );
-                  })}
-                </div>
-              </fieldset>
-
-              <label style={{ display: "flex", flexDirection: "column", gap: 7 }}>
-                <span style={FIELD_LABEL}>{c.noteLabel}</span>
-                <textarea
-                  value={form.note}
-                  onChange={set("note")}
-                  rows={4}
-                  placeholder={c.notePlaceholder}
-                  aria-invalid={errs.notes ? true : undefined}
-                  aria-describedby={errs.notes ? "vol-err-notes" : undefined}
-                  style={{ ...inputStyle(!!errs.notes), padding: "13px 15px", borderRadius: 16, lineHeight: 1.55, resize: "vertical" }}
-                />
-                {errs.notes && (
-                  <span id="vol-err-notes" role="alert" style={FIELD_ERR}>
-                    {errs.notes}
-                  </span>
-                )}
-              </label>
+                          {a}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </fieldset>
+                </>
+              ) : (
+                <>
+                <fieldset style={{ margin: 0, padding: 0, border: 0, minWidth: 0 }}>
+                  <legend className="vol-sr">
+                    {c.aboutLabel}
+                  </legend>
+                  <div style={{ display: "grid", gridTemplateColumns: twoRow ? "1fr 1fr" : "1fr", gap: 14, marginTop: 16 }}>
+                    {field("name", c.nameLabel, { type: "text", autoComplete: "name", placeholder: c.namePlaceholder, required: true })}
+                    {field("email", c.emailLabel, { type: "email", autoComplete: "email", placeholder: "you@example.com", required: true })}
+                    {field("phone", c.phoneLabel, { type: "tel", autoComplete: "tel", placeholder: c.phonePlaceholder, required: true })}
+                    {field("city", c.cityLabel, { type: "text", autoComplete: "address-level2", placeholder: c.cityPlaceholder })}
+                  </div>
+                </fieldset>
+                <label style={{ display: "flex", flexDirection: "column", gap: 7 }}>
+                  <span style={FIELD_LABEL}>{c.noteLabel}</span>
+                  <textarea
+                    value={form.note}
+                    onChange={set("note")}
+                    rows={4}
+                    placeholder={c.notePlaceholder}
+                    aria-invalid={errs.notes ? true : undefined}
+                    aria-describedby={errs.notes ? "vol-err-notes" : undefined}
+                    style={{ ...inputStyle(!!errs.notes), padding: "13px 15px", borderRadius: 16, lineHeight: 1.55, resize: "vertical" }}
+                  />
+                  {errs.notes && (
+                    <span id="vol-err-notes" role="alert" style={FIELD_ERR}>
+                      {errs.notes}
+                    </span>
+                  )}
+                </label>
+                </>
+              )}
 
               <input
                 value={form.honey}
@@ -345,21 +371,37 @@ export default function VolunteerPage() {
                 </div>
               )}
 
-              <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 16 }}>
-                <button
-                  type="submit"
-                  disabled={busy}
-                  className="gaw-pill-gold vol-submit"
-                  style={{ ...PILL, padding: "0 34px", border: 0, fontSize: 12, cursor: busy ? "default" : "pointer", opacity: busy ? 0.6 : 1 }}
-                >
-                  {busy ? "Sending…" : c.submitLabel}
-                </button>
-                <span aria-live="polite" style={{ fontSize: 13, lineHeight: 1.5, color: "#5A5546" }}>
-                  {pickedSummary}
-                </span>
-              </div>
+              {step === 1 ? (
+                <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 16 }}>
+                  <button type="button" onClick={toDetails} className="gaw-pill-gold vol-submit" style={{ ...PILL, padding: "0 30px", border: 0, fontSize: 12, cursor: "pointer" }}>
+                    Next: about you →
+                  </button>
+                  <span aria-live="polite" style={{ fontSize: 13, lineHeight: 1.5, color: "#5A5546" }}>
+                    {pickedSummary}
+                  </span>
+                </div>
+              ) : (
+                <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 12 }}>
+                  <button type="button" onClick={() => { setError(""); setStep(1); }} className="vol-ghost" style={{ ...PILL, minHeight: 44, cursor: "pointer" }}>
+                    ← Back
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={busy}
+                    className="gaw-pill-gold vol-submit"
+                    style={{ ...PILL, padding: "0 34px", border: 0, fontSize: 12, cursor: busy ? "default" : "pointer", opacity: busy ? 0.6 : 1 }}
+                  >
+                    {busy ? "Sending…" : c.submitLabel}
+                  </button>
+                  <span aria-live="polite" style={{ fontSize: 13, lineHeight: 1.5, color: "#5A5546" }}>
+                    {pickedSummary}
+                  </span>
+                </div>
+              )}
             </div>
 
+            {/* Step 1 uses the full width for the teams; the side notes join on step 2. */}
+            {step === 2 ? (
             <aside style={{ display: "flex", flexDirection: "column", gap: 16, position: twoCol ? "sticky" : "static", top: 130, minWidth: 0 }}>
               <div style={{ ...CARD, padding: "22px 24px" }}>
                 <span style={LABEL}>{c.nextLabel}</span>
@@ -395,6 +437,7 @@ export default function VolunteerPage() {
                 </a>
               </div>
             </aside>
+            ) : null}
           </form>
         )}
       </main>

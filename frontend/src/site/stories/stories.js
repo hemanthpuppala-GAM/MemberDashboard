@@ -20,9 +20,10 @@ export function useVideoStories() {
 }
 
 /** Every Short on the channel (wisdom clips + testimonials), newest first, shaped like stories. */
-export function useChannelShorts() {
+export function useChannelShorts(enabled = true) {
   const [shorts, setShorts] = useState([]);
   useEffect(() => {
+    if (!enabled) return undefined;
     let live = true;
     publicApi
       .channelShorts()
@@ -31,7 +32,7 @@ export function useChannelShorts() {
     return () => {
       live = false;
     };
-  }, []);
+  }, [enabled]);
   return shorts;
 }
 
