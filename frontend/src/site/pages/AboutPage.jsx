@@ -4,6 +4,7 @@ import { usePageQuotes } from "../siteQuotes";
 import { useViewportWidth } from "../useViewport";
 import { siteAsset } from "../siteAssets";
 import CmsExtraSections from "../cms/CmsExtraSections";
+import Chapters from "../chapters/Chapters";
 
 const PAD = "clamp(20px,5vw,72px)";
 const KICKER = { display: "inline-flex", alignItems: "center", gap: 10, fontSize: 11, fontWeight: 700, letterSpacing: ".3em", textTransform: "uppercase", color: "#7A5E22" };
@@ -24,7 +25,7 @@ export default function AboutPage() {
       <Breadcrumb current="About" />
 
       <section
-        style={{ flex: 1, display: "grid", gridTemplateColumns: desk ? "minmax(280px,.8fr) minmax(0,1.2fr)" : "1fr", gap: "clamp(28px,5vw,80px)", alignItems: "center", padding: `clamp(24px,4vh,48px) ${PAD} clamp(40px,6vh,72px)`, maxWidth: 1360, width: "100%", margin: "0 auto" }}
+        style={{ flex: 1, display: "grid", gridTemplateColumns: desk ? "minmax(280px,.8fr) minmax(0,1.2fr)" : "1fr", gap: "clamp(28px,5vw,80px)", alignItems: "start", padding: `clamp(24px,4vh,48px) ${PAD} clamp(40px,6vh,72px)`, maxWidth: 1360, width: "100%", margin: "0 auto" }}
       >
         <figure style={{ margin: 0, position: "relative", ...rise(0.1) }}>
           <img
@@ -48,52 +49,71 @@ export default function AboutPage() {
           <h1 className="serif" style={{ margin: 0, fontWeight: 500, fontSize: "clamp(36px,4.4vw,66px)", lineHeight: 1, letterSpacing: "-.015em", textWrap: "balance", color: "#12201A", ...rise(0.1) }}>
             {c.title} <em style={{ color: "#8A6F34" }}>{c.titleAccent}</em>
           </h1>
-          <p style={{ margin: 0, fontSize: "clamp(15px,1.15vw,18px)", lineHeight: 1.6, color: "#3A3128", textWrap: "pretty", maxWidth: "60ch", ...rise(0.2) }}>{c.intro}</p>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "10px 18px", ...rise(0.3) }}>
-            {[c.badge1, c.badge2].filter(Boolean).map((b) => (
-              <span key={b} style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "8px 14px", borderRadius: 999, border: "1px solid rgba(138,111,52,.35)", fontSize: 11, fontWeight: 700, letterSpacing: ".14em", textTransform: "uppercase", color: "#7A5E22" }}>
-                {b}
-              </span>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section aria-label="Dr. Hari Krishna's background" style={{ padding: `0 ${PAD} clamp(40px,6vh,72px)` }}>
-        <div style={{ maxWidth: 1360, margin: "0 auto", display: "grid", gridTemplateColumns: desk ? "repeat(3,minmax(0,1fr))" : "1fr", gap: desk ? 18 : 14, ...rise(0.4) }}>
-          {(c.strengths || []).map((g, i) => (
-            <article
-              key={i}
-              style={{ display: "flex", flexDirection: "column", gap: 10, padding: "clamp(20px,2vw,28px)", borderRadius: 20, background: "rgba(255,253,248,.55)", border: "1px solid rgba(255,255,255,.7)", boxShadow: "0 1px 0 rgba(255,255,255,.8) inset,0 12px 30px -14px rgba(60,42,16,.28)" }}
-            >
-              <span aria-hidden="true" className="serif" style={{ fontSize: 28, lineHeight: 1, color: "#8A6F34" }}>
-                {g.glyph}
-              </span>
-              <h2 className="serif" style={{ margin: 0, fontWeight: 500, fontSize: "clamp(22px,1.8vw,26px)", lineHeight: 1.15, color: "#12201A", textWrap: "balance" }}>
-                {g.title}
-              </h2>
-              <p style={{ margin: 0, maxWidth: "68ch", fontSize: 15, lineHeight: 1.65, color: "#3A3128", textWrap: "pretty" }}>{g.body}</p>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section aria-label="What members say" style={{ padding: `clamp(32px,5vh,56px) ${PAD}`, background: "linear-gradient(180deg,rgba(243,234,211,0),rgba(232,207,131,.18))" }}>
-        <div style={{ maxWidth: 1360, margin: "0 auto", display: "flex", flexDirection: "column", gap: 22 }}>
-          <span style={KICKER}>
-            <span aria-hidden="true" style={{ width: 18, height: 1, background: "#C9A24A" }} />
-            {c.quotesKicker}
-          </span>
-          <div style={{ display: "grid", gridTemplateColumns: desk ? "repeat(4,minmax(0,1fr))" : mid ? "repeat(2,minmax(0,1fr))" : "1fr", gap: 16 }}>
-            {quotes.map((t, i) => (
-              <blockquote key={i} style={{ margin: 0, display: "flex", flexDirection: "column", justifyContent: "space-between", gap: 16, padding: 22, borderRadius: 18, background: "#14241C", color: "#F6F1E6", boxShadow: "0 18px 40px -20px rgba(0,0,0,.5)" }}>
-                <p className="serif" style={{ margin: 0, fontSize: "clamp(18px,1.4vw,22px)", lineHeight: 1.3, textWrap: "pretty" }}>
-                  {t.text}
-                </p>
-                <footer style={{ fontSize: 11, fontWeight: 600, letterSpacing: ".14em", textTransform: "uppercase", color: "#E8CF83" }}>— {t.name}</footer>
-              </blockquote>
-            ))}
-          </div>
+          <Chapters
+            compact
+            label="About Dr. Hari Krishna"
+            names={c.chapterNames}
+            chapters={[
+              {
+                key: "story",
+                label: "His story",
+                content: (
+                  <>
+                    <p style={{ margin: 0, fontSize: "clamp(15px,1.15vw,18px)", lineHeight: 1.6, color: "#3A3128", textWrap: "pretty", maxWidth: "60ch" }}>{c.intro}</p>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "10px 18px" }}>
+                      {[c.badge1, c.badge2].filter(Boolean).map((b) => (
+                        <span key={b} style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "8px 14px", borderRadius: 999, border: "1px solid rgba(138,111,52,.35)", fontSize: 11, fontWeight: 700, letterSpacing: ".14em", textTransform: "uppercase", color: "#7A5E22" }}>
+                          {b}
+                        </span>
+                      ))}
+                    </div>
+                  </>
+                ),
+              },
+              {
+                key: "brings",
+                label: "What he brings",
+                show: (c.strengths || []).length > 0,
+                content: (
+                  <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                    {(c.strengths || []).map((g, i) => (
+                      <article
+                        key={i}
+                        style={{ display: "grid", gridTemplateColumns: "34px minmax(0,1fr)", gap: 14, alignItems: "start", padding: "16px 18px", borderRadius: 18, background: "rgba(255,253,248,.55)", border: "1px solid rgba(255,255,255,.7)", boxShadow: "0 1px 0 rgba(255,255,255,.8) inset,0 12px 30px -16px rgba(60,42,16,.28)" }}
+                      >
+                        <span aria-hidden="true" className="serif" style={{ fontSize: 26, lineHeight: 1, color: "#8A6F34", textAlign: "center" }}>
+                          {g.glyph}
+                        </span>
+                        <span style={{ display: "flex", flexDirection: "column", gap: 4, minWidth: 0 }}>
+                          <h2 className="serif" style={{ margin: 0, fontWeight: 500, fontSize: "clamp(20px,1.6vw,23px)", lineHeight: 1.15, color: "#12201A", textWrap: "balance" }}>
+                            {g.title}
+                          </h2>
+                          <p style={{ margin: 0, fontSize: 14, lineHeight: 1.6, color: "#3A3128", textWrap: "pretty" }}>{g.body}</p>
+                        </span>
+                      </article>
+                    ))}
+                  </div>
+                ),
+              },
+              {
+                key: "voices",
+                label: c.quotesKicker || "Members say",
+                show: quotes.length > 0,
+                content: (
+                  <div style={{ display: "grid", gridTemplateColumns: mid ? "repeat(2,minmax(0,1fr))" : "1fr", gap: 12 }}>
+                    {quotes.map((t, i) => (
+                      <blockquote key={t.key ?? i} style={{ animation: "gaw-rise .6s both", margin: 0, display: "flex", flexDirection: "column", justifyContent: "space-between", gap: 14, padding: 20, borderRadius: 18, background: "#14241C", color: "#F6F1E6", boxShadow: "0 18px 40px -20px rgba(0,0,0,.5)" }}>
+                        <p className="serif" style={{ margin: 0, fontSize: "clamp(17px,1.3vw,20px)", lineHeight: 1.3, textWrap: "pretty" }}>
+                          {t.text}
+                        </p>
+                        <footer style={{ fontSize: 11, fontWeight: 600, letterSpacing: ".14em", textTransform: "uppercase", color: "#E8CF83" }}>— {t.name}</footer>
+                      </blockquote>
+                    ))}
+                  </div>
+                ),
+              },
+            ]}
+          />
         </div>
       </section>
 

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { SitePage, SiteHeader, Breadcrumb, SiteFooter, AdminEditLink } from "../SiteChrome";
 import { useMemberBadge } from "../useMemberBadge";
@@ -8,9 +8,6 @@ import { useViewportWidth } from "../useViewport";
 import { YOUTUBE_URL } from "../sitePages";
 import "./wisdom.css";
 import CmsExtraSections from "../cms/CmsExtraSections";
-import StoriesViewer from "../stories/StoriesViewer";
-import { useChannelShorts } from "../stories/stories";
-import "../stories/stories.css";
 
 const PAD = "clamp(20px,5vw,72px)";
 const rise = (delay = 0) => ({ animation: `gaw-rise .9s ${delay}s both` });
@@ -57,9 +54,6 @@ const FALLBACKS = {
   chapterRiver: "The river of wisdom",
   chapterGhats: "Many ways in",
   chapterTruth: "One truth",
-  chapterClips: "Short clips",
-  clipsTitle: "Wisdom in a minute",
-  clipsIntro: "Short clips from Dr. Hari Krishna's talks and from members — the newest first. Tap one and they play one after another.",
   footerTitle: "Sit with us — free, every day.",
   footerSub: "Guided live on YouTube, Monday to Saturday. No experience needed.",
 };
@@ -314,7 +308,7 @@ function TruthChapter({ c, quotes, mid }) {
       {quotes.length ? (
         <div style={{ display: "grid", gridTemplateColumns: mid ? "repeat(2,minmax(0,1fr))" : "1fr", gap: 12 }}>
           {quotes.map((t, i) => (
-            <blockquote key={i} style={{ margin: 0, display: "flex", flexDirection: "column", gap: 6, padding: "16px 20px", borderRadius: 16, background: "rgba(232,207,131,.22)", border: "1px solid rgba(201,162,74,.4)" }}>
+            <blockquote key={t.key ?? i} style={{ animation: "gaw-rise .6s both", margin: 0, display: "flex", flexDirection: "column", gap: 6, padding: "16px 20px", borderRadius: 16, background: "rgba(232,207,131,.22)", border: "1px solid rgba(201,162,74,.4)" }}>
               <p className="serif" style={{ margin: 0, fontSize: 19, lineHeight: 1.3, color: "#12201A", textWrap: "pretty" }}>
                 {t.text}
               </p>
@@ -329,30 +323,6 @@ function TruthChapter({ c, quotes, mid }) {
 
 const ROMAN = ["I", "II", "III", "IV", "V", "VI"];
 
-/** Chapter V — every Short on the YouTube channel, newest first; tap one and they roll on from there. */
-function ClipsChapter({ c, shorts, onOpen, desk, mid }) {
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
-      <header style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10, textAlign: "center" }}>
-        <h2 className="serif" style={{ margin: 0, fontWeight: 500, fontSize: "clamp(28px,3vw,42px)", lineHeight: 1.1, color: INK }}>{c.clipsTitle}</h2>
-        {c.clipsIntro ? <p style={{ margin: 0, maxWidth: "60ch", fontSize: 15, lineHeight: 1.65, color: BODY, textWrap: "pretty" }}>{c.clipsIntro}</p> : null}
-      </header>
-      <div style={{ display: "grid", gridTemplateColumns: desk ? "repeat(5,minmax(0,1fr))" : mid ? "repeat(3,minmax(0,1fr))" : "repeat(2,minmax(0,1fr))", gap: 12 }}>
-        {shorts.map((s, i) => (
-          <button key={s.id} type="button" className="wisdom-clip" onClick={() => onOpen(i)} aria-label={`Play: ${s.name}`}>
-            <span className="wisdom-clip-thumb">
-              <img src={s.photo_path} alt="" loading="lazy" />
-              <span aria-hidden="true" className="wisdom-clip-play">▶</span>
-              {i === 0 ? <span className="wisdom-clip-new">New</span> : null}
-            </span>
-            <span className="wisdom-clip-title">{s.name}</span>
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-}
-
 /** /wisdom — design: Wisdom.dc.html */
 export default function WisdomPage() {
   const c = useSiteContent("wisdom", FALLBACKS);
@@ -361,8 +331,6 @@ export default function WisdomPage() {
   const { isMember } = useMemberBadge();
   const location = useLocation();
   const navigate = useNavigate();
-  const shorts = useChannelShorts();
-  const [clipAt, setClipAt] = useState(null);
   const barRef = useRef(null);
   const desk = w >= 900;
   const mid = w >= 640;
@@ -375,7 +343,6 @@ export default function WisdomPage() {
     { key: "river", label: c.chapterRiver || "The river of wisdom", show: stages.length > 0 || !!c.riverTitle },
     { key: "ghats", label: c.chapterGhats || "Many ways in", show: (c.ghats || []).length > 0 },
     { key: "truth", label: c.chapterTruth || "One truth", show: !!c.closingVerse || quotes.length > 0 },
-    { key: "clips", label: c.chapterClips || "Short clips", show: shorts.length > 0 },
   ].filter((ch) => ch.show);
 
   // The address bar carries the place: /wisdom#river-3 = chapter "river", stop 3 (shareable; Back works).
@@ -522,8 +489,6 @@ export default function WisdomPage() {
             <GhatsChapter c={c} desk={desk} mid={mid} />
           ) : chapter === "truth" ? (
             <TruthChapter c={c} quotes={quotes} mid={mid} />
-          ) : chapter === "clips" ? (
-            <ClipsChapter c={c} shorts={shorts} onOpen={setClipAt} desk={desk} mid={mid} />
           ) : null}
 
           {nextChapter ? (
@@ -559,10 +524,6 @@ export default function WisdomPage() {
           </ContentLink>
         </div>
       </section>
-
-      {clipAt !== null && shorts.length ? (
-        <StoriesViewer stories={shorts} start={clipAt} onClose={() => setClipAt(null)} joinTo={isMember ? "/dashboard" : "/join"} label={c.chapterClips || "Short clips"} ctaLabel={c.cta || "Join the live sessions — free"} />
-      ) : null}
 
       <CmsExtraSections slug="wisdom" />
       <SiteFooter title={c.footerTitle} sub={c.footerSub} />

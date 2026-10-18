@@ -247,6 +247,11 @@ export const SITE_CONTENT_SCHEMAS = {
     intro: "Changes publish to the About page the moment you save.",
     sections: [
       {
+        title: "Chapter names (the tabs)",
+        description: "The page is shown in chapters. Leave empty for the standard names, or list your own in order, separated by commas: His story, What he brings, What members say. A chapter with no content is hidden.",
+        fields: [{ key: "chapterNames", label: "Chapter names", type: "text" }],
+      },
+      {
         title: "Portrait",
         fields: [
           {
@@ -358,6 +363,20 @@ export const SITE_CONTENT_SCHEMAS = {
     title: "Steps, posture photo & teachings",
     intro: "Changes publish the moment you save.",
     sections: [
+      {
+        title: "Chapter names (the tabs)",
+        description: "The page is shown in chapters. Leave empty for the standard names, or list your own in order, separated by commas: How to sit, Quick answers, Short clips, The science, Practices, Your path. A chapter with no content is hidden.",
+        fields: [{ key: "chapterNames", label: "Chapter names", type: "text" }],
+      },
+      {
+        title: "Short clips (YouTube Shorts)",
+        description: "Every Short on the channel, newest first, in one sideways row after the quick answers. Fetched automatically; hidden if YouTube can't be read.",
+        columns: 2,
+        fields: [
+          { key: "clipsTitle", label: "Title", type: "text" },
+          { key: "clipsIntro", label: "Intro", type: "textarea", rows: 2, wide: true },
+        ],
+      },
       {
         title: "Posture photo",
         fields: [
@@ -501,9 +520,6 @@ export const SITE_CONTENT_SCHEMAS = {
           { key: "chapterRiver", label: "II · the living river", type: "text" },
           { key: "chapterGhats", label: "III · ghats", type: "text" },
           { key: "chapterTruth", label: "IV · closing & quotes", type: "text" },
-          { key: "chapterClips", label: "V · Short clips (YouTube Shorts, newest first)", type: "text" },
-          { key: "clipsTitle", label: "Short clips · title", type: "text" },
-          { key: "clipsIntro", label: "Short clips · intro", type: "textarea", rows: 2, wide: true },
         ],
       },
       {
@@ -642,6 +658,11 @@ export const SITE_CONTENT_SCHEMAS = {
     intro: "Changes publish the moment you save.",
     sections: [
       {
+        title: "Chapter names (the tabs)",
+        description: "The page is shown in chapters. Leave empty for the standard names, or list your own in order, separated by commas: Feel better, 8 simple rules, Detox plan. A chapter with no content is hidden.",
+        fields: [{ key: "chapterNames", label: "Chapter names", type: "text" }],
+      },
+      {
         title: "Heading & buttons",
         columns: 3,
         fields: [
@@ -727,6 +748,11 @@ export const SITE_CONTENT_SCHEMAS = {
     title: "Sessions, gatherings & Zoom",
     intro: "Changes publish the moment you save.",
     sections: [
+      {
+        title: "Chapter names (the tabs)",
+        description: "The page is shown in chapters. Leave empty for the standard names, or list your own in order, separated by commas: Daily sits, Upcoming gatherings, Past gatherings. A chapter with no content is hidden.",
+        fields: [{ key: "chapterNames", label: "Chapter names", type: "text" }],
+      },
       {
         title: "Heading",
         columns: 2,

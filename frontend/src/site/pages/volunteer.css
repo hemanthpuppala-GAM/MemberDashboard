@@ -77,3 +77,59 @@
 .gaw-site .vol-submit:disabled {
   transform: none;
 }
+
+/* Two-step sign-up: a small progress row above the form */
+.gaw-site .vol-steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.gaw-site .vol-step {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #8a7c63;
+}
+.gaw-site .vol-step > span {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 1px solid rgba(138, 111, 52, 0.4);
+  font-size: 15px;
+  letter-spacing: 0;
+  color: #7a5e22;
+}
+.gaw-site .vol-step.is-on {
+  color: #12201a;
+}
+.gaw-site .vol-step.is-on > span {
+  background: #14241c;
+  border-color: #14241c;
+  color: #e8cf83;
+}
+.gaw-site .vol-step.is-done > span {
+  background: linear-gradient(90deg, #e8cf83, #c9a24a);
+  border: 0;
+  color: #14241c;
+}
+.gaw-site .vol-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+.gaw-site .vol-steps {
+  scroll-margin-top: 110px;
+}
