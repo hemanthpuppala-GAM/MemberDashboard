@@ -359,6 +359,15 @@ export const SITE_CONTENT_SCHEMAS = {
     intro: "Changes publish the moment you save.",
     sections: [
       {
+        title: "Short clips (YouTube Shorts)",
+        description: "Every Short on the channel, newest first, in one sideways row after the quick answers. Fetched automatically; hidden if YouTube can't be read.",
+        columns: 2,
+        fields: [
+          { key: "clipsTitle", label: "Title", type: "text" },
+          { key: "clipsIntro", label: "Intro", type: "textarea", rows: 2, wide: true },
+        ],
+      },
+      {
         title: "Posture photo",
         fields: [
           { key: "photo", label: "Posture photo", type: "image", fallback: "assets/hari-posture-stream.png", portrait: true },
@@ -501,9 +510,6 @@ export const SITE_CONTENT_SCHEMAS = {
           { key: "chapterRiver", label: "II · the living river", type: "text" },
           { key: "chapterGhats", label: "III · ghats", type: "text" },
           { key: "chapterTruth", label: "IV · closing & quotes", type: "text" },
-          { key: "chapterClips", label: "V · Short clips (YouTube Shorts, newest first)", type: "text" },
-          { key: "clipsTitle", label: "Short clips · title", type: "text" },
-          { key: "clipsIntro", label: "Short clips · intro", type: "textarea", rows: 2, wide: true },
         ],
       },
       {

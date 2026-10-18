@@ -7,6 +7,7 @@ import { useViewportWidth } from "../useViewport";
 import { siteAsset } from "../siteAssets";
 import "./meditation.css";
 import CmsExtraSections from "../cms/CmsExtraSections";
+import ShortClips from "../stories/ShortClips";
 
 const PAD = "clamp(20px,5vw,72px)";
 const rise = (delay = 0) => ({ animation: `gaw-rise .9s ${delay}s both` });
@@ -37,6 +38,8 @@ const LABEL = { fontSize: 10.5, fontWeight: 700, letterSpacing: ".18em", textTra
 
 /** Defaults from Meditation.dc.html DEFAULTS that content/meditation.json may not carry. */
 const FALLBACKS = {
+  clipsTitle: "Watch: meditation in a minute",
+  clipsIntro: "Short clips from Dr. Hari Krishna and from members — the newest first. Tap one and they play one after another.",
   eyebrow: "The Path · Meditation 101",
   title: "Explained simply —",
   titleAccent: "and scientifically",
@@ -219,6 +222,9 @@ export default function MeditationPage() {
             </article>
           ))}
         </div>
+
+        {/* The channel's YouTube Shorts, newest first — tap one and they roll on */}
+        <ShortClips title={c.clipsTitle || "Short clips"} intro={c.clipsIntro} joinTo={isMember ? "/dashboard" : "/join"} ctaLabel={c.cta || "Join the free daily sit"} />
 
         {/* The science, simply */}
         <article
