@@ -8,25 +8,31 @@ use RuntimeException;
 use SimpleXMLElement;
 
 /**
- * Latest videos from the channel's public RSS feeds (no API key): the Shorts playlist first
- * (UUSH… = the channel's Shorts), else all uploads. Used to pick Shorts as video testimonials.
+ * Latest Shorts from the channel, without an API key: the public RSS feed of the channel's
+ * Shorts playlist (UUSH…) first; when YouTube serves that empty (it often does), the Shorts
+ * tab of the channel page itself, with titles from oEmbed. Used to pick video testimonials.
  */
 class YouTubeFeed
 {
     /** @return array{channel: string, items: list<array{id: string, title: string, url: string, thumbnail: string, published: ?string, is_short: bool}>} */
     public static function latest(): array
     {
-        return Cache::remember('youtube_feed.latest', now()->addMinutes(30), function () {
-            $channelId = self::channelId();
-            $shortsPlaylist = 'UUSH'.substr($channelId, 2);
+        $cached = Cache::get('youtube_feed.latest');
+        if (! empty($cached['items'])) { // an empty list saved by an older version doesn't count
+            return $cached;
+        }
 
-            $items = self::read("https://www.youtube.com/feeds/videos.xml?playlist_id={$shortsPlaylist}", true);
-            if (! $items) {
-                $items = self::read("https://www.youtube.com/feeds/videos.xml?channel_id={$channelId}", false);
-            }
+        $channelId = self::channelId();
+        $items = self::read('https://www.youtube.com/feeds/videos.xml?playlist_id=UUSH'.substr($channelId, 2), true)
+            ?: self::fromShortsPage()
+            ?: self::read("https://www.youtube.com/feeds/videos.xml?channel_id={$channelId}", false);
 
-            return ['channel' => (string) config('services.youtube.channel'), 'items' => $items];
-        });
+        $result = ['channel' => (string) config('services.youtube.channel'), 'items' => $items];
+        if ($items) { // never remember an empty answer — the next try may work
+            Cache::put('youtube_feed.latest', $result, now()->addMinutes(30));
+        }
+
+        return $result;
     }
 
     public static function channelId(): string
@@ -78,6 +84,49 @@ class YouTubeFeed
         }
 
         return $items;
+    }
+
+    /**
+     * The channel's Shorts tab (/@handle/shorts): video ids from the page data, newest first,
+     * titled via YouTube's public oEmbed endpoint.
+     *
+     * @return list<array{id: string, title: string, url: string, thumbnail: string, published: ?string, is_short: bool}>
+     */
+    public static function fromShortsPage(int $limit = 24): array
+    {
+        $handle = trim((string) config('services.youtube.channel'), '/');
+        $page = Http::timeout(15)->withHeaders(['Accept-Language' => 'en'])->get("https://www.youtube.com/{$handle}/shorts");
+        if (! $page->successful()) {
+            return [];
+        }
+        $ids = self::shortIds($page->body(), $limit);
+
+        return array_map(function (string $id) {
+            $title = '';
+            try {
+                $o = Http::timeout(8)->get('https://www.youtube.com/oembed', ['url' => "https://www.youtube.com/shorts/{$id}", 'format' => 'json']);
+                $title = $o->successful() ? trim((string) $o->json('title')) : '';
+            } catch (\Throwable) {
+                // keep the id; the admin sees the thumbnail
+            }
+
+            return [
+                'id' => $id,
+                'title' => $title ?: 'YouTube Short',
+                'url' => "https://www.youtube.com/shorts/{$id}",
+                'thumbnail' => "https://i.ytimg.com/vi/{$id}/hqdefault.jpg",
+                'published' => null,
+                'is_short' => true,
+            ];
+        }, $ids);
+    }
+
+    /** Short video ids in the order they appear in the Shorts tab's page data. @return list<string> */
+    public static function shortIds(string $html, int $limit = 24): array
+    {
+        preg_match_all('#(?:"/shorts/|"videoId":")([\w-]{11})"#', $html, $m);
+
+        return array_slice(array_values(array_unique($m[1])), 0, $limit);
     }
 
     private static function read(string $url, bool $allShorts): array
