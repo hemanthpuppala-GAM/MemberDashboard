@@ -90,7 +90,7 @@ export default function AboutPage() {
                 <p className="serif" style={{ margin: 0, fontSize: "clamp(18px,1.4vw,22px)", lineHeight: 1.3, textWrap: "pretty" }}>
                   {t.text}
                 </p>
-                <footer style={{ fontSize: 11, fontWeight: 600, letterSpacing: ".14em", textTransform: "uppercase", color: "#E8CF83" }}>— {t.name}, via NeoSouth</footer>
+                <footer style={{ fontSize: 11, fontWeight: 600, letterSpacing: ".14em", textTransform: "uppercase", color: "#E8CF83" }}>— {t.name}</footer>
               </blockquote>
             ))}
           </div>

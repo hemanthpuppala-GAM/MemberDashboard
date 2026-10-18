@@ -90,6 +90,7 @@ Route::prefix('v1')->group(function () {
     Route::get('/sit-presets', [SitPresetController::class, 'index']);
     Route::get('/testimonials', [TestimonialController::class, 'index']);
     Route::get('/testimonials/featured', [TestimonialController::class, 'featured']);
+    Route::get('/testimonials/videos', [TestimonialController::class, 'videos']);
     Route::get('/contact-channels', [ContactChannelController::class, 'index']);
     Route::get('/donation-methods', [DonationMethodController::class, 'index']);
     Route::get('/broadcasts/active', [BroadcastController::class, 'active']);
@@ -245,6 +246,7 @@ Route::prefix('v1')->group(function () {
 
         // ---- Testimonials ----
         Route::middleware('permission:testimonials.view')->get('/testimonials', [AdminTestimonialController::class, 'index']);
+        Route::middleware('permission:testimonials.create')->get('/testimonials/youtube', [AdminTestimonialController::class, 'youtube']);
         Route::middleware('permission:testimonials.create')->post('/testimonials', [AdminTestimonialController::class, 'store']);
         Route::middleware('permission:testimonials.edit')->put('/testimonials/{testimonial}', [AdminTestimonialController::class, 'update']);
         Route::middleware('permission:testimonials.delete')->delete('/testimonials/{testimonial}', [AdminTestimonialController::class, 'destroy']);

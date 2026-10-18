@@ -189,6 +189,8 @@ export const SITE_CONTENT_SCHEMAS = {
           { key: "eventHref", label: "Upcoming · link", type: "text" },
           { key: "testiKicker", label: "Members say · kicker", type: "text" },
           { key: "testiCta", label: "Members say · link label", type: "text" },
+          { key: "storiesCta", label: "Video stories · button (shown when Testimonials have videos)", type: "text" },
+          { key: "storiesRailTitle", label: "Video stories · title over the faces on phones", type: "text" },
           { key: "quoteKicker", label: "Quote of the day · kicker", type: "text" },
           { key: "quoteCta", label: "Quote of the day · link label", type: "text" },
         ],
@@ -488,6 +490,17 @@ export const SITE_CONTENT_SCHEMAS = {
           { key: "title", label: "Title", type: "text" },
           { key: "titleAccent", label: "Title accent (italic)", type: "text" },
           { key: "intro", label: "Intro", type: "textarea", rows: 5, wide: true },
+        ],
+      },
+      {
+        title: "Chapters (the tabs under the heading)",
+        description: "The page is shown in four chapters. A chapter with no content is hidden.",
+        columns: 4,
+        fields: [
+          { key: "chapterOverview", label: "I · cards & Library", type: "text" },
+          { key: "chapterRiver", label: "II · the living river", type: "text" },
+          { key: "chapterGhats", label: "III · ghats", type: "text" },
+          { key: "chapterTruth", label: "IV · closing & quotes", type: "text" },
         ],
       },
       {

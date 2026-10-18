@@ -91,6 +91,13 @@ return [
         'base_url' => env('ANTHROPIC_BASE_URL'),
     ],
 
+    // The YouTube channel whose Shorts can be picked as video testimonials (Admin → Testimonials →
+    // Import from YouTube). Public RSS feeds only — no API key. Set the id to skip looking it up.
+    'youtube' => [
+        'channel' => env('YOUTUBE_CHANNEL', '@GoldenAgeGurus'),
+        'channel_id' => env('YOUTUBE_CHANNEL_ID'),
+    ],
+
     // Live site's Supabase project — read-only source for `php artisan supabase:sync` and
     // Admin → People → Data sync. The service key bypasses row security: keep it in .env only.
     'supabase' => [
