@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { Plus, Pencil, Trash2, Star, Quote, MessageSquareQuote, PlayCircle, X } from "lucide-react";
+import { Plus, Pencil, Trash2, Star, Quote, MessageSquareQuote, PlayCircle, X, Clapperboard, Check } from "lucide-react";
 import Card from "../../ui/Card";
 import Button from "../../ui/Button";
 import IconButton from "../../ui/IconButton";
@@ -70,6 +70,21 @@ export default function TestimonialsPage() {
   const [photoFile, setPhotoFile] = useState(null);
   const [saving, setSaving] = useState(false);
   const [videoFile, setVideoFile] = useState(null);
+  const [shorts, setShorts] = useState(null); // null = picker closed; { loading } | { items, channel } | { error }
+
+  const openShorts = () => {
+    setShorts({ loading: true });
+    api.youtubeShorts().then((r) => setShorts(r)).catch((err) => setShorts({ error: err.message ?? "Could not read the YouTube channel" }));
+  };
+  // Picking a Short opens a new testimonial with the link filled in; the title starts as the caption.
+  const pickShort = (v) => {
+    setShorts(null);
+    setForm({ ...EMPTY, status: "published", video_url: v.url, quote: v.title });
+    setPhotoPreview("");
+    setPhotoFile(null);
+    setVideoFile(null);
+    setEditing({});
+  };
   const maxMb = useUploadLimit();
 
   const loadTestimonials = () => api.testimonials().then(setTestimonials);
@@ -140,7 +155,10 @@ export default function TestimonialsPage() {
             Stories from members and practitioners shown on the public site. Feature the strongest ones to highlight them on the homepage. Add a video (a YouTube / Shorts link or an upload) and it also plays as a <strong>Seeker story</strong> on the Home page.
           </p>
         </div>
-        <Button as="button" icon={Plus} onClick={openNew} disabled={loading || !canCreate} title={canCreate ? undefined : "You don't have permission to add testimonials"}>Add testimonial</Button>
+        <div className="flex flex-wrap gap-2">
+          <Button as="button" variant="secondary" icon={Clapperboard} onClick={openShorts} disabled={loading || !canCreate}>Import from YouTube</Button>
+          <Button as="button" icon={Plus} onClick={openNew} disabled={loading || !canCreate} title={canCreate ? undefined : "You don't have permission to add testimonials"}>Add testimonial</Button>
+        </div>
       </div>
 
       {!loading && sorted.length === 0 ? (
@@ -246,6 +264,41 @@ export default function TestimonialsPage() {
 
           <Toggle checked={form.is_featured} onChange={(v) => set({ is_featured: v })} label="Featured" description="Highlighted on the homepage instead of just the testimonials page" />
         </div>
+      </Modal>
+
+      <Modal
+        open={!!shorts}
+        onClose={() => setShorts(null)}
+        title="Import a Short from YouTube"
+        description={shorts?.channel ? `Latest Shorts from ${shorts.channel}. Pick the ones that are member testimonials — each becomes a Seeker story on the Home page.` : undefined}
+        size="lg"
+      >
+        {shorts?.loading ? (
+          <p className="py-10 text-center text-[13.5px] text-[var(--a-text-muted)]">Reading the channel…</p>
+        ) : shorts?.error ? (
+          <p className="py-6 text-center text-[13.5px] text-[var(--a-text-muted)]">{shorts.error}</p>
+        ) : shorts?.items?.length === 0 ? (
+          <p className="py-6 text-center text-[13.5px] text-[var(--a-text-muted)]">No Shorts found on the channel.</p>
+        ) : (
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+            {(shorts?.items ?? []).map((v) => (
+              <div key={v.id} className="flex flex-col overflow-hidden rounded-xl border border-[var(--a-border)]">
+                <a href={v.url} target="_blank" rel="noopener noreferrer" className="relative block aspect-[9/12] bg-black">
+                  <img src={v.thumbnail} alt="" loading="lazy" className="h-full w-full object-cover" />
+                  <PlayCircle size={30} className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white/90 drop-shadow" />
+                </a>
+                <div className="flex flex-1 flex-col gap-2 p-2.5">
+                  <p className="line-clamp-2 text-[12.5px] font-medium text-[var(--a-text-primary)]">{v.title}</p>
+                  {v.added ? (
+                    <span className="mt-auto inline-flex items-center gap-1 text-[12px] font-semibold text-[var(--a-success)]"><Check size={14} /> Already added</span>
+                  ) : (
+                    <Button as="button" size="sm" className="mt-auto" onClick={() => pickShort(v)}>Add as story</Button>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </Modal>
 
       <ConfirmModal

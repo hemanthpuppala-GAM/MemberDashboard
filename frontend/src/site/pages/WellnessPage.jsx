@@ -153,7 +153,7 @@ export default function WellnessPage() {
               {quotes.map((t, i) => (
                 <blockquote key={i} style={{ margin: 0, padding: "12px 16px", borderRadius: 14, background: "rgba(232,207,131,.22)", border: "1px solid rgba(201,162,74,.4)", fontSize: 13, lineHeight: 1.5, fontStyle: "italic", color: "#3A3128" }}>
                   {t.text}{" "}
-                  <span style={{ fontStyle: "normal", fontSize: 10.5, fontWeight: 600, letterSpacing: ".08em", textTransform: "uppercase", color: "#7A5E22" }}>— {t.name}, via NeoSouth</span>
+                  <span style={{ fontStyle: "normal", fontSize: 10.5, fontWeight: 600, letterSpacing: ".08em", textTransform: "uppercase", color: "#7A5E22" }}>— {t.name}</span>
                 </blockquote>
               ))}
             </div>

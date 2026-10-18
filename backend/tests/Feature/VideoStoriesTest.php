@@ -6,6 +6,7 @@ use App\Models\Auth\Role;
 use App\Models\Auth\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
@@ -51,6 +52,32 @@ class VideoStoriesTest extends TestCase
         // Removing the video takes it off the stories list.
         $this->putJson("/api/v1/admin/testimonials/{$stories[0]['id']}", ['name' => 'Lakshmi', 'quote' => 'Peace.', 'rating' => 5, 'status' => 'published', 'remove_video' => true])->assertOk();
         $this->assertCount(1, $this->getJson('/api/v1/testimonials/videos')->json());
+    }
+
+    public function test_shorts_from_the_channel_feed_can_be_picked(): void
+    {
+        $this->admin();
+        config(['services.youtube.channel_id' => 'UCabcdefghijklmnopqrstuv']);
+        $xml = <<<'XML'
+        <?xml version="1.0" encoding="UTF-8"?>
+        <feed xmlns:yt="http://www.youtube.com/xml/schemas/2015" xmlns:media="http://search.yahoo.com/mrss/" xmlns="http://www.w3.org/2005/Atom">
+          <entry><yt:videoId>short000001</yt:videoId><title>How meditation healed my anxiety | Lakshmi</title>
+            <link rel="alternate" href="https://www.youtube.com/shorts/short000001"/><published>2026-10-10T10:00:00+00:00</published>
+            <media:group><media:thumbnail url="https://i1.ytimg.com/vi/short000001/hqdefault.jpg" width="480" height="360"/></media:group></entry>
+          <entry><yt:videoId>short000002</yt:videoId><title>Daily sit tip</title>
+            <link rel="alternate" href="https://www.youtube.com/shorts/short000002"/><published>2026-10-09T10:00:00+00:00</published></entry>
+        </feed>
+        XML;
+        Http::fake(['www.youtube.com/feeds/videos.xml?playlist_id=UUSHabcdefghijklmnopqrstuv' => Http::response($xml)]);
+
+        $this->postJson('/api/v1/admin/testimonials', ['name' => 'Lakshmi', 'rating' => 5, 'status' => 'published', 'video_url' => 'https://youtube.com/shorts/short000001'])->assertCreated();
+
+        $items = $this->getJson('/api/v1/admin/testimonials/youtube')->assertOk()->json('items');
+        $this->assertCount(2, $items);
+        $this->assertSame('https://www.youtube.com/shorts/short000001', $items[0]['url']);
+        $this->assertTrue($items[0]['added']);
+        $this->assertFalse($items[1]['added']);
+        $this->assertStringEndsWith('/short000002/hqdefault.jpg', $items[1]['thumbnail']);
     }
 
     public function test_a_testimonial_needs_a_quote_or_a_video(): void

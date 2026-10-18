@@ -149,6 +149,7 @@ export const api = {
   reorderSitPresets: (presetIds) => apiFetch("/admin/sit-presets/reorder", { method: "PUT", body: { preset_ids: presetIds } }),
 
   testimonials: () => apiFetch("/admin/testimonials"),
+  youtubeShorts: () => apiFetch("/admin/testimonials/youtube"),
   createTestimonial: (formData) => apiUpload("/admin/testimonials", formData),
   updateTestimonial: (id, formData) => apiUpload(`/admin/testimonials/${id}`, formData, { method: "PUT" }),
   deleteTestimonial: (id) => apiFetch(`/admin/testimonials/${id}`, { method: "DELETE" }),

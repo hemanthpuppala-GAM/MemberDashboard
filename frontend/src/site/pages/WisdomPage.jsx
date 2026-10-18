@@ -312,7 +312,7 @@ function TruthChapter({ c, quotes, mid }) {
               <p className="serif" style={{ margin: 0, fontSize: 19, lineHeight: 1.3, color: "#12201A", textWrap: "pretty" }}>
                 {t.text}
               </p>
-              <footer style={{ fontSize: 11, fontWeight: 600, letterSpacing: ".14em", textTransform: "uppercase", color: "#7A5E22" }}>— {t.name}, via NeoSouth</footer>
+              <footer style={{ fontSize: 11, fontWeight: 600, letterSpacing: ".14em", textTransform: "uppercase", color: "#7A5E22" }}>— {t.name}</footer>
             </blockquote>
           ))}
         </div>
