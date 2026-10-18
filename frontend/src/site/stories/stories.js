@@ -19,6 +19,22 @@ export function useVideoStories() {
   return stories;
 }
 
+/** Every Short on the channel (wisdom clips + testimonials), newest first, shaped like stories. */
+export function useChannelShorts() {
+  const [shorts, setShorts] = useState([]);
+  useEffect(() => {
+    let live = true;
+    publicApi
+      .channelShorts()
+      .then((list) => live && Array.isArray(list) && setShorts(list.map((v) => ({ id: `yt-${v.id}`, name: v.title, role: null, place: null, photo_path: v.thumbnail, quote: "", video_url: v.url, published: v.published }))))
+      .catch(() => {});
+    return () => {
+      live = false;
+    };
+  }, []);
+  return shorts;
+}
+
 function readSeen() {
   try {
     return new Set(JSON.parse(localStorage.getItem(SEEN_KEY) || "[]"));

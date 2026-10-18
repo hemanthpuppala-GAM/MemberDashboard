@@ -303,3 +303,9 @@
 .gaw-site div.home-card-dark {
   color: #f6f1e6;
 }
+
+.gaw-site .story-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

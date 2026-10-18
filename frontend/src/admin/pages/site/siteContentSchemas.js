@@ -501,6 +501,9 @@ export const SITE_CONTENT_SCHEMAS = {
           { key: "chapterRiver", label: "II · the living river", type: "text" },
           { key: "chapterGhats", label: "III · ghats", type: "text" },
           { key: "chapterTruth", label: "IV · closing & quotes", type: "text" },
+          { key: "chapterClips", label: "V · Short clips (YouTube Shorts, newest first)", type: "text" },
+          { key: "clipsTitle", label: "Short clips · title", type: "text" },
+          { key: "clipsIntro", label: "Short clips · intro", type: "textarea", rows: 2, wide: true },
         ],
       },
       {

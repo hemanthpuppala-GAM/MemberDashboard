@@ -7,7 +7,7 @@ import { initials, storyThumb, youTubeId } from "./stories";
  * right edge for the next one and the left edge for the previous one, swipe down or Esc to close.
  * Uploaded videos and YouTube links both move on to the next story when they end.
  */
-export default function StoriesViewer({ stories, start = 0, onClose, onSeen, onIndex, joinTo = "/join" }) {
+export default function StoriesViewer({ stories, start = 0, onClose, onSeen, onIndex, joinTo = "/join", label = "Seeker stories", ctaLabel = "Start your own story — free" }) {
   const [i, setI] = useState(start);
   const [progress, setProgress] = useState(0);
   const [muted, setMuted] = useState(false);
@@ -123,7 +123,7 @@ export default function StoriesViewer({ stories, start = 0, onClose, onSeen, onI
   const sub = [s.role, s.place].filter(Boolean).join(" · ");
 
   return (
-    <div className="story-viewer" role="dialog" aria-modal="true" aria-label={`Seeker stories — ${s.name}`} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
+    <div className="story-viewer" role="dialog" aria-modal="true" aria-label={`${label} — ${s.name}`} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
       <div className="story-stage">
         {/* Progress — one bar per story */}
         <div className="story-bars" aria-hidden="true">
@@ -139,7 +139,7 @@ export default function StoriesViewer({ stories, start = 0, onClose, onSeen, onI
             <span className="story-face-inner">{thumb ? <img src={thumb} alt="" /> : <span className="serif">{initials(s.name)}</span>}</span>
           </span>
           <span style={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
-            <strong style={{ fontSize: 14, color: "#F6F1E6" }}>{s.name}</strong>
+            <strong className="story-title" style={{ fontSize: 14, color: "#F6F1E6" }}>{s.name}</strong>
             {sub ? <span style={{ fontSize: 12, color: "rgba(246,241,230,.75)" }}>{sub}</span> : null}
           </span>
           <button ref={closeBtn} type="button" className="story-close" onClick={onClose} aria-label="Close stories">
@@ -186,7 +186,7 @@ export default function StoriesViewer({ stories, start = 0, onClose, onSeen, onI
         <footer className="story-foot">
           {s.quote ? <p className="serif">“{s.quote.replace(/^[“"]|[”"]$/g, "")}”</p> : null}
           <Link to={joinTo} className="gaw-pill-gold story-join" onClick={onClose}>
-            Start your own story — free
+            {ctaLabel}
           </Link>
         </footer>
       </div>
