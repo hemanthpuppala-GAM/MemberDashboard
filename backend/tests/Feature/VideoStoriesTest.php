@@ -99,6 +99,20 @@ class VideoStoriesTest extends TestCase
         $this->assertSame('https://www.youtube.com/shorts/BBBBBBBBBB2', $items[1]['url']);
     }
 
+    public function test_the_public_shorts_list_is_newest_first(): void
+    {
+        config(['services.youtube.channel_id' => 'UCabcdefghijklmnopqrstuv']);
+        $xml = '<?xml version="1.0"?><feed xmlns:yt="http://www.youtube.com/xml/schemas/2015" xmlns="http://www.w3.org/2005/Atom">'
+            .'<entry><yt:videoId>older000001</yt:videoId><title>Older clip</title><published>2026-10-01T10:00:00+00:00</published></entry>'
+            .'<entry><yt:videoId>newer000002</yt:videoId><title>Newer clip</title><published>2026-10-15T10:00:00+00:00</published></entry></feed>';
+        Http::fake(['www.youtube.com/feeds/*' => Http::response($xml)]);
+
+        $list = $this->getJson('/api/v1/youtube/shorts')->assertOk()->json();
+        $this->assertSame(['newer000002', 'older000001'], array_column($list, 'id'));
+        $this->assertSame('https://www.youtube.com/shorts/newer000002', $list[0]['url']);
+        $this->assertArrayNotHasKey('is_short', $list[0]);
+    }
+
     public function test_an_empty_answer_is_not_remembered(): void
     {
         $this->admin();
