@@ -17,7 +17,7 @@ class TestimonialController extends Controller
 
     public function store(TestimonialRequest $request)
     {
-        $data = $request->safe()->except('photo');
+        $data = $this->fields($request);
         $data['created_by'] = $request->user()->id;
         $data['sort_order'] ??= Testimonial::count() + 1;
 
@@ -32,7 +32,7 @@ class TestimonialController extends Controller
 
     public function update(TestimonialRequest $request, Testimonial $testimonial)
     {
-        $data = $request->safe()->except('photo');
+        $data = $this->fields($request);
 
         if ($request->hasFile('photo')) {
             $data['photo_path'] = $this->storePhoto($request);
@@ -48,6 +48,30 @@ class TestimonialController extends Controller
         $testimonial->delete();
 
         return response()->json(null, 204);
+    }
+
+    /** Validated fields; an uploaded video wins over a pasted link. Video fields wait for the migration. */
+    private function fields(TestimonialRequest $request): array
+    {
+        $data = $request->safe()->except(['photo', 'video', 'remove_video']);
+        $data['quote'] = (string) ($data['quote'] ?? '');
+
+        if (! Testimonial::videosReady()) {
+            unset($data['video_url'], $data['place']);
+
+            return $data;
+        }
+        if ($request->boolean('remove_video')) {
+            $data['video_url'] = null;
+        }
+        if ($request->hasFile('video')) {
+            $disk = config('filesystems.uploads_disk', 'public');
+            $file = $request->file('video');
+            $path = $file->storeAs('testimonials/videos', Str::uuid().'.'.strtolower($file->getClientOriginalExtension() ?: 'mp4'), $disk);
+            $data['video_url'] = Storage::disk($disk)->url($path);
+        }
+
+        return $data;
     }
 
     private function storePhoto($request): string

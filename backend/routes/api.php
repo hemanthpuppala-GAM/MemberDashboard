@@ -90,6 +90,7 @@ Route::prefix('v1')->group(function () {
     Route::get('/sit-presets', [SitPresetController::class, 'index']);
     Route::get('/testimonials', [TestimonialController::class, 'index']);
     Route::get('/testimonials/featured', [TestimonialController::class, 'featured']);
+    Route::get('/testimonials/videos', [TestimonialController::class, 'videos']);
     Route::get('/contact-channels', [ContactChannelController::class, 'index']);
     Route::get('/donation-methods', [DonationMethodController::class, 'index']);
     Route::get('/broadcasts/active', [BroadcastController::class, 'active']);

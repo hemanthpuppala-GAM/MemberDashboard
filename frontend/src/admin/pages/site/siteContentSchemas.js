@@ -189,6 +189,8 @@ export const SITE_CONTENT_SCHEMAS = {
           { key: "eventHref", label: "Upcoming · link", type: "text" },
           { key: "testiKicker", label: "Members say · kicker", type: "text" },
           { key: "testiCta", label: "Members say · link label", type: "text" },
+          { key: "storiesCta", label: "Video stories · button (shown when Testimonials have videos)", type: "text" },
+          { key: "storiesRailTitle", label: "Video stories · title over the faces on phones", type: "text" },
           { key: "quoteKicker", label: "Quote of the day · kicker", type: "text" },
           { key: "quoteCta", label: "Quote of the day · link label", type: "text" },
         ],

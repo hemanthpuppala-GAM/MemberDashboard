@@ -1,0 +1,305 @@
+/* "Seeker stories" — video testimonials as phone-style stories. */
+.gaw-site .story-face {
+  flex: none;
+  display: inline-flex;
+  padding: 2.5px;
+  border-radius: 50%;
+  background: conic-gradient(from 200deg, #e8cf83, #c9a24a, #f6e7b8, #a8842f, #e8cf83);
+}
+.gaw-site .story-face-inner {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #14241c;
+  background: #1b3328;
+  color: #e8cf83;
+  font-size: 15px;
+}
+.gaw-site .story-face-inner img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.gaw-site .is-seen .story-face {
+  background: rgba(246, 241, 230, 0.35);
+}
+
+/* Overlapping faces inside the Home card */
+.gaw-site .story-stack {
+  display: inline-flex;
+  align-items: center;
+}
+.gaw-site .story-stack-face {
+  position: relative;
+  display: inline-flex;
+  animation: story-pulse 2.8s ease-in-out infinite;
+}
+.gaw-site .story-stack-face:nth-child(2) {
+  animation-delay: 0.3s;
+}
+.gaw-site .story-stack-face:nth-child(3) {
+  animation-delay: 0.6s;
+}
+.gaw-site .story-stack-face.is-seen {
+  animation: none;
+}
+@keyframes story-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.06);
+  }
+}
+
+/* Row of faces with names (phones, under the headline) */
+.gaw-site .story-rail {
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 4px 2px 2px;
+  max-width: 100%;
+}
+.gaw-site .story-rail::-webkit-scrollbar {
+  display: none;
+}
+.gaw-site .story-ring-btn {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  cursor: pointer;
+}
+.gaw-site .story-ring-name {
+  max-width: 70px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #3a3128;
+}
+.gaw-site .story-ring-name.is-dark {
+  color: #f6f1e6;
+}
+.gaw-site .story-ring-btn:focus-visible {
+  outline: 2px solid #c9a24a;
+  outline-offset: 3px;
+  border-radius: 12px;
+}
+
+/* The player */
+.gaw-site .story-viewer {
+  position: fixed;
+  inset: 0;
+  z-index: 220;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(8, 14, 11, 0.94);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  animation: gaw-rise 0.3s both;
+}
+.gaw-site .story-stage {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: min(100vw, calc(100dvh * 9 / 16), 480px);
+  height: min(100dvh, 853px);
+  background: #0b120e;
+  overflow: hidden;
+}
+@media (min-width: 640px) {
+  .gaw-site .story-stage {
+    height: min(calc(100dvh - 48px), 853px);
+    width: min(calc((100dvh - 48px) * 9 / 16), 480px);
+    border-radius: 18px;
+    box-shadow: 0 0 0 1px rgba(201, 162, 74, 0.45), 0 40px 90px -30px rgba(0, 0, 0, 0.8);
+  }
+}
+.gaw-site .story-bars {
+  position: absolute;
+  z-index: 3;
+  top: calc(10px + env(safe-area-inset-top));
+  left: 10px;
+  right: 10px;
+  display: flex;
+  gap: 4px;
+}
+.gaw-site .story-bar {
+  flex: 1;
+  height: 3px;
+  border-radius: 3px;
+  background: rgba(246, 241, 230, 0.3);
+  overflow: hidden;
+}
+.gaw-site .story-bar > span {
+  display: block;
+  height: 100%;
+  background: #e8cf83;
+  transition: width 0.25s linear;
+}
+.gaw-site .story-head {
+  position: absolute;
+  z-index: 3;
+  top: calc(22px + env(safe-area-inset-top));
+  left: 12px;
+  right: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+}
+.gaw-site .story-close {
+  margin-left: auto;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(20, 36, 28, 0.55);
+  color: #f6f1e6;
+  font-size: 26px;
+  line-height: 1;
+  cursor: pointer;
+}
+.gaw-site .story-video {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+}
+.gaw-site .story-video iframe,
+.gaw-site .story-video video {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  object-fit: contain;
+  background: #000;
+}
+.gaw-site .story-tap {
+  position: absolute;
+  z-index: 2;
+  top: 90px;
+  bottom: 150px;
+  width: 16%;
+  border: 0;
+  background: transparent;
+  color: rgba(246, 241, 230, 0);
+  font-size: 40px;
+  cursor: pointer;
+  transition: color 0.2s, background 0.2s;
+}
+.gaw-site .story-tap-prev {
+  left: 0;
+}
+.gaw-site .story-tap-next {
+  right: 0;
+}
+.gaw-site .story-tap:hover:not(:disabled),
+.gaw-site .story-tap:focus-visible {
+  color: rgba(246, 241, 230, 0.9);
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.25), transparent);
+}
+.gaw-site .story-tap-next:hover,
+.gaw-site .story-tap-next:focus-visible {
+  background: linear-gradient(270deg, rgba(0, 0, 0, 0.25), transparent);
+}
+.gaw-site .story-tap:disabled {
+  cursor: default;
+}
+.gaw-site .story-foot {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px calc(14px + env(safe-area-inset-bottom));
+  background: linear-gradient(180deg, rgba(11, 18, 14, 0.6), #0b120e);
+  text-align: center;
+}
+.gaw-site .story-foot p {
+  margin: 0;
+  font-size: 17px;
+  line-height: 1.3;
+  color: #f6f1e6;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+}
+.gaw-site .story-join {
+  display: inline-flex;
+  align-items: center;
+  height: 44px;
+  padding: 0 22px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Home "What members say" card: faces + "Watch their stories" */
+.gaw-site .home-stories-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 12px 4px 4px;
+  border: 1px solid rgba(232, 207, 131, 0.35);
+  border-radius: 999px;
+  background: rgba(232, 207, 131, 0.08);
+  font: inherit;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+.gaw-site .home-stories-btn:hover {
+  background: rgba(232, 207, 131, 0.18);
+  border-color: #e8cf83;
+}
+.gaw-site .home-stories-btn:focus-visible {
+  outline: 2px solid #e8cf83;
+  outline-offset: 2px;
+}
+
+.gaw-site .story-sound {
+  position: absolute;
+  z-index: 4;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 46px;
+  padding: 0 20px;
+  border-radius: 999px;
+  border: 1px solid rgba(201, 162, 74, 0.7);
+  background: rgba(20, 36, 28, 0.85);
+  color: #e8cf83;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+/* The members-say card is a <div> (not a link) while it holds the stories button: keep its light text. */
+.gaw-site div.home-card-dark {
+  color: #f6f1e6;
+}

@@ -18,7 +18,12 @@ class TestimonialRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'role' => ['nullable', 'string', 'max:255'],
-            'quote' => ['required', 'string', 'max:2000'],
+            // A video testimonial may skip the written quote (it becomes the caption when given).
+            'quote' => ['required_without_all:video_url,video', 'nullable', 'string', 'max:2000'],
+            'place' => ['nullable', 'string', 'max:120'],
+            'video_url' => ['nullable', 'url:https', 'max:500'],
+            'video' => ['nullable', 'file', 'mimetypes:video/mp4,video/webm,video/quicktime', 'max:204800'],
+            'remove_video' => ['boolean'],
             'rating' => ['required', 'integer', 'between:1,5'],
             'status' => ['required', Rule::in(Testimonial::STATUSES)],
             'is_featured' => ['boolean'],

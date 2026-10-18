@@ -8,6 +8,10 @@ import HomeHeader from "../home/HomeHeader";
 import FilmOverlay from "../home/FilmOverlay";
 import QuoteOverlay from "../home/QuoteOverlay";
 import { useDailyQuote } from "../home/dailyQuote";
+import StoryRings from "../stories/StoryRings";
+import StoriesViewer from "../stories/StoriesViewer";
+import { useSeenStories, useVideoStories } from "../stories/stories";
+import "../stories/stories.css";
 import ChaptersSheet from "../home/ChaptersSheet";
 import BodhiNavigator from "../home/BodhiNavigator";
 import { WorldSitsFooter } from "../home/WorldSits";
@@ -22,6 +26,8 @@ import CmsExtraSections from "../cms/CmsExtraSections";
 const FALLBACKS = {
   testiKicker: "What members say",
   testiCta: "More stories",
+  storiesCta: "Watch their stories",
+  storiesRailTitle: "Seeker stories",
   quoteKicker: "Quote of the day",
   quoteCta: "Read today’s musing",
   joinShortLabel: "Join",
@@ -102,6 +108,12 @@ const ARROW = (
   </span>
 );
 
+/** A <div> standing in for <Link> (same props), for cards that hold their own buttons. */
+function StaticCard({ to, children, ...rest }) {
+  void to;
+  return <div {...rest}>{children}</div>;
+}
+
 /** / — design: Home Bodhi Tree v2.dc.html */
 export default function HomePage() {
   const c = useSiteContent("home", FALLBACKS);
@@ -128,6 +140,29 @@ export default function HomePage() {
   const [vi, setVi] = useState(0);
   const sits = useSits(useHomeSessions(c.sessions));
   const voices = useHomeVoices(VOICES);
+  // "Seeker stories": video testimonials, opened like phone stories. #story-3 links to one.
+  const stories = useVideoStories();
+  const [seen, markSeen] = useSeenStories();
+  const [storyAt, setStoryAt] = useState(null);
+  const openStory = useCallback((i) => setStoryAt(i), []);
+  const closeStory = useCallback(() => {
+    setStoryAt(null);
+    try {
+      window.history.replaceState(window.history.state, "", window.location.pathname + window.location.search);
+    } catch {
+      /* ignore */
+    }
+  }, []);
+  const storyIndex = useCallback((i) => {
+    try {
+      window.history.replaceState(window.history.state, "", `#story-${i + 1}`);
+    } catch {
+      /* ignore */
+    }
+  }, []);
+  const firstUnseen = Math.max(0, stories.findIndex((s) => !seen.has(s.id)));
+  // The members-say card is one big link — unless it holds the stories button (no buttons inside links).
+  const TestiCard = stories.length ? StaticCard : Link;
 
   const questions = listOr(c.questions, QUESTIONS);
   const question = questions[qi % questions.length];
@@ -175,6 +210,11 @@ export default function HomePage() {
     const id = decodeURIComponent((location.hash || "").replace(/^#/, ""));
     if (!id) return undefined;
     const raf = requestAnimationFrame(() => {
+      const story = /^story-(\d+)$/.exec(id);
+      if (story) {
+        if (stories.length) setStoryAt(Math.min(stories.length, Math.max(1, +story[1])) - 1);
+        return;
+      }
       const i = CHAPTER_HASHES.indexOf(id);
       if (i >= 0) {
         openChapter(i);
@@ -183,7 +223,7 @@ export default function HomePage() {
       document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
     });
     return () => cancelAnimationFrame(raf);
-  }, [location.hash, location.key, openChapter]);
+  }, [location.hash, location.key, openChapter, stories.length]);
 
   // Layout maths from renderVals().
   const gutPx = Math.min(72, Math.max(24, w * 0.05));
@@ -318,6 +358,14 @@ export default function HomePage() {
           </div>
         </div>
 
+        {/* Phones / iPad portrait: video stories right under the headline, like a stories row. */}
+        {!desk && stories.length ? (
+          <div style={{ order: 2, position: "relative", zIndex: 5, background: ivory, padding: tablet ? "6px clamp(32px,6vw,56px) 4px" : "4px 20px 2px", display: "flex", flexDirection: "column", gap: 6 }}>
+            <span style={{ ...CARD_KICK, fontSize: 10.5, color: "#7A5E22" }}>{c.storiesRailTitle}</span>
+            <StoryRings variant="rail" stories={stories} seen={seen} onOpen={openStory} />
+          </div>
+        ) : null}
+
         {/* Stacked layouts (phones, iPad portrait): Guruji gets a full-width portrait right under the hero, not a quarter tile. */}
         {!desk && (
           <div style={{ order: 2, background: ivory, padding: tablet ? "8px 0 18px" : "10px 0 16px" }}>
@@ -384,24 +432,42 @@ export default function HomePage() {
                 </span>
               </SmartLink>
 
-              <Link
+              <TestiCard
                 to="/about"
                 className="home-card-dark"
                 style={{ position: "relative", minHeight: 0, display: "flex", flexDirection: "column", justifyContent: "center", gap: 8, overflow: "hidden", padding: cardPad, borderRadius: 22, background: "#14241C", boxShadow: "0 1px 0 rgba(255,255,255,.1) inset,0 24px 50px -22px rgba(60,42,16,.5)", animation: "gaw-rise .9s .8s both" }}
               >
                 <span aria-hidden="true" style={{ position: "absolute", right: "-12%", top: "-18%", width: "60%", aspectRatio: "1", borderRadius: "50%", background: "radial-gradient(circle,rgba(232,207,131,.28),rgba(232,207,131,0) 70%)" }} />
                 <span style={{ ...CARD_KICK, color: "#E8CF83" }}>{c.testiKicker}</span>
-                <span aria-hidden="true" style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 40, lineHeight: 0.6, color: "#C9A24A" }}>
-                  “
-                </span>
-                <span key={vi} style={{ display: "flex", flexDirection: "column", gap: 8, minHeight: fit ? 0 : "7.2em", animation: "gaw-rise .7s both" }}>
-                  <span style={{ fontFamily: "'Cormorant Garamond',serif", fontWeight: 500, fontSize: fit ? "clamp(14px,min(1.3vw,2.5dvh),22px)" : "clamp(16px,1.3vw,22px)", lineHeight: 1.15, textWrap: "pretty", ...(fit ? { display: "-webkit-box", WebkitBoxOrient: "vertical", WebkitLineClamp: 4, overflow: "hidden" } : {}) }}>{voice.text}</span>
+                {fit && stories.length ? null : (
+                  <span aria-hidden="true" style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: 40, lineHeight: 0.6, color: "#C9A24A" }}>
+                    “
+                  </span>
+                )}
+                <span key={vi} style={{ display: "flex", flexDirection: "column", gap: 8, minHeight: fit ? (stories.length ? "4.6em" : 0) : "7.2em", flexShrink: fit && stories.length ? 0 : 1, animation: "gaw-rise .7s both" }}>
+                  <span style={{ fontFamily: "'Cormorant Garamond',serif", fontWeight: 500, fontSize: fit ? "clamp(14px,min(1.3vw,2.5dvh),22px)" : "clamp(16px,1.3vw,22px)", lineHeight: 1.15, textWrap: "pretty", ...(fit ? { display: "-webkit-box", WebkitBoxOrient: "vertical", WebkitLineClamp: stories.length ? 3 : 4, overflow: "hidden" } : {}) }}>{voice.text}</span>
                   <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: ".08em", color: "rgba(246,241,230,.75)" }}>— {voice.name}, via NeoSouth</span>
                 </span>
-                <span style={{ ...CARD_CTA, color: "#E8CF83" }}>
-                  {c.testiCta} {ARROW}
-                </span>
-              </Link>
+                {stories.length ? (
+                  // With video stories: the faces + "Watch their stories" open the player; the text link stays.
+                  <span style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "8px 14px", marginTop: 4 }}>
+                    <button type="button" className="home-stories-btn" onClick={() => openStory(firstUnseen)} aria-label={`${c.storiesCta} — ${stories.length} video${stories.length === 1 ? "" : "s"}`}>
+                      <StoryRings stories={stories} seen={seen} max={fit && h < 760 ? 3 : 4} />
+                      <span style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 1 }}>
+                        <span style={{ ...CARD_CTA, marginTop: 0, color: "#E8CF83" }}>▶ {c.storiesCta}</span>
+                        <span style={{ fontSize: 11, color: "rgba(246,241,230,.7)" }}>{stories.length} video{stories.length === 1 ? "" : "s"}</span>
+                      </span>
+                    </button>
+                    <Link to="/about" style={{ ...CARD_CTA, marginTop: 0, fontSize: 10.5, color: "rgba(232,207,131,.8)" }}>
+                      {c.testiCta} {ARROW}
+                    </Link>
+                  </span>
+                ) : (
+                  <span style={{ ...CARD_CTA, color: "#E8CF83" }}>
+                    {c.testiCta} {ARROW}
+                  </span>
+                )}
+              </TestiCard>
 
               {quote ? (
                 <button
@@ -450,6 +516,9 @@ export default function HomePage() {
       </div>
 
       {film && <FilmOverlay src={filmSrc} onClose={() => setFilm(false)} />}
+      {storyAt !== null && stories.length ? (
+        <StoriesViewer stories={stories} start={storyAt} onClose={closeStory} onSeen={markSeen} onIndex={storyIndex} joinTo={joinTo} />
+      ) : null}
       {quoteOpen && quote && <QuoteOverlay quotes={quotes.recent.length ? quotes.recent : [quote]} onClose={closeQuote} />}
       {chOpen && <ChaptersSheet ch={ch} w={w} joinTo={joinTo} question={question} c={c} chapters={chapters} onNextQuestion={() => setQi((q) => q + 1)} onChapter={openChapter} onClose={closeChapters} />}
 
