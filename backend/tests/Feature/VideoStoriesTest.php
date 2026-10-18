@@ -79,6 +79,8 @@ class VideoStoriesTest extends TestCase
         $this->assertTrue($items[0]['added']);
         $this->assertFalse($items[1]['added']);
         $this->assertStringEndsWith('/short000002/hqdefault.jpg', $items[1]['thumbnail']);
+        // The feed's i1.ytimg.com host is blocked by the site's CSP: always i.ytimg.com.
+        $this->assertSame('https://i.ytimg.com/vi/short000001/hqdefault.jpg', $items[0]['thumbnail']);
     }
 
     public function test_when_the_feed_is_empty_shorts_come_from_the_channel_page(): void

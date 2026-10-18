@@ -250,7 +250,7 @@ export default function MeditationPage() {
               key: "clips",
               label: "Short clips",
               show: shorts.length > 0,
-              content: <ShortClips shorts={shorts} title={c.clipsTitle || "Short clips"} intro={c.clipsIntro} joinTo={isMember ? "/dashboard" : "/join"} ctaLabel={c.cta || "Join the free daily sit"} />,
+              content: <ShortClips shorts={shorts} title={c.clipsTitle || "Short clips"} intro={c.clipsIntro} />,
             },
             {
               key: "science",

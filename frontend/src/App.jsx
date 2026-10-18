@@ -64,6 +64,7 @@ function App() {
 
             {/* Staff support desk (core: phone + PIN; volunteers: Google). Exact paths so /support/my stays separate. */}
             <Route path="/support" element={<SupportDeskPage />} />
+            <Route path="/desk" element={<Navigate to="/support" replace />} />
             <Route path="/support/ticket/:id" element={<SupportDeskPage />} />
 
             <Route

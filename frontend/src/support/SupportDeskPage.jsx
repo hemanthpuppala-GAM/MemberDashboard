@@ -8,6 +8,7 @@ import KpiTiles from "./components/KpiTiles";
 import LogCallDialog from "./components/LogCallDialog";
 import TeamPanel from "./components/TeamPanel";
 import RegisterPanel from "./components/RegisterPanel";
+import ProgressPanel from "./components/ProgressPanel";
 import TicketDetail from "./components/TicketDetail";
 import { TicketFilters, TicketList } from "./components/TicketList";
 import { Button, ErrorNote, Loading, Segmented } from "./components/ui";
@@ -34,6 +35,7 @@ function DeskGate() {
 
 const VIEWS = [
   { value: "tickets", label: "Tickets" },
+  { value: "progress", label: "Progress" },
   { value: "register", label: "Event registration" },
   { value: "team", label: "Team & reviews" },
 ];
@@ -104,7 +106,9 @@ function Desk() {
           <Segmented label="Show" value={view} options={VIEWS} onChange={setView} />
         </div>
 
-        {view === "register" ? (
+        {view === "progress" ? (
+          <ProgressPanel progress={dash.data?.progress} />
+        ) : view === "register" ? (
           <RegisterPanel />
         ) : view === "team" ? (
           <TeamPanel team={dash.data?.team} reviews={dash.data?.latest_reviews} meId={me?.id} />

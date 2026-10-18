@@ -1,4 +1,5 @@
 import { NavLink, useNavigate } from "react-router-dom";
+import { LifeBuoy } from "lucide-react";
 import logoMark from "../../assets/logo-golden-age.jpg";
 import { NAV } from "./navConfig";
 import { useMemberAuth } from "../../auth/MemberAuthContext";
@@ -100,6 +101,13 @@ export default function Sidebar({ onNavigate }) {
           </NavLink>
         ))}
       </nav>
+
+      {/* Volunteers on the support team: their desk, with the same sign-in. */}
+      {user.support_desk && (
+        <a href={`${import.meta.env.BASE_URL}support`} className="ms-plain mb-2 flex items-center gap-3 rounded-full border border-[rgba(232,207,131,0.35)] px-3.5 py-2.5 text-[13.5px] font-semibold text-[#E8CF83] transition-colors">
+          <LifeBuoy size={16} strokeWidth={2} aria-hidden /> Support desk
+        </a>
+      )}
 
       <button
         type="button"
