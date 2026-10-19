@@ -16,11 +16,14 @@ class TestimonialController extends Controller
         return response()->json(Testimonial::orderBy('sort_order')->get());
     }
 
-    /** Latest Shorts from the channel, to pick as video testimonials; marks the ones already added. */
+    /**
+     * Latest Shorts from the channel, to pick as video testimonials; marks the ones already added.
+     * Read fresh each time (a just-posted Short shows up), which also updates the public list.
+     */
     public function youtube()
     {
         try {
-            $feed = YouTubeFeed::latest();
+            $feed = YouTubeFeed::refresh();
         } catch (\Throwable $e) {
             report($e);
 

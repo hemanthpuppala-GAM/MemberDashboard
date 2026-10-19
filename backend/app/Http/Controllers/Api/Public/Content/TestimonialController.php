@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api\Public\Content;
 use App\Http\Controllers\Controller;
 use App\Models\Content\Testimonial;
 use App\Services\Content\YouTubeFeed;
-use Illuminate\Support\Facades\Cache;
 
 class TestimonialController extends Controller
 {
@@ -31,22 +30,18 @@ class TestimonialController extends Controller
 
     /**
      * All the channel's Shorts (wisdom clips and testimonials alike), newest first — the
-     * Wisdom page's "Short clips". An empty or failed read is retried after 5 minutes.
+     * Meditation page's "Short clips". The list is refreshed once a day (see YouTubeFeed).
      */
     public function shorts()
     {
-        $items = Cache::get('youtube_public_shorts');
-        if ($items === null) {
-            try {
-                $items = YouTubeFeed::latest()['items'];
-            } catch (\Throwable $e) {
-                report($e);
-                $items = [];
-            }
-            usort($items, fn ($a, $b) => strcmp((string) ($b['published'] ?? ''), (string) ($a['published'] ?? '')));
-            $items = array_values(array_filter($items, fn ($v) => $v['is_short'] ?? true));
-            Cache::put('youtube_public_shorts', $items, $items ? now()->addMinutes(30) : now()->addMinutes(5));
+        try {
+            $items = YouTubeFeed::latest()['items'];
+        } catch (\Throwable $e) {
+            report($e);
+            $items = [];
         }
+        usort($items, fn ($a, $b) => strcmp((string) ($b['published'] ?? ''), (string) ($a['published'] ?? '')));
+        $items = array_values(array_filter($items, fn ($v) => $v['is_short'] ?? true));
 
         return response()->json(array_map(fn ($v) => array_intersect_key($v, array_flip(['id', 'title', 'url', 'thumbnail', 'published'])), $items));
     }

@@ -16,6 +16,14 @@ Schedule::command('supabase:sync --write --scheduled')
     ->withoutOverlapping()
     ->when(fn () => config('services.supabase.auto_sync') && \App\Services\People\SupabaseSync::configured());
 
+// The Meditation page's "Short clips": read the YouTube channel once a day.
+Schedule::command('youtube:refresh')->dailyAt('06:10')->timezone('Asia/Kolkata');
+
+Artisan::command('youtube:refresh', function () {
+    $feed = \App\Services\Content\YouTubeFeed::refresh();
+    $this->info(count($feed['items']).' Shorts saved'.(isset($feed['fetched_at']) ? ' (read '.$feed['fetched_at'].')' : '').'.');
+})->purpose('Read the latest Shorts from the YouTube channel (runs daily)');
+
 // Store every page's full copy (defaults + any admin edits) in the database, so the DB alone
 // holds the site's content. Never overwrites an admin edit; only fills keys the DB lacks.
 Artisan::command('site-content:sync', function () {
