@@ -15,7 +15,7 @@ class TestimonialController extends Controller
         );
     }
 
-    /** "Seeker stories": published testimonials that have a video, in the admin's order. */
+    /** "Seeker stories": published testimonials that have a video, newest upload first (Drive videos by their Drive upload time). */
     public function videos()
     {
         if (! Testimonial::videosReady()) {
@@ -24,7 +24,7 @@ class TestimonialController extends Controller
 
         return response()->json(
             Testimonial::where('status', 'published')->whereNotNull('video_url')->where('video_url', '!=', '')
-                ->orderBy('sort_order')->get(['id', 'name', 'role', 'place', 'photo_path', 'quote', 'video_url']),
+                ->orderByDesc('created_at')->orderByDesc('id')->get(['id', 'name', 'role', 'place', 'photo_path', 'quote', 'video_url', 'created_at']),
         );
     }
 

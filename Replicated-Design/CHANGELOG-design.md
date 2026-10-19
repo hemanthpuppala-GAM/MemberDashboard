@@ -164,3 +164,4 @@ Format: date · item · status (🟡 designed / ✅ implemented @sha / ⬅ code 
 ## 2026-10-20 — Short clips daily; video testimonials from Google Drive
 - ⬅ code change: the Meditation page's Short clips list is read from YouTube once a day (06:10 IST) and the last good list stays if YouTube fails; the admin YouTube picker still reads fresh.
 - ⬅ code change: Admin → Testimonials gets a **Check Drive now** button. Videos the team drops into the shared Google Drive folder are copied to the server every morning (06:20 IST) as draft testimonials ("Lakshmi - Hyderabad.mp4" → name Lakshmi, town Hyderabad), shown with a **New from Drive** badge; publishing one adds it to the Home page stories.
+- ⬅ code change: Home page Seeker stories (and the Admin → Testimonials list) are ordered newest upload first instead of the admin's manual order. Videos from the Drive folder use their Drive upload time.
