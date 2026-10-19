@@ -2,7 +2,12 @@
 
 namespace App\Models\People;
 
+use App\Models\Auth\User;
 use App\Models\Concerns\LogsActivity;
+use App\Models\Support\SupportAgent;
+use App\Models\Support\Ticket;
+use App\Services\People\MemberLinker;
+use App\Services\People\MemberNumbers;
 use Illuminate\Database\Eloquent\Attributes\Appends;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
@@ -13,17 +18,13 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
 use Laravel\Sanctum\HasApiTokens;
-use App\Models\Auth\User;
-use App\Models\Support\Ticket;
-use App\Services\People\MemberLinker;
-use App\Services\People\MemberNumbers;
 
 #[Fillable(['name', 'email', 'password', 'phone', 'category', 'summary', 'assigned_practitioner_id', 'source_submission_id', 'status', 'join_date', 'last_contact_date', 'referred_by_code', 'oauth_provider', 'oauth_provider_id', 'avatar_url', 'role_title', 'source', 'drive_id'])]
 #[Hidden(['password', 'remember_token'])]
 #[Appends(['member_code'])]
 class Member extends Authenticatable
 {
-    use LogsActivity, SoftDeletes, Notifiable, HasApiTokens;
+    use HasApiTokens, LogsActivity, Notifiable, SoftDeletes;
 
     public const STATUSES = ['new', 'active', 'in_progress', 'resolved', 'archived'];
 
@@ -134,6 +135,8 @@ class Member extends Authenticatable
             'phone' => $this->phone,
             'avatar_url' => $this->avatar_url,
             'oauth_provider' => $this->oauth_provider,
+            // On the support team as a volunteer → the member area shows a "Support desk" link.
+            'support_desk' => $this->email && SupportAgent::where('kind', 'volunteer')->where('is_active', true)->where('email', strtolower($this->email))->exists(),
         ];
     }
 }

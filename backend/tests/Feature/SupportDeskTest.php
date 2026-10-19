@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Mail\TicketUpdatedMail;
 use App\Models\People\Member;
 use App\Models\Support\SupportAgent;
 use App\Models\Support\Ticket;
@@ -83,7 +84,7 @@ class SupportDeskTest extends TestCase
         $this->assertSame('waiting', $ticket->status);
         $this->assertNotNull($ticket->first_response_at);
         $this->assertSame($agent->id, $ticket->assigned_agent_id);
-        Mail::assertSent(\App\Mail\TicketUpdatedMail::class, 1);
+        Mail::assertSent(TicketUpdatedMail::class, 1);
 
         // Member sees the public reply only, answers back -> back in progress.
         Sanctum::actingAs($member, [], 'sanctum');
@@ -104,6 +105,25 @@ class SupportDeskTest extends TestCase
         $dash = $this->getJson('/api/v1/support/dashboard')->assertOk();
         $dash->assertJsonPath('stats.resolved', 1)->assertJsonPath('stats.ratings', 1);
         $this->assertSame(1, collect($dash->json('team'))->firstWhere('id', $agent->id)['resolved_total']);
+
+        // Progress: the last 30 days, day by day, and this agent's own share.
+        $dash->assertJsonCount(30, 'progress.days')->assertJsonPath('progress.new_30d', 1)->assertJsonPath('progress.resolved_30d', 1)
+            ->assertJsonPath('progress.mine.resolved_30d', 1);
+        $this->assertSame(1, collect($dash->json('progress.days'))->sum('resolved'));
+    }
+
+    public function test_desk_sign_ins_cannot_open_the_admin_panel(): void
+    {
+        Sanctum::actingAs($this->core(), [], 'sanctum');
+        $this->getJson('/api/v1/admin/dashboard')->assertForbidden();
+        $this->getJson('/api/v1/admin/members')->assertForbidden();
+
+        $volunteer = $this->member('helper@example.com');
+        SupportAgent::create(['name' => 'Helper', 'kind' => 'volunteer', 'email' => 'helper@example.com', 'is_active' => true]);
+        Sanctum::actingAs($volunteer, [], 'sanctum');
+        $this->getJson('/api/v1/support/dashboard')->assertOk();
+        $this->getJson('/api/v1/admin/dashboard')->assertForbidden();
+        $this->getJson('/api/v1/auth/me')->assertOk()->assertJsonPath('user.support_desk', true);
     }
 
     public function test_members_only_see_their_own_tickets(): void

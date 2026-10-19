@@ -71,13 +71,13 @@ class YouTubeFeed
                 continue;
             }
             $link = (string) ($entry->link['href'] ?? '');
-            $thumb = $media->group ? (string) ($media->group->thumbnail?->attributes()['url'] ?? '') : '';
             $short = $allShorts || str_contains($link, '/shorts/');
             $items[] = [
                 'id' => $id,
                 'title' => trim((string) $entry->title),
                 'url' => $short ? "https://www.youtube.com/shorts/{$id}" : "https://www.youtube.com/watch?v={$id}",
-                'thumbnail' => $thumb ?: "https://i.ytimg.com/vi/{$id}/hqdefault.jpg",
+                // Always i.ytimg.com: the feed's i1–i4.ytimg.com hosts are blocked by the site's CSP.
+                'thumbnail' => "https://i.ytimg.com/vi/{$id}/hqdefault.jpg",
                 'published' => ((string) $entry->published) ?: null,
                 'is_short' => $short,
             ];

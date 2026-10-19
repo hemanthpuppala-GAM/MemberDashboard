@@ -154,3 +154,9 @@ Format: date · item · status (🟡 designed / ✅ implemented @sha / ⬅ code 
   - **Events** — Daily sits (India and USA & UK side by side on desktop) · Upcoming gatherings · Past gatherings + member quotes.
 - ⬅ code change: **Volunteer** sign-up as two steps with a small step row: 1 "Where you would like to serve" (teams, three across, + time) → "Next: about you" → 2 "About you" (details, note, Back / Count me in) with the "What happens next" notes beside it. Choosing no team keeps you on step 1 with the existing message.
 - Mission and Donate are already about one screen — unchanged. Chapter names are editable per page (CMS → Pages → [page] → "Chapter names", comma-separated).
+
+## 2026-10-18 — Support desk Progress view; story player without the join button
+- ⬅ code change: support desk gets a **Progress** tab (Tickets · Progress · Event registration · Team & reviews): "Last 30 days" tiles (New requests, Resolved, Resolved vs new %, and the signed-in person's You logged / You resolved / With you now on a tinted card), two single-series daily bar charts on a shared scale (new = gold #B38A28, resolved = green #0E7046 — validated CVD-safe and ≥3:1 on #FFFDF8), hover/focus a day for its count, "Show the days as a table", and bar lists for "Where requests came from" and "What they were about".
+- ⬅ code change: /desk on staging opens the support desk (same address as the live site). Members who are support volunteers get a "Support desk" link in their member sidebar.
+- ⬅ code change: the stories / short-clips player no longer shows a "Start your own story — free" button (members found it confusing); only the quote caption remains.
+- ⬅ code change: Short clips thumbnails always load from i.ytimg.com (the feed's i1–i4.ytimg.com hosts were blocked by the site's CSP, leaving the tiles blank).

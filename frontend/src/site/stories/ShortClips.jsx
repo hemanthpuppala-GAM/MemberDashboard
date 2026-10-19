@@ -8,7 +8,7 @@ import "./stories.css";
  * Tap one and the full-screen player rolls on from there to the older clips.
  * Renders nothing until the channel's Shorts load (or if they can't be read).
  */
-export default function ShortClips({ title, intro, joinTo = "/join", ctaLabel, shorts: given }) {
+export default function ShortClips({ title, intro, shorts: given }) {
   const fetched = useChannelShorts(!given);
   const shorts = given || fetched;
   const [at, setAt] = useState(null);
@@ -44,7 +44,7 @@ export default function ShortClips({ title, intro, joinTo = "/join", ctaLabel, s
           </button>
         ))}
       </div>
-      {at !== null ? <StoriesViewer stories={shorts} start={at} onClose={() => setAt(null)} joinTo={joinTo} label={title} ctaLabel={ctaLabel} /> : null}
+      {at !== null ? <StoriesViewer stories={shorts} start={at} onClose={() => setAt(null)} label={title} /> : null}
     </section>
   );
 }

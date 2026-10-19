@@ -66,10 +66,50 @@ class SupportDashboardController extends Controller
         return response()->json([
             'me' => $me->toPublic(),
             'stats' => $stats,
+            'progress' => $this->progress($me, $since),
             'open_by_source' => $openBySource,
             'team' => $team,
             'latest_reviews' => $latestReviews,
         ]);
+    }
+
+    /**
+     * The last 30 days at a glance: new vs resolved per day, how much got resolved, where
+     * requests come from, what they are about, and the signed-in person's own share.
+     */
+    private function progress(SupportAgent $me, $since): array
+    {
+        $created = Ticket::where('created_at', '>=', $since)->get(['created_at', 'source', 'category', 'assigned_agent_id', 'created_by_agent_id']);
+        $resolved = Ticket::where('resolved_at', '>=', $since)->get(['resolved_at', 'assigned_agent_id']);
+
+        $days = [];
+        for ($d = now()->subDays(29)->startOfDay(); $d <= now(); $d = $d->copy()->addDay()) {
+            $days[$d->toDateString()] = ['date' => $d->toDateString(), 'new' => 0, 'resolved' => 0];
+        }
+        foreach ($created as $t) {
+            if (isset($days[$k = $t->created_at->toDateString()])) {
+                $days[$k]['new']++;
+            }
+        }
+        foreach ($resolved as $t) {
+            if (isset($days[$k = $t->resolved_at->toDateString()])) {
+                $days[$k]['resolved']++;
+            }
+        }
+        $count = fn ($rows, $key) => $rows->groupBy(fn ($t) => $t->$key ?: 'other')->map->count()->sortDesc()->all();
+
+        return [
+            'days' => array_values($days),
+            'new_30d' => $created->count(),
+            'resolved_30d' => $resolved->count(),
+            'by_source' => $count($created, 'source'),
+            'by_category' => $count($created, 'category'),
+            'mine' => [
+                'logged_30d' => $created->where('created_by_agent_id', $me->id)->count(),
+                'resolved_30d' => $resolved->where('assigned_agent_id', $me->id)->count(),
+                'open' => Ticket::where('assigned_agent_id', $me->id)->whereIn('status', Ticket::OPEN_STATUSES)->count(),
+            ],
+        ];
     }
 
     public function agents()

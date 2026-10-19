@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
 import { initials, storyThumb, youTubeId } from "./stories";
 
 /**
@@ -7,7 +6,7 @@ import { initials, storyThumb, youTubeId } from "./stories";
  * right edge for the next one and the left edge for the previous one, swipe down or Esc to close.
  * Uploaded videos and YouTube links both move on to the next story when they end.
  */
-export default function StoriesViewer({ stories, start = 0, onClose, onSeen, onIndex, joinTo = "/join", label = "Seeker stories", ctaLabel = "Start your own story — free" }) {
+export default function StoriesViewer({ stories, start = 0, onClose, onSeen, onIndex, label = "Seeker stories" }) {
   const [i, setI] = useState(start);
   const [progress, setProgress] = useState(0);
   const [muted, setMuted] = useState(false);
@@ -183,12 +182,11 @@ export default function StoriesViewer({ stories, start = 0, onClose, onSeen, onI
           <span aria-hidden="true">›</span>
         </button>
 
-        <footer className="story-foot">
-          {s.quote ? <p className="serif">“{s.quote.replace(/^[“"]|[”"]$/g, "")}”</p> : null}
-          <Link to={joinTo} className="gaw-pill-gold story-join" onClick={onClose}>
-            {ctaLabel}
-          </Link>
-        </footer>
+        {s.quote ? (
+          <footer className="story-foot">
+            <p className="serif">“{s.quote.replace(/^[“"]|[”"]$/g, "")}”</p>
+          </footer>
+        ) : null}
       </div>
     </div>
   );

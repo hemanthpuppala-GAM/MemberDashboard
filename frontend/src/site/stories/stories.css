@@ -242,17 +242,6 @@
   -webkit-line-clamp: 3;
   overflow: hidden;
 }
-.gaw-site .story-join {
-  display: inline-flex;
-  align-items: center;
-  height: 44px;
-  padding: 0 22px;
-  border-radius: 999px;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
 
 /* Home "What members say" card: faces + "Watch their stories" */
 .gaw-site .home-stories-btn {

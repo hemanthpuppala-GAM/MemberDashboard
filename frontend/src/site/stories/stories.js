@@ -27,7 +27,7 @@ export function useChannelShorts(enabled = true) {
     let live = true;
     publicApi
       .channelShorts()
-      .then((list) => live && Array.isArray(list) && setShorts(list.map((v) => ({ id: `yt-${v.id}`, name: v.title, role: null, place: null, photo_path: v.thumbnail, quote: "", video_url: v.url, published: v.published }))))
+      .then((list) => live && Array.isArray(list) && setShorts(list.map((v) => ({ id: `yt-${v.id}`, name: v.title, role: null, place: null, photo_path: `https://i.ytimg.com/vi/${v.id}/hqdefault.jpg`, quote: "", video_url: v.url, published: v.published }))))
       .catch(() => {});
     return () => {
       live = false;

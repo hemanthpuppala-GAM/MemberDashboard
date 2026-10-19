@@ -517,7 +517,7 @@ export default function HomePage() {
 
       {film && <FilmOverlay src={filmSrc} onClose={() => setFilm(false)} />}
       {storyAt !== null && stories.length ? (
-        <StoriesViewer stories={stories} start={storyAt} onClose={closeStory} onSeen={markSeen} onIndex={storyIndex} joinTo={joinTo} />
+        <StoriesViewer stories={stories} start={storyAt} onClose={closeStory} onSeen={markSeen} onIndex={storyIndex} />
       ) : null}
       {quoteOpen && quote && <QuoteOverlay quotes={quotes.recent.length ? quotes.recent : [quote]} onClose={closeQuote} />}
       {chOpen && <ChaptersSheet ch={ch} w={w} joinTo={joinTo} question={question} c={c} chapters={chapters} onNextQuestion={() => setQi((q) => q + 1)} onChapter={openChapter} onClose={closeChapters} />}
