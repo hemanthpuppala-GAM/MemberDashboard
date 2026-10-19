@@ -13,7 +13,7 @@ export default function StoryRings({ stories, seen, onOpen, variant = "stack", m
         {stories.map((s, i) => (
           <button key={s.id} type="button" role="listitem" className={`story-ring-btn${seen.has(s.id) ? " is-seen" : ""}`} onClick={(e) => onOpen(i, e)} aria-label={`Watch ${s.name}'s story`}>
             <Face s={s} size={62} />
-            <span className={`story-ring-name${dark ? " is-dark" : ""}`}>{s.name.split(" ")[0]}</span>
+            <span className={`story-ring-name${dark ? " is-dark" : ""}`}>{shortName(s.name)}</span>
           </button>
         ))}
       </div>
@@ -30,6 +30,12 @@ export default function StoryRings({ stories, seen, onOpen, variant = "stack", m
       ))}
     </span>
   );
+}
+
+/** First name for the label under a face, skipping a title ("Dr. Santa" → "Santa"). */
+function shortName(name = "") {
+  const words = String(name).trim().split(/\s+/);
+  return (/^(dr|mr|mrs|ms|smt|sri|shri)\.?$/i.test(words[0]) && words[1] ? words[1] : words[0]) || name;
 }
 
 function Face({ s, size }) {
