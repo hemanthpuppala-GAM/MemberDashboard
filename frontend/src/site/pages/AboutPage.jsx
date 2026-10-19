@@ -13,7 +13,8 @@ const rise = (delay = 0) => ({ animation: `gaw-rise .9s ${delay}s both` });
 /** /about — design: About.dc.html */
 export default function AboutPage() {
   const c = useSiteContent("about");
-  const quotes = usePageQuotes("about", c.quotes);
+  // "What members say" is a chapter of its own, so it has room for up to six at a time.
+  const quotes = usePageQuotes("about", c.quotes, 6);
   const w = useViewportWidth();
   const desk = w >= 900;
   const mid = w >= 640;
