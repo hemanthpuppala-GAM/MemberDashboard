@@ -23,12 +23,12 @@ export function useHomeVoices(bundled) {
 }
 
 /**
- * Sub-page quotes: [{ key, text: "“…”", name }] — same count as `bundled`, typographic marks as in
- * content/*.json. `turn` moves the window along by one screenful, wrapping through every testimonial.
+ * Sub-page quotes: [{ key, text: "“…”", name }] — as many as `bundled` (or `count`), typographic
+ * marks as in content/*.json. `turn` moves the window along by one screenful, wrapping through every testimonial.
  */
-export function pageQuotes(page, testimonials, bundled, turn = 0) {
+export function pageQuotes(page, testimonials, bundled, turn = 0, count = (bundled || []).length) {
   const list = usable(testimonials);
-  const n = Math.min((bundled || []).length, list.length);
+  const n = Math.min(count, list.length);
   if (!n) return bundled || [];
   const start = (PAGE_OFFSET[page] ?? 0) + turn * n;
   return Array.from({ length: n }, (_, i) => {
@@ -37,18 +37,19 @@ export function pageQuotes(page, testimonials, bundled, turn = 0) {
   });
 }
 
-export function usePageQuotes(page, bundled) {
+export function usePageQuotes(page, bundled, count = (bundled || []).length) {
   const testimonials = useTestimonials();
   const [turn, setTurn] = useState(0);
   const total = usable(testimonials).length;
-  const shown = (bundled || []).length;
+  const shown = count;
 
   // Rotate only when there are more testimonials than fit, and not for reduced-motion readers.
+  // More cards on screen get more reading time before they change.
   useEffect(() => {
     if (total <= shown || window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return undefined;
-    const t = setInterval(() => setTurn((x) => x + 1), ROTATE_MS);
+    const t = setInterval(() => setTurn((x) => x + 1), ROTATE_MS * Math.max(1, shown / 2));
     return () => clearInterval(t);
   }, [total, shown]);
 
-  return useMemo(() => pageQuotes(page, testimonials, bundled, turn), [page, testimonials, bundled, turn]);
+  return useMemo(() => pageQuotes(page, testimonials, bundled, turn, count), [page, testimonials, bundled, turn, count]);
 }

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { SitePage, SiteHeader, Breadcrumb, SiteFooter, AdminEditLink } from "../SiteChrome";
 import { useSiteContent } from "../useSiteContent";
 import { usePageQuotes } from "../siteQuotes";
@@ -5,6 +6,10 @@ import { useViewportWidth } from "../useViewport";
 import { siteAsset } from "../siteAssets";
 import CmsExtraSections from "../cms/CmsExtraSections";
 import Chapters from "../chapters/Chapters";
+import StoryRings from "../stories/StoryRings";
+import StoriesViewer from "../stories/StoriesViewer";
+import { useSeenStories, useVideoStories } from "../stories/stories";
+import "../stories/stories.css";
 
 const PAD = "clamp(20px,5vw,72px)";
 const KICKER = { display: "inline-flex", alignItems: "center", gap: 10, fontSize: 11, fontWeight: 700, letterSpacing: ".3em", textTransform: "uppercase", color: "#7A5E22" };
@@ -13,7 +18,12 @@ const rise = (delay = 0) => ({ animation: `gaw-rise .9s ${delay}s both` });
 /** /about — design: About.dc.html */
 export default function AboutPage() {
   const c = useSiteContent("about");
-  const quotes = usePageQuotes("about", c.quotes);
+  // "What members say" is a chapter of its own, so it has room for up to six at a time.
+  const quotes = usePageQuotes("about", c.quotes, 6);
+  // Video testimonials (the Home page's Seeker stories) play here too, above the written ones.
+  const stories = useVideoStories();
+  const [seen, markSeen] = useSeenStories();
+  const [storyAt, setStoryAt] = useState(null);
   const w = useViewportWidth();
   const desk = w >= 900;
   const mid = w >= 640;
@@ -104,8 +114,18 @@ export default function AboutPage() {
               {
                 key: "voices",
                 label: c.quotesKicker || "Members say",
-                show: quotes.length > 0,
+                show: quotes.length > 0 || stories.length > 0,
                 content: (
+                  <>
+                  {stories.length > 0 && (
+                    <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                      <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: ".18em", textTransform: "uppercase", color: "#7A5E22" }}>
+                        Watch their stories · {stories.length} video{stories.length === 1 ? "" : "s"}
+                      </span>
+                      <StoryRings variant="rail" stories={stories} seen={seen} onOpen={(i) => setStoryAt(i)} />
+                    </div>
+                  )}
+                  {quotes.length > 0 && (
                   <div style={{ display: "grid", gridTemplateColumns: mid ? "repeat(2,minmax(0,1fr))" : "1fr", gap: 12 }}>
                     {quotes.map((t, i) => (
                       <blockquote key={t.key ?? i} style={{ animation: "gaw-rise .6s both", margin: 0, display: "flex", flexDirection: "column", justifyContent: "space-between", gap: 14, padding: 20, borderRadius: 18, background: "#14241C", color: "#F6F1E6", boxShadow: "0 18px 40px -20px rgba(0,0,0,.5)" }}>
@@ -116,12 +136,18 @@ export default function AboutPage() {
                       </blockquote>
                     ))}
                   </div>
+                  )}
+                  </>
                 ),
               },
             ]}
           />
         </div>
       </section>
+
+      {storyAt !== null && stories.length > 0 && (
+        <StoriesViewer stories={stories} start={storyAt} onClose={() => setStoryAt(null)} onSeen={markSeen} />
+      )}
 
       <CmsExtraSections slug="about" />
       <SiteFooter title={c.footerTitle} sub={c.footerSub} />
