@@ -47,7 +47,8 @@ export default function AboutPage() {
             {c.eyebrow}
           </span>
           <h1 className="serif" style={{ margin: 0, fontWeight: 500, fontSize: "clamp(36px,4.4vw,66px)", lineHeight: 1, letterSpacing: "-.015em", textWrap: "balance", color: "#12201A", ...rise(0.1) }}>
-            {c.title} <em style={{ color: "#8A6F34" }}>{c.titleAccent}</em>
+            {c.title} {/* The accent always starts its own line, so a short first word ("a") never hangs at the end of line one. */}
+            <em style={{ display: "block", color: "#8A6F34" }}>{c.titleAccent}</em>
           </h1>
           <Chapters
             compact
