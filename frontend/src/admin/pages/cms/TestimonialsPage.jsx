@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { Plus, Pencil, Trash2, Star, Quote, MessageSquareQuote, PlayCircle, X, Clapperboard, Check } from "lucide-react";
+import { Plus, Pencil, Trash2, Star, Quote, MessageSquareQuote, PlayCircle, X, Clapperboard, Check, FolderDown } from "lucide-react";
 import Card from "../../ui/Card";
 import Button from "../../ui/Button";
 import IconButton from "../../ui/IconButton";
@@ -86,6 +86,25 @@ export default function TestimonialsPage() {
     setEditing({});
   };
   const maxMb = useUploadLimit();
+  const [checkingDrive, setCheckingDrive] = useState(false);
+
+  // Copies new videos from the team's Google Drive folder as drafts (a few per click; the rest daily).
+  const checkDrive = async () => {
+    setCheckingDrive(true);
+    try {
+      const r = await api.driveImport();
+      const n = r.imported.length;
+      if (n) toast.success(`${n} new video${n === 1 ? "" : "s"} from Drive added as drafts — add the details and publish.`, { duration: 6000 });
+      else toast(r.skipped.length ? "Nothing new to add." : "No new videos in the Drive folder.");
+      if (r.skipped.length) toast(`Skipped: ${r.skipped.join("; ")}`, { duration: 8000 });
+      if (r.remaining) toast(`${r.remaining} more waiting — click again, or they come in with the daily check.`, { duration: 6000 });
+      if (n) await loadTestimonials();
+    } catch (err) {
+      toast.error(err.message ?? "Could not read the Google Drive folder", { duration: 8000 });
+    } finally {
+      setCheckingDrive(false);
+    }
+  };
 
   const loadTestimonials = () => api.testimonials().then(setTestimonials);
 
@@ -152,10 +171,11 @@ export default function TestimonialsPage() {
         <div>
           <h1 className="text-[24px] font-bold text-[var(--a-text-primary)]">Testimonials</h1>
           <p className="mt-1 text-[13.5px] text-[var(--a-text-muted)]">
-            Stories from members and practitioners shown on the public site. Feature the strongest ones to highlight them on the homepage. Add a video (a YouTube / Shorts link or an upload) and it also plays as a <strong>Seeker story</strong> on the Home page.
+            Stories from members and practitioners shown on the public site. Feature the strongest ones to highlight them on the homepage. Add a video (a YouTube / Shorts link or an upload) and it also plays as a <strong>Seeker story</strong> on the Home page. Videos dropped into the team&apos;s Google Drive folder come in here as drafts every morning.
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
+          <Button as="button" variant="secondary" icon={FolderDown} onClick={checkDrive} disabled={loading || !canCreate || checkingDrive} title="New videos in the team's Google Drive folder come in as drafts (also checked every morning)">{checkingDrive ? "Copying from Drive…" : "Check Drive now"}</Button>
           <Button as="button" variant="secondary" icon={Clapperboard} onClick={openShorts} disabled={loading || !canCreate}>Import from YouTube</Button>
           <Button as="button" icon={Plus} onClick={openNew} disabled={loading || !canCreate} title={canCreate ? undefined : "You don't have permission to add testimonials"}>Add testimonial</Button>
         </div>
@@ -187,14 +207,19 @@ export default function TestimonialsPage() {
 
               <StarRating value={t.rating} readOnly />
 
-              <p className="relative text-[13px] leading-relaxed text-[var(--a-text-muted)]">
-                <Quote size={14} className="mb-1 text-[var(--a-accent)]" />
-                {t.quote}
-              </p>
+              {t.quote ? (
+                <p className="relative text-[13px] leading-relaxed text-[var(--a-text-muted)]">
+                  <Quote size={14} className="mb-1 text-[var(--a-accent)]" />
+                  {t.quote}
+                </p>
+              ) : t.from_drive && t.status === "draft" ? (
+                <p className="text-[12.5px] leading-relaxed text-[var(--a-text-muted)]">From the Drive folder. Check the name and town, add a short caption if you like, then set it to Published to show it on the Home page.</p>
+              ) : null}
 
               <div className="mt-auto flex items-center gap-2 pt-1">
                 <StatusBadge status={t.status} />
                 {t.video_url && <span className="inline-flex items-center gap-1 rounded-full bg-[var(--a-accent-muted)] px-2 py-0.5 text-[10.5px] font-semibold tracking-wide text-[var(--a-accent)] uppercase"><PlayCircle size={11} /> Video story</span>}
+                {t.from_drive && t.status === "draft" && <span className="rounded-full bg-[var(--a-warning-muted)] px-2 py-0.5 text-[10.5px] font-semibold tracking-wide text-[var(--a-warning)] uppercase">New from Drive</span>}
                 {t.is_featured && <span className="rounded-full bg-[var(--a-accent-muted)] px-2 py-0.5 text-[10.5px] font-semibold tracking-wide text-[var(--a-accent)] uppercase">Featured</span>}
               </div>
             </Card>
