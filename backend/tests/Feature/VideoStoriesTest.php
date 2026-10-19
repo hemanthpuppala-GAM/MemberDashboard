@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Auth\Role;
 use App\Models\Auth\User;
+use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Cache;
@@ -122,6 +123,39 @@ class VideoStoriesTest extends TestCase
         Http::fake(['*' => Http::response('', 404)]);
         $this->getJson('/api/v1/admin/testimonials/youtube')->assertOk()->assertJsonCount(0, 'items');
         $this->assertNull(Cache::get('youtube_feed.latest'));
+    }
+
+    public function test_shorts_are_read_once_a_day_and_the_last_good_list_stays(): void
+    {
+        config(['services.youtube.channel_id' => 'UCabcdefghijklmnopqrstuv']);
+        $feed = fn (string $id) => '<?xml version="1.0"?><feed xmlns:yt="http://www.youtube.com/xml/schemas/2015" xmlns="http://www.w3.org/2005/Atom">'
+            ."<entry><yt:videoId>{$id}</yt:videoId><title>Clip</title><published>2026-10-15T10:00:00+00:00</published></entry></feed>";
+        Http::fakeSequence('www.youtube.com/feeds/*')
+            ->push($feed('first000001'))
+            ->push($feed('second00002'))
+            ->push('', 500)->push('', 500);
+        Http::fake(['www.youtube.com/@*' => Http::response('', 500)]);
+
+        $this->assertSame(['first000001'], array_column($this->getJson('/api/v1/youtube/shorts')->json(), 'id'));
+
+        // Later the same day: the saved list, YouTube isn't asked again.
+        $this->travel(5)->hours();
+        $this->assertSame(['first000001'], array_column($this->getJson('/api/v1/youtube/shorts')->json(), 'id'));
+        Http::assertSentCount(1);
+
+        // The daily refresh picks up the new Short.
+        $this->artisan('youtube:refresh')->assertSuccessful();
+        $this->assertSame(['second00002'], array_column($this->getJson('/api/v1/youtube/shorts')->json(), 'id'));
+
+        // YouTube down the next day: visitors keep seeing the last good list.
+        $this->travel(2)->days();
+        $this->assertSame(['second00002'], array_column($this->getJson('/api/v1/youtube/shorts')->json(), 'id'));
+    }
+
+    public function test_the_daily_refresh_is_scheduled(): void
+    {
+        $events = collect(app(Schedule::class)->events());
+        $this->assertTrue($events->contains(fn ($e) => str_contains($e->command ?? '', 'youtube:refresh')));
     }
 
     public function test_a_testimonial_needs_a_quote_or_a_video(): void

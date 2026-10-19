@@ -14,23 +14,56 @@ use SimpleXMLElement;
  */
 class YouTubeFeed
 {
-    /** @return array{channel: string, items: list<array{id: string, title: string, url: string, thumbnail: string, published: ?string, is_short: bool}>} */
+    private const KEY = 'youtube_feed.latest';
+
+    /** A list older than this is refreshed on the next visit (the daily schedule normally does it first). */
+    private const MAX_AGE_HOURS = 26;
+
+    /**
+     * The saved list, refreshed once a day by `youtube:refresh`. If the schedule hasn't run, a
+     * visit refreshes a list older than a day; if YouTube fails, the last good list stays.
+     *
+     * @return array{channel: string, items: list<array{id: string, title: string, url: string, thumbnail: string, published: ?string, is_short: bool}>, fetched_at?: string}
+     */
     public static function latest(): array
     {
-        $cached = Cache::get('youtube_feed.latest');
-        if (! empty($cached['items'])) { // an empty list saved by an older version doesn't count
+        $cached = Cache::get(self::KEY);
+        $fresh = ! empty($cached['items']) && isset($cached['fetched_at'])
+            && now()->subHours(self::MAX_AGE_HOURS)->lt($cached['fetched_at']);
+        if ($fresh || (! empty($cached['items']) && Cache::has(self::KEY.'.failed'))) {
             return $cached;
         }
 
-        $channelId = self::channelId();
-        $items = self::read('https://www.youtube.com/feeds/videos.xml?playlist_id=UUSH'.substr($channelId, 2), true)
-            ?: self::fromShortsPage()
-            ?: self::read("https://www.youtube.com/feeds/videos.xml?channel_id={$channelId}", false);
+        return self::refresh();
+    }
 
-        $result = ['channel' => (string) config('services.youtube.channel'), 'items' => $items];
-        if ($items) { // never remember an empty answer — the next try may work
-            Cache::put('youtube_feed.latest', $result, now()->addMinutes(30));
+    /** Read the channel now and save the list. Keeps (and returns) the last good list when YouTube fails. */
+    public static function refresh(): array
+    {
+        $cached = Cache::get(self::KEY);
+        try {
+            $channelId = self::channelId();
+            $items = self::read('https://www.youtube.com/feeds/videos.xml?playlist_id=UUSH'.substr($channelId, 2), true)
+                ?: self::fromShortsPage()
+                ?: self::read("https://www.youtube.com/feeds/videos.xml?channel_id={$channelId}", false);
+        } catch (\Throwable $e) {
+            Cache::put(self::KEY.'.failed', true, now()->addMinutes(10));
+            if (! empty($cached['items'])) {
+                report($e);
+
+                return $cached;
+            }
+            throw $e;
         }
+
+        if (! $items) { // never save an empty answer — the next try may work
+            Cache::put(self::KEY.'.failed', true, now()->addMinutes(10));
+
+            return ! empty($cached['items']) ? $cached : ['channel' => (string) config('services.youtube.channel'), 'items' => []];
+        }
+        $result = ['channel' => (string) config('services.youtube.channel'), 'items' => $items, 'fetched_at' => now()->toIso8601String()];
+        Cache::forever(self::KEY, $result);
+        Cache::forget(self::KEY.'.failed');
 
         return $result;
     }

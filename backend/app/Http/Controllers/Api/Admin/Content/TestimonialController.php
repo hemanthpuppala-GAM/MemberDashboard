@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Api\Admin\Content;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Content\TestimonialRequest;
+use App\Models\Content\DriveImport;
 use App\Models\Content\Testimonial;
+use App\Services\Content\DriveTestimonials;
 use App\Services\Content\YouTubeFeed;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -13,14 +15,38 @@ class TestimonialController extends Controller
 {
     public function index()
     {
-        return response()->json(Testimonial::orderBy('sort_order')->get());
+        $fromDrive = DriveTestimonials::ready() ? DriveImport::whereNotNull('testimonial_id')->pluck('testimonial_id')->all() : [];
+
+        return response()->json(Testimonial::orderBy('sort_order')->get()
+            ->each(fn ($t) => $t->setAttribute('from_drive', in_array($t->id, $fromDrive, true))));
     }
 
-    /** Latest Shorts from the channel, to pick as video testimonials; marks the ones already added. */
+    /** "Check Drive now": copy new videos from the team's Google Drive folder as drafts (a few per click). */
+    public function driveImport()
+    {
+        if (! DriveTestimonials::configured()) {
+            return response()->json(['message' => 'Google Drive is not set up yet. Add GOOGLE_DRIVE_API_KEY and GOOGLE_DRIVE_TESTIMONIALS_FOLDER to the server .env, then run php artisan config:cache.'], 422);
+        }
+        @set_time_limit(600);
+        try {
+            $report = DriveTestimonials::import(limit: 5);
+        } catch (\Throwable $e) {
+            report($e);
+
+            return response()->json(['message' => $e->getMessage()], 502);
+        }
+
+        return response()->json($report);
+    }
+
+    /**
+     * Latest Shorts from the channel, to pick as video testimonials; marks the ones already added.
+     * Read fresh each time (a just-posted Short shows up), which also updates the public list.
+     */
     public function youtube()
     {
         try {
-            $feed = YouTubeFeed::latest();
+            $feed = YouTubeFeed::refresh();
         } catch (\Throwable $e) {
             report($e);
 

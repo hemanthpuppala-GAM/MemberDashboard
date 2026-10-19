@@ -160,3 +160,7 @@ Format: date · item · status (🟡 designed / ✅ implemented @sha / ⬅ code 
 - ⬅ code change: /desk on staging opens the support desk (same address as the live site). Members who are support volunteers get a "Support desk" link in their member sidebar.
 - ⬅ code change: the stories / short-clips player no longer shows a "Start your own story — free" button (members found it confusing); only the quote caption remains.
 - ⬅ code change: Short clips thumbnails always load from i.ytimg.com (the feed's i1–i4.ytimg.com hosts were blocked by the site's CSP, leaving the tiles blank).
+
+## 2026-10-20 — Short clips daily; video testimonials from Google Drive
+- ⬅ code change: the Meditation page's Short clips list is read from YouTube once a day (06:10 IST) and the last good list stays if YouTube fails; the admin YouTube picker still reads fresh.
+- ⬅ code change: Admin → Testimonials gets a **Check Drive now** button. Videos the team drops into the shared Google Drive folder are copied to the server every morning (06:20 IST) as draft testimonials ("Lakshmi - Hyderabad.mp4" → name Lakshmi, town Hyderabad), shown with a **New from Drive** badge; publishing one adds it to the Home page stories.

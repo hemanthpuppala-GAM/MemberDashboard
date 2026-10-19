@@ -150,6 +150,7 @@ export const api = {
 
   testimonials: () => apiFetch("/admin/testimonials"),
   youtubeShorts: () => apiFetch("/admin/testimonials/youtube"),
+  driveImport: () => apiFetch("/admin/testimonials/drive-import", { method: "POST" }),
   createTestimonial: (formData) => apiUpload("/admin/testimonials", formData),
   updateTestimonial: (id, formData) => apiUpload(`/admin/testimonials/${id}`, formData, { method: "PUT" }),
   deleteTestimonial: (id) => apiFetch(`/admin/testimonials/${id}`, { method: "DELETE" }),

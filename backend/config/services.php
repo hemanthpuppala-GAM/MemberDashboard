@@ -98,6 +98,15 @@ return [
         'channel_id' => env('YOUTUBE_CHANNEL_ID'),
     ],
 
+    // Google Drive folder the team drops video testimonials into. `testimonials:drive-import` copies
+    // new videos onto this server as draft testimonials. The folder must be shared "anyone with
+    // the link"; the key is a plain API key restricted to the Drive API (no billing needed).
+    'google_drive' => [
+        'api_key' => env('GOOGLE_DRIVE_API_KEY'),
+        'testimonials_folder' => env('GOOGLE_DRIVE_TESTIMONIALS_FOLDER'),
+        'max_mb' => (int) env('GOOGLE_DRIVE_MAX_MB', 200),
+    ],
+
     // Live site's Supabase project — read-only source for `php artisan supabase:sync` and
     // Admin → People → Data sync. The service key bypasses row security: keep it in .env only.
     'supabase' => [
