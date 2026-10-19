@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\Admin\Auth\RoleController;
 use App\Http\Controllers\Api\Admin\Auth\UserController;
 use App\Http\Controllers\Api\Admin\Cms\EventController as AdminEventController;
 use App\Http\Controllers\Api\Admin\Cms\MediaController;
+use App\Http\Controllers\Api\Admin\Site\GoLiveController;
 use App\Http\Controllers\Api\Admin\Cms\PageController as AdminPageController;
 use App\Http\Controllers\Api\Admin\Cms\SectionContentController;
 use App\Http\Controllers\Api\Admin\Cms\SectionController;
@@ -411,6 +412,13 @@ Route::prefix('v1')->group(function () {
         });
 
         // ---- Settings ----
+        // Go live — open to every admin-panel user (no extra permission), by the team's choice.
+        Route::get('/go-live', [GoLiveController::class, 'show']);
+        Route::post('/go-live/schedule', [GoLiveController::class, 'schedule']);
+        Route::delete('/go-live/schedule', [GoLiveController::class, 'cancel']);
+        Route::post('/go-live/now', [GoLiveController::class, 'now']);
+        Route::post('/go-live/rollback', [GoLiveController::class, 'rollback']);
+
         Route::middleware('permission:settings.view')->get('/settings', [AdminSettingController::class, 'index']);
         Route::middleware('permission:settings.edit')->group(function () {
             Route::put('/settings', [AdminSettingController::class, 'update']);

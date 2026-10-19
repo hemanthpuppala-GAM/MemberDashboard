@@ -18,7 +18,7 @@
 </IfModule>
 
 # Never cache the shell, service worker or manifest (after the rule above, so it wins) — a fresh upload must show immediately
-<FilesMatch "^(index\.html|sw-v2\.js|manifest-v2\.webmanifest)$">
+<FilesMatch "^(index\.html|sw\.js|sw-v2\.js|manifest-v2\.webmanifest|version\.json)$">
   Header set Cache-Control "no-cache, no-store, must-revalidate"
   Header set Pragma "no-cache"
   Header set Expires "0"

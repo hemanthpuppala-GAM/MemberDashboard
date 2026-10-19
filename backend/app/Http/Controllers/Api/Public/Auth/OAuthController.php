@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Public\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\People\Member;
 use App\Services\Auth\OAuthService;
+use App\Services\Site\GoLive;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
@@ -116,7 +117,7 @@ class OAuthController extends Controller
 
     private function frontendUrl(): string
     {
-        return rtrim((string) config('app.frontend_url'), '/');
+        return GoLive::frontendUrl(); // the main site once live
     }
 
     private function stateKey(string $state): string

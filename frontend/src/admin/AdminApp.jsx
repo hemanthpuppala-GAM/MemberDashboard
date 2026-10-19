@@ -40,6 +40,7 @@ import SupportTeamPage from "./pages/people/SupportTeamPage";
 import MembershipDrivesPage from "./pages/people/MembershipDrivesPage";
 import MembershipDrivePage from "./pages/people/MembershipDrivePage";
 import DataSyncPage from "./pages/people/DataSyncPage";
+import GoLivePage from "./pages/site/GoLivePage";
 
 import AnnouncementsPage from "./pages/engage/AnnouncementsPage";
 import BroadcastsPage from "./pages/engage/BroadcastsPage";
@@ -100,6 +101,7 @@ export default function AdminApp() {
                 <Route path="membership-drives" element={guarded("members.view", <MembershipDrivesPage />)} />
                 <Route path="membership-drives/:id" element={guarded("members.view", <MembershipDrivePage />)} />
                 <Route path="data-sync" element={guarded("members.view", <DataSyncPage />)} />
+                <Route path="go-live" element={<GoLivePage />} />
 
                 <Route path="announcements" element={guarded("announcements.view", <AnnouncementsPage />)} />
                 <Route path="broadcasts" element={guarded("broadcast.view", <BroadcastsPage />)} />

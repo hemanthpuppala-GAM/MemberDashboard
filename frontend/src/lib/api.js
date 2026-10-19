@@ -222,6 +222,11 @@ export const api = {
   },
   addDriveMembers: (id, lines, preview) => apiFetch(`/admin/membership-drives/${id}/members`, { method: "POST", body: { lines, preview } }),
   dataSync: () => apiFetch("/admin/data-sync"),
+  goLive: () => apiFetch("/admin/go-live"),
+  scheduleGoLive: (at) => apiFetch("/admin/go-live/schedule", { method: "POST", body: { at } }),
+  cancelGoLive: () => apiFetch("/admin/go-live/schedule", { method: "DELETE" }),
+  goLiveNow: () => apiFetch("/admin/go-live/now", { method: "POST" }),
+  rollbackGoLive: () => apiFetch("/admin/go-live/rollback", { method: "POST" }),
   runDataSync: (preview, tables) => apiFetch("/admin/data-sync", { method: "POST", body: { preview, ...(tables ? { tables } : {}) } }),
   addMemberJourneyEntry: (id, payload) => apiFetch(`/admin/members/${id}/journey`, { method: "POST", body: payload }),
 

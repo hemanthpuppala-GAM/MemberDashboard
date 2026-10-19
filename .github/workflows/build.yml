@@ -2,6 +2,9 @@ name: Build deploy zips
 
 # Push to main  -> build + auto-deploy to STAGING over FTPS.
 # Run workflow  -> choose staging or production (production is manual only).
+# Production = the main-site build (address goldenagewisdom.org/), uploaded to <site>/app/. Visitors
+# only see it once Admin → Go live switches the site's routing into app/ (and until then it does
+# no harm). Both builds use the one backend at /staging/backend.
 # Deploy steps are skipped until the FTP_SERVER / FTP_USERNAME / FTP_PASSWORD
 # repo secrets exist. Optional repo variables: FTP_ROOT (default
 # public_html/goldenagewisdom.org/), FTP_PROTOCOL (default ftps).
@@ -17,8 +20,9 @@ on:
         options: [staging, production]
         default: staging
 
+# One deploy at a time: staging and production share the backend folder.
 concurrency:
-  group: deploy-${{ github.event.inputs.target || 'staging' }}
+  group: deploy
   cancel-in-progress: false
 
 env:
@@ -37,7 +41,7 @@ jobs:
         working-directory: frontend
         run: |
           if [ "$TARGET" = "production" ]; then
-            echo "VITE_API_URL=https://goldenagewisdom.org/backend/api/v1" > .env.production
+            echo "VITE_API_URL=https://goldenagewisdom.org/staging/backend/api/v1" > .env.production
             sed -i -E "s#base: '[^']*'#base: '/'#" vite.config.js
           else
             echo "VITE_API_URL=https://goldenagewisdom.org/staging/backend/api/v1" > .env.production
@@ -48,6 +52,14 @@ jobs:
       - run: npm run build
         working-directory: frontend
       - run: cp deploy/htaccess-frontend frontend/dist/.htaccess
+      - name: Version stamp and staging noindex
+        # version.json lets Admin → Go live tell whether the production build matches staging.
+        # The staging copy stays online after go-live, so keep search engines off it.
+        run: |
+          printf '{"sha":"%s","built_at":"%s","target":"%s"}\n' "$GITHUB_SHA" "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$TARGET" > frontend/dist/version.json
+          if [ "$TARGET" != "production" ]; then
+            sed -i 's#<head>#<head><meta name="robots" content="noindex">#' frontend/dist/index.html
+          fi
       - uses: actions/upload-artifact@v4
         with:
           name: frontend-${{ github.event.inputs.target || 'staging' }}
@@ -57,9 +69,14 @@ jobs:
         if: env.FTP_SERVER != ''
         working-directory: frontend
         run: |
-          # Upload to the folder the build was made for (vite `base`).
-          BASE=$(grep -oE "base: '[^']*'" vite.config.js | sed -E "s/base: '(.*)'/\1/")
-          echo "SERVER_DIR=${FTP_ROOT%/}/${BASE#/}" >> "$GITHUB_ENV"
+          # Staging: the folder the build was made for (vite `base`). Production: app/, beside the
+          # old site, never over it — the go-live switch points the site at it.
+          if [ "$TARGET" = "production" ]; then
+            echo "SERVER_DIR=${FTP_ROOT%/}/app/" >> "$GITHUB_ENV"
+          else
+            BASE=$(grep -oE "base: '[^']*'" vite.config.js | sed -E "s/base: '(.*)'/\1/")
+            echo "SERVER_DIR=${FTP_ROOT%/}/${BASE#/}" >> "$GITHUB_ENV"
+          fi
       - name: Deploy frontend to cPanel (${{ env.TARGET }})
         if: env.FTP_SERVER != ''
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
@@ -123,8 +140,8 @@ jobs:
       - name: Resolve server folder
         if: env.FTP_SERVER != ''
         run: |
-          if [ "$TARGET" = "production" ]; then SUB=backend/; else SUB=staging/backend/; fi
-          echo "SERVER_DIR=${FTP_ROOT%/}/$SUB" >> "$GITHUB_ENV"
+          # One backend for staging and the live site (it holds the real data).
+          echo "SERVER_DIR=${FTP_ROOT%/}/staging/backend/" >> "$GITHUB_ENV"
       - name: Deploy backend to cPanel (${{ env.TARGET }})
         if: env.FTP_SERVER != ''
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
