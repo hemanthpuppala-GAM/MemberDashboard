@@ -2,7 +2,7 @@ import {
   LayoutDashboard, FileText, Image, Inbox, UsersRound, UserCog, ShieldCheck,
   Megaphone, Radio, QrCode, BarChart3, Globe, Settings, Files, Phone, Landmark,
   Music2, MessageSquareQuote, HeartHandshake, ListChecks, CalendarClock, Timer,
-  ClipboardList, Headset, LifeBuoy, UserPlus, RefreshCw, Quote,
+  ClipboardList, Headset, LifeBuoy, UserPlus, RefreshCw, Quote, Rocket,
 } from "lucide-react";
 
 /**
@@ -63,6 +63,8 @@ export const NAV = [
   { type: "link", to: "/admin/languages", icon: Globe, label: "Languages", permission: "languages.view" },
   { type: "link", to: "/admin/translations", icon: FileText, label: "Translations", permission: "translations.view" },
   { type: "link", to: "/admin/settings", icon: Settings, label: "Settings", permission: "settings.view" },
+  // Open to every admin-panel user (no permission), by the team's choice.
+  { type: "link", to: "/admin/go-live", icon: Rocket, label: "Go live" },
 ];
 
 export const BREADCRUMB_RULES = [
@@ -84,6 +86,7 @@ export const BREADCRUMB_RULES = [
   { pattern: /^\/admin\/membership-drives\/([^/]+)\/?$/, crumbs: () => ["People", "Membership drives", "Drive"] },
   { pattern: /^\/admin\/membership-drives\/?$/, crumbs: () => ["People", "Membership drives"] },
   { pattern: /^\/admin\/data-sync\/?$/, crumbs: () => ["People", "Data sync"] },
+  { pattern: /^\/admin\/go-live\/?$/, crumbs: () => ["Go live"] },
   { pattern: /^\/admin\/members\/([^/]+)\/journey\/?$/, crumbs: (m) => ["People", "Members", m[1], "Records"] },
   { pattern: /^\/admin\/members\/([^/]+)\/?$/, crumbs: (m) => ["People", "Members", m[1]] },
   { pattern: /^\/admin\/members\/?$/, crumbs: () => ["People", "Members"] },

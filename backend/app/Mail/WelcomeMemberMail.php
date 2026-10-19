@@ -3,6 +3,7 @@
 namespace App\Mail;
 
 use App\Models\People\Member;
+use App\Services\Site\GoLive;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
@@ -34,7 +35,7 @@ class WelcomeMemberMail extends Mailable
             with: [
                 'memberName' => $name !== '' ? $name : 'friend',
                 'firstName' => $firstName,
-                'dashboardUrl' => rtrim((string) config('app.frontend_url'), '/').'/dashboard',
+                'dashboardUrl' => GoLive::frontendUrl().'/dashboard',
                 'siteName' => config('app.name', 'Golden Age Wisdom'),
             ],
         );

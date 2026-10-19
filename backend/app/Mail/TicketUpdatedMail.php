@@ -4,6 +4,7 @@ namespace App\Mail;
 
 use App\Models\Support\Ticket;
 use App\Models\Support\TicketComment;
+use App\Services\Site\GoLive;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
@@ -36,7 +37,7 @@ class TicketUpdatedMail extends Mailable
                 'kind' => $this->kind,
                 'reply' => $this->comment?->body,
                 'name' => $this->ticket->requester_name ?: 'friend',
-                'url' => rtrim(config('app.frontend_url'), '/').'/support/my?ticket='.$this->ticket->id,
+                'url' => GoLive::frontendUrl().'/support/my?ticket='.$this->ticket->id,
             ],
         );
     }

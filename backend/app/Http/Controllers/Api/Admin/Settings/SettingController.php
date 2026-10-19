@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Settings\SettingUpdateRequest;
 use App\Models\Settings\Setting;
 use App\Services\Mail\SmtpSettings;
+use App\Services\Site\GoLive;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Mail;
 
@@ -13,7 +14,7 @@ class SettingController extends Controller
 {
     public function index()
     {
-        $flat = array_merge(Setting::DEFAULTS, Setting::pluck('value', 'key')->toArray());
+        $flat = array_merge(Setting::DEFAULTS, Setting::where('key', 'not like', GoLive::PREFIX.'%')->pluck('value', 'key')->toArray());
 
         foreach (Setting::WRITE_ONLY_KEYS as $key) {
             unset($flat[$key]);
@@ -25,6 +26,9 @@ class SettingController extends Controller
     public function update(SettingUpdateRequest $request)
     {
         foreach ($this->flatten($request->validated('settings')) as $key => $value) {
+            if (str_starts_with($key, GoLive::PREFIX)) {
+                continue; // go-live state changes only through Admin → Go live
+            }
             Setting::updateOrCreate(['key' => $key], ['value' => $value]);
         }
 

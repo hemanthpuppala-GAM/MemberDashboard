@@ -1,0 +1,66 @@
+# GAW-LIVE-ROUTING — goldenagewisdom.org is served by the new app in app/ (MemberDashboard).
+# Written by the go-live switch (Admin → Go live / `php artisan site:go-live`). The old site's
+# .htaccess is kept beside it as .htaccess.before-live; rolling back puts it back.
+Options -Indexes -MultiViews
+DirectoryIndex index.html
+RewriteEngine On
+
+# --- Force HTTPS (first, so redirects below land on https) ---
+RewriteCond %{HTTPS} !=on
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+
+# --- Leave alone: the staging app and backend, SSL certificate checks, cPanel ---
+RewriteRule ^(staging|\.well-known|cgi-sys)(/|$) - [L]
+
+# --- Old site addresses → the new pages (printed QR codes, shared links, bookmarks) ---
+RewriteCond %{THE_REQUEST} \s/index\.html [NC,OR]
+RewriteCond %{THE_REQUEST} \s/Home(%20|\+|\s)?[^/\s]*\.dc\.html [NC,OR]
+RewriteCond %{THE_REQUEST} \s/(Intro(%20|\+|\s)Film|Launch|Demo|Demo(%20|\+|\s)Video)\.dc\.html [NC]
+RewriteRule ^ / [R=301,L]
+RewriteCond %{THE_REQUEST} \s/Member(%20|\+|\s)Flow\.dc\.html [NC]
+RewriteRule ^ /join [R=301,L]
+RewriteCond %{THE_REQUEST} \s/(mass-meditation\.html|circle\.html|Mass(%20|\+|\s)Meditation\.dc\.html|Peace(%20|\+|\s)v5\.dc\.html|Quantum(%20|\+|\s)Chain\.dc\.html) [NC]
+RewriteRule ^ /meditation [R=301,L]
+RewriteCond %{THE_REQUEST} \s/volunteer\.html [NC]
+RewriteRule ^ /volunteer [R=301,L]
+RewriteCond %{THE_REQUEST} \s/Privacy\.dc\.html [NC]
+RewriteRule ^ /privacy [R=301,L]
+RewriteCond %{THE_REQUEST} \s/Support(%20|\+|\s)Desk\.dc\.html [NC]
+RewriteRule ^ /support [R=301,L]
+RewriteRule ^(peace|circle)/?$ /meditation [R=301,L]
+RewriteRule ^(film|launch|demo|demo-video)/?$ / [R=301,L]
+RewriteRule ^desk/?$ /support [R=301,L]
+# /join, /volunteer, /privacy and /ask exist in the new site under the same address.
+
+# --- Everything else: the new app (its own .htaccess sends unknown paths to index.html) ---
+RewriteCond %{REQUEST_URI} !^/app/
+RewriteRule ^(.*)$ app/$1 [L]
+
+# --- Security headers (as on the old site; the app's .htaccess adds its own cache rules) ---
+<IfModule mod_headers.c>
+  Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=()"
+  Header always set Cross-Origin-Opener-Policy "same-origin-allow-popups"
+  # Google sign-in, YouTube embeds and the QR image are the only third parties.
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://accounts.google.com https://apis.google.com https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://*.googleusercontent.com https://i.ytimg.com https://api.qrserver.com; media-src 'self' blob:; frame-src https://accounts.google.com https://www.youtube.com https://www.youtube-nocookie.com; connect-src 'self' https://accounts.google.com https://www.googleapis.com https://api.anthropic.com https://aicjclttdubvaslootfz.supabase.co; frame-ancestors 'none'; base-uri 'self'; form-action 'self' https://accounts.google.com; upgrade-insecure-requests"
+</IfModule>
+
+# --- Compression ---
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css text/plain text/xml application/javascript application/json image/svg+xml
+</IfModule>
+
+# --- Correct types ---
+<IfModule mod_mime.c>
+  AddType video/mp4 .mp4
+  AddType image/webp .webp
+  AddType application/json .json
+  AddType font/woff2 .woff2
+</IfModule>
+
+# --- Keep private files out of reach (the old site's data/ and notes) ---
+<FilesMatch "\.(md|json)$">
+  Require all denied
+</FilesMatch>

@@ -14,7 +14,10 @@ Schedule::command('db:backup')->dailyAt('02:45')->timezone('Asia/Kolkata');
 Schedule::command('supabase:sync --write --scheduled')
     ->dailyAt('03:00')->timezone('Asia/Kolkata')
     ->withoutOverlapping()
-    ->when(fn () => config('services.supabase.auto_sync') && \App\Services\People\SupabaseSync::configured());
+    ->when(fn () => config('services.supabase.auto_sync') && \App\Services\People\SupabaseSync::configured() && ! \App\Services\Site\GoLive::isLive());
+
+// Go live at the time picked in Admin → Go live (checked every minute; also the scheduler heartbeat it shows).
+Schedule::command('site:go-live --due')->everyMinute()->withoutOverlapping();
 
 // The Meditation page's "Short clips": read the YouTube channel once a day.
 Schedule::command('youtube:refresh')->dailyAt('06:10')->timezone('Asia/Kolkata');
@@ -39,6 +42,44 @@ Artisan::command('testimonials:drive-import', function () {
     }
     $this->info(count($report['imported']).' new video(s) added as draft testimonials.');
 })->purpose('Copy new videos from the Google Drive testimonials folder (runs daily)');
+
+Artisan::command('site:go-live {--now : Switch to the new site now} {--due : Switch only if the scheduled time has come} {--rollback : Put the old site back} {--check : Only show the checklist}', function () {
+    $live = \App\Services\Site\GoLive::class;
+    try {
+        if ($this->option('due')) {
+            foreach ($live::runIfDue() ?? [] as $step) {
+                $this->line($step);
+            }
+
+            return 0;
+        }
+        if ($this->option('rollback')) {
+            $live::rollback('artisan');
+            $this->info('Rolled back — the old site is live again.');
+
+            return 0;
+        }
+        if ($this->option('now')) {
+            foreach ($live::goLive('artisan') as $step) {
+                $this->line($step);
+            }
+            $this->info('The new site is live.');
+
+            return 0;
+        }
+    } catch (\Throwable $e) {
+        $this->error($e->getMessage());
+
+        return 1;
+    }
+    $this->line('Status: '.$live::state()['status']);
+    foreach ($live::checks() as $c) {
+        $this->line(($c['ok'] ? '  ✓ ' : ($c['blocking'] ? '  ✗ ' : '  ! ')).$c['label'].' — '.$c['detail']);
+    }
+    $this->line('Run with --now to switch, --rollback to undo.');
+
+    return 0;
+})->purpose('Make the new app the main goldenagewisdom.org site (or roll back)');
 
 // Store every page's full copy (defaults + any admin edits) in the database, so the DB alone
 // holds the site's content. Never overwrites an admin edit; only fills keys the DB lacks.
