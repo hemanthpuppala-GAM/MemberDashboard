@@ -12,19 +12,6 @@ import EmptyState from "../../ui/EmptyState";
 import { api } from "../../../lib/api";
 import { usePermissions } from "../../usePermissions";
 
-const EMPTY = {
-  title: "",
-  description: "",
-  starts_at: "",
-  ends_at: "",
-  recurrence: "none",
-  timezone: BROWSER_TZ,
-  location: "",
-  join_url: "",
-  host_practitioner_id: "",
-  is_published: true,
-};
-
 /**
  * Chrome reports some zones by their old ICU names (India is "Asia/Calcutta"); the backend only
  * accepts current IANA names (`timezone:all`), so map them before showing or saving.
@@ -48,6 +35,19 @@ const BROWSER_TZ = (() => {
     return "Asia/Kolkata";
   }
 })();
+
+const EMPTY = {
+  title: "",
+  description: "",
+  starts_at: "",
+  ends_at: "",
+  recurrence: "none",
+  timezone: BROWSER_TZ,
+  location: "",
+  join_url: "",
+  host_practitioner_id: "",
+  is_published: true,
+};
 
 /** The zones most sitters are in; the full IANA list follows under "All time zones". */
 const COMMON_ZONES = [

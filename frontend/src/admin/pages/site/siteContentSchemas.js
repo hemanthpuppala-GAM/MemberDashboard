@@ -272,7 +272,7 @@ export const SITE_CONTENT_SCHEMAS = {
           { key: "eyebrow", label: "Eyebrow", type: "text", wide: true },
           { key: "title", label: "Title", type: "text" },
           { key: "titleAccent", label: "Title accent (italic)", type: "text" },
-          { key: "intro", label: "Intro", type: "textarea", rows: 5, wide: true },
+          { key: "intro", label: "Intro", type: "textarea", rows: 8, wide: true, hint: "Leave a blank line between paragraphs." },
           { key: "badge1", label: "Badge 1", type: "text" },
           { key: "badge2", label: "Badge 2", type: "text" },
         ],

@@ -47,7 +47,8 @@ export default function AboutPage() {
             {c.eyebrow}
           </span>
           <h1 className="serif" style={{ margin: 0, fontWeight: 500, fontSize: "clamp(36px,4.4vw,66px)", lineHeight: 1, letterSpacing: "-.015em", textWrap: "balance", color: "#12201A", ...rise(0.1) }}>
-            {c.title} <em style={{ color: "#8A6F34" }}>{c.titleAccent}</em>
+            {c.title} {/* The accent always starts its own line, so a short first word ("a") never hangs at the end of line one. */}
+            <em style={{ display: "block", color: "#8A6F34" }}>{c.titleAccent}</em>
           </h1>
           <Chapters
             compact
@@ -59,7 +60,12 @@ export default function AboutPage() {
                 label: "His story",
                 content: (
                   <>
-                    <p style={{ margin: 0, fontSize: "clamp(15px,1.15vw,18px)", lineHeight: 1.6, color: "#3A3128", textWrap: "pretty", maxWidth: "60ch" }}>{c.intro}</p>
+                    {/* A blank line in the CMS text starts a new paragraph. */}
+                    <div style={{ display: "flex", flexDirection: "column", gap: "0.8em", fontSize: "clamp(15px,1.15vw,18px)" }}>
+                      {String(c.intro ?? "").split(/\n\s*\n/).map((para) => para.trim()).filter(Boolean).map((para, i) => (
+                        <p key={i} style={{ margin: 0, fontSize: "inherit", lineHeight: 1.6, color: "#3A3128", textWrap: "pretty", maxWidth: "60ch" }}>{para}</p>
+                      ))}
+                    </div>
                     <div style={{ display: "flex", flexWrap: "wrap", gap: "10px 18px" }}>
                       {[c.badge1, c.badge2].filter(Boolean).map((b) => (
                         <span key={b} style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "8px 14px", borderRadius: 999, border: "1px solid rgba(138,111,52,.35)", fontSize: 11, fontWeight: 700, letterSpacing: ".14em", textTransform: "uppercase", color: "#7A5E22" }}>
