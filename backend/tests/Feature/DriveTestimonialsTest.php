@@ -68,6 +68,24 @@ class DriveTestimonialsTest extends TestCase
         Http::assertSentCount(4); // list + 2 downloads, then a second list
     }
 
+    public function test_home_page_stories_follow_the_drive_upload_time(): void
+    {
+        $this->fakeDrive([
+            ['id' => 'old', 'name' => 'Older.mp4', 'size' => '10', 'mimeType' => 'video/mp4', 'createdTime' => '2026-10-10T09:00:00.000Z'],
+            ['id' => 'new', 'name' => 'Newer.mp4', 'size' => '10', 'mimeType' => 'video/mp4', 'createdTime' => '2026-10-18T09:00:00.000Z'],
+        ]);
+        $this->artisan('testimonials:drive-import')->assertSuccessful();
+        Testimonial::whereIn('name', ['Older', 'Newer'])->update(['status' => 'published']);
+
+        $this->assertSame(['Newer', 'Older'], array_column($this->getJson('/api/v1/testimonials/videos')->json(), 'name'));
+
+        // Videos imported before upload times were kept get them on the next run.
+        Testimonial::where('name', 'Older')->update(['created_at' => '2026-10-30 00:00:00']);
+        $this->artisan('testimonials:drive-import')->assertSuccessful();
+        $this->assertSame(['Newer', 'Older'], array_column($this->getJson('/api/v1/testimonials/videos')->json(), 'name'));
+        $this->assertSame('2026-10-10 09:00:00', Testimonial::where('name', 'Older')->value('created_at')->format('Y-m-d H:i:s'));
+    }
+
     public function test_admin_can_check_drive_now_and_sees_which_came_from_drive(): void
     {
         $this->admin();

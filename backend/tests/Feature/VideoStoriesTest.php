@@ -46,13 +46,14 @@ class VideoStoriesTest extends TestCase
         $this->postJson('/api/v1/admin/testimonials', ['name' => 'Text', 'quote' => 'Lovely.', 'rating' => 5, 'status' => 'published'])->assertCreated();
         $this->postJson('/api/v1/admin/testimonials', ['name' => 'Draft', 'rating' => 5, 'status' => 'draft', 'video_url' => 'https://youtu.be/xyz12345678'])->assertCreated();
 
+        // Newest upload first.
         $stories = $this->getJson('/api/v1/testimonials/videos')->assertOk()->json();
-        $this->assertSame(['Lakshmi', 'Ravi'], array_column($stories, 'name'));
-        $this->assertSame('Vizag', $stories[0]['place']);
-        $this->assertStringEndsWith('.mp4', $stories[1]['video_url']);
+        $this->assertSame(['Ravi', 'Lakshmi'], array_column($stories, 'name'));
+        $this->assertSame('Vizag', $stories[1]['place']);
+        $this->assertStringEndsWith('.mp4', $stories[0]['video_url']);
 
         // Removing the video takes it off the stories list.
-        $this->putJson("/api/v1/admin/testimonials/{$stories[0]['id']}", ['name' => 'Lakshmi', 'quote' => 'Peace.', 'rating' => 5, 'status' => 'published', 'remove_video' => true])->assertOk();
+        $this->putJson("/api/v1/admin/testimonials/{$stories[1]['id']}", ['name' => 'Lakshmi', 'quote' => 'Peace.', 'rating' => 5, 'status' => 'published', 'remove_video' => true])->assertOk();
         $this->assertCount(1, $this->getJson('/api/v1/testimonials/videos')->json());
     }
 

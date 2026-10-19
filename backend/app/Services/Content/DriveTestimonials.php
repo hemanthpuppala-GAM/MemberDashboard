@@ -4,6 +4,7 @@ namespace App\Services\Content;
 
 use App\Models\Content\DriveImport;
 use App\Models\Content\Testimonial;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
@@ -44,8 +45,10 @@ class DriveTestimonials
             throw new RuntimeException('Run php artisan migrate first (creates the drive_imports table).');
         }
 
+        $files = self::listVideos();
+        self::keepUploadTimes($files);
         $known = DriveImport::pluck('file_id')->all();
-        $new = array_values(array_filter(self::listVideos(), fn ($f) => ! in_array($f['id'], $known, true)));
+        $new = array_values(array_filter($files, fn ($f) => ! in_array($f['id'], $known, true)));
         $maxBytes = max(1, (int) config('services.google_drive.max_mb', 200)) * 1048576;
         $report = ['imported' => [], 'skipped' => [], 'remaining' => 0];
 
@@ -70,11 +73,37 @@ class DriveTestimonials
                 'status' => 'draft',
                 'sort_order' => Testimonial::count() + 1,
             ]);
+            if ($at = self::uploadedAt($file)) {
+                $testimonial->forceFill(['created_at' => $at])->save();
+            }
             DriveImport::create(['file_id' => $file['id'], 'file_name' => Str::limit($file['name'], 250, ''), 'testimonial_id' => $testimonial->id]);
             $report['imported'][] = $file['name'];
         }
 
         return $report;
+    }
+
+    /** Stories are ordered by upload time: give imported testimonials their Drive upload time (also fixes earlier imports). */
+    private static function keepUploadTimes(array $files): void
+    {
+        $times = collect($files)->mapWithKeys(fn ($f) => [$f['id'] => self::uploadedAt($f)])->filter();
+        DriveImport::whereIn('file_id', $times->keys())->whereNotNull('testimonial_id')->get()
+            ->each(function (DriveImport $row) use ($times) {
+                $t = Testimonial::find($row->testimonial_id);
+                if ($t && ! $t->created_at?->equalTo($times[$row->file_id])) {
+                    $t->timestamps = false;
+                    $t->forceFill(['created_at' => $times[$row->file_id]])->save();
+                }
+            });
+    }
+
+    private static function uploadedAt(array $file): ?Carbon
+    {
+        try {
+            return ! empty($file['createdTime']) ? Carbon::parse($file['createdTime'])->utc() : null;
+        } catch (\Throwable) {
+            return null;
+        }
     }
 
     /** "Lakshmi - Hyderabad.mp4" → ["Lakshmi", "Hyderabad"]; "VID_2026.mp4" → ["VID 2026", null]. */

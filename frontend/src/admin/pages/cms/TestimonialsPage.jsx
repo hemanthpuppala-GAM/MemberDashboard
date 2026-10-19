@@ -161,7 +161,8 @@ export default function TestimonialsPage() {
     }
   };
 
-  const sorted = [...testimonials].sort((a, b) => a.sort_order - b.sort_order);
+  // Newest first — the same order as the Home page stories (Drive videos by their Drive upload time).
+  const sorted = [...testimonials].sort((a, b) => String(b.created_at).localeCompare(String(a.created_at)) || b.id - a.id);
   const hasVideo = !!videoFile || !!form.video_url.trim();
   const canSave = !!form.name.trim() && (!!form.quote.trim() || hasVideo);
 
