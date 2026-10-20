@@ -2,9 +2,9 @@ name: Build deploy zips
 
 # Push to main  -> build + auto-deploy to STAGING over FTPS.
 # Run workflow  -> choose staging or production (production is manual only).
-# Production = the main-site build (address goldenagewisdom.org/), uploaded to <site>/app/. Visitors
-# only see it once Admin → Go live switches the site's routing into app/ (and until then it does
-# no harm). Both builds use the one backend at /staging/backend.
+# Production = the main-site build (address goldenagewisdom.org/), uploaded to <site>/app/
+# (served at goldenagewisdom.org since Admin → Go live). Frontend only: both builds use the one
+# backend at /staging/backend, which the staging deploy uploads.
 # Deploy steps are skipped until the FTP_SERVER / FTP_USERNAME / FTP_PASSWORD
 # repo secrets exist. Optional repo variables: FTP_ROOT (default
 # public_html/goldenagewisdom.org/), FTP_PROTOCOL (default ftps).
@@ -20,9 +20,11 @@ on:
         options: [staging, production]
         default: staging
 
-# One deploy at a time: staging and production share the backend folder.
+# One deploy at a time per target. Only staging uploads the backend (shared by both), so a
+# production build and a staging deploy never write the same folder and can run side by side —
+# and a waiting production build no longer replaces (cancels) a waiting staging deploy.
 concurrency:
-  group: deploy
+  group: deploy-${{ github.event.inputs.target || 'staging' }}
   cancel-in-progress: false
 
 env:
@@ -89,6 +91,8 @@ jobs:
           server-dir: ${{ env.SERVER_DIR }}
 
   backend:
+    # The live site uses the staging backend; every staging deploy (each merge to main) uploads it.
+    if: ${{ (github.event.inputs.target || 'staging') != 'production' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

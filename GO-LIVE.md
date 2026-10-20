@@ -33,7 +33,7 @@ The new app replaces the old static site at **goldenagewisdom.org** with one ins
 4. Optional rehearsal: Go live now → open the site → Roll back.
 
 ## After going live
-- Every change: merge, which deploys staging. Then **Run workflow → production** to update the live site.
+- Every change: merge, which deploys staging and the shared backend. Then **Run workflow → production** to update the live site (frontend only; it can run while staging deploys).
 - The old site repo's deploy workflow (goldenagewisdom-redesign) can stay as it is. Its files are
   no longer served, but **never upload its `htaccess.txt` as `.htaccess`**: that would bring back
   the old site.
