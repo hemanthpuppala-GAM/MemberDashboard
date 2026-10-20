@@ -452,8 +452,8 @@ export default function HomePage() {
                     “
                   </span>
                 )}
-                <span key={vi} style={{ display: "flex", flexDirection: "column", gap: 8, minHeight: fit ? (stories.length ? (h < 860 ? 0 : "4.6em") : 0) : "7.2em", flexShrink: fit && stories.length ? 0 : 1, animation: "gaw-rise .7s both" }}>
-                  <span style={{ fontFamily: "'Cormorant Garamond',serif", fontWeight: 500, fontSize: fit ? "clamp(14px,min(1.3vw,2.5dvh),22px)" : "clamp(16px,1.3vw,22px)", lineHeight: 1.15, textWrap: "pretty", ...(fit ? { display: "-webkit-box", WebkitBoxOrient: "vertical", WebkitLineClamp: stories.length ? (h < 860 ? 2 : 3) : 4, overflow: "hidden" } : {}) }}>{voice.text}</span>
+                <span key={vi} style={{ display: "flex", flexDirection: "column", gap: 8, minHeight: fit ? (stories.length ? (h < 760 ? 0 : "4.6em") : 0) : "7.2em", flexShrink: fit && stories.length ? 0 : 1, animation: "gaw-rise .7s both" }}>
+                  <span style={{ fontFamily: "'Cormorant Garamond',serif", fontWeight: 500, fontSize: fit ? "clamp(14px,min(1.3vw,2.5dvh),22px)" : "clamp(16px,1.3vw,22px)", lineHeight: 1.15, textWrap: "pretty", ...(fit ? { display: "-webkit-box", WebkitBoxOrient: "vertical", WebkitLineClamp: stories.length ? (h < 760 ? 2 : 3) : 4, overflow: "hidden" } : {}) }}>{voice.text}</span>
                   <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: ".08em", color: "rgba(246,241,230,.75)" }}>— {voice.name}</span>
                 </span>
                 {stories.length ? (
