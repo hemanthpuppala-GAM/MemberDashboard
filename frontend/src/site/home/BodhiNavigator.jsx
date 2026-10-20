@@ -38,9 +38,10 @@ export default function BodhiNavigator({ active, chapters, desk, treeW, onActive
           // and reserve the same space above.
           margin: desk ? 0 : "3.9% auto 0",
           // Desktop: crop only the art above the box; the leaf-pills at the edges (I · Rituals,
-          // V · Reflect) may reach a little past the sides on small trees instead of being cut off.
+          // V · Reflect) may reach a little past the sides on small trees instead of being cut off. Never
+          // past the bottom: the PNG has a baked-in caption line there.
           overflow: "visible",
-          clipPath: desk ? "inset(0 -32px -16px -32px)" : "polygon(0 0, 46.5% 0, 46.5% -6%, 100% -6%, 100% 100%, 0 100%)",
+          clipPath: desk ? "inset(0 -32px 0 -32px)" : "polygon(0 0, 46.5% 0, 46.5% -6%, 100% -6%, 100% 100%, 0 100%)",
           containerType: "inline-size",
         }}
       >
