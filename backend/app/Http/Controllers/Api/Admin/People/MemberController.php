@@ -43,7 +43,9 @@ class MemberController extends Controller
         if ($search = trim((string) $request->query('search'))) {
             $num = $ready ? MemberNumbers::parse($search) : null;
             $phone = $ready ? MemberNumbers::phoneKey($search) : null;
-            $query->where(fn ($q) => $q->where('name', 'like', "{$search}%")->orWhere('email', 'like', "{$search}%")
+            // Any part of the name or email: "prasad" finds "Durga Prasad" too.
+            $like = '%'.addcslashes($search, '%_\\').'%';
+            $query->where(fn ($q) => $q->where('name', 'like', $like)->orWhere('email', 'like', $like)
                 ->when($num, fn ($q) => $q->orWhere('member_num', $num))
                 ->when($phone, fn ($q) => $q->orWhere('phone_key', $phone)));
         }

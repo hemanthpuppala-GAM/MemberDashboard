@@ -244,6 +244,17 @@ class MemberSyncTest extends TestCase
         $this->getJson('/api/v1/admin/members?search='.$m->member_code)->assertJsonPath('data.0.id', $m->id);
     }
 
+    public function test_member_search_finds_any_part_of_the_name(): void
+    {
+        $this->admin();
+        $durga = $this->member(['name' => 'Durga Prasad', 'email' => 'dp@example.com']);
+        $this->member(['name' => 'Lakshmi', 'email' => 'lakshmi@example.com']);
+
+        $this->assertSame([$durga->id], array_column($this->getJson('/api/v1/admin/members?search=prasad')->json('data'), 'id'));
+        $this->assertSame([$durga->id], array_column($this->getJson('/api/v1/admin/members?search=dp@')->json('data'), 'id'));
+        $this->assertCount(0, $this->getJson('/api/v1/admin/members?search=%25')->json('data')); // a bare % is literal, not "everyone"
+    }
+
     public function test_supabase_sync_from_exports_is_repeatable_and_live_numbers_win(): void
     {
         $local = $this->member(['email' => 'local@example.com']); // got 100002 here
