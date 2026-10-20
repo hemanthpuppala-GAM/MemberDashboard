@@ -13,7 +13,7 @@ use Illuminate\Support\Str;
  */
 return new class extends Migration
 {
-    private const TEAMS = [
+    public const TEAMS = [ // public: 2026_10_20_000003 re-seeds from it
         ['events-setup', 'Events — on the ground', 'Setting up halls, chairs, mats, sound and signage. Arrive early, leave last.'],
         ['helpline', 'Helpline — first level', 'Answer the first message or call, understand what is being asked, and pass it to the right team.'],
         ['local-event', 'Local event volunteer', 'Host or help run sits and gatherings in your own city.'],
