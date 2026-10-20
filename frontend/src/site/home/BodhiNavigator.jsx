@@ -37,8 +37,10 @@ export default function BodhiNavigator({ active, chapters, desk, treeW, onActive
           // box, right of 46.5% only — the PNG's baked-in menu line sits to its left at that height)
           // and reserve the same space above.
           margin: desk ? 0 : "3.9% auto 0",
-          overflow: desk ? "hidden" : "visible",
-          clipPath: desk ? undefined : "polygon(0 0, 46.5% 0, 46.5% -6%, 100% -6%, 100% 100%, 0 100%)",
+          // Desktop: crop only the art above the box; the leaf-pills at the edges (I · Rituals,
+          // V · Reflect) may reach a little past the sides on small trees instead of being cut off.
+          overflow: "visible",
+          clipPath: desk ? "inset(0 -32px -16px -32px)" : "polygon(0 0, 46.5% 0, 46.5% -6%, 100% -6%, 100% 100%, 0 100%)",
           containerType: "inline-size",
         }}
       >
@@ -81,9 +83,9 @@ export default function BodhiNavigator({ active, chapters, desk, treeW, onActive
                 WebkitBackdropFilter: "blur(6px)",
                 textAlign: "center",
                 whiteSpace: "nowrap",
-                fontSize: "clamp(8px,1.55cqw,11px)",
+                fontSize: "clamp(7px,1.55cqw,11px)",
                 fontWeight: 700,
-                letterSpacing: ".2em",
+                letterSpacing: "min(.2em,.45cqw)", // tighter on small trees so the labels fit their leaves
                 textTransform: "uppercase",
                 lineHeight: 1.25,
               }}
