@@ -103,6 +103,9 @@ export function sitsSummary(sits) {
         : "Daily, in five time zones",
     heroKicker: live.length ? "Group meditation live now" : "Next group meditation",
     heroLine: live.length ? `${live[0].name} · ${live[0].home}` : next ? `${next.name} · ${next.local} · in ${countdown(next.until)}` : "Sits around the world",
+    // The same, split so a long session name can be shortened on its own line (hero pill).
+    heroName: live.length ? live[0].name : next ? next.name : "Sits around the world",
+    heroWhen: live.length ? live[0].home : next ? `${next.local} · in ${countdown(next.until)}` : "",
     statusShort: live.length ? `${live[0].name} · live now` : next ? `Next in ${countdown(next.until)}` : "Daily · 5 time zones",
     dot: live.length ? "#C9A24A" : "#12201A",
     dotGlow: live.length ? "0 0 0 3px rgba(201,162,74,.25)" : "none",
