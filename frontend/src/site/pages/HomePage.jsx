@@ -247,7 +247,7 @@ export default function HomePage() {
   const shortFit = tightFit && h < 680;
   // Room beside the headline for the pill (else it goes under the sub-line, e.g. 1024px tablets).
   const headFitPx = 6.9 * (shortFit ? Math.max(30, Math.min(h * 0.062, 44)) : Math.max(34, Math.min(w * 0.039, h * 0.075, 64)));
-  const pillBeside = wideFit || fitColW - gutPx - headFitPx - 18 >= 200;
+  const pillBeside = wideFit || fitColW - gutPx - headFitPx - 18 >= 250;
   const fitTreeH = h - hh - (w >= 1200 ? 34 : 0) - (heroH || 300) - (footH || 80) - 28;
   // Tree beside its caption, or — on tall wide screens where the caption's column is what limits
   // the tree — caption underneath (≈150px) so the tree can use the column's full width.
@@ -347,12 +347,20 @@ export default function HomePage() {
             </a>
               <DailySitLink
                 className="home-sits-cta"
-                style={{ display: "inline-flex", alignItems: "center", gap: 12, height: 48, padding: "0 22px 0 16px", borderRadius: 999, background: "linear-gradient(90deg,#E8CF83,#C9A24A)", border: "1px solid rgba(255,255,255,.5)", boxShadow: "0 1px 0 rgba(255,255,255,.6) inset,0 12px 30px -10px rgba(201,162,74,.7)", whiteSpace: "nowrap", ...(tightFit ? { whiteSpace: "normal", height: "auto", minHeight: 48, padding: "8px 20px 8px 16px", maxWidth: "100%" } : {}), ...(phone ? { order: 1, width: "100%", whiteSpace: "normal", height: "auto", minHeight: 56, padding: "10px 18px 10px 16px" } : {}) }}
+                style={{ display: "inline-flex", alignItems: "center", gap: 12, height: 48, padding: "0 22px 0 16px", borderRadius: 999, background: "linear-gradient(90deg,#E8CF83,#C9A24A)", border: "1px solid rgba(255,255,255,.5)", boxShadow: "0 1px 0 rgba(255,255,255,.6) inset,0 12px 30px -10px rgba(201,162,74,.7)", whiteSpace: "nowrap", ...(tightFit ? { height: "auto", minHeight: 48, padding: "8px 22px 8px 16px", maxWidth: "100%", borderRadius: 26 } : {}), ...(phone ? { order: 1, width: "100%", whiteSpace: "normal", height: "auto", minHeight: 56, padding: "10px 18px 10px 16px" } : {}) }}
               >
                 <span aria-hidden="true" style={{ width: 9, height: 9, borderRadius: "50%", background: sits.dot, boxShadow: sits.dotGlow, animation: sits.dotAnim }} />
-                <span style={{ display: "flex", flexDirection: "column", gap: 1, textAlign: "left" }}>
+                <span style={{ display: "flex", flexDirection: "column", gap: 1, textAlign: "left", minWidth: 0 }}>
                   <span style={{ fontSize: 10, fontWeight: 800, letterSpacing: tightFit ? ".12em" : ".22em", textTransform: "uppercase", color: "#5A3C0E" }}>{sits.heroKicker}</span>
-                  <span style={{ fontSize: 12.5, fontWeight: 700, letterSpacing: ".02em", color: "#14241C" }}>{sits.heroLine}</span>
+                  {tightFit || phone ? (
+                    // Narrow pill: name and time on their own lines, a long name shortened with "…".
+                    <>
+                      <span style={{ fontSize: 12.5, fontWeight: 700, letterSpacing: ".02em", color: "#14241C", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", maxWidth: phone ? "none" : 260 }}>{sits.heroName}</span>
+                      {sits.heroWhen && <span style={{ fontSize: 12, fontWeight: 600, color: "#3A2A0E", whiteSpace: "nowrap" }}>{sits.heroWhen}</span>}
+                    </>
+                  ) : (
+                    <span style={{ fontSize: 12.5, fontWeight: 700, letterSpacing: ".02em", color: "#14241C" }}>{sits.heroLine}</span>
+                  )}
                 </span>
               </DailySitLink>
           </div>
@@ -444,8 +452,8 @@ export default function HomePage() {
                     “
                   </span>
                 )}
-                <span key={vi} style={{ display: "flex", flexDirection: "column", gap: 8, minHeight: fit ? (stories.length ? "4.6em" : 0) : "7.2em", flexShrink: fit && stories.length ? 0 : 1, animation: "gaw-rise .7s both" }}>
-                  <span style={{ fontFamily: "'Cormorant Garamond',serif", fontWeight: 500, fontSize: fit ? "clamp(14px,min(1.3vw,2.5dvh),22px)" : "clamp(16px,1.3vw,22px)", lineHeight: 1.15, textWrap: "pretty", ...(fit ? { display: "-webkit-box", WebkitBoxOrient: "vertical", WebkitLineClamp: stories.length ? 3 : 4, overflow: "hidden" } : {}) }}>{voice.text}</span>
+                <span key={vi} style={{ display: "flex", flexDirection: "column", gap: 8, minHeight: fit ? (stories.length ? (h < 860 ? 0 : "4.6em") : 0) : "7.2em", flexShrink: fit && stories.length ? 0 : 1, animation: "gaw-rise .7s both" }}>
+                  <span style={{ fontFamily: "'Cormorant Garamond',serif", fontWeight: 500, fontSize: fit ? "clamp(14px,min(1.3vw,2.5dvh),22px)" : "clamp(16px,1.3vw,22px)", lineHeight: 1.15, textWrap: "pretty", ...(fit ? { display: "-webkit-box", WebkitBoxOrient: "vertical", WebkitLineClamp: stories.length ? (h < 860 ? 2 : 3) : 4, overflow: "hidden" } : {}) }}>{voice.text}</span>
                   <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: ".08em", color: "rgba(246,241,230,.75)" }}>— {voice.name}</span>
                 </span>
                 {stories.length ? (
@@ -458,9 +466,12 @@ export default function HomePage() {
                         <span style={{ fontSize: 11, color: "rgba(246,241,230,.7)" }}>{stories.length} video{stories.length === 1 ? "" : "s"}</span>
                       </span>
                     </button>
-                    <Link to="/about" style={{ ...CARD_CTA, marginTop: 0, fontSize: 10.5, color: "rgba(232,207,131,.8)" }}>
-                      {c.testiCta} {ARROW}
-                    </Link>
+                    {/* Short screens: the card itself opens the stories page; this link would not fit. */}
+                    {!(fit && h < 860) && (
+                      <Link to="/about" style={{ ...CARD_CTA, marginTop: 0, fontSize: 10.5, color: "rgba(232,207,131,.8)" }}>
+                        {c.testiCta} {ARROW}
+                      </Link>
+                    )}
                   </span>
                 ) : (
                   <span style={{ ...CARD_CTA, color: "#E8CF83" }}>

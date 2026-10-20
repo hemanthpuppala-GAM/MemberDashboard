@@ -171,3 +171,4 @@ Format: date · item · status (🟡 designed / ✅ implemented @sha / ⬅ code 
 
 ## 2026-10-20 — Go live switch
 - ⬅ code change: new **Admin → Go live** page (open to every admin-panel user). It shows a ready-to-switch checklist, lets you schedule a time (India time) or go live now, and has a roll back button and a history. Going live makes goldenagewisdom.org serve the new site and redirects old addresses (/peace, /circle → /meditation; /desk → /support; /film, /launch → home). The staging preview stays online but is hidden from search engines.
+- ⬅ code change: Home hero on short wide screens (e.g. 1920×1080 at 150% scaling = 1280×620): the "Next group meditation" pill shows the session name and time on their own lines (a long name ends in "…") and only sits beside the headline with ~250px to spare; "What members say" drops the separate "More stories" link and keeps the quote to two lines below 860px height, so nothing is clipped.
