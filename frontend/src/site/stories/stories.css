@@ -280,22 +280,76 @@
   overflow: hidden;
 }
 
-/* Channel clips: take the viewer to YouTube to like, comment, subscribe or watch the full video. */
-.gaw-site .story-yt {
+/* Channel clips: a Shorts-style rail of YouTube actions over the right of the video (lower half,
+   below the tap zones), and the full-video link in the footer. */
+.gaw-site .story-video {
+  position: relative;
+}
+.gaw-site .story-rail {
+  position: absolute;
+  z-index: 3;
+  right: 8px;
+  bottom: 96px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
-  width: 100%;
+  gap: 14px;
 }
-.gaw-site .story-yt-main {
+.gaw-site .story-rail a,
+.gaw-site .story-rail button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: 56px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #f6f1e6;
+  text-decoration: none;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+  cursor: pointer;
+}
+.gaw-site .story-rail-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: rgba(14, 26, 20, 0.62);
+  border: 1px solid rgba(246, 241, 230, 0.22);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  transition: background 0.2s, color 0.2s, transform 0.2s;
+}
+.gaw-site .story-rail a:hover .story-rail-btn,
+.gaw-site .story-rail button:hover .story-rail-btn {
+  background: rgba(14, 26, 20, 0.85);
+  transform: scale(1.06);
+}
+.gaw-site .story-rail .story-rail-sub .story-rail-btn {
+  background: #e8cf83;
+  border-color: #e8cf83;
+  color: #14241c;
+}
+.gaw-site .story-rail a:focus-visible .story-rail-btn,
+.gaw-site .story-rail button:focus-visible .story-rail-btn,
+.gaw-site .story-full:focus-visible {
+  outline: 2px solid #e8cf83;
+  outline-offset: 2px;
+}
+.gaw-site .story-full {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
   width: 100%;
   max-width: 320px;
-  height: 46px;
+  height: 44px;
   border-radius: 999px;
   background: #e8cf83;
   color: #14241c;
@@ -303,26 +357,8 @@
   font-weight: 800;
   text-decoration: none;
 }
-.gaw-site .story-yt-main:hover {
+.gaw-site .story-full:hover {
   background: #f1dc9d;
-}
-.gaw-site .story-yt-more {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 4px 18px;
-}
-.gaw-site .story-yt-more a {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  min-height: 36px;
-  font-size: 13px;
-  font-weight: 700;
-  color: #f6f1e6;
-  text-decoration: underline;
-  text-decoration-color: rgba(232, 207, 131, 0.55);
-  text-underline-offset: 3px;
 }
 
 /* Home "What members say" card: faces + "Watch their stories" */
@@ -416,8 +452,7 @@
   transform: translateY(-1px);
 }
 .gaw-site .short-clips-subscribe:focus-visible,
-.gaw-site .short-clips-all:focus-visible,
-.gaw-site .story-yt a:focus-visible {
+.gaw-site .short-clips-all:focus-visible {
   outline: 2px solid #c9a24a;
   outline-offset: 2px;
 }

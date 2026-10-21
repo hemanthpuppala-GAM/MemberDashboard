@@ -3,16 +3,24 @@ import { createPortal } from "react-dom";
 import { initials, storyThumb, youTubeId } from "./stories";
 import { YOUTUBE_SUBSCRIBE_URL } from "../sitePages";
 
+const RailIcon = ({ d }) => (
+  <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+    <path d={d} />
+  </svg>
+);
+
 /**
  * Full-screen "Seeker stories" player, like phone stories: a progress bar per story, tap the
  * right edge for the next one and the left edge for the previous one, swipe down or Esc to close.
  * Uploaded videos and YouTube links both move on to the next story when they end.
- * `youtubeActions`: channel clips get Like & comment, Subscribe and "Watch the full video" links.
+ * `youtubeActions`: channel clips get a Shorts-style rail (Like, Comment, Share, Subscribe) and a
+ * "Watch the full video" link when the Short's description points to one.
  */
 export default function StoriesViewer({ stories, start = 0, onClose, onSeen, onIndex, label = "Seeker stories", youtubeActions = false }) {
   const [i, setI] = useState(start);
   const [progress, setProgress] = useState(0);
   const [muted, setMuted] = useState(false);
+  const [shared, setShared] = useState(false); // "Link copied" after Share on a computer
   const video = useRef(null);
   const closeBtn = useRef(null);
   const frame = useRef(null);
@@ -108,6 +116,24 @@ export default function StoriesViewer({ stories, start = 0, onClose, onSeen, onI
   // Leaving for YouTube: pause here so the clip doesn't keep playing behind the YouTube tab.
   const pauseYt = () => frame.current?.contentWindow?.postMessage(JSON.stringify({ event: "command", func: "pauseVideo", args: [] }), "*");
 
+  // Share: the phone's share sheet (WhatsApp, …); on a computer, copy the YouTube link.
+  const share = async () => {
+    const url = s.video_url;
+    try {
+      if (navigator.share) return await navigator.share({ title: s.name, url });
+    } catch (err) {
+      if (err?.name === "AbortError") return undefined;
+    }
+    try {
+      await navigator.clipboard.writeText(url);
+      setShared(true);
+      setTimeout(() => setShared(false), 2200);
+    } catch {
+      window.open(`https://wa.me/?text=${encodeURIComponent(`${s.name} ${url}`)}`, "_blank", "noopener");
+    }
+    return undefined;
+  };
+
   const onTouchStart = (e) => {
     const t = e.touches[0];
     touch.current = { x: t.clientX, y: t.clientY };
@@ -158,6 +184,28 @@ export default function StoriesViewer({ stories, start = 0, onClose, onSeen, onI
         </header>
 
         <div className="story-video" key={s.id}>
+          {youtubeActions && yt ? (
+            // Shorts-style actions, always shown: YouTube decides whether its own embed shows a like
+            // button, so these take viewers to the clip on YouTube, where likes and comments count.
+            <nav className="story-rail" aria-label="On YouTube">
+              <a href={s.video_url} target="_blank" rel="noopener noreferrer" onClick={pauseYt}>
+                <span className="story-rail-btn"><RailIcon d="M7 10v11M2 11.5A1.5 1.5 0 0 1 3.5 10H7v11H3.5A1.5 1.5 0 0 1 2 19.5zM7 10l4.3-7.2a1.7 1.7 0 0 1 3.1 1.2L13.6 9H19a2 2 0 0 1 2 2.3l-1.3 7.6A2.5 2.5 0 0 1 17.2 21H7" /></span>
+                Like
+              </a>
+              <a href={`https://www.youtube.com/watch?v=${yt}`} target="_blank" rel="noopener noreferrer" onClick={pauseYt}>
+                <span className="story-rail-btn"><RailIcon d="M21 12a8.5 8.5 0 0 1-12.4 7.6L3 21l1.5-5.2A8.5 8.5 0 1 1 21 12z" /></span>
+                Comment
+              </a>
+              <button type="button" onClick={share}>
+                <span className="story-rail-btn"><RailIcon d="M14 4l7 7-7 7M21 11h-9a8 8 0 0 0-8 8v1" /></span>
+                {shared ? "Copied" : "Share"}
+              </button>
+              <a href={YOUTUBE_SUBSCRIBE_URL} target="_blank" rel="noopener noreferrer" onClick={pauseYt} className="story-rail-sub">
+                <span className="story-rail-btn"><RailIcon d="M6 16V11a6 6 0 1 1 12 0v5l2 2H4zM10 20a2 2 0 0 0 4 0" /></span>
+                Subscribe
+              </a>
+            </nav>
+          ) : null}
           {yt ? (
             <iframe
               ref={frame}
@@ -186,7 +234,7 @@ export default function StoriesViewer({ stories, start = 0, onClose, onSeen, onI
         ) : null}
 
         {/* Edge tap zones — the middle stays free for the player's own controls. On YouTube clips they
-            stop halfway down, so YouTube's like / share buttons and title below stay reachable. */}
+            stop halfway down, clear of the action rail and YouTube's own buttons below. */}
         <button type="button" className={`story-tap story-tap-prev${yt ? " story-tap-yt" : ""}`} aria-label="Previous story" disabled={i === 0} onClick={() => go(i - 1)}>
           <span aria-hidden="true">‹</span>
         </button>
@@ -194,25 +242,13 @@ export default function StoriesViewer({ stories, start = 0, onClose, onSeen, onI
           <span aria-hidden="true">›</span>
         </button>
 
-        {s.quote || (youtubeActions && yt) ? (
+        {s.quote || (youtubeActions && yt && s.full_url) ? (
           <footer className="story-foot">
             {s.quote ? <p className="serif">“{s.quote.replace(/^[“"]|[”"]$/g, "")}”</p> : null}
-            {youtubeActions && yt ? (
-              <div className="story-yt">
-                <a href={s.video_url} target="_blank" rel="noopener noreferrer" onClick={pauseYt} className="story-yt-main">
-                  <span aria-hidden="true">♥</span> Like &amp; comment on YouTube
-                </a>
-                <span className="story-yt-more">
-                  <a href={YOUTUBE_SUBSCRIBE_URL} target="_blank" rel="noopener noreferrer" onClick={pauseYt}>
-                    Subscribe
-                  </a>
-                  {s.full_url ? (
-                    <a href={s.full_url} target="_blank" rel="noopener noreferrer" onClick={pauseYt}>
-                      <span aria-hidden="true">▶</span> Watch the full video
-                    </a>
-                  ) : null}
-                </span>
-              </div>
+            {youtubeActions && yt && s.full_url ? (
+              <a href={s.full_url} target="_blank" rel="noopener noreferrer" onClick={pauseYt} className="story-full">
+                <span aria-hidden="true">▶</span> Watch the full video on YouTube
+              </a>
             ) : null}
           </footer>
         ) : null}
