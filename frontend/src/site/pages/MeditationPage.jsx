@@ -41,7 +41,7 @@ const LABEL = { fontSize: 10.5, fontWeight: 700, letterSpacing: ".18em", textTra
 /** Defaults from Meditation.dc.html DEFAULTS that content/meditation.json may not carry. */
 const FALLBACKS = {
   clipsTitle: "Watch: meditation in a minute",
-  clipsIntro: "Short clips from Dr. Hari Krishna and from members — the newest first. Tap one and they play one after another.",
+  clipsIntro: "The newest Shorts from Dr. Hari Krishna and from members. Tap one to watch it on YouTube, where you can like, comment and subscribe.",
   eyebrow: "The Path · Meditation 101",
   title: "Explained simply —",
   titleAccent: "and scientifically",
