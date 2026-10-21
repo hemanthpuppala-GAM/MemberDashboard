@@ -8,7 +8,7 @@ import { siteAsset } from "../siteAssets";
 import "./meditation.css";
 import CmsExtraSections from "../cms/CmsExtraSections";
 import ShortClips from "../stories/ShortClips";
-import { useChannelShorts } from "../stories/stories";
+import { useChannelShorts, useClipTopics } from "../stories/stories";
 import Chapters from "../chapters/Chapters";
 
 const PAD = "clamp(20px,5vw,72px)";
@@ -136,6 +136,7 @@ export default function MeditationPage() {
   const mid = w >= 640;
   const [depth, setDepth] = useState("simple");
   const shorts = useChannelShorts();
+  const topics = useClipTopics();
   const simple = depth === "simple";
   const photo = (c.photo && c.photo.trim()) || "assets/hari-posture-stream.png";
 
@@ -249,8 +250,8 @@ export default function MeditationPage() {
             {
               key: "clips",
               label: "Short clips",
-              show: shorts.length > 0,
-              content: <ShortClips shorts={shorts} title={c.clipsTitle || "Short clips"} intro={c.clipsIntro} />,
+              show: shorts.length > 0 || topics.length > 0,
+              content: <ShortClips shorts={shorts} topics={topics} title={c.clipsTitle || "Short clips"} intro={c.clipsIntro} />,
             },
             {
               key: "science",

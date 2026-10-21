@@ -4,6 +4,8 @@ namespace Tests\Feature;
 
 use App\Models\Auth\Role;
 use App\Models\Auth\User;
+use App\Models\Site\SiteContent;
+use App\Services\Content\YouTubeFeed;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
@@ -115,6 +117,52 @@ class VideoStoriesTest extends TestCase
         $this->assertSame(['newer000002', 'older000001'], array_column($list, 'id'));
         $this->assertSame('https://www.youtube.com/shorts/newer000002', $list[0]['url']);
         $this->assertArrayNotHasKey('is_short', $list[0]);
+    }
+
+    public function test_each_short_carries_the_full_video_from_its_description(): void
+    {
+        config(['services.youtube.channel_id' => 'UCabcdefghijklmnopqrstuv']);
+        $xml = '<?xml version="1.0"?><feed xmlns:yt="http://www.youtube.com/xml/schemas/2015" xmlns:media="http://search.yahoo.com/mrss/" xmlns="http://www.w3.org/2005/Atom">'
+            .'<entry><yt:videoId>short000001</yt:videoId><title>Observer</title><published>2026-10-15T10:00:00+00:00</published>'
+            .'<media:group><media:description>Watch the full video: https://youtu.be/LONG0000001 #shorts (this clip: https://youtube.com/shorts/short000001)</media:description></media:group></entry>'
+            .'<entry><yt:videoId>short000002</yt:videoId><title>No link</title><published>2026-10-14T10:00:00+00:00</published>'
+            .'<media:group><media:description>Only https://www.youtube.com/watch?v=short000002 itself</media:description></media:group></entry></feed>';
+        Http::fake(['www.youtube.com/feeds/*' => Http::response($xml)]);
+
+        $list = $this->getJson('/api/v1/youtube/shorts')->assertOk()->json();
+        $this->assertSame('https://www.youtube.com/watch?v=LONG0000001', $list[0]['full_url']);
+        $this->assertNull($list[1]['full_url']);
+    }
+
+    public function test_topic_rows_come_from_the_playlists_set_in_site_content(): void
+    {
+        config(['services.youtube.channel_id' => 'UCabcdefghijklmnopqrstuv']);
+        SiteContent::create(['page' => 'meditation', 'data' => ['clipsTopics' => [
+            ['title' => 'Meditation basics', 'playlist' => 'https://www.youtube.com/playlist?list=PLbasics0001'],
+            ['title' => 'Broken link', 'playlist' => 'not a playlist'],
+            ['title' => 'Empty playlist', 'playlist' => 'PLempty00002'],
+        ]]]);
+        $entry = fn (string $id, string $link) => "<entry><yt:videoId>{$id}</yt:videoId><title>Clip {$id}</title><link rel=\"alternate\" href=\"{$link}\"/><published>2026-10-15T10:00:00+00:00</published></entry>";
+        $feed = fn (string $entries) => '<?xml version="1.0"?><feed xmlns:yt="http://www.youtube.com/xml/schemas/2015" xmlns="http://www.w3.org/2005/Atom">'.$entries.'</feed>';
+        Http::fake([
+            'www.youtube.com/feeds/videos.xml?playlist_id=PLbasics0001' => Http::response($feed($entry('basic000001', 'https://www.youtube.com/watch?v=basic000001').$entry('long0000002', 'https://www.youtube.com/watch?v=long0000002'))),
+            'www.youtube.com/feeds/videos.xml?playlist_id=PLempty00002' => Http::response($feed('')),
+            'www.youtube.com/feeds/*' => Http::response($feed($entry('basic000001', 'https://www.youtube.com/shorts/basic000001'))),
+        ]);
+        $this->getJson('/api/v1/youtube/shorts')->assertOk(); // the channel's Shorts, so the playlist knows which are Shorts
+
+        $topics = $this->getJson('/api/v1/youtube/topics')->assertOk()->json();
+        $this->assertCount(1, $topics);
+        $this->assertSame('Meditation basics', $topics[0]['title']);
+        $this->assertSame('https://www.youtube.com/playlist?list=PLbasics0001', $topics[0]['url']);
+        $this->assertSame(['https://www.youtube.com/shorts/basic000001', 'https://www.youtube.com/watch?v=long0000002'], array_column($topics[0]['items'], 'url'));
+    }
+
+    public function test_playlist_ids_are_read_from_links_or_bare_ids(): void
+    {
+        $this->assertSame('PLx-y_z12345', YouTubeFeed::playlistId('https://youtube.com/playlist?list=PLx-y_z12345&si=abc'));
+        $this->assertSame('PLx-y_z12345', YouTubeFeed::playlistId(' PLx-y_z12345 '));
+        $this->assertNull(YouTubeFeed::playlistId('https://youtube.com/@GoldenAgeGurus'));
     }
 
     public function test_an_empty_answer_is_not_remembered(): void

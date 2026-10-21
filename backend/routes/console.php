@@ -19,13 +19,16 @@ Schedule::command('supabase:sync --write --scheduled')
 // Go live at the time picked in Admin → Go live (checked every minute; also the scheduler heartbeat it shows).
 Schedule::command('site:go-live --due')->everyMinute()->withoutOverlapping();
 
-// The Meditation page's "Short clips": read the YouTube channel once a day.
+// The Meditation page's "Short clips" (and their topic playlists): read the YouTube channel once a day.
 Schedule::command('youtube:refresh')->dailyAt('06:10')->timezone('Asia/Kolkata');
 
 Artisan::command('youtube:refresh', function () {
     $feed = \App\Services\Content\YouTubeFeed::refresh();
     $this->info(count($feed['items']).' Shorts saved'.(isset($feed['fetched_at']) ? ' (read '.$feed['fetched_at'].')' : '').'.');
-})->purpose('Read the latest Shorts from the YouTube channel (runs daily)');
+    foreach (\App\Services\Content\YouTubeFeed::topics(true) as $topic) {
+        $this->info("Topic \"{$topic['title']}\": ".count($topic['items']).' videos.');
+    }
+})->purpose('Read the latest Shorts and the topic playlists from the YouTube channel (runs daily)');
 
 // Video testimonials the team drops into the Google Drive folder → draft testimonials, once a day.
 Schedule::command('testimonials:drive-import')->dailyAt('06:20')->timezone('Asia/Kolkata')

@@ -319,6 +319,7 @@ export const publicApi = {
   featuredTestimonials: () => apiFetch("/testimonials/featured", { auth: false }),
   videoStories: () => apiFetch("/testimonials/videos", { auth: false }),
   channelShorts: () => apiFetch("/youtube/shorts", { auth: false }),
+  clipTopics: () => apiFetch("/youtube/topics", { auth: false }),
   settings: () => apiFetch("/settings", { auth: false }),
   submitContact: (payload) => apiFetch("/contact", { method: "POST", body: payload, auth: false }),
   volunteerCategories: () => apiFetch("/volunteer-categories", { auth: false }),

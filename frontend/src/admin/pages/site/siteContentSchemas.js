@@ -370,11 +370,27 @@ export const SITE_CONTENT_SCHEMAS = {
       },
       {
         title: "Short clips (YouTube Shorts)",
-        description: "Every Short on the channel, newest first, in one sideways row after the quick answers. Fetched automatically; hidden if YouTube can't be read.",
+        description:
+          "Every Short on the channel, newest first, then one row per topic below. Each topic is a playlist you keep on YouTube (YouTube Studio → Playlists): paste its link here and the row follows the playlist. Rows refresh once a day; hidden if YouTube can't be read. Every clip offers Like & comment, Subscribe and the full video on YouTube.",
         columns: 2,
         fields: [
           { key: "clipsTitle", label: "Title", type: "text" },
           { key: "clipsIntro", label: "Intro", type: "textarea", rows: 2, wide: true },
+          {
+            type: "list",
+            key: "clipsTopics",
+            label: "Topic rows (YouTube playlists)",
+            wide: true,
+            addable: true,
+            addLabel: "Add topic",
+            newItem: { title: "", playlist: "" },
+            itemLabel: (t) => t.title || "Topic",
+            layout: "row",
+            fields: [
+              { key: "title", label: "Row title", type: "text", grow: 2 },
+              { key: "playlist", label: "Playlist link", type: "text", grow: 4, placeholder: "https://www.youtube.com/playlist?list=PL…" },
+            ],
+          },
         ],
       },
       {
