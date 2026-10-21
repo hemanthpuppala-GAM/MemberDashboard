@@ -131,6 +131,9 @@ export default function StoriesViewer({ stories, start = 0, onClose, onSeen, onI
   // otherwise become the containing block and the full-screen player would sit inside it.
   return createPortal(
     <div className="story-viewer" role="dialog" aria-modal="true" aria-label={`${label} — ${s.name}`} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
+      <button type="button" className="story-side story-side-prev" aria-label="Previous story" disabled={i === 0} onClick={() => go(i - 1)}>
+        <span aria-hidden="true">‹</span>
+      </button>
       <div className="story-stage">
         {/* Progress — one bar per story */}
         <div className="story-bars" aria-hidden="true">
@@ -182,11 +185,12 @@ export default function StoriesViewer({ stories, start = 0, onClose, onSeen, onI
           </button>
         ) : null}
 
-        {/* Edge tap zones — the middle stays free for the player's own controls */}
-        <button type="button" className="story-tap story-tap-prev" aria-label="Previous story" disabled={i === 0} onClick={() => go(i - 1)}>
+        {/* Edge tap zones — the middle stays free for the player's own controls. On YouTube clips they
+            stop halfway down, so YouTube's like / share buttons and title below stay reachable. */}
+        <button type="button" className={`story-tap story-tap-prev${yt ? " story-tap-yt" : ""}`} aria-label="Previous story" disabled={i === 0} onClick={() => go(i - 1)}>
           <span aria-hidden="true">‹</span>
         </button>
-        <button type="button" className="story-tap story-tap-next" aria-label={i === stories.length - 1 ? "Close stories" : "Next story"} onClick={() => go(i + 1)}>
+        <button type="button" className={`story-tap story-tap-next${yt ? " story-tap-yt" : ""}`} aria-label={i === stories.length - 1 ? "Close stories" : "Next story"} onClick={() => go(i + 1)}>
           <span aria-hidden="true">›</span>
         </button>
 
@@ -213,6 +217,11 @@ export default function StoriesViewer({ stories, start = 0, onClose, onSeen, onI
           </footer>
         ) : null}
       </div>
+
+      {/* Bigger screens: previous / next beside the player, clear of the video and YouTube's own buttons. */}
+      <button type="button" className="story-side story-side-next" aria-label={i === stories.length - 1 ? "Close stories" : "Next story"} onClick={() => go(i + 1)}>
+        <span aria-hidden="true">›</span>
+      </button>
     </div>,
     document.querySelector(".gaw-site") || document.body,
   );

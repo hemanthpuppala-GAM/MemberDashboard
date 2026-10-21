@@ -221,6 +221,43 @@
 .gaw-site .story-tap:disabled {
   cursor: default;
 }
+.gaw-site .story-tap-yt {
+  bottom: 50%;
+}
+.gaw-site .story-side {
+  display: none;
+}
+@media (min-width: 640px) {
+  .gaw-site .story-viewer {
+    gap: 18px;
+  }
+  .gaw-site .story-side {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    width: 52px;
+    height: 52px;
+    padding-bottom: 3px;
+    border-radius: 50%;
+    border: 1px solid rgba(232, 207, 131, 0.55);
+    background: rgba(20, 36, 28, 0.7);
+    color: #e8cf83;
+    font-size: 30px;
+    line-height: 1;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+  }
+  .gaw-site .story-side:hover:not(:disabled),
+  .gaw-site .story-side:focus-visible {
+    background: #e8cf83;
+    color: #14241c;
+  }
+  .gaw-site .story-side:disabled {
+    opacity: 0.3;
+    cursor: default;
+  }
+}
 .gaw-site .story-foot {
   position: relative;
   z-index: 3;
