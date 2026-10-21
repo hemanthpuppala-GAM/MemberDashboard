@@ -371,7 +371,7 @@ export const SITE_CONTENT_SCHEMAS = {
       {
         title: "Short clips (YouTube Shorts)",
         description:
-          "Every Short on the channel, newest first, then one row per topic below. Each topic is a playlist you keep on YouTube (YouTube Studio → Playlists): paste its link here and the row follows the playlist. Rows refresh once a day; hidden if YouTube can't be read. Every clip offers Like & comment, Subscribe and the full video on YouTube.",
+          "The 6 newest Shorts, then one row per topic below (6 each). Tapping a clip opens it on YouTube (the app on phones), so likes, comments and subscribers go to the channel. Each topic is a playlist you keep on YouTube (YouTube Studio → Playlists): paste its link here and the row follows the playlist. Rows refresh once a day; hidden if YouTube can't be read.",
         columns: 2,
         fields: [
           { key: "clipsTitle", label: "Title", type: "text" },
