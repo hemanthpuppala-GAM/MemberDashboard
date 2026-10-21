@@ -21,6 +21,8 @@ export const EDITABLE_PAGES = ["home", "about", "mission", "meditation", "wisdom
 
 export const OFFICIAL_EMAIL = "goldenageguruteachings@gmail.com";
 export const YOUTUBE_URL = "https://www.youtube.com/@GoldenAgeGurus";
+/** Opens the channel with YouTube's "Subscribe?" confirmation already showing. */
+export const YOUTUBE_SUBSCRIBE_URL = `${YOUTUBE_URL}?sub_confirmation=1`;
 /** "Watch live" goes to the channel's live/streams tab, not the channel home. */
 export const YOUTUBE_LIVE_URL = "https://www.youtube.com/@GoldenAgeGurus/streams";
 

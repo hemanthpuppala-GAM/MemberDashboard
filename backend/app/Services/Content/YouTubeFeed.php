@@ -2,6 +2,7 @@
 
 namespace App\Services\Content;
 
+use App\Models\Site\SiteContent;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use RuntimeException;
@@ -10,7 +11,8 @@ use SimpleXMLElement;
 /**
  * Latest Shorts from the channel, without an API key: the public RSS feed of the channel's
  * Shorts playlist (UUSH…) first; when YouTube serves that empty (it often does), the Shorts
- * tab of the channel page itself, with titles from oEmbed. Used to pick video testimonials.
+ * tab of the channel page itself, with titles from oEmbed. Used for the Meditation page's Short
+ * clips (plus topic rows from playlists) and to pick video testimonials.
  */
 class YouTubeFeed
 {
@@ -23,31 +25,101 @@ class YouTubeFeed
      * The saved list, refreshed once a day by `youtube:refresh`. If the schedule hasn't run, a
      * visit refreshes a list older than a day; if YouTube fails, the last good list stays.
      *
-     * @return array{channel: string, items: list<array{id: string, title: string, url: string, thumbnail: string, published: ?string, is_short: bool}>, fetched_at?: string}
+     * @return array{channel: string, items: list<array{id: string, title: string, url: string, thumbnail: string, published: ?string, is_short: bool, full_url: ?string}>, fetched_at?: string}
      */
     public static function latest(): array
     {
-        $cached = Cache::get(self::KEY);
-        $fresh = ! empty($cached['items']) && isset($cached['fetched_at'])
-            && now()->subHours(self::MAX_AGE_HOURS)->lt($cached['fetched_at']);
-        if ($fresh || (! empty($cached['items']) && Cache::has(self::KEY.'.failed'))) {
-            return $cached;
-        }
-
-        return self::refresh();
+        return self::remember(self::KEY, fn () => self::readChannel());
     }
 
     /** Read the channel now and save the list. Keeps (and returns) the last good list when YouTube fails. */
     public static function refresh(): array
     {
-        $cached = Cache::get(self::KEY);
+        return self::remember(self::KEY, fn () => self::readChannel(), true);
+    }
+
+    /** One playlist's videos (a "topic" row of Short clips), saved and refreshed like the channel list. */
+    public static function playlist(string $id, bool $refresh = false): array
+    {
+        return self::remember(self::KEY.'.playlist.'.$id, fn () => self::readPlaylist($id), $refresh);
+    }
+
+    /**
+     * Topic rows for the Meditation page's Short clips: the playlists listed in Admin → Site content →
+     * Meditation, each with its videos. Topics without a valid playlist, or whose playlist is empty, are left out.
+     *
+     * @return list<array{title: string, playlist_id: string, url: string, items: list<array>}>
+     */
+    public static function topics(bool $refresh = false): array
+    {
+        $rows = SiteContent::merged('meditation', SiteContent::where('page', 'meditation')->first())['clipsTopics'] ?? [];
+        $topics = [];
+        foreach (is_array($rows) ? $rows : [] as $row) {
+            $title = trim((string) ($row['title'] ?? ''));
+            $id = self::playlistId((string) ($row['playlist'] ?? ''));
+            if ($title === '' || ! $id) {
+                continue;
+            }
+            try {
+                $items = self::playlist($id, $refresh)['items'];
+            } catch (\Throwable $e) {
+                report($e);
+                $items = [];
+            }
+            if ($items) {
+                $topics[] = ['title' => $title, 'playlist_id' => $id, 'url' => "https://www.youtube.com/playlist?list={$id}", 'items' => $items];
+            }
+        }
+
+        return $topics;
+    }
+
+    /** A playlist id from a pasted playlist link (…?list=PL…) or the bare id. */
+    public static function playlistId(string $value): ?string
+    {
+        $value = trim($value);
+        if (preg_match('/[?&]list=([\w-]{10,64})/', $value, $m)) {
+            return $m[1];
+        }
+
+        return preg_match('/^[\w-]{10,64}$/', $value) ? $value : null;
+    }
+
+    /**
+     * The long video a Short points to ("watch the full video — link in description"): the first
+     * youtube.com/watch, /live or youtu.be link in the description that isn't the Short itself.
+     */
+    public static function fullVideoUrl(string $description, string $selfId): ?string
+    {
+        preg_match_all('#https?://(?:www\.|m\.)?(?:youtube\.com/(?:watch\?(?:[^\s"<]*&)?v=|live/)|youtu\.be/)([\w-]{11})#i', $description, $m);
+        foreach ($m[1] as $id) {
+            if ($id !== $selfId) {
+                return "https://www.youtube.com/watch?v={$id}";
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Cached read with the same rules for every list: fresh for a day; after a failure the last good
+     * list is kept (and YouTube left alone for 10 minutes); an empty answer is never saved.
+     */
+    private static function remember(string $key, callable $read, bool $force = false): array
+    {
+        $cached = Cache::get($key);
+        if (! $force) {
+            $fresh = ! empty($cached['items']) && isset($cached['fetched_at'])
+                && now()->subHours(self::MAX_AGE_HOURS)->lt($cached['fetched_at']);
+            if ($fresh || (! empty($cached['items']) && Cache::has($key.'.failed'))) {
+                return $cached;
+            }
+        }
+
         try {
-            $channelId = self::channelId();
-            $items = self::read('https://www.youtube.com/feeds/videos.xml?playlist_id=UUSH'.substr($channelId, 2), true)
-                ?: self::fromShortsPage()
-                ?: self::read("https://www.youtube.com/feeds/videos.xml?channel_id={$channelId}", false);
+            $items = $read();
         } catch (\Throwable $e) {
-            Cache::put(self::KEY.'.failed', true, now()->addMinutes(10));
+            Cache::put($key.'.failed', true, now()->addMinutes(10));
             if (! empty($cached['items'])) {
                 report($e);
 
@@ -57,15 +129,54 @@ class YouTubeFeed
         }
 
         if (! $items) { // never save an empty answer — the next try may work
-            Cache::put(self::KEY.'.failed', true, now()->addMinutes(10));
+            Cache::put($key.'.failed', true, now()->addMinutes(10));
 
             return ! empty($cached['items']) ? $cached : ['channel' => (string) config('services.youtube.channel'), 'items' => []];
         }
         $result = ['channel' => (string) config('services.youtube.channel'), 'items' => $items, 'fetched_at' => now()->toIso8601String()];
-        Cache::forever(self::KEY, $result);
-        Cache::forget(self::KEY.'.failed');
+        Cache::forever($key, $result);
+        Cache::forget($key.'.failed');
 
         return $result;
+    }
+
+    private static function readChannel(): array
+    {
+        $channelId = self::channelId();
+        $channelFeed = "https://www.youtube.com/feeds/videos.xml?channel_id={$channelId}";
+        $items = self::read('https://www.youtube.com/feeds/videos.xml?playlist_id=UUSH'.substr($channelId, 2), true);
+        if (! $items && ($items = self::fromShortsPage())) {
+            // The Shorts tab has no descriptions: take the full-video links from the channel feed (latest 15).
+            $links = [];
+            try {
+                foreach (self::read($channelFeed, false) as $v) {
+                    $links[$v['id']] = $v['full_url'];
+                }
+            } catch (\Throwable) {
+                // the clips still work without the links
+            }
+            foreach ($items as &$item) {
+                $item['full_url'] = $links[$item['id']] ?? null;
+            }
+            unset($item);
+        }
+
+        return $items ?: self::read($channelFeed, false);
+    }
+
+    private static function readPlaylist(string $id): array
+    {
+        $shorts = array_flip(array_column(Cache::get(self::KEY)['items'] ?? [], 'id'));
+        $items = self::read("https://www.youtube.com/feeds/videos.xml?playlist_id={$id}", false);
+        foreach ($items as &$item) {
+            if (! $item['is_short'] && isset($shorts[$item['id']])) {
+                $item['is_short'] = true;
+                $item['url'] = "https://www.youtube.com/shorts/{$item['id']}";
+            }
+        }
+        unset($item);
+
+        return $items;
     }
 
     public static function channelId(): string
@@ -104,6 +215,7 @@ class YouTubeFeed
                 continue;
             }
             $link = (string) ($entry->link['href'] ?? '');
+            $description = (string) ($media->group->description ?? '');
             $short = $allShorts || str_contains($link, '/shorts/');
             $items[] = [
                 'id' => $id,
@@ -113,6 +225,7 @@ class YouTubeFeed
                 'thumbnail' => "https://i.ytimg.com/vi/{$id}/hqdefault.jpg",
                 'published' => ((string) $entry->published) ?: null,
                 'is_short' => $short,
+                'full_url' => self::fullVideoUrl($description, $id),
             ];
         }
 
@@ -150,6 +263,7 @@ class YouTubeFeed
                 'thumbnail' => "https://i.ytimg.com/vi/{$id}/hqdefault.jpg",
                 'published' => null,
                 'is_short' => true,
+                'full_url' => null,
             ];
         }, $ids);
     }

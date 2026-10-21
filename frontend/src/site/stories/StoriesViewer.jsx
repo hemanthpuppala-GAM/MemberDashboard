@@ -1,12 +1,15 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { initials, storyThumb, youTubeId } from "./stories";
+import { YOUTUBE_SUBSCRIBE_URL } from "../sitePages";
 
 /**
  * Full-screen "Seeker stories" player, like phone stories: a progress bar per story, tap the
  * right edge for the next one and the left edge for the previous one, swipe down or Esc to close.
  * Uploaded videos and YouTube links both move on to the next story when they end.
+ * `youtubeActions`: channel clips get Like & comment, Subscribe and "Watch the full video" links.
  */
-export default function StoriesViewer({ stories, start = 0, onClose, onSeen, onIndex, label = "Seeker stories" }) {
+export default function StoriesViewer({ stories, start = 0, onClose, onSeen, onIndex, label = "Seeker stories", youtubeActions = false }) {
   const [i, setI] = useState(start);
   const [progress, setProgress] = useState(0);
   const [muted, setMuted] = useState(false);
@@ -102,6 +105,9 @@ export default function StoriesViewer({ stories, start = 0, onClose, onSeen, onI
     frame.current?.contentWindow?.postMessage(JSON.stringify({ event: "listening", id: 1, channel: "widget" }), "*");
   };
 
+  // Leaving for YouTube: pause here so the clip doesn't keep playing behind the YouTube tab.
+  const pauseYt = () => frame.current?.contentWindow?.postMessage(JSON.stringify({ event: "command", func: "pauseVideo", args: [] }), "*");
+
   const onTouchStart = (e) => {
     const t = e.touches[0];
     touch.current = { x: t.clientX, y: t.clientY };
@@ -121,7 +127,9 @@ export default function StoriesViewer({ stories, start = 0, onClose, onSeen, onI
   const thumb = storyThumb(s);
   const sub = [s.role, s.place].filter(Boolean).join(" · ");
 
-  return (
+  // Rendered at the site root: an animated ancestor (the chapter panels keep a `translate`) would
+  // otherwise become the containing block and the full-screen player would sit inside it.
+  return createPortal(
     <div className="story-viewer" role="dialog" aria-modal="true" aria-label={`${label} — ${s.name}`} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
       <div className="story-stage">
         {/* Progress — one bar per story */}
@@ -182,12 +190,30 @@ export default function StoriesViewer({ stories, start = 0, onClose, onSeen, onI
           <span aria-hidden="true">›</span>
         </button>
 
-        {s.quote ? (
+        {s.quote || (youtubeActions && yt) ? (
           <footer className="story-foot">
-            <p className="serif">“{s.quote.replace(/^[“"]|[”"]$/g, "")}”</p>
+            {s.quote ? <p className="serif">“{s.quote.replace(/^[“"]|[”"]$/g, "")}”</p> : null}
+            {youtubeActions && yt ? (
+              <div className="story-yt">
+                <a href={s.video_url} target="_blank" rel="noopener noreferrer" onClick={pauseYt} className="story-yt-main">
+                  <span aria-hidden="true">♥</span> Like &amp; comment on YouTube
+                </a>
+                <span className="story-yt-more">
+                  <a href={YOUTUBE_SUBSCRIBE_URL} target="_blank" rel="noopener noreferrer" onClick={pauseYt}>
+                    Subscribe
+                  </a>
+                  {s.full_url ? (
+                    <a href={s.full_url} target="_blank" rel="noopener noreferrer" onClick={pauseYt}>
+                      <span aria-hidden="true">▶</span> Watch the full video
+                    </a>
+                  ) : null}
+                </span>
+              </div>
+            ) : null}
           </footer>
         ) : null}
       </div>
-    </div>
+    </div>,
+    document.querySelector(".gaw-site") || document.body,
   );
 }

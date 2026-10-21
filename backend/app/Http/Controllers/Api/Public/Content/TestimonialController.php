@@ -43,7 +43,25 @@ class TestimonialController extends Controller
         usort($items, fn ($a, $b) => strcmp((string) ($b['published'] ?? ''), (string) ($a['published'] ?? '')));
         $items = array_values(array_filter($items, fn ($v) => $v['is_short'] ?? true));
 
-        return response()->json(array_map(fn ($v) => array_intersect_key($v, array_flip(['id', 'title', 'url', 'thumbnail', 'published'])), $items));
+        return response()->json(array_map(self::clip(...), $items));
+    }
+
+    /** Topic rows for the Short clips: the YouTube playlists listed in Admin → Site content → Meditation. */
+    public function topics()
+    {
+        try {
+            $topics = YouTubeFeed::topics();
+        } catch (\Throwable $e) {
+            report($e);
+            $topics = [];
+        }
+
+        return response()->json(array_map(fn ($t) => ['title' => $t['title'], 'url' => $t['url'], 'items' => array_map(self::clip(...), $t['items'])], $topics));
+    }
+
+    private static function clip(array $v): array
+    {
+        return array_intersect_key($v, array_flip(['id', 'title', 'url', 'thumbnail', 'published', 'full_url']));
     }
 
     public function featured()
