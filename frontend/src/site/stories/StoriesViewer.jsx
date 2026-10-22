@@ -103,6 +103,9 @@ export default function StoriesViewer({ stories, start = 0, onClose, onSeen, onI
     frame.current?.contentWindow?.postMessage(JSON.stringify({ event: "listening", id: 1, channel: "widget" }), "*");
   };
 
+  // Leaving for YouTube: pause here so the video doesn't keep playing behind the YouTube tab.
+  const pauseYt = () => frame.current?.contentWindow?.postMessage(JSON.stringify({ event: "command", func: "pauseVideo", args: [] }), "*");
+
   const onTouchStart = (e) => {
     const t = e.touches[0];
     touch.current = { x: t.clientX, y: t.clientY };
@@ -189,9 +192,15 @@ export default function StoriesViewer({ stories, start = 0, onClose, onSeen, onI
           <span aria-hidden="true">›</span>
         </button>
 
-        {s.quote ? (
+        {s.quote || yt ? (
           <footer className="story-foot">
-            <p className="serif">“{s.quote.replace(/^[“"]|[”"]$/g, "")}”</p>
+            {s.quote ? <p className="serif">“{s.quote.replace(/^[“"]|[”"]$/g, "")}”</p> : null}
+            {/* Stories that live on YouTube: one quiet way to support them there (likes count on YouTube only). */}
+            {yt ? (
+              <a href={`https://www.youtube.com/watch?v=${yt}`} target="_blank" rel="noopener noreferrer" onClick={pauseYt} className="story-yt-link">
+                <span aria-hidden="true">♥</span> Like &amp; comment on YouTube
+              </a>
+            ) : null}
           </footer>
         ) : null}
       </div>

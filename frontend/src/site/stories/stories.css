@@ -280,6 +280,27 @@
   overflow: hidden;
 }
 
+/* Member stories that live on YouTube: a quiet link to like & comment there. */
+.gaw-site .story-yt-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 36px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #e8cf83;
+  text-decoration: underline;
+  text-decoration-color: rgba(232, 207, 131, 0.5);
+  text-underline-offset: 3px;
+}
+.gaw-site .story-yt-link:hover {
+  color: #f6f1e6;
+}
+.gaw-site .story-yt-link:focus-visible {
+  outline: 2px solid #e8cf83;
+  outline-offset: 2px;
+}
+
 /* Home "What members say" card: faces + "Watch their stories" */
 .gaw-site .home-stories-btn {
   display: inline-flex;
