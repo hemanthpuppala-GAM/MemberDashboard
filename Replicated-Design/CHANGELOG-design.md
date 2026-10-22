@@ -190,3 +190,5 @@ Format: date · item · status (🟡 designed / ✅ implemented @sha / ⬅ code 
 
 ## 2026-10-23 — Real team email addresses
 - ⬅ code change: site emails are sent from **support@goldenagewisdom.org** (the SMTP mailbox in Admin → Settings → Email) as "Golden Age Wisdom", and replies go to support@. Alerts for new questions, volunteer and registration sign-ups default to **info@goldenagewisdom.org** (Settings → General → "Alert inbox"). The public "General inquiries" contact email becomes **contact@goldenagewisdom.org** (was the non-existent admin@).
+- ⬅ code change: Sit & Scribe → Recent sits gets **Add a missed sit** (member dashboard). Pick when (Today / Yesterday / the day before, member's own calendar), what (Live on Zoom / Live on YouTube / My own sit) and minutes (15 / 30 / 45 / 60 or 1–180), then "Sit added". It counts on that day for the streak and 41-day challenge. Older days can't be added. Own sits show as "Own sit".
+- ⬅ code change: member-dashboard dialogs now always open over the whole screen (they could be clipped inside a page card).

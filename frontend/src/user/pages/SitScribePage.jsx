@@ -8,9 +8,12 @@ import { publicApi } from "../../lib/api";
 import { memberAuthApi } from "../../lib/memberAuth";
 import { useActiveSit } from "../ActiveSitContext";
 import { LIVE_LOGGED_EVENT } from "../liveReturn";
+import AddMissedSit from "../AddMissedSit";
 
 /** Sits logged from a live session (old-site imports say "live"). */
 const LIVE_VIA = { zoom: "Live on Zoom", youtube: "Live on YouTube", live: "Live session" };
+/** Their own sit, added later with "Add a missed sit". */
+const OWN_SIT = "Own sit";
 
 function formatClock(totalSeconds) {
   const m = Math.floor(totalSeconds / 60);
@@ -298,7 +301,7 @@ export default function SitScribePage() {
       )}
 
       {sessions && (
-        <Card title="Recent sits" description={sessions.length === 0 ? undefined : `${sessions.length} logged`}>
+        <Card title="Recent sits" description={sessions.length === 0 ? undefined : `${sessions.length} logged`} actions={<AddMissedSit />}>
           {sessions.length === 0 ? (
             <EmptyState icon={History} title="No sits logged yet" description="Complete a sit above and it will show up here." />
           ) : (
@@ -310,7 +313,7 @@ export default function SitScribePage() {
                       {LIVE_VIA[s.via] ? <Video size={14} /> : s.sit_preset?.music_track_id ? <Music2 size={14} /> : <VolumeX size={14} />}
                     </div>
                     <div>
-                      <div className="text-[13.5px] font-medium text-[var(--color-ink)]">{LIVE_VIA[s.via] ?? s.sit_preset?.title ?? "Silent sit"}</div>
+                      <div className="text-[13.5px] font-medium text-[var(--color-ink)]">{LIVE_VIA[s.via] ?? (s.via === "own" ? OWN_SIT : null) ?? s.sit_preset?.title ?? "Silent sit"}</div>
                       <div className="text-[12px] text-[var(--color-ink-soft)]">{formatLogDate(s.completed_at)}</div>
                     </div>
                   </div>
