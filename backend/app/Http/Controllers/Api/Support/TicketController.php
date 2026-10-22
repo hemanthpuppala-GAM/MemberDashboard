@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Support;
 
 use App\Http\Controllers\Controller;
+use App\Mail\TicketAssignedMail;
 use App\Mail\TicketUpdatedMail;
 use App\Models\People\Member;
 use App\Models\Support\SupportAgent;
@@ -148,10 +149,11 @@ class TicketController extends Controller
         ]);
 
         $notes = [];
+        $assignee = null;
         if (array_key_exists('assigned_agent_id', $data) && $data['assigned_agent_id'] !== $ticket->assigned_agent_id) {
             $ticket->assigned_agent_id = $data['assigned_agent_id'];
-            $to = $data['assigned_agent_id'] ? SupportAgent::find($data['assigned_agent_id'])?->name : 'nobody';
-            $notes[] = "{$agent->name} assigned this to {$to}.";
+            $assignee = $data['assigned_agent_id'] ? SupportAgent::find($data['assigned_agent_id']) : null;
+            $notes[] = "{$agent->name} assigned this to ".($assignee?->name ?? 'nobody').'.';
         }
         if (isset($data['status']) && $data['status'] !== $ticket->status) {
             $notes[] = "{$agent->name} changed status to ".str_replace('_', ' ', $data['status']).'.';
@@ -172,6 +174,9 @@ class TicketController extends Controller
         }
         if ($wasResolved) {
             $this->notifyRequester($ticket, 'resolved');
+        }
+        if ($assignee && $assignee->id !== $agent->id) {
+            $this->notifyAssignee($ticket, $assignee, $agent);
         }
 
         return response()->json($ticket->fresh(['assignee', 'creator'])->toApi(true));
@@ -208,6 +213,20 @@ class TicketController extends Controller
         }
 
         return response()->json($comment->load('agent')->toApi(), 201);
+    }
+
+    /** Email the team member a ticket was just assigned to (not when they took it themselves). */
+    private function notifyAssignee(Ticket $ticket, SupportAgent $assignee, SupportAgent $by): void
+    {
+        $email = $assignee->alertEmail();
+        if (! $email) {
+            return;
+        }
+        try {
+            Mail::to($email)->send(new TicketAssignedMail($ticket, $assignee->name, $by->name));
+        } catch (\Throwable $e) {
+            Log::warning("Ticket {$ticket->ref} assignment email failed: ".$e->getMessage());
+        }
     }
 
     private function notifyRequester(Ticket $ticket, string $kind, ?TicketComment $comment = null): void

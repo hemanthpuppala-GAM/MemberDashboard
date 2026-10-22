@@ -24,6 +24,12 @@ class SupportAgent extends Authenticatable
         return $this->belongsTo(\App\Models\Auth\User::class);
     }
 
+    /** Where to send "ticket assigned to you" emails: their own email, else their admin-panel login's. */
+    public function alertEmail(): ?string
+    {
+        return $this->email ?: $this->user?->email;
+    }
+
     /** The desk identity of an admin-panel user (created on first use). */
     public static function forUser(\App\Models\Auth\User $user): self
     {
