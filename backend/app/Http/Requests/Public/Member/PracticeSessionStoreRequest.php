@@ -16,6 +16,8 @@ class PracticeSessionStoreRequest extends FormRequest
         return [
             'duration_minutes' => ['required', 'integer', 'min:1', 'max:180'],
             'sit_preset_id' => ['nullable', 'integer', 'exists:sit_presets,id'],
+            // Set when the sit was a live session joined from the dashboard (logged on return).
+            'via' => ['nullable', 'in:zoom,youtube'],
         ];
     }
 }

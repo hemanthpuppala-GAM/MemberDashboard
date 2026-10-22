@@ -4,6 +4,7 @@ import { Menu } from "lucide-react";
 import Sidebar from "./layout/Sidebar";
 import { NAV } from "./layout/navConfig";
 import { ActiveSitProvider } from "./ActiveSitContext";
+import LiveReturnPrompt from "./LiveReturnPrompt";
 import BroadcastManager from "../components/layout/BroadcastManager";
 import "./member.css";
 
@@ -53,6 +54,8 @@ export default function UserLayout() {
           </main>
         </div>
       </div>
+      {/* Back from Zoom / YouTube live: offer to log the sit, then a journal entry. */}
+      <LiveReturnPrompt />
     </ActiveSitProvider>
   );
 }
