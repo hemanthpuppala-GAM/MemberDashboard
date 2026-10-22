@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, useState } from "react";
-import { Play, Pause, RotateCcw, Music2, VolumeX, CheckCircle2, ChevronLeft, Flame, History } from "lucide-react";
+import { Play, Pause, RotateCcw, Music2, VolumeX, CheckCircle2, ChevronLeft, Flame, History, Video } from "lucide-react";
 import Card from "../ui/Card";
 import EmptyState from "../ui/EmptyState";
 import StreakCalendar from "../ui/StreakCalendar";
@@ -7,6 +7,10 @@ import Button from "../../components/ui/Button";
 import { publicApi } from "../../lib/api";
 import { memberAuthApi } from "../../lib/memberAuth";
 import { useActiveSit } from "../ActiveSitContext";
+import { LIVE_LOGGED_EVENT } from "../liveReturn";
+
+/** Sits logged from a live session (old-site imports say "live"). */
+const LIVE_VIA = { zoom: "Live on Zoom", youtube: "Live on YouTube", live: "Live session" };
 
 function formatClock(totalSeconds) {
   const m = Math.floor(totalSeconds / 60);
@@ -37,6 +41,12 @@ export default function SitScribePage() {
     memberAuthApi.overview().then(setOverview).catch(() => {});
     memberAuthApi.practiceSessions().then(setSessions).catch(() => {});
   };
+
+  // A live sit logged from the "back from Zoom" prompt: show it in the streak and history at once.
+  useEffect(() => {
+    window.addEventListener(LIVE_LOGGED_EVENT, loadPracticeData);
+    return () => window.removeEventListener(LIVE_LOGGED_EVENT, loadPracticeData);
+  }, []);
 
   useEffect(() => {
     publicApi
@@ -297,10 +307,10 @@ export default function SitScribePage() {
                 <div key={s.id} className="flex items-center justify-between gap-3 py-2.5 first:pt-0 last:pb-0">
                   <div className="flex items-center gap-2.5">
                     <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[rgba(168,185,160,0.15)] text-[var(--color-blue-dark)]">
-                      {s.sit_preset?.music_track_id ? <Music2 size={14} /> : <VolumeX size={14} />}
+                      {LIVE_VIA[s.via] ? <Video size={14} /> : s.sit_preset?.music_track_id ? <Music2 size={14} /> : <VolumeX size={14} />}
                     </div>
                     <div>
-                      <div className="text-[13.5px] font-medium text-[var(--color-ink)]">{s.sit_preset?.title ?? "Silent sit"}</div>
+                      <div className="text-[13.5px] font-medium text-[var(--color-ink)]">{LIVE_VIA[s.via] ?? s.sit_preset?.title ?? "Silent sit"}</div>
                       <div className="text-[12px] text-[var(--color-ink-soft)]">{formatLogDate(s.completed_at)}</div>
                     </div>
                   </div>

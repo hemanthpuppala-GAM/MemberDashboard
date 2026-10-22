@@ -7,6 +7,7 @@ import ProgressRing from "../ui/ProgressRing";
 import Button from "../../components/ui/Button";
 import { memberAuthApi } from "../../lib/memberAuth";
 import JoinButton from "../ui/JoinButton";
+import { LIVE_LOGGED_EVENT } from "../liveReturn";
 import { useMemberSchedule } from "../useMemberSchedule";
 import { useMemberAuth } from "../../auth/MemberAuthContext";
 import AddPhoneCard from "../ui/AddPhoneCard";
@@ -32,11 +33,16 @@ export default function OverviewPage() {
   const nextSit = schedule.live[0] || schedule.next;
 
   useEffect(() => {
-    memberAuthApi
-      .overview()
-      .then(setOverview)
-      .catch((e) => setError(e.message || "Could not load your overview."))
-      .finally(() => setLoading(false));
+    const load = () =>
+      memberAuthApi
+        .overview()
+        .then(setOverview)
+        .catch((e) => setError(e.message || "Could not load your overview."))
+        .finally(() => setLoading(false));
+    load();
+    // A live sit logged from the "back from Zoom" prompt updates the streak and totals here too.
+    window.addEventListener(LIVE_LOGGED_EVENT, load);
+    return () => window.removeEventListener(LIVE_LOGGED_EVENT, load);
   }, []);
 
   const stats = overview

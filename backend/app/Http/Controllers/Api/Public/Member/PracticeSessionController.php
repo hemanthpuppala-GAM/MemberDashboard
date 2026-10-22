@@ -23,11 +23,12 @@ class PracticeSessionController extends Controller
         /** @var Member $member */
         $member = $request->user();
 
-        $session = $member->practiceSessions()->create([
+        $session = $member->practiceSessions()->make([
             'duration_minutes' => $request->validated('duration_minutes'),
             'sit_preset_id' => $request->validated('sit_preset_id'),
             'completed_at' => now(),
         ]);
+        $session->forceFill(['via' => $request->validated('via')])->save();
         $session->load('sitPreset');
 
         return response()->json([
