@@ -120,8 +120,14 @@ return [
     */
 
     'from' => [
-        'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
-        'name' => env('MAIL_FROM_NAME', env('APP_NAME', 'Laravel')),
+        'address' => env('MAIL_FROM_ADDRESS', 'support@goldenagewisdom.org'),
+        'name' => env('MAIL_FROM_NAME', 'Golden Age Wisdom'),
+    ],
+
+    // Replies to any site email (welcome, ticket updates, alerts) go to the support inbox.
+    'reply_to' => [
+        'address' => env('MAIL_REPLY_TO_ADDRESS', 'support@goldenagewisdom.org'),
+        'name' => env('MAIL_REPLY_TO_NAME', 'Golden Age Wisdom support'),
     ],
 
 ];

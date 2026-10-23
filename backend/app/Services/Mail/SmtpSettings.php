@@ -47,10 +47,12 @@ class SmtpSettings
         Config::set('mail.mailers.smtp.password', $keys['email.smtp_password'] ?? null);
         Config::set('mail.mailers.smtp.scheme', $port === 465 ? 'smtps' : null);
 
-        $from = $keys['general.admin_email'] ?? null;
-        if (filled($from)) {
-            Config::set('mail.from.address', $from);
-            Config::set('mail.from.name', $keys['general.site_name'] ?? config('app.name'));
+        // Send as the mailbox we log in with (support@goldenagewisdom.org): Microsoft 365 and most hosts
+        // refuse mail "from" any other address. The admin email is where alerts go, not the sender.
+        $user = trim((string) ($keys['email.smtp_user'] ?? ''));
+        if (filter_var($user, FILTER_VALIDATE_EMAIL)) {
+            Config::set('mail.from.address', $user);
         }
+        Config::set('mail.from.name', $keys['general.site_name'] ?? config('mail.from.name'));
     }
 }

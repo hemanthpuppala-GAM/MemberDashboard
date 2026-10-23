@@ -12,7 +12,8 @@ class Setting extends Model
     public const DEFAULTS = [
         'general.site_name' => 'Golden Age Wisdom',
         'general.tagline' => 'World peace through meditation',
-        'general.admin_email' => 'admin@goldenagewisdom.org',
+        // Team inbox for new-question / volunteer / registration alerts and the test email.
+        'general.admin_email' => 'info@goldenagewisdom.org',
         'general.default_language' => 'en',
         'general.timezone' => 'Asia/Kolkata',
 
