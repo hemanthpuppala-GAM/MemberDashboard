@@ -131,7 +131,7 @@ export default function SettingsPage() {
             group="general"
             values={settings.general}
             onChange={updateGroup}
-            fields={[["siteName", "Site name"], ["tagline", "Tagline"], ["adminEmail", "Admin email"], ["timezone", "Timezone"]]}
+            fields={[["siteName", "Site name"], ["tagline", "Tagline"], ["adminEmail", "Alert inbox (new questions, volunteers, sign-ups)"], ["timezone", "Timezone"]]}
             disabled={!canEdit}
           />
           <Button as="button" size="sm" className="mt-5" onClick={() => save("general", "General settings")} disabled={saving || !canEdit} title={canEdit ? undefined : "You don't have permission to edit settings"}>Save</Button>
@@ -339,7 +339,7 @@ export default function SettingsPage() {
             <div className="grid gap-5 sm:grid-cols-2">
               <Field label="SMTP host"><TextInput value={settings.email.smtpHost} onChange={(e) => updateGroup("email", { smtpHost: e.target.value })} disabled={!canEdit} /></Field>
               <Field label="SMTP port"><TextInput type="number" value={settings.email.smtpPort} onChange={(e) => updateGroup("email", { smtpPort: e.target.value })} disabled={!canEdit} /></Field>
-              <Field label="SMTP user"><TextInput value={settings.email.smtpUser} onChange={(e) => updateGroup("email", { smtpUser: e.target.value })} disabled={!canEdit} /></Field>
+              <Field label="SMTP user" hint="The mailbox the site sends from, e.g. support@goldenagewisdom.org. Members' replies come back to support@."><TextInput value={settings.email.smtpUser} onChange={(e) => updateGroup("email", { smtpUser: e.target.value })} disabled={!canEdit} /></Field>
               <Field label="SMTP password" hint="Write-only — leave blank to keep the current password">
                 <TextInput type="password" value={settings.email.smtpPassword ?? ""} onChange={(e) => updateGroup("email", { smtpPassword: e.target.value })} placeholder="••••••••" disabled={!canEdit} />
               </Field>

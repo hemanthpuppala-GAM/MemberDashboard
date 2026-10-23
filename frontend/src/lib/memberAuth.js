@@ -70,8 +70,12 @@ export const memberAuthApi = {
 
   overview: () => memberFetch("/member/overview"),
   practiceSessions: () => memberFetch("/member/practice-sessions"),
-  logPracticeSession: (duration_minutes, sit_preset_id, via) =>
-    memberFetch("/member/practice-sessions", { method: "POST", body: { duration_minutes, sit_preset_id, ...(via ? { via } : {}) } }),
+  /** `completedOn` (YYYY-MM-DD, member's calendar): "Add a missed sit" for today or the two days before. */
+  logPracticeSession: (duration_minutes, sit_preset_id, via, completedOn) =>
+    memberFetch("/member/practice-sessions", {
+      method: "POST",
+      body: { duration_minutes, sit_preset_id, ...(via ? { via } : {}), ...(completedOn ? { completed_on: completedOn } : {}) },
+    }),
   journal: () => memberFetch("/member/journal"),
   addJournalEntry: (content) => memberFetch("/member/journal", { method: "POST", body: { content } }),
   updateJournalEntry: (id, content) => memberFetch(`/member/journal/${id}`, { method: "PUT", body: { content } }),

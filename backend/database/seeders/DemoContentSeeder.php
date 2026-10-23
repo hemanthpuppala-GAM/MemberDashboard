@@ -37,7 +37,7 @@ class DemoContentSeeder extends Seeder
         $channels = [
             ['type' => 'phone', 'label' => 'Call us', 'value' => '+1 555 0100', 'order' => 1],
             ['type' => 'whatsapp', 'label' => 'WhatsApp support', 'value' => '+1 555 0100', 'order' => 2],
-            ['type' => 'email', 'label' => 'General inquiries', 'value' => 'admin@goldenagewisdom.org', 'order' => 3],
+            ['type' => 'email', 'label' => 'General inquiries', 'value' => 'contact@goldenagewisdom.org', 'order' => 3],
             ['type' => 'address', 'label' => 'Studio', 'value' => '108 Serenity Lane, Rishikesh, India', 'order' => 4],
             ['type' => 'social', 'label' => 'Instagram', 'value' => 'https://instagram.com/goldenagewisdom', 'order' => 5],
         ];

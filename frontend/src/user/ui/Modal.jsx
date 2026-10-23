@@ -1,9 +1,14 @@
+import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 
+/**
+ * Rendered at the dashboard's root (.member-theme keeps its colours): inside a page, the page's entrance
+ * animation would trap the overlay in that card and clip it.
+ */
 export default function Modal({ open, onClose, title, description, children }) {
   if (!open) return null;
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px]" onClick={onClose} />
       <div className="relative w-full max-w-md animate-[viewIn_0.25s_ease] overflow-hidden rounded-3xl border border-[var(--color-border)] bg-[var(--color-surface)] p-6 shadow-[0_20px_60px_rgba(80,65,40,0.20)]">
@@ -25,6 +30,7 @@ export default function Modal({ open, onClose, title, description, children }) {
 
         {children}
       </div>
-    </div>
+    </div>,
+    document.querySelector(".member-theme") || document.body,
   );
 }

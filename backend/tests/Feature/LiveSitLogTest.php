@@ -25,4 +25,25 @@ class LiveSitLogTest extends TestCase
 
         $this->assertEqualsCanonicalizing(['zoom', null], array_column($this->getJson('/api/v1/member/practice-sessions')->assertOk()->json(), 'via'));
     }
+
+    public function test_a_missed_sit_can_be_added_for_the_last_two_days_only(): void
+    {
+        $this->travelTo(now()->setDate(2026, 10, 22)->setTime(9, 30));
+        $member = Member::create(['name' => 'Ravi', 'email' => 'ravi@example.com', 'password' => 'secret-pass', 'category' => 'meditation', 'join_date' => now()]);
+        Sanctum::actingAs($member, [], 'sanctum');
+
+        $this->postJson('/api/v1/member/practice-sessions', ['duration_minutes' => 60, 'via' => 'zoom', 'completed_on' => '2026-10-21'])
+            ->assertCreated()
+            ->assertJsonPath('session.via', 'zoom')
+            ->assertJsonPath('challenge.day', 1);
+        $this->postJson('/api/v1/member/practice-sessions', ['duration_minutes' => 20, 'via' => 'own', 'completed_on' => '2026-10-20'])->assertCreated();
+        $today = $this->postJson('/api/v1/member/practice-sessions', ['duration_minutes' => 15, 'completed_on' => '2026-10-22'])->assertCreated();
+
+        // Three days in a row now: the streak and the challenge both count them on their own dates.
+        $today->assertJsonPath('streak_days', 3)->assertJsonPath('challenge.day', 3);
+        $this->assertSame('2026-10-21 12:00:00', $member->practiceSessions()->where('duration_minutes', 60)->value('completed_at')->format('Y-m-d H:i:s'));
+
+        $this->postJson('/api/v1/member/practice-sessions', ['duration_minutes' => 20, 'completed_on' => '2026-10-15'])->assertUnprocessable();
+        $this->postJson('/api/v1/member/practice-sessions', ['duration_minutes' => 20, 'completed_on' => '2026-10-30'])->assertUnprocessable();
+    }
 }
