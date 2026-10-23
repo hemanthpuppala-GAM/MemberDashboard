@@ -65,15 +65,17 @@ export default function SupportTeamPage() {
   };
 
   const pinOk = !form.pin || /^\d{4,8}$/.test(form.pin);
+  const emailOk = /\S+@\S+\.\S+/.test(form.email.trim());
   const valid =
     form.name.trim() &&
     pinOk &&
-    (isCore ? form.phone.trim() && (!isNew || form.pin) : /\S+@\S+\.\S+/.test(form.email.trim()));
+    (isCore ? form.phone.trim() && (!isNew || form.pin) && (!form.email.trim() || emailOk) : emailOk);
 
   const handleSave = async () => {
     const payload = { kind: form.kind, name: form.name.trim(), is_active: form.is_active };
     if (isCore) {
       payload.phone = form.phone.trim();
+      payload.email = form.email.trim() || null; // optional: only for "ticket assigned to you" emails
       if (form.pin) payload.pin = form.pin;
     } else {
       payload.email = form.email.trim();
@@ -197,7 +199,7 @@ export default function SupportTeamPage() {
         <div>
           <h1 className="text-[24px] font-bold text-[var(--a-text-primary)]">Support team</h1>
           <p className="mt-1 max-w-[640px] text-[13.5px] text-[var(--a-text-muted)]">
-            Core support sign in at /support with their phone number and PIN. Volunteers sign in with their Google account (the email listed here).
+            Core support sign in at /support with their phone number and PIN. Volunteers sign in with their Google account (the email listed here). Whoever a ticket is assigned to gets an email about it.
           </p>
           <p className="mt-1 max-w-[640px] text-[13px] text-[var(--a-text-muted)]">
             Admin staff with access to Queries can open the support desk with their admin login.
@@ -288,9 +290,16 @@ export default function SupportTeamPage() {
                   placeholder={isNew ? "e.g. 4821" : "New PIN"}
                 />
               </Field>
+              <Field
+                label="Email for alerts (optional)"
+                error={form.email.trim() && !emailOk ? "Check the email address." : undefined}
+                hint="We email them when a ticket is assigned to them. They still sign in with phone and PIN."
+              >
+                <TextInput type="email" value={form.email} onChange={(e) => set({ email: e.target.value })} placeholder="name@gmail.com" />
+              </Field>
             </>
           ) : (
-            <Field label="Member Gmail" required hint="The Google account they use to sign in as a member.">
+            <Field label="Member Gmail" required hint="The Google account they use to sign in as a member. Tickets assigned to them are emailed here.">
               <TextInput type="email" value={form.email} onChange={(e) => set({ email: e.target.value })} placeholder="name@gmail.com" />
             </Field>
           )}
