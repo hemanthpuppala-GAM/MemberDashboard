@@ -16,6 +16,9 @@ Schedule::command('supabase:sync --write --scheduled')
     ->withoutOverlapping()
     ->when(fn () => config('services.supabase.auto_sync') && \App\Services\People\SupabaseSync::configured() && ! \App\Services\Site\GoLive::isLive());
 
+// Send queued emails (bulk replies from the support desk) — shared hosting has no long-running worker.
+Schedule::command('queue:work --stop-when-empty --max-time=50')->everyMinute()->withoutOverlapping();
+
 // Go live at the time picked in Admin → Go live (checked every minute; also the scheduler heartbeat it shows).
 Schedule::command('site:go-live --due')->everyMinute()->withoutOverlapping();
 

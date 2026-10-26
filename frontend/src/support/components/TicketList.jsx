@@ -1,6 +1,8 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Search } from "lucide-react";
 import { SOURCE_LABELS, sourceLabel, timeAgo } from "../format";
+import { supportApi } from "../supportApi";
 import { Button, Empty, ErrorNote, Loading, StatusPill, UrgentBadge, cardClass, inputClass } from "./ui";
 
 const SCOPES = [
@@ -78,27 +80,206 @@ export function TicketFilters({ scope, onScope, search, onSearch, source, onSour
   );
 }
 
-/** The ticket rows, with loading / empty / error states and "Load more". */
-export function TicketList({ list, scope, filtered, selectedId }) {
+/**
+ * The ticket rows, with loading / empty / error states and "Load more". The core team can "Select" rows
+ * (or every ticket matching the current filter) and reply to them all at once (each person is emailed in
+ * their own ticket) or close them in one go.
+ */
+export function TicketList({ list, scope, filtered, selectedId, filter, canBulk, onBulkClosed }) {
+  const [selecting, setSelecting] = useState(false);
+  const [picked, setPicked] = useState(() => new Set());
+  const [allMatching, setAllMatching] = useState(false);
+  const [confirming, setConfirming] = useState(false); // close step
+  const [replying, setReplying] = useState(false); // reply composer
+  const [draft, setDraft] = useState("");
+  const [resolve, setResolve] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [bulkError, setBulkError] = useState("");
+  const [done, setDone] = useState("");
+
+  const stopSelecting = () => {
+    setSelecting(false);
+    setPicked(new Set());
+    setAllMatching(false);
+    setConfirming(false);
+    setReplying(false);
+    setDraft("");
+    setResolve(false);
+    setBulkError("");
+  };
+  const toggle = (id) => {
+    setAllMatching(false);
+    setConfirming(false);
+    setPicked((cur) => {
+      const next = new Set(cur);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+  const closable = list.items.filter((t) => !["resolved", "closed"].includes(t.status));
+  const allShown = closable.length > 0 && closable.every((t) => picked.has(t.id));
+  const count = allMatching ? list.total : picked.size;
+
+  const replyToThem = async () => {
+    setBusy(true);
+    setBulkError("");
+    try {
+      const res = await supportApi.bulkReply({ ...(allMatching ? { filter } : { ids: [...picked] }), body: draft.trim(), resolve });
+      const plural = (n, w) => `${n} ${w}${n === 1 ? "" : "s"}`;
+      setDone(
+        `Reply sent on ${plural(res.replied, "ticket")}: ${res.emailed} emailed` +
+          (res.no_email ? `, ${res.no_email} with no email (it's on their ticket)` : "") +
+          ".",
+      );
+      stopSelecting();
+      onBulkClosed?.();
+    } catch (err) {
+      setBulkError(err.message);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const closeThem = async () => {
+    setBusy(true);
+    setBulkError("");
+    try {
+      const res = await supportApi.bulkClose(allMatching ? { filter } : { ids: [...picked] });
+      setDone(`${res.closed} ticket${res.closed === 1 ? "" : "s"} closed.`);
+      stopSelecting();
+      onBulkClosed?.();
+    } catch (err) {
+      setBulkError(err.message);
+    } finally {
+      setBusy(false);
+    }
+  };
+
   if (list.loading && !list.items.length) return <Loading label="Loading tickets…" />;
   if (list.error && !list.items.length) return <ErrorNote onRetry={list.reload}>Couldn't load tickets. {list.error}</ErrorNote>;
   if (!list.items.length) {
     const [title, text] = filtered ? ["No matches", "Nothing matches your search or filter. Try fewer words or “All sources”."] : EMPTY_COPY[scope];
     return (
-      <div className={cardClass}>
-        <Empty title={title}>{text}</Empty>
+      <div className="flex flex-col gap-3">
+        {done && (
+          <p className="text-[13px] font-semibold text-[#2F6B45]" aria-live="polite">
+            {done}
+          </p>
+        )}
+        <div className={cardClass}>
+          <Empty title={title}>{text}</Empty>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="flex flex-col gap-3">
-      <p className="text-[13px] text-[#5A5546]" aria-live="polite">
-        {list.total} ticket{list.total === 1 ? "" : "s"}
-      </p>
+      <div className="flex min-h-[36px] flex-wrap items-center gap-x-3 gap-y-1">
+        <p className="text-[13px] text-[#5A5546]" aria-live="polite">
+          {list.total} ticket{list.total === 1 ? "" : "s"}
+          {done && <span className="ml-2 font-semibold text-[#2F6B45]">{done}</span>}
+        </p>
+        {canBulk && scope !== "resolved" && (
+          <Button
+            variant="ghost"
+            onClick={() => (selecting ? stopSelecting() : (setSelecting(true), setDone("")))}
+            className="ml-auto !min-h-[36px] !px-3 !text-[13px]"
+          >
+            {selecting ? "Cancel" : "Select tickets"}
+          </Button>
+        )}
+      </div>
+      {selecting && (
+        <div className={`${cardClass} flex flex-col gap-2.5 px-4 py-3`}>
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-[14px] text-[#1B3328]">
+            <label className="inline-flex min-h-[36px] cursor-pointer items-center gap-2">
+              <input
+                type="checkbox"
+                className="h-[18px] w-[18px] accent-[#14241C]"
+                checked={allShown}
+                onChange={() => {
+                  setAllMatching(false);
+                  setConfirming(false);
+                  setPicked(allShown ? new Set() : new Set(closable.map((t) => t.id)));
+                }}
+              />
+              All shown
+            </label>
+            <span className="font-semibold">{count} selected</span>
+            {allShown && !allMatching && list.total > closable.length && (
+              <button type="button" onClick={() => setAllMatching(true)} className="cursor-pointer text-[13px] font-semibold text-[#7A5E22] underline underline-offset-2">
+                Select all {list.total} matching this view
+              </button>
+            )}
+            {!confirming && !replying && (
+              <span className="ml-auto flex gap-2">
+                <Button variant="outline" disabled={!count} onClick={() => setReplying(true)} className="!min-h-[38px] !text-[13px]">
+                  Reply to {count || ""}
+                </Button>
+                <Button variant="dark" disabled={!count} onClick={() => setConfirming(true)} className="!min-h-[38px] !text-[13px]">
+                  Close {count || ""} ticket{count === 1 ? "" : "s"}
+                </Button>
+              </span>
+            )}
+          </div>
+          {replying && (
+            <div className="flex flex-col gap-2.5 rounded-xl bg-[#FBF1D6] px-3 py-3">
+              <label className="flex flex-col gap-1.5 text-[13.5px] font-semibold text-[#1B3328]">
+                One reply to {count} {count === 1 ? "person" : "people"}
+                <textarea
+                  rows={5}
+                  value={draft}
+                  onChange={(e) => setDraft(e.target.value)}
+                  placeholder="Thank you for offering seva. Our volunteer team will call you this week…"
+                  className={`${inputClass} font-normal`}
+                />
+              </label>
+              <p className="text-[12.5px] leading-relaxed text-[#5A5546]">
+                Each person gets it by email in their own ticket (&ldquo;Namaste &lt;their name&gt;,&rdquo; is added at the top). Write {"{name}"} to use
+                their name inside the message too.
+              </p>
+              <div className="flex flex-wrap items-center gap-2">
+                <label className="mr-auto inline-flex cursor-pointer items-center gap-2 text-[13.5px] text-[#1B3328]">
+                  <input type="checkbox" className="h-[18px] w-[18px] accent-[#14241C]" checked={resolve} onChange={(e) => setResolve(e.target.checked)} />
+                  Mark resolved after sending
+                </label>
+                <Button variant="outline" onClick={() => setReplying(false)} disabled={busy} className="!min-h-[36px] !text-[13px]">
+                  Back
+                </Button>
+                <Button variant="dark" onClick={replyToThem} busy={busy} disabled={!draft.trim()} className="!min-h-[36px] !text-[13px]">
+                  Send to {count}
+                </Button>
+              </div>
+            </div>
+          )}
+          {confirming && (
+            <div className="flex flex-wrap items-center gap-2 rounded-xl bg-[#FBF1D6] px-3 py-2.5 text-[13.5px] text-[#1B3328]">
+              <span className="mr-auto">
+                Close {count} ticket{count === 1 ? "" : "s"}? Nobody is emailed, and they don&apos;t count as resolved.
+              </span>
+              <Button variant="outline" onClick={() => setConfirming(false)} disabled={busy} className="!min-h-[36px] !text-[13px]">
+                Back
+              </Button>
+              <Button variant="dark" onClick={closeThem} busy={busy} className="!min-h-[36px] !text-[13px]">
+                Yes, close
+              </Button>
+            </div>
+          )}
+          {bulkError && <ErrorNote>{bulkError}</ErrorNote>}
+        </div>
+      )}
       <ul className={`${cardClass} m-0 list-none divide-y divide-[rgba(138,111,52,0.14)] overflow-hidden p-0`}>
         {list.items.map((t) => (
-          <TicketRow key={t.id} ticket={t} selected={String(t.id) === String(selectedId)} />
+          <TicketRow
+            key={t.id}
+            ticket={t}
+            selected={String(t.id) === String(selectedId)}
+            picking={selecting && !["resolved", "closed"].includes(t.status)}
+            picked={allMatching || picked.has(t.id)}
+            onPick={() => toggle(t.id)}
+          />
         ))}
       </ul>
       {list.error && <ErrorNote>{list.error}</ErrorNote>}
@@ -111,7 +292,18 @@ export function TicketList({ list, scope, filtered, selectedId }) {
   );
 }
 
-function TicketRow({ ticket: t, selected }) {
+function TicketRow({ ticket: t, selected, picking, picked, onPick }) {
+  const body = <RowBody ticket={t} />;
+  if (picking) {
+    return (
+      <li>
+        <label className={`flex cursor-pointer items-start gap-3 px-4 py-3.5 transition hover:bg-[#FBF6EA] ${picked ? "bg-[#FBF1D6]" : ""}`}>
+          <input type="checkbox" className="mt-1 h-[18px] w-[18px] shrink-0 accent-[#14241C]" checked={picked} onChange={onPick} aria-label={`Select ${t.ref}`} />
+          <div className="min-w-0 flex-1">{body}</div>
+        </label>
+      </li>
+    );
+  }
   return (
     <li>
       <Link
@@ -120,6 +312,15 @@ function TicketRow({ ticket: t, selected }) {
         className={`block px-4 py-3.5 transition hover:bg-[#FBF6EA] ${selected ? "bg-[#FBF1D6] shadow-[inset_3px_0_0_#C9A24A]" : ""}`}
         style={{ color: "inherit" }}
       >
+        {body}
+      </Link>
+    </li>
+  );
+}
+
+function RowBody({ ticket: t }) {
+  return (
+    <>
         <div className="flex items-center gap-2 text-[12px] text-[#5A5546]">
           <span className="font-semibold text-[#7A5E22]">{t.ref}</span>
           <span aria-hidden>·</span>
@@ -137,7 +338,6 @@ function TicketRow({ ticket: t, selected }) {
             <StatusPill status={t.status} />
           </span>
         </div>
-      </Link>
-    </li>
+    </>
   );
 }

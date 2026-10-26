@@ -17,7 +17,9 @@ class Ticket extends Model
 {
     public const STATUSES = ['open', 'in_progress', 'waiting', 'resolved', 'closed'];
     public const OPEN_STATUSES = ['open', 'in_progress', 'waiting'];
-    public const SOURCES = ['ask_web', 'member_portal', 'website', 'call', 'whatsapp', 'volunteer', 'other'];
+    public const SOURCES = ['ask_web', 'member_portal', 'website', 'call', 'whatsapp', 'volunteer', 'volunteer_old', 'other'];
+    /** A volunteer sign-up older than this when it reaches the desk is tagged "Old volunteer sign-up". */
+    public const RECENT_VOLUNTEER_DAYS = 14;
     public const PRIORITIES = ['normal', 'urgent'];
 
     protected function casts(): array
@@ -81,8 +83,12 @@ class Ticket extends Model
         );
     }
 
-    public static function fromVolunteerApplication(VolunteerApplication $a): self
+    /** $old: a past sign-up put on the desk later — its own source, so it can be filtered and closed in bulk. */
+    public static function fromVolunteerApplication(VolunteerApplication $a, bool $old = false): self
     {
+        if ($existing = self::whereIn('source', ['volunteer', 'volunteer_old'])->where('source_id', $a->id)->first()) {
+            return $existing;
+        }
         $lines = array_filter([
             $a->teams ? 'Teams: '.implode(', ', (array) $a->teams) : null,
             $a->availability ? 'Availability: '.$a->availability : null,
@@ -92,13 +98,13 @@ class Ticket extends Model
         ]);
 
         return self::firstOrCreate(
-            ['source' => 'volunteer', 'source_id' => $a->id],
+            ['source' => $old ? 'volunteer_old' : 'volunteer', 'source_id' => $a->id],
             [
                 'member_id' => $a->member_id ?: Member::where('email', $a->email)->value('id'),
                 'requester_name' => $a->name,
                 'requester_email' => $a->email,
                 'requester_phone' => $a->phone,
-                'subject' => 'Volunteer sign-up: '.$a->name,
+                'subject' => ($old ? 'Old volunteer sign-up: ' : 'Volunteer sign-up: ').$a->name,
                 'body' => implode("\n", $lines) ?: 'New volunteer sign-up.',
                 'category' => 'volunteer',
                 'lang' => $a->lang ? strtolower($a->lang) : null,
@@ -107,19 +113,21 @@ class Ticket extends Model
     }
 
     /**
-     * Recent volunteer sign-ups still "new" with no desk ticket get one, dated when they signed up: ones
-     * that arrived through the old site's form and came in with Data sync (which adds sign-ups quietly),
-     * or any whose ticket failed to save. Older sign-ups stay off the desk. Returns how many were made.
+     * Volunteer sign-ups from the last $days still "new" with no desk ticket get one, dated when they signed
+     * up: ones that arrived through the old site's form and came in with Data sync (which adds sign-ups
+     * quietly), or any whose ticket failed to save. Ones older than RECENT_VOLUNTEER_DAYS are tagged
+     * "Old volunteer sign-up". Returns how many were made.
      */
-    public static function backfillVolunteerTickets(int $days = 14): int
+    public static function backfillVolunteerTickets(int $days = self::RECENT_VOLUNTEER_DAYS): int
     {
         $made = 0;
+        $recent = now()->subDays(self::RECENT_VOLUNTEER_DAYS);
         VolunteerApplication::where('status', 'new')
             ->where('created_at', '>=', now()->subDays($days))
-            ->whereNotExists(fn ($q) => $q->from('tickets')->where('source', 'volunteer')->whereColumn('source_id', 'volunteer_applications.id'))
+            ->whereNotExists(fn ($q) => $q->from('tickets')->whereIn('source', ['volunteer', 'volunteer_old'])->whereColumn('source_id', 'volunteer_applications.id'))
             ->orderBy('id')
-            ->each(function (VolunteerApplication $a) use (&$made) {
-                $ticket = self::fromVolunteerApplication($a);
+            ->each(function (VolunteerApplication $a) use (&$made, $recent) {
+                $ticket = self::fromVolunteerApplication($a, $a->created_at < $recent);
                 if ($ticket->wasRecentlyCreated) {
                     $ticket->forceFill(['created_at' => $a->created_at])->saveQuietly();
                     $made++;
