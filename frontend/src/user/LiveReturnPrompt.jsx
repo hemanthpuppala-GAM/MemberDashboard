@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { CheckCircle2, PenLine } from "lucide-react";
+import { CheckCircle2, PenLine, X } from "lucide-react";
 import Modal from "./ui/Modal";
 import Button from "../components/ui/Button";
 import { memberAuthApi } from "../lib/memberAuth";
@@ -10,14 +10,18 @@ const plural = (n) => `${n} minute${n === 1 ? "" : "s"}`;
 
 /**
  * Back from a live session joined on the dashboard: "Log all / about half / don't log", then an
- * optional journal entry, as on the old site. Checks on load, whenever the dashboard regains focus or
- * becomes visible again, and each minute while it's open (so it asks once the session ends); never
- * while a Sit & Scribe sit is running.
+ * optional journal entry, as on the old site. Before the session's scheduled end it doesn't interrupt:
+ * a quiet bar says it will ask at the end, with "I've left: log N minutes" for leaving early. Checks
+ * on load, whenever the dashboard regains focus or becomes visible again, and each minute while it's
+ * open (so it asks once the session ends); never while a Sit & Scribe sit is running.
  */
 export default function LiveReturnPrompt() {
   const { hasActiveSit } = useActiveSit();
   // On load too, so it also asks when they reopen the dashboard later that day.
-  const [back, setBack] = useState(() => (document.hidden ? null : readLiveReturn())); // { label, via, minutes }
+  const initial = () => (document.hidden ? null : readLiveReturn());
+  const [back, setBack] = useState(() => (initial()?.ended ? initial() : null)); // { label, via, minutes }: ask now
+  const [waiting, setWaiting] = useState(() => (initial()?.ended === false ? initial() : null)); // still in the session: the bar
+  const [barHidden, setBarHidden] = useState(false);
   const [logged, setLogged] = useState(null); // minutes logged → journal step
   const [draft, setDraft] = useState("");
   const [busy, setBusy] = useState(false);
@@ -25,7 +29,9 @@ export default function LiveReturnPrompt() {
 
   const check = useCallback(() => {
     if (document.hidden || hasActiveSit) return;
-    setBack((cur) => cur || readLiveReturn());
+    const away = readLiveReturn();
+    setWaiting(away && !away.ended ? away : null);
+    if (away?.ended) setBack((cur) => cur || away);
   }, [hasActiveSit]);
 
   useEffect(() => {
@@ -64,7 +70,13 @@ export default function LiveReturnPrompt() {
 
   const skip = () => {
     clearLiveReturn();
+    setWaiting(null);
     close();
+  };
+
+  const leftEarly = () => {
+    setBack(waiting);
+    setWaiting(null);
   };
 
   const saveJournal = async () => {
@@ -80,7 +92,33 @@ export default function LiveReturnPrompt() {
     }
   };
 
-  if (!back || (hasActiveSit && logged === null)) return null;
+  if (!back) {
+    if (!waiting || barHidden || hasActiveSit) return null;
+    const where = waiting.via === "youtube" ? "YouTube" : "Zoom";
+    return (
+      <div role="status" className="fixed inset-x-0 bottom-4 z-[90] flex justify-center px-4 lg:pl-[276px]">
+        <div className="flex w-full max-w-xl flex-wrap items-center gap-x-4 gap-y-2 rounded-2xl border border-[var(--color-border-strong)] bg-[var(--color-surface)] py-3 pl-4 pr-2 shadow-[0_12px_40px_rgba(14,26,20,0.18)]">
+          <p className="min-w-0 flex-1 text-[13.5px] leading-snug text-[var(--color-ink)]">
+            In the session on {where}? <span className="text-[var(--color-ink-soft)]">We&apos;ll ask how it went when it ends.</span>
+          </p>
+          <div className="flex items-center gap-1">
+            <Button as="button" variant="secondary" onClick={leftEarly} className="!px-3.5 !py-2 !text-[13px]">
+              I&apos;ve left: log {plural(waiting.minutes)}
+            </Button>
+            <button
+              type="button"
+              onClick={() => setBarHidden(true)}
+              aria-label="Hide until the session ends"
+              className="rounded-full p-2 text-[var(--color-ink-soft)] hover:bg-[var(--color-bg-soft)] hover:text-[var(--color-ink)]"
+            >
+              <X size={16} />
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+  if (hasActiveSit && logged === null) return null;
   const where = back.via === "youtube" ? "YouTube" : "Zoom";
 
   if (logged !== null) {
@@ -117,7 +155,7 @@ export default function LiveReturnPrompt() {
   return (
     <Modal
       open
-      onClose={skip}
+      onClose={back.ended ? skip : close} // opened from the bar by mistake: back to the bar
       title={`${plural(back.minutes)} with ${back.label}`}
       description={`You were away on ${where} for about ${plural(back.minutes)}. Shall we add that to your practice? Only you know how much of it was true stillness.`}
     >

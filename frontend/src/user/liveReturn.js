@@ -2,7 +2,8 @@
  * "Join on Zoom / YouTube" from the dashboard: remember when the member left, so that when they come
  * back the dashboard can offer to log the sit (all of it, about half, or none). It measures time away
  * from the dashboard, not time in the meeting, which is why the member decides how much to log.
- * It never asks before the session's scheduled end: a peek at the dashboard mid-sit is not a return.
+ * It never interrupts before the session's scheduled end: a peek at the dashboard mid-sit is not a return,
+ * so until then the dashboard only shows a quiet bar ("I've left: log N minutes").
  * Kept in this browser only (like the old site's gaw_live_open).
  */
 const KEY = "gaw_live_open";
@@ -23,7 +24,10 @@ export function markLiveStart(label, via, end) {
   }
 }
 
-/** { label, via, minutes } once the member has been away long enough, else null. */
+/**
+ * { label, via, minutes, ended } once the member has been away long enough, else null. `ended`: the
+ * session's scheduled end has passed (or isn't known); before that, minutes run from Join to now.
+ */
 export function readLiveReturn() {
   let open;
   try {
@@ -33,7 +37,6 @@ export function readLiveReturn() {
   }
   if (!open?.t) return null;
   const now = Date.now();
-  if (open.end && now < open.end) return null; // still in the session
   const until = open.end ? Math.min(now, open.end) : now;
   const minutes = Math.round((until - open.t) / 60000);
   if (minutes < MIN_MINUTES) return null;
@@ -41,7 +44,12 @@ export function readLiveReturn() {
     clearLiveReturn();
     return null;
   }
-  return { label: open.label || "the live session", via: open.via === "youtube" ? "youtube" : "zoom", minutes: Math.min(minutes, MAX_LOG_MINUTES) };
+  return {
+    label: open.label || "the live session",
+    via: open.via === "youtube" ? "youtube" : "zoom",
+    minutes: Math.min(minutes, MAX_LOG_MINUTES),
+    ended: !open.end || now >= open.end,
+  };
 }
 
 export function clearLiveReturn() {
