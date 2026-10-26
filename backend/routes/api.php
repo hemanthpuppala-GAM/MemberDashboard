@@ -277,6 +277,7 @@ Route::prefix('v1')->group(function () {
         // ---- Volunteer applications ----
         Route::middleware('permission:volunteers.view')->group(function () {
             Route::get('/volunteer-applications', [AdminVolunteerApplicationController::class, 'index']);
+            Route::get('/volunteer-applications/export', [AdminVolunteerApplicationController::class, 'export']);
             Route::get('/volunteer-applications/{volunteerApplication}', [AdminVolunteerApplicationController::class, 'show']);
         });
         Route::middleware('permission:volunteers.edit')->patch('/volunteer-applications/{volunteerApplication}/status', [AdminVolunteerApplicationController::class, 'update']);

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
-import { HeartHandshake, Trash2 } from "lucide-react";
+import { Download, HeartHandshake, Trash2 } from "lucide-react";
 import Card from "../../ui/Card";
 import DataTable from "../../ui/DataTable";
 import Modal from "../../ui/Modal";
@@ -9,7 +9,7 @@ import Button from "../../ui/Button";
 import ConfirmModal from "../../ui/ConfirmModal";
 import Field, { Select } from "../../ui/Field";
 import { StatusBadge } from "../../ui/Badge";
-import { api } from "../../../lib/api";
+import { api, downloadAuthed } from "../../../lib/api";
 import { usePermissions } from "../../usePermissions";
 
 const STATUSES = ["new", "reviewing", "contacted", "approved", "archived"];
@@ -90,6 +90,18 @@ export default function VolunteerApplicationsPage() {
     [categories]
   );
 
+  // The rows the filters show (all pages), as a spreadsheet.
+  const download = () => {
+    const qs = new URLSearchParams({
+      ...(search ? { search } : {}),
+      ...(categoryFilter ? { category_id: categoryFilter } : {}),
+      ...(statusFilter ? { status: statusFilter } : {}),
+    }).toString();
+    downloadAuthed(`/admin/volunteer-applications/export${qs ? `?${qs}` : ""}`, `volunteer-applications-${new Date().toISOString().slice(0, 10)}.csv`).catch((err) =>
+      toast.error(err.message ?? "Download failed"),
+    );
+  };
+
   const toolbar = (
     <>
       <Select value={categoryFilter} onChange={(e) => handleFilterChange(setCategoryFilter)(e.target.value)} className="w-auto!">
@@ -100,6 +112,9 @@ export default function VolunteerApplicationsPage() {
         <option value="">All statuses</option>
         {STATUSES.map((s) => <option key={s} value={s}>{s.replace("_", " ")}</option>)}
       </Select>
+      <Button as="button" variant="secondary" icon={Download} onClick={download}>
+        Download CSV
+      </Button>
     </>
   );
 
