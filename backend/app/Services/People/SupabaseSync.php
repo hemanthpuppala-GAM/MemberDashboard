@@ -262,7 +262,7 @@ class SupabaseSync
 
             $app = VolunteerApplication::whereRaw('lower(email) = ?', [$email])->latest('id')->first();
             if (! $app) {
-                // Past sign-ups: no new desk ticket (saveQuietly skips the "created" hook).
+                // No desk ticket here (saveQuietly skips the "created" hook): only recent ones get one, below.
                 $app = new VolunteerApplication([
                     ...$values, 'email' => $email, 'teams' => $teams, 'status' => 'new',
                     'category_id' => $teams ? $slugs[$teams[0]] : null,
@@ -295,6 +295,9 @@ class SupabaseSync
                 $this->count('volunteers', 'unchanged');
             }
         }
+
+        // Sign-ups from the last two weeks still need a reply: put them on the support desk.
+        $this->counts['volunteers']['desk_tickets'] = Ticket::backfillVolunteerTickets();
     }
 
     private function syncPractice(array $rows): void

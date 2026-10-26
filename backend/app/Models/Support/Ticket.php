@@ -106,6 +106,29 @@ class Ticket extends Model
         );
     }
 
+    /**
+     * Recent volunteer sign-ups still "new" with no desk ticket get one, dated when they signed up: ones
+     * that arrived through the old site's form and came in with Data sync (which adds sign-ups quietly),
+     * or any whose ticket failed to save. Older sign-ups stay off the desk. Returns how many were made.
+     */
+    public static function backfillVolunteerTickets(int $days = 14): int
+    {
+        $made = 0;
+        VolunteerApplication::where('status', 'new')
+            ->where('created_at', '>=', now()->subDays($days))
+            ->whereNotExists(fn ($q) => $q->from('tickets')->where('source', 'volunteer')->whereColumn('source_id', 'volunteer_applications.id'))
+            ->orderBy('id')
+            ->each(function (VolunteerApplication $a) use (&$made) {
+                $ticket = self::fromVolunteerApplication($a);
+                if ($ticket->wasRecentlyCreated) {
+                    $ticket->forceFill(['created_at' => $a->created_at])->saveQuietly();
+                    $made++;
+                }
+            });
+
+        return $made;
+    }
+
     public static function subjectFrom(?string $text): string
     {
         $t = trim(preg_replace('/\s+/', ' ', (string) $text));
