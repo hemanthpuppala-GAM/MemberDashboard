@@ -82,13 +82,17 @@ export function TicketFilters({ scope, onScope, search, onSearch, source, onSour
 
 /**
  * The ticket rows, with loading / empty / error states and "Load more". The core team can "Select" rows
- * (or every ticket matching the current filter) and close them in one go.
+ * (or every ticket matching the current filter) and reply to them all at once (each person is emailed in
+ * their own ticket) or close them in one go.
  */
 export function TicketList({ list, scope, filtered, selectedId, filter, canBulk, onBulkClosed }) {
   const [selecting, setSelecting] = useState(false);
   const [picked, setPicked] = useState(() => new Set());
   const [allMatching, setAllMatching] = useState(false);
-  const [confirming, setConfirming] = useState(false);
+  const [confirming, setConfirming] = useState(false); // close step
+  const [replying, setReplying] = useState(false); // reply composer
+  const [draft, setDraft] = useState("");
+  const [resolve, setResolve] = useState(false);
   const [busy, setBusy] = useState(false);
   const [bulkError, setBulkError] = useState("");
   const [done, setDone] = useState("");
@@ -98,6 +102,9 @@ export function TicketList({ list, scope, filtered, selectedId, filter, canBulk,
     setPicked(new Set());
     setAllMatching(false);
     setConfirming(false);
+    setReplying(false);
+    setDraft("");
+    setResolve(false);
     setBulkError("");
   };
   const toggle = (id) => {
@@ -113,6 +120,26 @@ export function TicketList({ list, scope, filtered, selectedId, filter, canBulk,
   const closable = list.items.filter((t) => !["resolved", "closed"].includes(t.status));
   const allShown = closable.length > 0 && closable.every((t) => picked.has(t.id));
   const count = allMatching ? list.total : picked.size;
+
+  const replyToThem = async () => {
+    setBusy(true);
+    setBulkError("");
+    try {
+      const res = await supportApi.bulkReply({ ...(allMatching ? { filter } : { ids: [...picked] }), body: draft.trim(), resolve });
+      const plural = (n, w) => `${n} ${w}${n === 1 ? "" : "s"}`;
+      setDone(
+        `Reply sent on ${plural(res.replied, "ticket")}: ${res.emailed} emailed` +
+          (res.no_email ? `, ${res.no_email} with no email (it's on their ticket)` : "") +
+          ".",
+      );
+      stopSelecting();
+      onBulkClosed?.();
+    } catch (err) {
+      setBulkError(err.message);
+    } finally {
+      setBusy(false);
+    }
+  };
 
   const closeThem = async () => {
     setBusy(true);
@@ -160,7 +187,7 @@ export function TicketList({ list, scope, filtered, selectedId, filter, canBulk,
             onClick={() => (selecting ? stopSelecting() : (setSelecting(true), setDone("")))}
             className="ml-auto !min-h-[36px] !px-3 !text-[13px]"
           >
-            {selecting ? "Cancel" : "Select to close"}
+            {selecting ? "Cancel" : "Select tickets"}
           </Button>
         )}
       </div>
@@ -186,12 +213,47 @@ export function TicketList({ list, scope, filtered, selectedId, filter, canBulk,
                 Select all {list.total} matching this view
               </button>
             )}
-            {!confirming && (
-              <Button variant="dark" disabled={!count} onClick={() => setConfirming(true)} className="ml-auto !min-h-[38px] !text-[13px]">
-                Close {count || ""} ticket{count === 1 ? "" : "s"}
-              </Button>
+            {!confirming && !replying && (
+              <span className="ml-auto flex gap-2">
+                <Button variant="outline" disabled={!count} onClick={() => setReplying(true)} className="!min-h-[38px] !text-[13px]">
+                  Reply to {count || ""}
+                </Button>
+                <Button variant="dark" disabled={!count} onClick={() => setConfirming(true)} className="!min-h-[38px] !text-[13px]">
+                  Close {count || ""} ticket{count === 1 ? "" : "s"}
+                </Button>
+              </span>
             )}
           </div>
+          {replying && (
+            <div className="flex flex-col gap-2.5 rounded-xl bg-[#FBF1D6] px-3 py-3">
+              <label className="flex flex-col gap-1.5 text-[13.5px] font-semibold text-[#1B3328]">
+                One reply to {count} {count === 1 ? "person" : "people"}
+                <textarea
+                  rows={5}
+                  value={draft}
+                  onChange={(e) => setDraft(e.target.value)}
+                  placeholder="Thank you for offering seva. Our volunteer team will call you this week…"
+                  className={`${inputClass} font-normal`}
+                />
+              </label>
+              <p className="text-[12.5px] leading-relaxed text-[#5A5546]">
+                Each person gets it by email in their own ticket (&ldquo;Namaste &lt;their name&gt;,&rdquo; is added at the top). Write {"{name}"} to use
+                their name inside the message too.
+              </p>
+              <div className="flex flex-wrap items-center gap-2">
+                <label className="mr-auto inline-flex cursor-pointer items-center gap-2 text-[13.5px] text-[#1B3328]">
+                  <input type="checkbox" className="h-[18px] w-[18px] accent-[#14241C]" checked={resolve} onChange={(e) => setResolve(e.target.checked)} />
+                  Mark resolved after sending
+                </label>
+                <Button variant="outline" onClick={() => setReplying(false)} disabled={busy} className="!min-h-[36px] !text-[13px]">
+                  Back
+                </Button>
+                <Button variant="dark" onClick={replyToThem} busy={busy} disabled={!draft.trim()} className="!min-h-[36px] !text-[13px]">
+                  Send to {count}
+                </Button>
+              </div>
+            </div>
+          )}
           {confirming && (
             <div className="flex flex-wrap items-center gap-2 rounded-xl bg-[#FBF1D6] px-3 py-2.5 text-[13.5px] text-[#1B3328]">
               <span className="mr-auto">

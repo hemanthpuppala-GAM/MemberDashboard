@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Mail\TicketUpdatedMail;
 use App\Models\People\Member;
 use App\Models\People\VolunteerApplication;
 use App\Models\Support\SupportAgent;
@@ -97,5 +98,46 @@ class VolunteerTicketBackfillTest extends TestCase
         Sanctum::actingAs($vol, [], 'sanctum');
 
         $this->postJson('/api/v1/support/tickets/bulk-close', ['filter' => ['scope' => 'open']])->assertForbidden();
+    }
+
+    public function test_core_team_replies_to_many_tickets_each_emailed_to_its_own_person(): void
+    {
+        Mail::fake();
+        $this->quietSignUp('Asha', '100');
+        $this->quietSignUp('Bala', '120');
+        Ticket::backfillVolunteerTickets(3650);
+        $noEmail = Ticket::create(['source' => 'volunteer_old', 'subject' => 'Old volunteer sign-up: Phone only', 'requester_name' => 'Phone only', 'requester_phone' => '9000011111']);
+        $other = Ticket::create(['source' => 'call', 'subject' => 'Back pain', 'requester_email' => 'caller@example.com']);
+
+        $token = $this->agent('core')->createToken('desk')->plainTextToken;
+        $this->withToken($token)->postJson('/api/v1/support/tickets/bulk-reply', [
+            'filter' => ['scope' => 'open', 'source' => 'volunteer_old'],
+            'body' => "Dear {name}, thank you for offering seva. Please join the volunteers' call on Sunday.",
+        ])->assertOk()->assertJson(['replied' => 3, 'emailed' => 2, 'no_email' => 1]);
+
+        Mail::assertQueued(TicketUpdatedMail::class, 2);
+        Mail::assertQueued(TicketUpdatedMail::class, fn ($m) => $m->hasTo('asha@example.com') && $m->comment->body === "Dear Asha, thank you for offering seva. Please join the volunteers' call on Sunday."
+            && str_contains($m->envelope()->subject, 'volunteer sign-up') && str_contains($m->render(), 'Open my volunteer sign-up'));
+        Mail::assertNotQueued(TicketUpdatedMail::class, fn ($m) => $m->hasTo('caller@example.com'));
+
+        $asha = Ticket::where('requester_email', 'asha@example.com')->first();
+        $this->assertSame('waiting', $asha->status);
+        $this->assertNotNull($asha->first_response_at);
+        $this->assertSame(1, $noEmail->comments()->where('internal', false)->count()); // in the thread, for the member page
+        $this->assertSame('open', $other->fresh()->status);
+
+        // Reply and resolve the chosen ones.
+        $this->withToken($token)->postJson('/api/v1/support/tickets/bulk-reply', ['ids' => [$asha->id], 'body' => 'Welcome aboard!', 'resolve' => true])
+            ->assertJson(['replied' => 1, 'emailed' => 1]);
+        $this->assertSame('resolved', $asha->fresh()->status);
+    }
+
+    public function test_volunteer_helpers_cannot_reply_in_bulk(): void
+    {
+        $vol = Member::create(['name' => 'Seva', 'email' => 'seva@example.com', 'password' => 'secret-pass', 'category' => 'meditation', 'join_date' => now()]);
+        SupportAgent::create(['kind' => 'volunteer', 'name' => 'Seva', 'email' => 'seva@example.com']);
+        Sanctum::actingAs($vol, [], 'sanctum');
+
+        $this->postJson('/api/v1/support/tickets/bulk-reply', ['filter' => ['scope' => 'open'], 'body' => 'Hi'])->assertForbidden();
     }
 }

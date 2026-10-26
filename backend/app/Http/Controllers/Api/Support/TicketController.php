@@ -158,22 +158,7 @@ class TicketController extends Controller
     {
         $agent = $this->agent($request);
         abort_if($agent->kind === 'volunteer', 403, 'Only the core team can close tickets in bulk.');
-        $data = $request->validate([
-            'ids' => ['required_without:filter', 'array', 'max:500'],
-            'ids.*' => ['integer'],
-            'filter' => ['required_without:ids', 'array'],
-            'filter.scope' => ['nullable', Rule::in(['mine', 'unassigned', 'open', 'resolved', 'all'])],
-            'filter.source' => ['nullable', 'string', 'max:200'],
-            'filter.q' => ['nullable', 'string', 'max:200'],
-        ]);
-
-        $q = Ticket::query();
-        if (isset($data['ids'])) {
-            $q->whereIn('id', $data['ids']);
-        } else {
-            $this->filter($q, $agent, $data['filter']);
-        }
-        $tickets = $q->whereIn('status', Ticket::OPEN_STATUSES)->orderBy('id')->limit(2000)->get();
+        [, $tickets] = $this->bulkSelection($request, $agent);
         foreach ($tickets as $ticket) {
             $ticket->status = 'closed';
             $ticket->save();
@@ -181,6 +166,71 @@ class TicketController extends Controller
         }
 
         return response()->json(['closed' => $tickets->count()]);
+    }
+
+    /**
+     * One message to many open tickets (old volunteer sign-ups, say): each gets it as a reply in its own thread
+     * and its own requester is emailed, as with a single reply. "{name}" becomes each person's name. The emails
+     * go out through the queue (the scheduler works it every minute), so hundreds don't time out the request.
+     * With "resolve", each is marked resolved after the reply. Core team and admin staff only.
+     */
+    public function bulkReply(Request $request)
+    {
+        $agent = $this->agent($request);
+        abort_if($agent->kind === 'volunteer', 403, 'Only the core team can reply in bulk.');
+        [$data, $tickets] = $this->bulkSelection($request, $agent, [
+            'body' => ['required', 'string', 'max:5000'],
+            'resolve' => ['nullable', 'boolean'],
+        ]);
+
+        $emailed = 0;
+        foreach ($tickets as $ticket) {
+            $name = trim((string) $ticket->requester_name) ?: 'friend';
+            $comment = $ticket->comments()->create([
+                'author_type' => 'agent',
+                'agent_id' => $agent->id,
+                'body' => str_replace('{name}', $name, $data['body']),
+                'internal' => false,
+            ]);
+            $ticket->first_response_at ??= now();
+            $ticket->moveTo(! empty($data['resolve']) ? 'resolved' : ($ticket->status === 'open' ? 'waiting' : $ticket->status));
+            $ticket->save();
+
+            $email = $ticket->requester_email ?: $ticket->member?->email;
+            if ($email) {
+                try {
+                    Mail::to($email)->queue(new TicketUpdatedMail($ticket, 'reply', $comment));
+                    $emailed++;
+                } catch (\Throwable $e) {
+                    Log::warning("Ticket {$ticket->ref} bulk reply email failed: ".$e->getMessage());
+                }
+            }
+        }
+
+        return response()->json(['replied' => $tickets->count(), 'emailed' => $emailed, 'no_email' => $tickets->count() - $emailed]);
+    }
+
+    /** The open tickets a bulk action applies to: the chosen ids, or every one matching the desk's current filter. */
+    private function bulkSelection(Request $request, SupportAgent $agent, array $rules = []): array
+    {
+        $data = $request->validate([
+            'ids' => ['required_without:filter', 'array', 'max:500'],
+            'ids.*' => ['integer'],
+            'filter' => ['required_without:ids', 'array'],
+            'filter.scope' => ['nullable', Rule::in(['mine', 'unassigned', 'open', 'resolved', 'all'])],
+            'filter.source' => ['nullable', 'string', 'max:200'],
+            'filter.q' => ['nullable', 'string', 'max:200'],
+            ...$rules,
+        ]);
+
+        $q = Ticket::query()->with('member');
+        if (isset($data['ids'])) {
+            $q->whereIn('id', $data['ids']);
+        } else {
+            $this->filter($q, $agent, $data['filter']);
+        }
+
+        return [$data, $q->whereIn('status', Ticket::OPEN_STATUSES)->orderBy('id')->limit(2000)->get()];
     }
 
     public function comment(Request $request, Ticket $ticket)

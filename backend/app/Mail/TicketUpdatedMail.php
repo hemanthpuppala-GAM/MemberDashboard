@@ -18,11 +18,17 @@ class TicketUpdatedMail extends Mailable
 
     public function __construct(public Ticket $ticket, public string $kind, public ?TicketComment $comment = null) {}
 
+    /** "question", or "volunteer sign-up" for sign-up tickets. */
+    private function what(): string
+    {
+        return in_array($this->ticket->source, ['volunteer', 'volunteer_old'], true) ? 'volunteer sign-up' : 'question';
+    }
+
     public function envelope(): Envelope
     {
         $subject = $this->kind === 'resolved'
-            ? "Your question {$this->ticket->ref} is resolved — Golden Age Wisdom"
-            : "Reply to your question {$this->ticket->ref} — Golden Age Wisdom";
+            ? "Your {$this->what()} {$this->ticket->ref} is resolved — Golden Age Wisdom"
+            : "Reply to your {$this->what()} {$this->ticket->ref} — Golden Age Wisdom";
 
         return new Envelope(subject: $subject);
     }
@@ -35,6 +41,7 @@ class TicketUpdatedMail extends Mailable
             with: [
                 'ticket' => $this->ticket,
                 'kind' => $this->kind,
+                'what' => $this->what(),
                 'reply' => $this->comment?->body,
                 'name' => $this->ticket->requester_name ?: 'friend',
                 'url' => GoLive::frontendUrl().'/support/my?ticket='.$this->ticket->id,
