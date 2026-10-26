@@ -17,7 +17,7 @@ export default function JoinButton({ sit, size = "md", className = "" }) {
       href={sit.joinUrl}
       target="_blank"
       rel="noopener noreferrer"
-      onClick={() => markLiveStart(sit.name || sit.title, yt ? "youtube" : "zoom")}
+      onClick={() => markLiveStart(sit.name || sit.title, yt ? "youtube" : "zoom", sit.end)}
       variant={sit.live || size === "lg" ? "primary" : "secondary"}
       className={`${size === "lg" ? "!px-7 !py-3 !text-[15px]" : "!px-4 !py-2 !text-[13px]"} ${className}`}
     >

@@ -10,8 +10,9 @@ const plural = (n) => `${n} minute${n === 1 ? "" : "s"}`;
 
 /**
  * Back from a live session joined on the dashboard: "Log all / about half / don't log", then an
- * optional journal entry, as on the old site. Checks on load and whenever the dashboard regains
- * focus or becomes visible again; never while a Sit & Scribe sit is running.
+ * optional journal entry, as on the old site. Checks on load, whenever the dashboard regains focus or
+ * becomes visible again, and each minute while it's open (so it asks once the session ends); never
+ * while a Sit & Scribe sit is running.
  */
 export default function LiveReturnPrompt() {
   const { hasActiveSit } = useActiveSit();
@@ -31,7 +32,9 @@ export default function LiveReturnPrompt() {
     const onVisible = () => !document.hidden && check();
     window.addEventListener("focus", check);
     document.addEventListener("visibilitychange", onVisible);
+    const tick = setInterval(check, 60000);
     return () => {
+      clearInterval(tick);
       window.removeEventListener("focus", check);
       document.removeEventListener("visibilitychange", onVisible);
     };
