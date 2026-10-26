@@ -172,6 +172,8 @@ export const supportApi = {
   ticket: (id) => supportFetch(`/support/tickets/${id}`),
   createTicket: (payload) => supportFetch("/support/tickets", { method: "POST", body: payload }),
   updateTicket: (id, payload) => supportFetch(`/support/tickets/${id}`, { method: "PATCH", body: payload }),
+  /** { ids } or { filter: { scope, source, q } } → { closed } */
+  bulkClose: (payload) => supportFetch("/support/tickets/bulk-close", { method: "POST", body: payload }),
   events: () => supportFetch("/support/events"),
   createEvent: (payload) => supportFetch("/support/events", { method: "POST", body: payload }),
   registerAtEvent: (id, payload) => supportFetch(`/support/events/${id}/register`, { method: "POST", body: payload }),

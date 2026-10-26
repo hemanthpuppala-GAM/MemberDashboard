@@ -27,40 +27,7 @@ class TicketController extends Controller
         $ready = \App\Services\People\MemberNumbers::ready();
         $q = Ticket::query()->with($ready ? ['assignee', 'member:id,member_num'] : ['assignee'])->withCount('comments');
 
-        match ($request->query('scope', 'open')) {
-            'mine' => $q->where('assigned_agent_id', $agent->id)->whereIn('status', Ticket::OPEN_STATUSES),
-            'unassigned' => $q->whereNull('assigned_agent_id')->whereIn('status', Ticket::OPEN_STATUSES),
-            'resolved' => $q->whereIn('status', ['resolved', 'closed']),
-            'all' => null,
-            default => $q->whereIn('status', Ticket::OPEN_STATUSES),
-        };
-
-        if ($status = $request->query('status')) {
-            $q->whereIn('status', array_intersect(explode(',', $status), Ticket::STATUSES));
-        }
-        if ($source = $request->query('source')) {
-            $q->whereIn('source', array_intersect(explode(',', $source), Ticket::SOURCES));
-        }
-        if ($assignee = $request->query('agent_id')) {
-            $q->where('assigned_agent_id', (int) $assignee);
-        }
-        if ($term = trim((string) $request->query('q'))) {
-            $id = (int) preg_replace('/\D+/', '', $term);
-            $q->where(function ($w) use ($term, $id, $ready) {
-                $like = '%'.$term.'%';
-                $w->where('subject', 'like', $like)
-                    ->orWhere('body', 'like', $like)
-                    ->orWhere('requester_name', 'like', $like)
-                    ->orWhere('requester_email', 'like', $like)
-                    ->orWhere('requester_phone', 'like', $like);
-                if ($id > 0) {
-                    $w->orWhere('id', $id);
-                }
-                if ($ready && ($num = \App\Services\People\MemberNumbers::parse($term))) {
-                    $w->orWhereHas('member', fn ($m) => $m->where('member_num', $num)); // "GAW-100023"
-                }
-            });
-        }
+        $this->filter($q, $agent, $request->query());
 
         // Urgent first, then the ones waiting longest.
         $page = $q->orderByRaw("case when priority = 'urgent' then 0 else 1 end")
@@ -182,6 +149,40 @@ class TicketController extends Controller
         return response()->json($ticket->fresh(['assignee', 'creator'])->toApi(true));
     }
 
+    /**
+     * Close many open tickets at once — the chosen ids, or every one matching the desk's current filter (old
+     * volunteer sign-ups, say). Nobody is emailed, and they count as closed, not resolved: no resolved_at, so
+     * the desk's "resolved" numbers and reply times stay true. Core team and admin staff only.
+     */
+    public function bulkClose(Request $request)
+    {
+        $agent = $this->agent($request);
+        abort_if($agent->kind === 'volunteer', 403, 'Only the core team can close tickets in bulk.');
+        $data = $request->validate([
+            'ids' => ['required_without:filter', 'array', 'max:500'],
+            'ids.*' => ['integer'],
+            'filter' => ['required_without:ids', 'array'],
+            'filter.scope' => ['nullable', Rule::in(['mine', 'unassigned', 'open', 'resolved', 'all'])],
+            'filter.source' => ['nullable', 'string', 'max:200'],
+            'filter.q' => ['nullable', 'string', 'max:200'],
+        ]);
+
+        $q = Ticket::query();
+        if (isset($data['ids'])) {
+            $q->whereIn('id', $data['ids']);
+        } else {
+            $this->filter($q, $agent, $data['filter']);
+        }
+        $tickets = $q->whereIn('status', Ticket::OPEN_STATUSES)->orderBy('id')->limit(2000)->get();
+        foreach ($tickets as $ticket) {
+            $ticket->status = 'closed';
+            $ticket->save();
+            $ticket->comments()->create(['author_type' => 'system', 'agent_id' => $agent->id, 'body' => "{$agent->name} closed this in bulk.", 'internal' => true]);
+        }
+
+        return response()->json(['closed' => $tickets->count()]);
+    }
+
     public function comment(Request $request, Ticket $ticket)
     {
         $agent = $this->agent($request);
@@ -213,6 +214,46 @@ class TicketController extends Controller
         }
 
         return response()->json($comment->load('agent')->toApi(), 201);
+    }
+
+    /** The desk's list filters (scope tab, status, source, assignee, search), shared by the list and bulk close. */
+    private function filter($q, SupportAgent $agent, array $f): void
+    {
+        $ready = \App\Services\People\MemberNumbers::ready();
+        match ($f['scope'] ?? 'open') {
+            'mine' => $q->where('assigned_agent_id', $agent->id)->whereIn('status', Ticket::OPEN_STATUSES),
+            'unassigned' => $q->whereNull('assigned_agent_id')->whereIn('status', Ticket::OPEN_STATUSES),
+            'resolved' => $q->whereIn('status', ['resolved', 'closed']),
+            'all' => null,
+            default => $q->whereIn('status', Ticket::OPEN_STATUSES),
+        };
+
+        if ($status = $f['status'] ?? null) {
+            $q->whereIn('status', array_intersect(explode(',', $status), Ticket::STATUSES));
+        }
+        if ($source = $f['source'] ?? null) {
+            $q->whereIn('source', array_intersect(explode(',', $source), Ticket::SOURCES));
+        }
+        if ($assignee = $f['agent_id'] ?? null) {
+            $q->where('assigned_agent_id', (int) $assignee);
+        }
+        if ($term = trim((string) ($f['q'] ?? ''))) {
+            $id = (int) preg_replace('/\D+/', '', $term);
+            $q->where(function ($w) use ($term, $id, $ready) {
+                $like = '%'.$term.'%';
+                $w->where('subject', 'like', $like)
+                    ->orWhere('body', 'like', $like)
+                    ->orWhere('requester_name', 'like', $like)
+                    ->orWhere('requester_email', 'like', $like)
+                    ->orWhere('requester_phone', 'like', $like);
+                if ($id > 0) {
+                    $w->orWhere('id', $id);
+                }
+                if ($ready && ($num = \App\Services\People\MemberNumbers::parse($term))) {
+                    $w->orWhereHas('member', fn ($m) => $m->where('member_num', $num)); // "GAW-100023"
+                }
+            });
+        }
     }
 
     /** Email the team member a ticket was just assigned to (not when they took it themselves). */

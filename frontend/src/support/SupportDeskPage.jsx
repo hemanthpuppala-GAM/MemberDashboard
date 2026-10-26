@@ -124,7 +124,16 @@ function Desk() {
                 onSource={setSource}
                 stats={dash.data?.stats}
               />
-              <TicketList list={list} scope={scope} filtered={!!(q || source)} selectedId={selectedId} />
+              <TicketList
+                key={`${scope}|${q}|${source}`} // a new view starts with nothing selected
+                list={list}
+                scope={scope}
+                filtered={!!(q || source)}
+                selectedId={selectedId}
+                filter={{ scope, q, source }}
+                canBulk={!!me && me.kind !== "volunteer"}
+                onBulkClosed={refreshAll}
+              />
             </section>
 
             {selectedId && (

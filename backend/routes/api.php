@@ -156,6 +156,7 @@ Route::prefix('v1')->group(function () {
         Route::get('/agents', [SupportDashboardController::class, 'agents']);
         Route::get('/tickets', [SupportTicketController::class, 'index']);
         Route::post('/tickets', [SupportTicketController::class, 'store']);
+        Route::post('/tickets/bulk-close', [SupportTicketController::class, 'bulkClose']);
         Route::get('/tickets/{ticket}', [SupportTicketController::class, 'show']);
         Route::patch('/tickets/{ticket}', [SupportTicketController::class, 'update']);
         Route::post('/tickets/{ticket}/comments', [SupportTicketController::class, 'comment']);

@@ -16,6 +16,7 @@ export const SOURCE_LABELS = {
   call: "Phone call",
   whatsapp: "WhatsApp",
   volunteer: "Volunteer sign-up",
+  volunteer_old: "Old volunteer sign-up",
   other: "Other",
 };
 
