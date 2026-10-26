@@ -9,6 +9,7 @@ import { memberAuthApi } from "../../lib/memberAuth";
 import { useActiveSit } from "../ActiveSitContext";
 import { LIVE_LOGGED_EVENT } from "../liveReturn";
 import AddMissedSit from "../AddMissedSit";
+import { SIT_SOUNDS, chime, soundUrl } from "../sitSounds";
 
 /** Sits logged from a live session (old-site imports say "live"). */
 const LIVE_VIA = { zoom: "Live on Zoom", youtube: "Live on YouTube", live: "Live session" };
@@ -20,6 +21,31 @@ function formatClock(totalSeconds) {
   const s = totalSeconds % 60;
   return `${m}:${String(s).padStart(2, "0")}`;
 }
+
+const OWN_MINUTES = [10, 15, 20, 30, 45, 60];
+
+function stored(key, fallback) {
+  try {
+    return localStorage.getItem(key) ?? fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+function remember(key, value) {
+  try {
+    localStorage.setItem(key, String(value));
+  } catch {
+    /* private mode */
+  }
+}
+
+const chip = (on) =>
+  `rounded-full border px-3.5 py-2 text-[13px] font-medium transition-colors ${
+    on
+      ? "border-[var(--color-gold-deep)] bg-[var(--color-gold-deep)] text-white"
+      : "border-[var(--color-border-strong)] bg-[var(--color-bg-soft)] text-[var(--color-ink)] hover:border-[var(--color-gold-deep)]"
+  }`;
 
 function formatLogDate(iso) {
   return new Date(iso).toLocaleString(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
@@ -36,6 +62,11 @@ export default function SitScribePage() {
   const [logging, setLogging] = useState(false);
   const gradientId = useId();
   const audioRef = useRef(null);
+
+  // "Your own sit": the member picks the length and a background sound (remembered on this device).
+  const [ownMinutes, setOwnMinutes] = useState(() => Number(stored("gaw_goal", 30)) || 30);
+  const [ownSound, setOwnSound] = useState(() => stored("gaw_sound", "om"));
+  const [ownSrc, setOwnSrc] = useState(null);
 
   const [overview, setOverview] = useState(null);
   const [sessions, setSessions] = useState(null);
@@ -68,8 +99,9 @@ export default function SitScribePage() {
           setRunning(false);
           setCompleted(true);
           setLogging(true);
+          chime();
           memberAuthApi
-            .logPracticeSession(preset.duration_minutes, preset.id)
+            .logPracticeSession(preset.duration_minutes, preset.id, preset.own ? "own" : undefined)
             .then(loadPracticeData)
             .catch(() => {})
             .finally(() => setLogging(false));
@@ -81,12 +113,32 @@ export default function SitScribePage() {
     return () => clearInterval(interval);
   }, [running, preset]);
 
+  // Your own sit: get the chosen sound ready (the synthesised ones take a moment the first time).
+  useEffect(() => {
+    let live = true;
+    if (preset?.own) soundUrl(preset.sound).then((url) => live && setOwnSrc(url));
+    return () => {
+      live = false;
+      setOwnSrc(null);
+    };
+  }, [preset]);
+
+  const audioSrc = preset?.track?.file_url || (preset?.own ? ownSrc : null);
+
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
     if (running) audio.play().catch(() => {});
     else audio.pause();
-  }, [running]);
+  }, [running, audioSrc]);
+
+  const ownMinutesValid = Number.isInteger(ownMinutes) && ownMinutes >= 1 && ownMinutes <= 180;
+  const startOwnSit = () => {
+    remember("gaw_goal", ownMinutes);
+    remember("gaw_sound", ownSound);
+    const sound = SIT_SOUNDS.find((x) => x.key === ownSound) ?? SIT_SOUNDS[0];
+    choosePreset({ id: null, own: true, sound: sound.key, title: `Your own sit · ${sound.label}`, duration_minutes: ownMinutes });
+  };
 
   const choosePreset = (p) => {
     setPreset(p);
@@ -142,7 +194,7 @@ export default function SitScribePage() {
         const { preset: p, remaining: r } = liveRef.current;
         const minutes = Math.round((p.duration_minutes * 60 - r) / 60);
         if (minutes >= 1) {
-          await memberAuthApi.logPracticeSession(minutes, p.id);
+          await memberAuthApi.logPracticeSession(minutes, p.id, p.own ? "own" : undefined);
           loadPracticeData();
         }
       },
@@ -174,7 +226,7 @@ export default function SitScribePage() {
       <div>
         <h2 className="font-display text-[22px] text-[var(--color-ink)]">Sit & Scribe</h2>
         <p className="mt-1 text-[14px] text-[var(--color-ink-soft)]">
-          Choose a session, then scribe your reflections after.
+          Sit on your own or choose a guided session, then scribe your reflections after.
         </p>
       </div>
 
@@ -182,14 +234,58 @@ export default function SitScribePage() {
         <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-[13.5px] text-red-700">{presetsError}</p>
       )}
 
-      {!presetsError && presets && presets.length === 0 && (
+      {!preset && (
+        <Card title="Your own sit" description="Choose how long, and a sound to sit with. A soft bell rings when the time is up.">
+          <div className="flex flex-col gap-5">
+            <div className="flex flex-col gap-2">
+              <span className="text-[13px] font-medium text-[var(--color-ink)]">Minutes</span>
+              <div className="flex flex-wrap items-center gap-2">
+                {OWN_MINUTES.map((m) => (
+                  <button key={m} type="button" aria-pressed={ownMinutes === m} onClick={() => setOwnMinutes(m)} className={chip(ownMinutes === m)}>
+                    {m}
+                  </button>
+                ))}
+                <input
+                  type="number"
+                  min={1}
+                  max={180}
+                  inputMode="numeric"
+                  aria-label="Minutes"
+                  value={Number.isNaN(ownMinutes) ? "" : ownMinutes}
+                  onChange={(e) => setOwnMinutes(e.target.value === "" ? NaN : Number(e.target.value))}
+                  className="w-20 rounded-xl border border-[var(--color-border-strong)] bg-[var(--color-bg-soft)] px-3 py-2 text-[14px] text-[var(--color-ink)] focus:border-[var(--color-gold-deep)] focus:outline-none"
+                />
+                <span className="text-[13px] text-[var(--color-ink-soft)]">min</span>
+              </div>
+              {!ownMinutesValid && <p className="text-[12.5px] text-red-600">Choose 1 to 180 minutes.</p>}
+            </div>
+            <div className="flex flex-col gap-2">
+              <span className="text-[13px] font-medium text-[var(--color-ink)]">Sound</span>
+              <div className="flex flex-wrap gap-2">
+                {SIT_SOUNDS.map((x) => (
+                  <button key={x.key} type="button" aria-pressed={ownSound === x.key} onClick={() => setOwnSound(x.key)} className={chip(ownSound === x.key)}>
+                    <span aria-hidden="true" className="mr-1.5">{x.glyph}</span>
+                    {x.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <Button as="button" onClick={startOwnSit} disabled={!ownMinutesValid} className="w-fit">
+              <Play size={16} />
+              Begin {ownMinutesValid ? `${ownMinutes}-minute ` : ""}sit
+            </Button>
+          </div>
+        </Card>
+      )}
+
+      {!preset && !presetsError && presets && presets.length === 0 && (
         <Card padded={false}>
-          <EmptyState icon={Music2} title="No sessions available yet" description="Sessions will appear here soon." />
+          <EmptyState icon={Music2} title="No guided sessions yet" description="Guided sessions will appear here soon. Your own sit above works any time." />
         </Card>
       )}
 
       {!preset && presets && presets.length > 0 && (
-        <Card title="Choose a session">
+        <Card title="Or choose a guided session">
           <div className="grid gap-2.5 sm:grid-cols-2">
             {presets.map((p) => (
               <button
@@ -277,9 +373,8 @@ export default function SitScribePage() {
                 </Button>
               </div>
 
-              {preset.track?.file_url && (
-                <audio ref={audioRef} src={preset.track.file_url} loop className="w-full max-w-xs" controls />
-              )}
+              {audioSrc && <audio ref={audioRef} src={audioSrc} loop className="w-full max-w-xs" controls />}
+              {preset.own && preset.sound !== "off" && !audioSrc && <p className="text-[12.5px] text-[var(--color-ink-soft)]">Preparing the sound…</p>}
             </div>
           </Card>
         </>
