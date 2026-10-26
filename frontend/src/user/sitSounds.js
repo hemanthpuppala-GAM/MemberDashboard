@@ -1,13 +1,15 @@
 import { siteAsset } from "../site/siteAssets";
 
 /**
- * Background sounds for "Your own sit", the same six the old site offered. Aum and the flute are
- * recordings; the bowl, bells and birdsong are synthesised once into a seamless WAV loop and played
- * through an <audio> element (iOS silences bare WebAudio output but never a media element).
+ * Background sounds for "Your own sit", the same six the old site offered. Aum and the tanpura are
+ * pre-rendered files of generated tones (from the old site); the bowl, bells and birdsong are
+ * synthesised once into a seamless WAV loop. All play through an <audio> element (iOS silences bare
+ * WebAudio output but never a media element).
  */
 export const SIT_SOUNDS = [
   { key: "om", label: "Aum drone", glyph: "ॐ", src: "assets/sounds/aum-drone.wav" },
-  { key: "flute", label: "Temple flute", glyph: "♪", src: "assets/sounds/temple-flute.wav" },
+  // Key stays "flute" so a sound members already picked (saved on their device) still matches.
+  { key: "flute", label: "Tanpura drone", glyph: "♪", src: "assets/sounds/tanpura-drone.wav" },
   { key: "bowl", label: "Singing bowl", glyph: "◎", synth: "bowl" },
   { key: "bells", label: "Temple bells", glyph: "❈", synth: "bells" },
   { key: "birds", label: "Dawn birdsong", glyph: "✧", synth: "birds" },
