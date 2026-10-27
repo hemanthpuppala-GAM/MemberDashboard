@@ -27,27 +27,27 @@ class PracticeSessionController extends Controller
         $session = $member->practiceSessions()->make([
             'duration_minutes' => $request->validated('duration_minutes'),
             'sit_preset_id' => $request->validated('sit_preset_id'),
-            'completed_at' => self::completedAt($request->validated('completed_on')),
+            'completed_at' => self::completedAt($request->validated('completed_on'), $zone = MemberPracticeStats::zone($request)),
         ]);
         $session->forceFill(['via' => $request->validated('via')])->save();
         $session->load('sitPreset');
 
         return response()->json([
             'session' => $session,
-            ...MemberPracticeStats::forMember($member),
+            ...MemberPracticeStats::forMember($member, $zone),
         ], 201);
     }
 
     /**
-     * A missed sit added for an earlier day is stamped at noon UTC on that date, so it counts on that day
-     * for the streak and challenge (which group by date) in every time zone. Today's sits: the actual time.
+     * A missed sit added for an earlier day is stamped at noon on that date in the member's time zone, so it
+     * counts on that day for the streak and challenge. Today's sits: the actual time.
      */
-    private static function completedAt(?string $day): Carbon
+    private static function completedAt(?string $day, string $zone): Carbon
     {
-        if (! $day || $day >= now()->toDateString()) {
+        if (! $day || $day >= Carbon::today($zone)->toDateString()) {
             return now();
         }
 
-        return Carbon::parse($day.' 12:00:00', 'UTC');
+        return Carbon::parse($day.' 12:00:00', $zone)->utc();
     }
 }

@@ -39,8 +39,19 @@ export function oauthRedirectUrl(provider) {
   return `${API_URL}/auth/${provider}/redirect`;
 }
 
+/** The member's own time zone, so the server counts streak and challenge days on their calendar. */
+function timeZone() {
+  try {
+    return Intl.DateTimeFormat().resolvedOptions().timeZone || "";
+  } catch {
+    return "";
+  }
+}
+
 export async function memberFetch(path, { method = "GET", body, auth = true } = {}) {
   const headers = { Accept: "application/json" };
+  const zone = timeZone();
+  if (zone) headers["X-Timezone"] = zone;
   if (body !== undefined) headers["Content-Type"] = "application/json";
   if (auth) {
     const token = getMemberToken();
