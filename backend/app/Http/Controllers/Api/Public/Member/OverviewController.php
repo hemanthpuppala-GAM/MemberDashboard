@@ -28,7 +28,7 @@ class OverviewController extends Controller
         $recentJournal = $member->journalEntries()->first();
 
         return response()->json([
-            ...MemberPracticeStats::forMember($member),
+            ...MemberPracticeStats::forMember($member, MemberPracticeStats::zone($request)),
             'upcoming_session' => $upcoming ? [
                 'id' => $upcoming->id,
                 'title' => $upcoming->title,
