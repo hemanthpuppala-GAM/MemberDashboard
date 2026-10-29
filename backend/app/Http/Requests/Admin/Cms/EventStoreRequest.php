@@ -38,6 +38,12 @@ class EventStoreRequest extends FormRequest
             'timezone' => ['nullable', 'timezone:all_with_bc'],
             'location' => ['nullable', 'string', 'max:160'],
             'join_url' => ['nullable', 'string', 'max:255'],
+            // Photos from the Media library, the full album (a Google Drive folder) and one button, e.g. a survey.
+            'photos' => ['nullable', 'array', 'max:12'],
+            'photos.*' => ['string', 'max:500'],
+            'photos_url' => ['nullable', 'url', 'max:500'],
+            'cta_label' => ['nullable', 'string', 'max:60', 'required_with:cta_url'],
+            'cta_url' => ['nullable', 'string', 'max:500', 'required_with:cta_label'],
             'is_published' => ['boolean'],
             'host_practitioner_id' => ['nullable', 'integer', 'exists:users,id'],
         ];

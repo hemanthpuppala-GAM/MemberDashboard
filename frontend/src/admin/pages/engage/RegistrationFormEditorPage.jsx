@@ -59,6 +59,7 @@ export default function RegistrationFormEditorPage() {
     status: "draft",
     submit_label: "Register",
     success_message: "",
+    members_only: false,
   });
   const [fields, setFields] = useState(isNew ? DEFAULT_FIELDS : []);
 
@@ -74,6 +75,7 @@ export default function RegistrationFormEditorPage() {
           status: f.status,
           submit_label: f.submit_label ?? "Register",
           success_message: f.success_message ?? "",
+          members_only: !!f.members_only,
         });
         setFields(
           f.fields.map((fl) => ({
@@ -210,6 +212,13 @@ export default function RegistrationFormEditorPage() {
                   </Select>
                 </Field>
               </div>
+              <Toggle
+                checked={form.members_only}
+                onChange={(v) => updateForm("members_only")(v)}
+                disabled={!canEdit}
+                label="Members only (Google sign-in first)"
+                description="For surveys: people sign in with Google before the form (new people become members), each answer is tied to their member ID, and one answer per member is kept."
+              />
               <Field label="Success message" hint="Shown after someone registers. Leave blank for a default message.">
                 <TextArea rows={2} value={form.success_message} onChange={(e) => updateForm("success_message")(e.target.value)} placeholder="You're registered — we'll add you to the WhatsApp group before the session starts." disabled={!canEdit} />
               </Field>

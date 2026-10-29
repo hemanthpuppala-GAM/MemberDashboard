@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Mail\Admin\NewRegistrationFormSubmissionMail;
 use App\Models\Engage\RegistrationForm;
 use App\Models\Engage\RegistrationFormSubmission;
+use App\Models\People\Member;
 use App\Models\Settings\Setting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -27,6 +28,15 @@ class RegistrationFormController extends Controller
         $form = RegistrationForm::where('slug', $slug)->where('status', 'published')->firstOrFail();
         $fields = $form->fields;
 
+        // Members only: the member's own (Google sign-in) token; each member has one answer, kept up to date.
+        $member = null;
+        if ($form->members_only) {
+            $member = auth('sanctum')->user();
+            if (! $member instanceof Member) {
+                return response()->json(['message' => 'Please sign in with Google to fill this form.', 'sign_in_required' => true], 401);
+            }
+        }
+
         $validator = Validator::make($request->all(), $this->rulesFor($fields));
         $validated = $validator->validate();
 
@@ -35,15 +45,21 @@ class RegistrationFormController extends Controller
             $data[$field->field_key] = $validated[$field->field_key] ?? null;
         }
 
-        $submission = $form->submissions()->create(['data' => $data]);
-        $submission->setRelation('form', $form);
-
-        $this->notifyAdmin($submission);
+        $existing = $member ? $form->submissions()->where('member_id', $member->id)->first() : null;
+        if ($existing) {
+            $existing->update(['data' => $data]);
+            $submission = $existing;
+        } else {
+            $submission = $form->submissions()->create(['data' => $data, 'member_id' => $member?->id]);
+            $submission->setRelation('form', $form);
+            $this->notifyAdmin($submission);
+        }
 
         return response()->json([
             'success_message' => $form->success_message ?: "You're registered — we'll be in touch soon.",
             'submission_id' => $submission->id,
-        ], 201);
+            'updated' => (bool) $existing,
+        ], $existing ? 200 : 201);
     }
 
     private function notifyAdmin(RegistrationFormSubmission $submission): void

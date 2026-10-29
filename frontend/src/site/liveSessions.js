@@ -104,6 +104,10 @@ export function eventRow(e) {
     meta: [when, e.location].filter(Boolean).join(" · "),
     desc: e.description || "",
     joinUrl: e.join_url || "",
+    photos: Array.isArray(e.photos) ? e.photos : [],
+    photosUrl: e.photos_url || "",
+    ctaLabel: e.cta_label || "",
+    ctaUrl: e.cta_url || "",
   };
 }
 

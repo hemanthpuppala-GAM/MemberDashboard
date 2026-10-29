@@ -9,12 +9,17 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable(['title', 'slug', 'description', 'status', 'submit_label', 'success_message', 'created_by'])]
+#[Fillable(['title', 'slug', 'description', 'status', 'submit_label', 'success_message', 'members_only', 'created_by'])]
 class RegistrationForm extends Model
 {
     use LogsActivity;
 
     public const STATUSES = ['draft', 'published'];
+
+    protected function casts(): array
+    {
+        return ['members_only' => 'boolean'];
+    }
 
     public function fields(): HasMany
     {

@@ -18,6 +18,10 @@ use App\Models\Auth\User;
     'is_published',
     'updated_by',
     'host_practitioner_id',
+    'photos',
+    'photos_url',
+    'cta_label',
+    'cta_url',
 ])]
 class Event extends Model
 {
@@ -27,6 +31,7 @@ class Event extends Model
             'starts_at' => 'datetime',
             'ends_at' => 'datetime',
             'is_published' => 'boolean',
+            'photos' => 'array',
         ];
     }
 
@@ -98,6 +103,10 @@ class Event extends Model
             'next_starts_at' => $start->toIso8601String(),
             'next_ends_at' => $end->toIso8601String(),
             'join_url' => $this->join_url ?: $fallbackJoinUrl,
+            'photos' => array_values((array) ($this->photos ?? [])),
+            'photos_url' => $this->photos_url,
+            'cta_label' => $this->cta_label,
+            'cta_url' => $this->cta_url,
         ];
     }
 }
