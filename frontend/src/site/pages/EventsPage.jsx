@@ -77,6 +77,38 @@ function DesignLink({ href, isMember, children, ...rest }) {
   );
 }
 
+/** A past gathering's photos (tap to open), its full album and its button (e.g. "Fill the survey"). */
+function PastExtras({ event: p, isMember }) {
+  const photos = p.photos || [];
+  if (!photos.length && !p.photosUrl && !(p.ctaLabel && p.ctaUrl)) return null;
+  const pill = { display: "inline-flex", alignItems: "center", minHeight: 36, padding: "0 14px", borderRadius: 999, fontSize: 12.5, fontWeight: 600, textDecoration: "none" };
+  return (
+    <span style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 8 }}>
+      {photos.length > 0 && (
+        <span style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 2 }}>
+          {photos.map((url) => (
+            <a key={url} href={url} target="_blank" rel="noopener noreferrer" aria-label={`Photo from ${p.title}`} style={{ flex: "none" }}>
+              <img src={url} alt="" loading="lazy" style={{ display: "block", width: 112, height: 80, objectFit: "cover", borderRadius: 10, border: "1px solid rgba(138,111,52,.25)" }} />
+            </a>
+          ))}
+        </span>
+      )}
+      <span style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+        {p.ctaLabel && p.ctaUrl && (
+          <DesignLink href={p.ctaUrl} isMember={isMember} style={{ ...pill, background: "linear-gradient(135deg,#E8CF83,#C9A24A 55%,#A8853A)", color: "#14241C" }}>
+            {p.ctaLabel} →
+          </DesignLink>
+        )}
+        {p.photosUrl && (
+          <a href={p.photosUrl} target="_blank" rel="noopener noreferrer" style={{ ...pill, border: "1px solid rgba(138,111,52,.4)", color: "#7A5E22" }}>
+            See all photos ↗
+          </a>
+        )}
+      </span>
+    </span>
+  );
+}
+
 /** Today's `hhmm` in zone `tz`, as an absolute Date (design: localOf). */
 function localOf(hhmm, tz, now) {
   const [h, m] = String(hhmm || "0:0").split(":").map(Number);
@@ -265,6 +297,11 @@ export default function EventsPage() {
                                 Join →
                               </a>
                             )}
+                            {e.ctaLabel && e.ctaUrl && (
+                              <DesignLink href={e.ctaUrl} isMember={isMember} className="gaw-ev-register" style={{ display: "inline-flex", alignItems: "center", alignSelf: "flex-start", minHeight: 32, fontSize: 12, fontWeight: 700, letterSpacing: ".12em", textTransform: "uppercase" }}>
+                                {e.ctaLabel} →
+                              </DesignLink>
+                            )}
                           </span>
                         </div>
                       ))}
@@ -295,6 +332,7 @@ export default function EventsPage() {
                             <span style={{ display: "flex", flexDirection: "column", gap: 2, minWidth: 0 }}>
                               <span style={{ fontWeight: 600, fontSize: 14.5, color: "#12201A" }}>{p.title}</span>
                               <span style={{ fontSize: 12.5, lineHeight: 1.45, color: "#5A4E3C" }}>{p.meta}</span>
+                              <PastExtras event={p} isMember={isMember} />
                             </span>
                             <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: ".14em", textTransform: "uppercase", color: "#7A5E22", whiteSpace: "nowrap" }}>Complete</span>
                           </div>

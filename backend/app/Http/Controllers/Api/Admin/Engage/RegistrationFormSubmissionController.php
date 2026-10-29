@@ -13,7 +13,7 @@ class RegistrationFormSubmissionController extends Controller
 {
     public function index(Request $request, RegistrationForm $registrationForm)
     {
-        $query = $registrationForm->submissions()->latest();
+        $query = $registrationForm->submissions()->with('member:id,name,email,member_num')->latest();
 
         if ($status = $request->query('status')) {
             $query->where('status', $status);
@@ -48,14 +48,17 @@ class RegistrationFormSubmissionController extends Controller
     public function export(RegistrationForm $registrationForm)
     {
         $fields = $registrationForm->fields;
-        $submissions = $registrationForm->submissions()->oldest()->get();
+        $submissions = $registrationForm->submissions()->with('member')->oldest()->get();
+        $withMember = $registrationForm->members_only || $submissions->contains(fn ($s) => $s->member_id);
 
         $escape = fn ($v) => '"'.str_replace('"', '""', (string) $v).'"';
 
-        $csv = implode(',', [...$fields->map(fn ($f) => $escape($f->label)), $escape('Status'), $escape('Submitted at')])."\n";
+        $head = [...($withMember ? ['Member ID', 'Member name', 'Member email'] : []), ...$fields->map(fn ($f) => $f->label), 'Status', 'Submitted at'];
+        $csv = implode(',', array_map($escape, $head))."\n";
         foreach ($submissions as $submission) {
             $row = $fields->map(fn ($f) => $escape($submission->data[$f->field_key] ?? ''));
-            $csv .= implode(',', [...$row, $escape($submission->status), $escape($submission->created_at)])."\n";
+            $who = $withMember ? array_map($escape, [$submission->member?->member_code, $submission->member?->name, $submission->member?->email]) : [];
+            $csv .= implode(',', [...$who, ...$row, $escape($submission->status), $escape($submission->created_at)])."\n";
         }
 
         return Response::make($csv, 200, [

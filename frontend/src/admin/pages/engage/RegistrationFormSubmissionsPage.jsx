@@ -98,7 +98,27 @@ export default function RegistrationFormSubmissionsPage() {
       },
       cell: ({ getValue }) => <span className="text-[var(--a-text-primary)]">{getValue()}</span>,
     }));
+    // Members-only forms: who answered (their member ID links to the profile).
+    const memberColumn = form.members_only
+      ? [
+          {
+            id: "member",
+            header: "Member",
+            accessorFn: (row) => row.member?.name ?? "—",
+            cell: ({ row }) =>
+              row.original.member ? (
+                <Link to={`/admin/members/${row.original.member.id}`} onClick={(e) => e.stopPropagation()} className="font-semibold text-[var(--a-accent)] hover:underline">
+                  {row.original.member.name}
+                  {row.original.member.member_code ? ` · ${row.original.member.member_code}` : ""}
+                </Link>
+              ) : (
+                "—"
+              ),
+          },
+        ]
+      : [];
     return [
+      ...memberColumn,
       ...fieldColumns,
       { accessorKey: "created_at", header: "Registered", cell: ({ getValue }) => new Date(getValue()).toLocaleString() },
       {

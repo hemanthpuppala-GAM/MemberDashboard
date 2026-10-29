@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
-import { Plus, Pencil, Trash2, CalendarClock } from "lucide-react";
+import { Plus, Pencil, Trash2, CalendarClock, X } from "lucide-react";
 import Card from "../../ui/Card";
 import Button from "../../ui/Button";
 import IconButton from "../../ui/IconButton";
@@ -9,6 +9,7 @@ import ConfirmModal from "../../ui/ConfirmModal";
 import Field, { TextInput, TextArea, Select } from "../../ui/Field";
 import Toggle from "../../ui/Toggle";
 import EmptyState from "../../ui/EmptyState";
+import MediaPickerModal from "../../ui/MediaPickerModal";
 import { api } from "../../../lib/api";
 import { usePermissions } from "../../usePermissions";
 
@@ -47,6 +48,10 @@ const EMPTY = {
   join_url: "",
   host_practitioner_id: "",
   is_published: true,
+  photos: [],
+  photos_url: "",
+  cta_label: "",
+  cta_url: "",
 };
 
 /** The zones most sitters are in; the full IANA list follows under "All time zones". */
@@ -139,6 +144,7 @@ export default function EventsPage() {
   const [editing, setEditing] = useState(null);
   const [toDelete, setToDelete] = useState(null);
   const [form, setForm] = useState(EMPTY);
+  const [pickingPhoto, setPickingPhoto] = useState(false);
 
   const practitioners = useMemo(() => users.filter((u) => u.primary_role?.name === "practitioner"), [users]);
   const zoneGroups = useMemo(() => {
@@ -175,6 +181,10 @@ export default function EventsPage() {
       join_url: e.join_url ?? "",
       host_practitioner_id: e.host_practitioner_id ?? "",
       is_published: e.is_published,
+      photos: e.photos ?? [],
+      photos_url: e.photos_url ?? "",
+      cta_label: e.cta_label ?? "",
+      cta_url: e.cta_url ?? "",
     });
     setEditing(e);
   };
@@ -188,6 +198,10 @@ export default function EventsPage() {
       location: form.location || null,
       join_url: form.join_url || null,
       host_practitioner_id: form.host_practitioner_id || null,
+      photos: form.photos.length ? form.photos : null,
+      photos_url: form.photos_url.trim() || null,
+      cta_label: form.cta_label.trim() || null,
+      cta_url: form.cta_url.trim() || null,
     };
     try {
       if (editing?.id) {
@@ -311,9 +325,55 @@ export default function EventsPage() {
               <TextInput value={form.join_url} onChange={(e) => setForm((f) => ({ ...f, join_url: e.target.value }))} placeholder="https://zoom.us/j/..." />
             </Field>
           </div>
+          <div className="flex flex-col gap-3 rounded-xl border border-[var(--a-border)] p-4">
+            <p className="text-[13px] font-semibold text-[var(--a-text-primary)]">On the Events page (optional)</p>
+            <Field label="Photos" hint="Up to 12 from the Media library (upload them there first). Shown with the gathering.">
+              <div className="flex flex-wrap items-center gap-2">
+                {form.photos.map((url) => (
+                  <span key={url} className="relative h-16 w-20 overflow-hidden rounded-lg border border-[var(--a-border)]">
+                    <img src={url} alt="" className="h-full w-full object-cover" />
+                    <button
+                      type="button"
+                      aria-label="Remove photo"
+                      onClick={() => setForm((f) => ({ ...f, photos: f.photos.filter((p) => p !== url) }))}
+                      className="absolute top-0.5 right-0.5 rounded-full bg-black/60 p-0.5 text-white"
+                    >
+                      <X size={12} />
+                    </button>
+                  </span>
+                ))}
+                {form.photos.length < 12 && (
+                  <button
+                    type="button"
+                    onClick={() => setPickingPhoto(true)}
+                    className="flex h-16 w-20 items-center justify-center rounded-lg border border-dashed border-[var(--a-border)] text-[12px] font-semibold text-[var(--a-accent)]"
+                  >
+                    + Add
+                  </button>
+                )}
+              </div>
+            </Field>
+            <Field label="Full album link" hint="E.g. the Google Drive folder (shared as “Anyone with the link”). Shown as “See all photos”.">
+              <TextInput value={form.photos_url} onChange={(e) => setForm((f) => ({ ...f, photos_url: e.target.value }))} placeholder="https://drive.google.com/drive/folders/..." />
+            </Field>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Field label="Button label" hint="E.g. “Fill the survey”">
+                <TextInput value={form.cta_label} onChange={(e) => setForm((f) => ({ ...f, cta_label: e.target.value }))} placeholder="Fill the survey" />
+              </Field>
+              <Field label="Button link" hint="A registration form: /register/your-form-slug, or any https:// link">
+                <TextInput value={form.cta_url} onChange={(e) => setForm((f) => ({ ...f, cta_url: e.target.value }))} placeholder="/register/vasavi-survey" />
+              </Field>
+            </div>
+          </div>
           <Toggle checked={form.is_published} onChange={(v) => setForm((f) => ({ ...f, is_published: v }))} label="Published" description="Turn off to hide from members while you're still setting it up" />
         </div>
       </Modal>
+
+      <MediaPickerModal
+        open={pickingPhoto}
+        onClose={() => setPickingPhoto(false)}
+        onSelect={(url) => setForm((f) => (f.photos.includes(url) ? f : { ...f, photos: [...f.photos, url].slice(0, 12) }))}
+      />
 
       <ConfirmModal
         open={!!toDelete}

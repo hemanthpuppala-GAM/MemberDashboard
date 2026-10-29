@@ -25,6 +25,8 @@ class RegistrationFormRequest extends FormRequest
             'status' => ['required', Rule::in(RegistrationForm::STATUSES)],
             'submit_label' => ['nullable', 'string', 'max:60'],
             'success_message' => ['nullable', 'string', 'max:500'],
+            // Members only: Google sign-in before the form (a survey), each answer tied to the member.
+            'members_only' => ['sometimes', 'boolean'],
 
             'fields' => ['array'],
             'fields.*.label' => ['required', 'string', 'max:160'],

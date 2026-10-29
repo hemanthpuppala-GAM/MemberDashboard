@@ -1,16 +1,24 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import { CheckCircle2 } from "lucide-react";
 import logoMark from "../assets/logo-golden-age.jpg";
 import Starfield from "../components/layout/Starfield";
 import { publicApi } from "../lib/api";
+import { memberFetch, oauthRedirectUrl } from "../lib/memberAuth";
+import { useMemberAuth } from "../auth/MemberAuthContext";
 
 const inputClass =
   "w-full rounded-xl border border-[var(--color-border-strong)] bg-white px-4 py-3 text-[15px] text-[var(--color-ink)] placeholder:text-[var(--color-ink-soft)] outline-none transition-all focus:border-[var(--color-gold-deep)] focus:shadow-[0_0_0_3px_rgba(198,161,91,0.28)] disabled:opacity-60";
 
-/** Public "register for a program" page — the form an admin builds in Admin → Engage → Registration Forms, rendered from its field definitions. */
+/**
+ * Public "register for a program" page — the form an admin builds in Admin → Engage → Registration Forms, rendered
+ * from its field definitions. A "Members only" form (a survey) asks for Google sign-in first; signing in registers
+ * new people as members, and their answer is tied to their member ID.
+ */
 export default function RegisterPage() {
   const { slug } = useParams();
+  const { pathname, search } = useLocation();
+  const { user, loading: authLoading } = useMemberAuth();
   const [form, setForm] = useState(null);
   const [notFound, setNotFound] = useState(false);
   const [values, setValues] = useState({});
@@ -37,7 +45,9 @@ export default function RegisterPage() {
     setError("");
     setSubmitting(true);
     try {
-      const res = await publicApi.submitRegistration(slug, values);
+      const res = form.members_only
+        ? await memberFetch(`/registration-forms/${slug}/submit`, { method: "POST", body: values })
+        : await publicApi.submitRegistration(slug, values);
       setResult(res);
     } catch (err) {
       setError(err.message || "Something went wrong. Please try again.");
@@ -45,6 +55,16 @@ export default function RegisterPage() {
       setSubmitting(false);
     }
   };
+
+  const signIn = () => {
+    try {
+      sessionStorage.setItem("gaw_after_signin", `${pathname}${search}`); // AuthCallbackPage brings them back here
+    } catch {
+      /* storage blocked: they land on the dashboard and can open the link again */
+    }
+    window.location.href = oauthRedirectUrl("google");
+  };
+  const needsSignIn = form?.members_only && !user;
 
   return (
     <div className="relative flex min-h-dvh flex-col overflow-hidden bg-[var(--color-bg)]">
@@ -70,18 +90,39 @@ export default function RegisterPage() {
               <p className="font-display text-[20px] text-[var(--color-ink)]">Registration not found</p>
               <p className="mt-2 text-[13.5px] text-[var(--color-muted)]">This link may have closed or been removed.</p>
             </div>
-          ) : !form ? (
+          ) : !form || (form.members_only && authLoading) ? (
             <p className="py-10 text-center text-[13.5px] text-[var(--color-muted)]">Loading…</p>
+          ) : needsSignIn ? (
+            <div className="flex flex-col items-center gap-3 py-2 text-center">
+              <h1 className="font-display text-[clamp(22px,4.5vw,28px)] leading-tight text-[var(--color-ink)]">{form.title}</h1>
+              {form.description && <p className="text-[14px] leading-relaxed text-[var(--color-muted)]">{form.description}</p>}
+              <p className="mt-1 text-[14px] leading-relaxed text-[var(--color-ink-soft)]">
+                This form is for members. Sign in with Google to continue. New here? Signing in registers you as a member, free.
+              </p>
+              <button
+                type="button"
+                onClick={signIn}
+                className="mt-1 w-full rounded-full bg-gradient-to-br from-[var(--color-gold)] to-[var(--color-gold-deep)] px-4 py-3 text-[14.5px] font-semibold text-[var(--color-on-gold)] transition-opacity hover:opacity-95"
+              >
+                Sign in with Google to continue
+              </button>
+            </div>
           ) : result ? (
             <div className="py-4 text-center">
               <CheckCircle2 size={40} className="mx-auto text-[var(--color-gold-deep)]" />
-              <p className="mt-3 font-display text-[20px] text-[var(--color-ink)]">You're in!</p>
+              <p className="mt-3 font-display text-[20px] text-[var(--color-ink)]">{result.updated ? "Your answers are updated" : form.members_only ? "Thank you!" : "You're in!"}</p>
               <p className="mt-2 text-[14px] leading-relaxed text-[var(--color-muted)]">{result.success_message}</p>
             </div>
           ) : (
             <>
               <h1 className="font-display text-[clamp(22px,4.5vw,28px)] leading-tight text-[var(--color-ink)]">{form.title}</h1>
               {form.description && <p className="mt-2 text-[14px] leading-relaxed text-[var(--color-muted)]">{form.description}</p>}
+              {form.members_only && user && (
+                <p className="mt-3 rounded-xl bg-[var(--color-bg-soft)] px-3 py-2 text-[13px] text-[var(--color-ink-soft)]">
+                  Signed in as <strong>{user.name || user.email}</strong>
+                  {user.member_code ? ` · ${user.member_code}` : ""}
+                </p>
+              )}
 
               <form onSubmit={handleSubmit} className="mt-5 flex flex-col gap-3">
                 {form.fields.map((field) => (
