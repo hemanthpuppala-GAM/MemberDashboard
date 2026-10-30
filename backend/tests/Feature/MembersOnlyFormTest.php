@@ -73,4 +73,20 @@ class MembersOnlyFormTest extends TestCase
             ->assertJsonPath('0.cta_label', 'Fill the survey')
             ->assertJsonPath('0.cta_url', '/register/vasavi-survey');
     }
+
+    public function test_tick_all_that_apply_questions_keep_every_choice_and_the_other_box(): void
+    {
+        $form = $this->survey(false);
+        $form->fields()->create(['label' => 'I am meditating for the following reasons', 'field_key' => 'reasons', 'type' => 'checkboxes', 'is_required' => true,
+            'options' => ['Health benefits', 'Peace', 'World peace', 'Any other'], 'sort_order' => 1]);
+
+        $this->postJson('/api/v1/registration-forms/vasavi-survey/submit', ['how_long' => 'New', 'reasons' => []])
+            ->assertUnprocessable()->assertJsonValidationErrors('reasons');
+        $this->postJson('/api/v1/registration-forms/vasavi-survey/submit', ['how_long' => 'New', 'reasons' => ['Peace', 'Made up']])
+            ->assertUnprocessable()->assertJsonValidationErrors('reasons.1');
+
+        $this->postJson('/api/v1/registration-forms/vasavi-survey/submit', ['how_long' => 'New', 'reasons' => ['Peace', 'World peace', 'Any other'], 'reasons_other' => 'Better sleep'])
+            ->assertCreated();
+        $this->assertSame(['Peace', 'World peace', 'Any other: Better sleep'], $form->submissions()->first()->data['reasons']);
+    }
 }

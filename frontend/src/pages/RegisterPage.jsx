@@ -32,7 +32,7 @@ export default function RegisterPage() {
       .then((f) => {
         setForm(f);
         const initial = {};
-        for (const field of f.fields) initial[field.field_key] = field.type === "checkbox" ? false : "";
+        for (const field of f.fields) initial[field.field_key] = field.type === "checkbox" ? false : field.type === "checkboxes" ? [] : "";
         setValues(initial);
       })
       .catch(() => setNotFound(true));
@@ -126,7 +126,15 @@ export default function RegisterPage() {
 
               <form onSubmit={handleSubmit} className="mt-5 flex flex-col gap-3">
                 {form.fields.map((field) => (
-                  <FieldInput key={field.field_key} field={field} value={values[field.field_key]} onChange={(v) => setValue(field.field_key, v)} disabled={submitting} />
+                  <FieldInput
+                    key={field.field_key}
+                    field={field}
+                    value={values[field.field_key]}
+                    onChange={(v) => setValue(field.field_key, v)}
+                    other={values[`${field.field_key}_other`] ?? ""}
+                    onOther={(v) => setValue(`${field.field_key}_other`, v)}
+                    disabled={submitting}
+                  />
                 ))}
 
                 {error && (
@@ -153,7 +161,10 @@ export default function RegisterPage() {
   );
 }
 
-function FieldInput({ field, value, onChange, disabled }) {
+/** "Other" / "Any other …" choices of a tick-all question come with a text box. */
+const isOtherOption = (o) => /^\s*(any\s+)?others?\b/i.test(o);
+
+function FieldInput({ field, value, onChange, other, onOther, disabled }) {
   const label = (
     <label className="mb-1 block text-[13px] font-medium text-[var(--color-ink-soft)]">
       {field.label} {field.is_required && <span className="text-[#C96B6B]">*</span>}
@@ -213,6 +224,39 @@ function FieldInput({ field, value, onChange, disabled }) {
           </div>
         </div>
       );
+    case "checkboxes": {
+      const ticked = Array.isArray(value) ? value : [];
+      const toggle = (o) => onChange(ticked.includes(o) ? ticked.filter((x) => x !== o) : [...ticked, o]);
+      return (
+        <div>
+          {label}
+          <p className="mb-1.5 text-[12px] text-[var(--color-muted)]">Tick all that apply</p>
+          <div className="flex flex-col gap-1.5">
+            {(field.options ?? []).map((o) => (
+              <div key={o} className="flex flex-col gap-1.5">
+                <label className="flex items-center gap-2 text-[13.5px] text-[var(--color-ink-soft)]">
+                  <input type="checkbox" checked={ticked.includes(o)} onChange={() => toggle(o)} disabled={disabled} />
+                  {o}
+                </label>
+                {isOtherOption(o) && ticked.includes(o) && (
+                  <div className="pl-6">
+                    <input
+                      type="text"
+                      value={other}
+                      onChange={(e) => onOther(e.target.value)}
+                      placeholder="Please tell us"
+                      aria-label={`${field.label}: ${o}`}
+                      disabled={disabled}
+                      className={inputClass}
+                    />
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
     case "checkbox":
       return (
         <label className="flex items-start gap-2.5 text-[13.5px] text-[var(--color-ink-soft)]">

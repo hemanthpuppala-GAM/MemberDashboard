@@ -28,7 +28,7 @@ class NewRegistrationFormSubmissionMail extends Mailable
         $rows = [];
         foreach ($this->submission->form->fields as $field) {
             $value = $this->submission->data[$field->field_key] ?? null;
-            $rows[$field->label] = is_bool($value) ? ($value ? 'Yes' : 'No') : $value;
+            $rows[$field->label] = is_bool($value) ? ($value ? 'Yes' : 'No') : (is_array($value) ? implode('; ', $value) : $value);
         }
         $rows['Submitted'] = $this->submission->created_at?->format('d M Y, H:i');
 

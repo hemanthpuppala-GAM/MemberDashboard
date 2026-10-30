@@ -56,7 +56,7 @@ class RegistrationFormSubmissionController extends Controller
         $head = [...($withMember ? ['Member ID', 'Member name', 'Member email'] : []), ...$fields->map(fn ($f) => $f->label), 'Status', 'Submitted at'];
         $csv = implode(',', array_map($escape, $head))."\n";
         foreach ($submissions as $submission) {
-            $row = $fields->map(fn ($f) => $escape($submission->data[$f->field_key] ?? ''));
+            $row = $fields->map(fn ($f) => $escape(is_array($v = $submission->data[$f->field_key] ?? '') ? implode('; ', $v) : $v));
             $who = $withMember ? array_map($escape, [$submission->member?->member_code, $submission->member?->name, $submission->member?->email]) : [];
             $csv .= implode(',', [...$who, ...$row, $escape($submission->status), $escape($submission->created_at)])."\n";
         }

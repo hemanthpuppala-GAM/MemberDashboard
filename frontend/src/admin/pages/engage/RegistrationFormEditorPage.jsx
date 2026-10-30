@@ -19,10 +19,12 @@ const FIELD_TYPES = [
   { value: "date", label: "Date" },
   { value: "select", label: "Dropdown (choose one)" },
   { value: "radio", label: "Radio buttons (choose one)" },
+  { value: "checkboxes", label: "Multiple choice (tick all that apply)" },
   { value: "checkbox", label: "Checkbox (yes / no)" },
 ];
 
-const CHOICE_TYPES = ["select", "radio"];
+// A choice named "Other" or "Any other …" gets its own text box on the public form.
+const CHOICE_TYPES = ["select", "radio", "checkboxes"];
 
 function slugifyKey(label, existingKeys) {
   const base = label.trim().toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "") || "field";
@@ -357,6 +359,17 @@ function PreviewInput({ field }) {
           {(field.options ?? []).map((o) => (
             <label key={o} className="flex items-center gap-2 text-[13px] text-[var(--a-text-muted)]">
               <input type="radio" disabled /> {o}
+            </label>
+          ))}
+        </div>
+      );
+    case "checkboxes":
+      return (
+        <div className="flex flex-col gap-1.5">
+          {(field.options ?? []).length === 0 && <span className="text-[12.5px] text-[var(--a-text-faint)]">No choices added yet</span>}
+          {(field.options ?? []).map((o) => (
+            <label key={o} className="flex items-center gap-2 text-[13px] text-[var(--a-text-muted)]">
+              <input type="checkbox" disabled /> {o}
             </label>
           ))}
         </div>
