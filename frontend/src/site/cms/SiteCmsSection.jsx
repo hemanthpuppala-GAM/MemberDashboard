@@ -202,7 +202,7 @@ function Media({ f }) {
 
 function Events({ f }) {
   const { upcoming } = useEventSessions();
-  const rows = (upcoming || []).slice(0, 6).map(eventRow);
+  const rows = (upcoming || []).slice(0, 6).map((e) => eventRow(e));
   return (
     <section style={WRAP}>
       <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
