@@ -94,6 +94,7 @@ export default function RegistrationFormSubmissionsPage() {
       accessorFn: (row) => {
         const v = row.data?.[f.field_key];
         if (f.type === "checkbox") return v ? "Yes" : "No";
+        if (Array.isArray(v)) return v.length ? v.join("; ") : "—";
         return v ?? "—";
       },
       cell: ({ getValue }) => <span className="text-[var(--a-text-primary)]">{getValue()}</span>,
