@@ -48,6 +48,7 @@ import QrCodesPage from "./pages/engage/QrCodesPage";
 import RegistrationFormsPage from "./pages/engage/RegistrationFormsPage";
 import RegistrationFormEditorPage from "./pages/engage/RegistrationFormEditorPage";
 import RegistrationFormSubmissionsPage from "./pages/engage/RegistrationFormSubmissionsPage";
+import RegistrationFormResultsPage from "./pages/engage/RegistrationFormResultsPage";
 
 import VolunteerApplicationsPage from "./pages/volunteers/VolunteerApplicationsPage";
 import VolunteerCategoriesPage from "./pages/volunteers/VolunteerCategoriesPage";
@@ -110,6 +111,7 @@ export default function AdminApp() {
                 <Route path="registration-forms/new" element={guarded("registration_forms.create", <RegistrationFormEditorPage />)} />
                 <Route path="registration-forms/:id" element={guarded("registration_forms.view", <RegistrationFormEditorPage />)} />
                 <Route path="registration-forms/:id/submissions" element={guarded("registration_forms.view", <RegistrationFormSubmissionsPage />)} />
+                <Route path="registration-forms/:id/results" element={guarded("registration_forms.view", <RegistrationFormResultsPage />)} />
 
                 <Route path="volunteers" element={guarded("volunteers.view", <VolunteerApplicationsPage />)} />
                 <Route path="volunteers/categories" element={guarded("volunteers.view", <VolunteerCategoriesPage />)} />

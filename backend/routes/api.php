@@ -379,6 +379,7 @@ Route::prefix('v1')->group(function () {
             Route::get('/registration-forms/{registrationForm}', [AdminRegistrationFormController::class, 'show']);
             Route::get('/registration-forms/{registrationForm}/submissions', [RegistrationFormSubmissionController::class, 'index']);
             Route::get('/registration-forms/{registrationForm}/submissions/export', [RegistrationFormSubmissionController::class, 'export']);
+            Route::get('/registration-forms/{registrationForm}/results', [RegistrationFormSubmissionController::class, 'results']);
         });
         Route::middleware('permission:registration_forms.create')->post('/registration-forms', [AdminRegistrationFormController::class, 'store']);
         Route::middleware('permission:registration_forms.edit')->group(function () {
