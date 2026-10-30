@@ -77,13 +77,14 @@ function DesignLink({ href, isMember, children, ...rest }) {
   );
 }
 
-/** A past gathering's photos (tap to open), its full album and its button (e.g. "Fill the survey"). */
+/** A past gathering's description, photos (tap to open), map, full album and its button (e.g. "Fill the survey"). */
 function PastExtras({ event: p, isMember }) {
   const photos = p.photos || [];
-  if (!photos.length && !p.photosUrl && !(p.ctaLabel && p.ctaUrl)) return null;
+  if (!p.desc && !photos.length && !p.photosUrl && !p.mapUrl && !(p.ctaLabel && p.ctaUrl)) return null;
   const pill = { display: "inline-flex", alignItems: "center", minHeight: 36, padding: "0 14px", borderRadius: 999, fontSize: 12.5, fontWeight: 600, textDecoration: "none" };
   return (
     <span style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 8 }}>
+      {p.desc && <span style={{ fontSize: 13, lineHeight: 1.5, color: "#3A3128", textWrap: "pretty" }}>{p.desc}</span>}
       {photos.length > 0 && (
         <span style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 2 }}>
           {photos.map((url) => (
@@ -102,6 +103,11 @@ function PastExtras({ event: p, isMember }) {
         {p.photosUrl && (
           <a href={p.photosUrl} target="_blank" rel="noopener noreferrer" style={{ ...pill, border: "1px solid rgba(138,111,52,.4)", color: "#7A5E22" }}>
             See all photos ↗
+          </a>
+        )}
+        {p.mapUrl && (
+          <a href={p.mapUrl} target="_blank" rel="noopener noreferrer" style={{ ...pill, border: "1px solid rgba(138,111,52,.4)", color: "#7A5E22" }}>
+            Map ↗
           </a>
         )}
       </span>
@@ -196,8 +202,8 @@ export default function EventsPage() {
     abroad = (c.sessionsAbroad || []).map((s) => buildSession(s, s.tz || "UTC", s.zone || "", now, tz));
   }
   const abroadKicker = live.daily && abroad.some((s) => !/^(America|Europe\/London)/.test(s.tz)) ? "Around the world" : c.abroadKicker;
-  const upcoming = live.upcoming ? live.upcoming.slice(0, 5).map(eventRow) : c.upcoming || [];
-  const past = live.past ? live.past.map(eventRow) : c.past || [];
+  const upcoming = live.upcoming ? live.upcoming.slice(0, 5).map((e) => eventRow(e)) : c.upcoming || [];
+  const past = live.past ? live.past.map((e) => eventRow(e, { inEventZone: true })) : c.past || [];
 
   return (
     <SitePage>
@@ -295,6 +301,11 @@ export default function EventsPage() {
                             {e.joinUrl && (
                               <a href={e.joinUrl} target="_blank" rel="noopener noreferrer" className="gaw-ev-register" style={{ display: "inline-flex", alignItems: "center", alignSelf: "flex-start", minHeight: 32, fontSize: 12, fontWeight: 700, letterSpacing: ".12em", textTransform: "uppercase" }}>
                                 Join →
+                              </a>
+                            )}
+                            {e.mapUrl && (
+                              <a href={e.mapUrl} target="_blank" rel="noopener noreferrer" className="gaw-ev-register" style={{ display: "inline-flex", alignItems: "center", alignSelf: "flex-start", minHeight: 32, fontSize: 12, fontWeight: 700, letterSpacing: ".12em", textTransform: "uppercase" }}>
+                                Map ↗
                               </a>
                             )}
                             {e.ctaLabel && e.ctaUrl && (

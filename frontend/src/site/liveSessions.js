@@ -91,19 +91,39 @@ export function useEventSessions() {
   }, [events]);
 }
 
-/** A one-off session as the events list rows' { day, month, title, meta, desc, joinUrl }, in the visitor's zone. */
-export function eventRow(e) {
+/** "10 AM", or "10:30 AM" when the minutes aren't round. */
+function clock(d, timeZone) {
+  const opts = { hour: "numeric", ...(timeZone ? { timeZone } : {}) };
+  const mins = Number(new Intl.DateTimeFormat("en-US", { minute: "numeric", ...(timeZone ? { timeZone } : {}) }).format(d));
+  return d.toLocaleTimeString([], mins ? { ...opts, minute: "2-digit" } : opts);
+}
+
+/**
+ * A one-off session as the events list rows' { day, month, title, meta, desc, joinUrl, mapUrl, … }. Upcoming
+ * sessions read in the visitor's zone; a gathering that already happened (`inEventZone`) reads in its own zone
+ * ("Thu · 10 AM – 8 PM IST" for Hyderabad, wherever you are). A link in Location shows as a "Map" link instead.
+ */
+export function eventRow(e, { inEventZone = false } = {}) {
   const a = new Date(e.next_starts_at);
   const b = valid(e.next_ends_at) ? new Date(e.next_ends_at) : null;
-  const t = (d) => d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
-  const when = `${a.toLocaleDateString([], { weekday: "short" })} · ${t(a)}${b ? ` – ${t(b)}` : ""} ${zoneAbbr(visitorZone(), a)}`.trim();
+  let zone = inEventZone && e.timezone ? e.timezone : undefined;
+  try {
+    if (zone) new Intl.DateTimeFormat("en-US", { timeZone: zone });
+  } catch {
+    zone = undefined;
+  }
+  const tz = zone ? { timeZone: zone } : {};
+  const when = `${a.toLocaleDateString([], { weekday: "short", ...tz })} · ${clock(a, zone)}${b ? ` – ${clock(b, zone)}` : ""} ${zoneAbbr(zone || visitorZone(), a)}`.trim();
+  const place = (e.location || "").trim();
+  const isLink = /^https?:\/\//i.test(place);
   return {
-    day: a.toLocaleDateString([], { day: "numeric" }),
-    month: a.toLocaleDateString("en-US", { month: "short" }).toUpperCase(),
+    day: a.toLocaleDateString([], { day: "numeric", ...tz }),
+    month: a.toLocaleDateString("en-US", { month: "short", ...tz }).toUpperCase(),
     title: e.title,
-    meta: [when, e.location].filter(Boolean).join(" · "),
+    meta: [when, isLink ? "" : place].filter(Boolean).join(" · "),
     desc: e.description || "",
     joinUrl: e.join_url || "",
+    mapUrl: isLink ? place : "",
     photos: Array.isArray(e.photos) ? e.photos : [],
     photosUrl: e.photos_url || "",
     ctaLabel: e.cta_label || "",
