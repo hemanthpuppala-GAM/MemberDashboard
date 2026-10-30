@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import { Plus, Pencil, Trash2, ClipboardList, Copy, Users } from "lucide-react";
+import { Plus, Pencil, Trash2, ClipboardList, Copy, Users, BarChart3 } from "lucide-react";
 import Card from "../../ui/Card";
 import Button from "../../ui/Button";
 import IconButton from "../../ui/IconButton";
@@ -99,6 +99,7 @@ export default function RegistrationFormsPage() {
                 <div className="flex shrink-0 items-center gap-1">
                   <IconButton icon={Copy} label="Copy registration link" onClick={() => copyLink(f.slug)} />
                   <IconButton icon={Users} label="View registrations" onClick={() => navigate(`${f.id}/submissions`)} />
+                  <IconButton icon={BarChart3} label="Results & charts" onClick={() => navigate(`${f.id}/results`)} />
                   <IconButton
                     icon={Pencil}
                     label={canEdit ? "Edit" : "You don't have permission to edit forms"}
