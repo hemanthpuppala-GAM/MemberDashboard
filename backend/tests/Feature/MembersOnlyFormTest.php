@@ -89,4 +89,21 @@ class MembersOnlyFormTest extends TestCase
             ->assertCreated();
         $this->assertSame(['Peace', 'World peace', 'Any other: Better sleep'], $form->submissions()->first()->data['reasons']);
     }
+
+    public function test_the_vasavi_survey_command_loads_the_teams_questions_only_while_unanswered(): void
+    {
+        $form = $this->survey(false);
+        $this->artisan('forms:vasavi-survey')->expectsOutputToContain('20 questions loaded')->assertSuccessful();
+
+        $form->refresh();
+        $this->assertTrue($form->members_only);
+        $this->assertSame('published', $form->status);
+        $this->assertSame(20, $form->fields()->count());
+        $this->assertSame('I am meditating', $form->fields()->first()->label);
+        $this->assertSame('checkboxes', $form->fields()->where('label', 'I am meditating for the following reasons')->value('type'));
+
+        $form->submissions()->create(['data' => ['q01' => 'Yes']]);
+        $this->artisan('forms:vasavi-survey')->assertFailed();
+        $this->assertSame(20, $form->fields()->count());
+    }
 }
