@@ -48,6 +48,7 @@ export default function AskPage() {
   const [voiceLang, setVoiceLang] = useState(() => PAGE_LANGS.find((l) => l.code === lang).voice);
   const [text, setText] = useState("");
   const [phone, setPhone] = useState("");
+  const [phoneTouched, setPhoneTouched] = useState(false);
   const [note, setNote] = useState("");
   const [sent, setSent] = useState(false);
   const [ack, setAck] = useState(null);
@@ -90,6 +91,8 @@ export default function AskPage() {
     setVoiceLang(code);
   };
 
+  const phoneValue = phoneTouched ? phone : phone || user?.phone || "";
+
   const send = () => {
     const question = text.trim();
     if (!question) {
@@ -97,8 +100,9 @@ export default function AskPage() {
       setSent(false);
       return;
     }
-    // Visitors (not signed in) leave a number, so the team can reach them even if WhatsApp never sends.
-    if (!user && phone.replace(/\D/g, "").length < 10) {
+    // Everyone leaves a number (members: pre-filled from their profile), so the team can reach them even if
+    // WhatsApp never sends.
+    if (phoneValue.replace(/\D/g, "").length < 10) {
       setNote(t.phoneMissing);
       setSent(false);
       return;
@@ -119,7 +123,7 @@ export default function AskPage() {
     setSent(true);
     setAck(user?.email ? { state: "sending", email: user.email } : null);
 
-    submitQuestion({ member: user, question, lang, phone: user ? undefined : phone.trim() })
+    submitQuestion({ member: user, question, lang, phone: phoneValue.trim() })
       .then((res) => user?.email && setAck({ state: res?.ack_sent ? "sent" : "failed", email: user.email }))
       .catch(() => user?.email && setAck({ state: "failed", email: user.email }));
   };
@@ -248,28 +252,27 @@ export default function AskPage() {
           />
         </div>
 
-        {!user && (
-          <div className="flex flex-col gap-1.5">
-            <StepLabel>{t.stepPhone}</StepLabel>
-            <input
-              type="tel"
-              inputMode="tel"
-              autoComplete="tel"
-              value={phone}
-              onChange={(e) => {
-                setPhone(e.target.value);
-                setNote("");
-              }}
-              placeholder="+91 98765 43210"
-              aria-label={t.stepPhone}
-              className={`${textareaClass} text-[16px]`}
-            />
-            <span className="text-[12.5px] text-[#5A5546]">{t.phoneHint}</span>
-          </div>
-        )}
+        <div className="flex flex-col gap-1.5">
+          <StepLabel>{t.stepPhone}</StepLabel>
+          <input
+            type="tel"
+            inputMode="tel"
+            autoComplete="tel"
+            value={phoneValue}
+            onChange={(e) => {
+              setPhone(e.target.value);
+              setPhoneTouched(true);
+              setNote("");
+            }}
+            placeholder="+91 98765 43210"
+            aria-label={t.stepPhone}
+            className={`${textareaClass} text-[16px]`}
+          />
+          <span className="text-[12.5px] text-[#5A5546]">{t.phoneHint}</span>
+        </div>
 
         <div className="flex flex-col gap-1.5">
-          <StepLabel>{user ? t.step2.replace(/^3\./, "2.") : t.step2}</StepLabel>
+          <StepLabel>{t.step2}</StepLabel>
           <button type="button" onClick={send} className={`${primaryButtonClass} w-full px-4 py-3.5 text-[16px]`}>
             {t.sendBtn}
           </button>

@@ -28,6 +28,14 @@ class ContactController extends Controller
             $data['name'] = $data['name'] ?? $member->name;
             $data['email'] = $data['email'] ?? $member->email;
             $data['phone'] = $data['phone'] ?? $member->phone;
+            // A member with no number on file (Google sign-in) who gives one here: keep it on their profile.
+            if (! filled($member->phone) && filled($data['phone'])) {
+                try {
+                    $member->fill(['phone' => $data['phone']])->save();
+                } catch (\Throwable $e) {
+                    Log::warning('Could not save the phone from an Ask question: '.$e->getMessage(), ['member_id' => $member->id]);
+                }
+            }
         }
 
         // name/email columns are NOT NULL; anonymous QR questions have neither.
