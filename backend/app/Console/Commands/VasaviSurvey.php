@@ -8,7 +8,8 @@ use Illuminate\Support\Facades\DB;
 
 /**
  * Sets the Vasavi Brindavanam survey (Admin → Registration Forms, link /register/vasavi-survey) to the team's
- * questions, so nobody has to type them in. Replaces the form's questions only while it has no answers.
+ * questions, so nobody has to type them in. Replaces the form's questions only while it has no answers; once it
+ * has answers, it only puts the questions in this order.
  */
 class VasaviSurvey extends Command
 {
@@ -18,13 +19,16 @@ class VasaviSurvey extends Command
 
     private const YES_NO = ['Yes', 'No'];
 
-    /** [label, type, required, options] — the team's sheet, in order. */
+    /** [label, type, required, options] — the team's questions: meditators first, then people not meditating yet. */
     private function questions(): array
     {
         return [
+            // Meditators
             ['I am meditating', 'radio', true, self::YES_NO],
             ['I am enjoying meditation', 'radio', true, self::YES_NO],
             ['What inspires me to meditate?', 'textarea', false, []],
+            ['Anything that you would like to share about your journey and experiences?', 'textarea', false, []],
+            ['Did meditation help you in your daily life situations?', 'radio', false, self::YES_NO],
             ['The 41 days meditation program benefitted a lot', 'radio', false, self::YES_NO],
             ['What interested you the most during the 41 days meditation program?', 'textarea', false, []],
             ['I have some questions around meditation', 'radio', false, self::YES_NO],
@@ -35,13 +39,12 @@ class VasaviSurvey extends Command
             ['I find the Golden Age wisdom shared in the YouTube channel very useful', 'radio', false, self::YES_NO],
             ['I am aware that meditation will help my surroundings to form a better and healthy community', 'radio', false, self::YES_NO],
             ['Any suggestions you would like to provide?', 'textarea', false, []],
+            // Not meditating yet
+            ["I don't know much about meditation and would like to know more", 'radio', false, ['Yes', 'NA']],
             ['I want to start my meditation journey but I am unable to, due to', 'checkboxes', false, ['Timings', 'Work and other commitments', 'Personal reasons', "Couldn't maintain routine", "I wasn't sure what to expect", 'I preferred meditating at home', "I don't connect to meditation much"]],
             ['I need guidance and support to start my meditation journey', 'radio', false, self::YES_NO],
             ['I am unable to sit for meditation although I tried', 'radio', false, self::YES_NO],
             ['What change could help you to participate?', 'textarea', false, []],
-            ["I don't know much about meditation and would like to know more", 'radio', false, ['Yes', 'NA']],
-            ['Anything that you would like to share about your journey and experiences?', 'textarea', false, []],
-            ['Did meditation help you in your daily life situations?', 'radio', false, self::YES_NO],
         ];
     }
 
@@ -50,9 +53,18 @@ class VasaviSurvey extends Command
         $slug = (string) $this->option('slug');
         $form = RegistrationForm::firstOrNew(['slug' => $slug]);
         if ($form->exists && $form->submissions()->exists()) {
-            $this->error("\"{$form->title}\" already has answers — its questions were left as they are. Edit them in Admin → Registration Forms.");
+            // Answers are stored per question, so with answers in only the order changes (matched by label).
+            $order = array_flip(array_column($this->questions(), 0));
+            $moved = 0;
+            foreach ($form->fields as $field) {
+                if (isset($order[$field->label])) {
+                    $field->update(['sort_order' => $order[$field->label]]);
+                    $moved++;
+                }
+            }
+            $this->info("\"{$form->title}\" already has answers: kept them and its questions, put {$moved} questions in the new order.");
 
-            return self::FAILURE;
+            return self::SUCCESS;
         }
 
         DB::transaction(function () use ($form) {

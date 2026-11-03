@@ -102,9 +102,22 @@ class MembersOnlyFormTest extends TestCase
         $this->assertSame('I am meditating', $form->fields()->first()->label);
         $this->assertSame('checkboxes', $form->fields()->where('label', 'I am meditating for the following reasons')->value('type'));
 
+        // Meditators first, then people not meditating yet.
+        $labels = $form->fields()->pluck('label')->all();
+        $this->assertSame('Anything that you would like to share about your journey and experiences?', $labels[3]);
+        $this->assertSame('Did meditation help you in your daily life situations?', $labels[4]);
+        $this->assertSame("I don't know much about meditation and would like to know more", $labels[15]);
+        $this->assertSame('I want to start my meditation journey but I am unable to, due to', $labels[16]);
+
+        // With answers in, only the order changes: same questions, same keys, answers kept.
         $form->submissions()->create(['data' => ['q01' => 'Yes']]);
-        $this->artisan('forms:vasavi-survey')->assertFailed();
+        $keys = $form->fields()->pluck('field_key', 'label')->all();
+        $form->fields()->where('label', 'I am meditating')->update(['sort_order' => 99]);
+        $this->artisan('forms:vasavi-survey')->expectsOutputToContain('put 20 questions in the new order')->assertSuccessful();
         $this->assertSame(20, $form->fields()->count());
+        $this->assertSame('I am meditating', $form->fields()->first()->label);
+        $this->assertSame($keys, $form->fields()->pluck('field_key', 'label')->all());
+        $this->assertSame(1, $form->submissions()->count());
     }
 
     public function test_results_sum_up_each_question_and_filter_by_one_answer(): void
