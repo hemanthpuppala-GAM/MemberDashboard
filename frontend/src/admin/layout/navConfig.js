@@ -98,6 +98,7 @@ export const BREADCRUMB_RULES = [
   { pattern: /^\/admin\/qr-codes\/?$/, crumbs: () => ["Engage", "QR Codes"] },
   { pattern: /^\/admin\/registration-forms\/new\/?$/, crumbs: () => ["Engage", "Registration Forms", "New form"] },
   { pattern: /^\/admin\/registration-forms\/([^/]+)\/submissions\/?$/, crumbs: (m) => ["Engage", "Registration Forms", m[1], "Registrations"] },
+  { pattern: /^\/admin\/registration-forms\/([^/]+)\/results\/?$/, crumbs: (m) => ["Engage", "Registration Forms", m[1], "Results"] },
   { pattern: /^\/admin\/registration-forms\/([^/]+)\/?$/, crumbs: (m) => ["Engage", "Registration Forms", m[1]] },
   { pattern: /^\/admin\/registration-forms\/?$/, crumbs: () => ["Engage", "Registration Forms"] },
   { pattern: /^\/admin\/volunteers\/categories\/?$/, crumbs: () => ["Volunteers", "Categories"] },

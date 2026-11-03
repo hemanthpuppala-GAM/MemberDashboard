@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Admin\Engage;
 use App\Http\Controllers\Controller;
 use App\Models\Engage\RegistrationForm;
 use App\Models\Engage\RegistrationFormSubmission;
+use App\Services\Engage\FormResults;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Validation\Rule;
@@ -23,6 +24,17 @@ class RegistrationFormSubmissionController extends Controller
         }
 
         return response()->json($query->paginate((int) $request->query('per_page', 20)));
+    }
+
+    /** Answers summed up per question (bars, "Any other" texts, written answers), optionally for one answer group. */
+    public function results(Request $request, RegistrationForm $registrationForm)
+    {
+        $data = $request->validate([
+            'filter_field' => ['nullable', 'string', 'max:80'],
+            'filter_value' => ['nullable', 'string', 'max:200'],
+        ]);
+
+        return response()->json(FormResults::for($registrationForm, $data['filter_field'] ?? null, $data['filter_value'] ?? null));
     }
 
     public function update(Request $request, RegistrationForm $registrationForm, RegistrationFormSubmission $submission)

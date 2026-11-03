@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
-import { ArrowLeft, Users, Download, Trash2 } from "lucide-react";
+import { ArrowLeft, Users, Download, Trash2, BarChart3 } from "lucide-react";
 import Card from "../../ui/Card";
 import DataTable from "../../ui/DataTable";
 import Button from "../../ui/Button";
@@ -173,9 +173,14 @@ export default function RegistrationFormSubmissionsPage() {
             Everyone who registered through this form's link. Mark people "contacted" once you've added them to WhatsApp.
           </p>
         </div>
-        <Button as="button" variant="secondary" icon={Download} onClick={exportCsv} disabled={!form}>
-          Export CSV
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <Button as={Link} to={`/admin/registration-forms/${id}/results`} variant="secondary" icon={BarChart3}>
+            Results & charts
+          </Button>
+          <Button as="button" variant="secondary" icon={Download} onClick={exportCsv} disabled={!form}>
+            Export CSV
+          </Button>
+        </div>
       </div>
 
       <Card padded={false}>

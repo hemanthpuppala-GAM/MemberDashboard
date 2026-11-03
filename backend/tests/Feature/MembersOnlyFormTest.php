@@ -106,4 +106,42 @@ class MembersOnlyFormTest extends TestCase
         $this->artisan('forms:vasavi-survey')->assertFailed();
         $this->assertSame(20, $form->fields()->count());
     }
+
+    public function test_results_sum_up_each_question_and_filter_by_one_answer(): void
+    {
+        $this->artisan('forms:vasavi-survey');
+        $form = RegistrationForm::where('slug', 'vasavi-survey')->first();
+        $key = fn ($label) => $form->fields()->where('label', $label)->value('field_key');
+        [$med, $reasons, $inspire] = [$key('I am meditating'), $key('I am meditating for the following reasons'), $key('What inspires me to meditate?')];
+        foreach ([
+            ['Yes', ['Peace', 'World peace'], 'My guru'],
+            ['Yes', ['Peace', 'Any other: Better sleep'], ''],
+            ['No', ['Reducing stress'], 'Friends'],
+        ] as [$m, $r, $t]) {
+            $form->submissions()->create(['data' => [$med => $m, $reasons => $r, $inspire => $t]]);
+        }
+
+        $role = Role::create(['name' => Role::SUPER_ADMIN, 'display_name' => 'Super admin']);
+        $admin = User::create(['name' => 'Admin', 'email' => 'admin@example.com', 'password' => 'secret-pass']);
+        $admin->roles()->attach($role);
+        Sanctum::actingAs($admin, [], 'sanctum');
+
+        $all = $this->getJson("/api/v1/admin/registration-forms/{$form->id}/results")->assertOk()->assertJsonPath('total', 3)->json();
+        $q = collect($all['questions'])->keyBy('key');
+        $this->assertSame(['Yes' => 2, 'No' => 1], collect($q[$med]['counts'])->pluck('count', 'option')->all());
+        $this->assertSame(['option' => 'Peace', 'count' => 2], $q[$reasons]['counts'][0]); // most picked first
+        $this->assertSame(1, collect($q[$reasons]['counts'])->firstWhere('option', 'Any other')['count']);
+        $this->assertSame(['Better sleep'], $q[$reasons]['others']);
+        $this->assertSame(2, $q[$inspire]['answered']);
+        $this->assertCount(1, $all['per_day']);
+
+        // Only the people who said they are not meditating.
+        $no = $this->getJson("/api/v1/admin/registration-forms/{$form->id}/results?filter_field={$med}&filter_value=No")
+            ->assertJsonPath('matching', 1)->json();
+        $nq = collect($no['questions'])->keyBy('key');
+        $this->assertSame(1, collect($nq[$reasons]['counts'])->firstWhere('option', 'Reducing stress')['count']);
+        $this->assertSame('Friends', $nq[$inspire]['answers'][0]['text']);
+        // A ticked choice works as a filter too.
+        $this->getJson("/api/v1/admin/registration-forms/{$form->id}/results?filter_field={$reasons}&filter_value=Peace")->assertJsonPath('matching', 2);
+    }
 }

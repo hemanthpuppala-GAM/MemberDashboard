@@ -254,6 +254,9 @@ export const api = {
   deleteRegistrationSubmission: (formId, submissionId) =>
     apiFetch(`/admin/registration-forms/${formId}/submissions/${submissionId}`, { method: "DELETE" }),
   registrationSubmissionsExportPath: (formId) => `/admin/registration-forms/${formId}/submissions/export`,
+  /** Answers summed up per question; `filter` = { filter_field, filter_value } shows one answer group. */
+  registrationResults: (formId, filter = {}) =>
+    apiFetch(`/admin/registration-forms/${formId}/results?${new URLSearchParams(Object.fromEntries(Object.entries(filter).filter(([, v]) => v)))}`),
 
   broadcasts: () => apiFetch("/admin/broadcasts"),
   createBroadcast: (payload) => apiFetch("/admin/broadcasts", { method: "POST", body: payload }),
