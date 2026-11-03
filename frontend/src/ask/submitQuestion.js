@@ -6,9 +6,9 @@ import { memberAuthApi } from "../lib/memberAuth";
  * token (source = member_portal) and the backend emails them an acknowledgement; everyone else
  * is an anonymous qr_web submission. Resolves to `{ ack_sent }`.
  */
-export function submitQuestion({ member, question, category = "general", topicLabel, lang = "en" }) {
+export function submitQuestion({ member, question, category = "general", topicLabel, lang = "en", phone }) {
   const message = topicLabel ? `[${topicLabel}] ${question}` : question;
   return member
     ? memberAuthApi.contact({ category, message, lang })
-    : publicApi.submitContact({ category, message, lang, source: "qr_web" });
+    : publicApi.submitContact({ category, message, lang, source: "qr_web", ...(phone ? { phone } : {}) });
 }
