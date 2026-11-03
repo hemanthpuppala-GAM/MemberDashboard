@@ -66,4 +66,20 @@ class AskQuestionTest extends TestCase
             ->assertOk()
             ->assertJson(['support.primary' => '917396112111', 'support.web' => '917396119111']);
     }
+
+    public function test_a_members_number_from_the_ask_page_is_kept_on_their_profile_when_missing(): void
+    {
+        \Illuminate\Support\Facades\Mail::fake();
+        $member = Member::create(['name' => 'Hemanth', 'email' => 'h@example.com', 'password' => 'secret-pass', 'category' => 'meditation', 'join_date' => now()]);
+        Sanctum::actingAs($member, [], 'sanctum');
+
+        $this->postJson('/api/v1/contact', ['category' => 'general', 'message' => 'Is there a kundalini group?', 'phone' => '+91 98765 43210'])->assertCreated()
+            ->assertJsonPath('phone', '+91 98765 43210');
+        $this->assertSame('+91 98765 43210', $member->fresh()->phone);
+
+        // A number already on the profile stays; this question carries the one they typed.
+        $this->postJson('/api/v1/contact', ['category' => 'general', 'message' => 'Another one', 'phone' => '+91 90000 11111'])->assertCreated()
+            ->assertJsonPath('phone', '+91 90000 11111');
+        $this->assertSame('+91 98765 43210', $member->fresh()->phone);
+    }
 }

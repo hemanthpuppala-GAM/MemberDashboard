@@ -9,6 +9,6 @@ import { memberAuthApi } from "../lib/memberAuth";
 export function submitQuestion({ member, question, category = "general", topicLabel, lang = "en", phone }) {
   const message = topicLabel ? `[${topicLabel}] ${question}` : question;
   return member
-    ? memberAuthApi.contact({ category, message, lang })
+    ? memberAuthApi.contact({ category, message, lang, ...(phone ? { phone } : {}) })
     : publicApi.submitContact({ category, message, lang, source: "qr_web", ...(phone ? { phone } : {}) });
 }
