@@ -254,6 +254,15 @@ export const api = {
   deleteRegistrationSubmission: (formId, submissionId) =>
     apiFetch(`/admin/registration-forms/${formId}/submissions/${submissionId}`, { method: "DELETE" }),
   registrationSubmissionsExportPath: (formId) => `/admin/registration-forms/${formId}/submissions/export`,
+
+  // Kids Meditation Circle (children's data — members.view / members.edit)
+  kidsAnalytics: () => apiFetch("/admin/kids/analytics"),
+  kids: (params = {}) => apiFetch(`/admin/kids?${new URLSearchParams(Object.fromEntries(Object.entries(params).filter(([, v]) => v)))}`),
+  kidsExportPath: (params = {}) => `/admin/kids/export?${new URLSearchParams(Object.fromEntries(Object.entries(params).filter(([, v]) => v)))}`,
+  kidsFamily: (id) => apiFetch(`/admin/kids/families/${id}`),
+  kidsConsent: (id) => apiFetch(`/admin/kids/consents/${id}`),
+  kidsRoster: (group, date) => apiFetch(`/admin/kids/roster?${new URLSearchParams({ group, ...(date ? { date } : {}) })}`),
+  kidsAttendance: (kid_id, date, present) => apiFetch("/admin/kids/attendance", { method: "POST", body: { kid_id, date, present } }),
   /** Answers summed up per question; `filter` = { filter_field, filter_value } shows one answer group. */
   registrationResults: (formId, filter = {}) =>
     apiFetch(`/admin/registration-forms/${formId}/results?${new URLSearchParams(Object.fromEntries(Object.entries(filter).filter(([, v]) => v)))}`),
@@ -330,6 +339,7 @@ export const publicApi = {
   contactChannels: () => apiFetch("/contact-channels", { auth: false }),
   donationMethods: () => apiFetch("/donation-methods", { auth: false }),
   broadcasts: (page) => apiFetch(`/broadcasts/active${page ? `?page=${encodeURIComponent(page)}` : ""}`, { auth: false }),
+  kidsProgram: () => apiFetch("/kids/program", { auth: false }),
   registrationForm: (slug) => apiFetch(`/registration-forms/${slug}`, { auth: false }),
   submitRegistration: (slug, payload) => apiFetch(`/registration-forms/${slug}/submit`, { method: "POST", body: payload, auth: false }),
 };

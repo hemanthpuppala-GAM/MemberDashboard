@@ -2,7 +2,7 @@ import {
   LayoutDashboard, FileText, Image, Inbox, UsersRound, UserCog, ShieldCheck,
   Megaphone, Radio, QrCode, BarChart3, Globe, Settings, Files, Phone, Landmark,
   Music2, MessageSquareQuote, HeartHandshake, ListChecks, CalendarClock, Timer,
-  ClipboardList, Headset, LifeBuoy, UserPlus, RefreshCw, Quote, Rocket,
+  ClipboardList, Headset, LifeBuoy, UserPlus, RefreshCw, Quote, Rocket, Baby,
 } from "lucide-react";
 
 /**
@@ -36,6 +36,7 @@ export const NAV = [
       // Leaves the admin panel: the desk (/support) shares this app's router and accepts the admin sign-in.
       { to: "/support", label: "Support desk", icon: LifeBuoy, permission: "members.view" },
       { to: "/admin/members", label: "Members", icon: UsersRound, permission: "members.view" },
+      { to: "/admin/kids", label: "Kids Circle", icon: Baby, permission: "members.view" },
       { to: "/admin/membership-drives", label: "Membership drives", icon: UserPlus, permission: "members.view" },
       { to: "/admin/data-sync", label: "Data sync", icon: RefreshCw, permission: "members.view" },
       { to: "/admin/users", label: "Users", icon: UserCog, permission: "users.view" },
@@ -69,6 +70,7 @@ export const NAV = [
 
 export const BREADCRUMB_RULES = [
   { pattern: /^\/admin\/?$/, crumbs: () => ["Dashboard"] },
+  { pattern: /^\/admin\/kids\/?$/, crumbs: () => ["People", "Kids Circle"] },
   { pattern: /^\/admin\/cms\/pages\/new\/?$/, crumbs: () => ["CMS", "Pages", "New page"] },
   { pattern: /^\/admin\/cms\/pages\/([^/]+)\/copy\/?$/, crumbs: (m) => ["CMS", "Pages", m[1], "Page copy"] },
   { pattern: /^\/admin\/cms\/pages\/([^/]+)\/sections\/([^/]+)\/?$/, crumbs: (m) => ["CMS", "Pages", m[1], "Section"] },

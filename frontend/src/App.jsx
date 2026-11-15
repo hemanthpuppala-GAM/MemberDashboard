@@ -12,6 +12,8 @@ import PrivacyPage from "./site/pages/PrivacyPage";
 import DonatePage from "./site/pages/DonatePage";
 import JoinPage from "./pages/JoinPage";
 import RegisterPage from "./pages/RegisterPage";
+import KidsPage from "./kids/KidsPage";
+import KidsRegisterPage from "./kids/KidsRegisterPage";
 import AuthCallbackPage from "./pages/AuthCallbackPage";
 import AdminApp from "./admin/AdminApp";
 import UserApp from "./user/UserApp";
@@ -52,6 +54,9 @@ function App() {
 
             <Route path="/join" element={<JoinPage />} />
             <Route path="/register/:slug" element={<RegisterPage />} />
+            {/* Kids Meditation Circle (USA, online): program page + parent registration with signed consent. */}
+            <Route path="/kids" element={<KidsPage />} />
+            <Route path="/kids/register" element={<KidsRegisterPage />} />
             <Route path="/auth/callback" element={<AuthCallbackPage />} />
 
             {/* Ask a question — QR target, no login. Poster / Zoom slide carry the QR. */}
