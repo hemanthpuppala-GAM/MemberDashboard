@@ -67,7 +67,10 @@ export async function memberFetch(path, { method = "GET", body, auth = true } = 
   const isJson = res.headers.get("content-type")?.includes("application/json");
   const data = isJson ? await res.json().catch(() => null) : null;
   if (!res.ok) {
-    throw new Error(data?.message ?? `Request failed (${res.status})`);
+    const err = new Error(data?.message ?? `Request failed (${res.status})`);
+    err.status = res.status;
+    err.errors = data?.errors; // Laravel 422 field errors
+    throw err;
   }
   return data;
 }
@@ -96,6 +99,13 @@ export const memberAuthApi = {
   updateProfile: (payload) => memberFetch("/member/profile", { method: "PUT", body: payload }),
   updatePassword: (payload) => memberFetch("/member/password", { method: "PUT", body: payload }),
   contact: (payload) => memberFetch("/contact", { method: "POST", body: payload }),
+
+  // Kids Meditation Circle — the parent's own household
+  kids: () => memberFetch("/member/kids"),
+  saveKids: (payload) => memberFetch("/member/kids", { method: "POST", body: payload }),
+  kidMedia: (kidId, media_consent) => memberFetch(`/member/kids/${kidId}/media`, { method: "PUT", body: { media_consent } }),
+  withdrawKid: (kidId) => memberFetch(`/member/kids/${kidId}/withdraw`, { method: "POST" }),
+  kidsConsent: (id) => memberFetch(`/member/kids/consents/${id}`),
 };
 
 export { API_ORIGIN };

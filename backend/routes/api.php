@@ -52,7 +52,10 @@ use App\Http\Controllers\Api\Public\Engage\BroadcastController;
 use App\Http\Controllers\Api\Public\Engage\RegistrationFormController;
 use App\Http\Controllers\Api\Public\Languages\LanguageController;
 use App\Http\Controllers\Api\Public\Languages\UiStringController;
+use App\Http\Controllers\Api\Admin\Kids\KidsAdminController;
+use App\Http\Controllers\Api\Public\Kids\KidsProgramController;
 use App\Http\Controllers\Api\Public\Member\JournalController;
+use App\Http\Controllers\Api\Public\Member\KidsController as MemberKidsController;
 use App\Http\Controllers\Api\Public\Member\LiveSessionController;
 use App\Http\Controllers\Api\Public\Member\OverviewController as MemberOverviewController;
 use App\Http\Controllers\Api\Public\Member\PracticeSessionController;
@@ -102,6 +105,7 @@ Route::prefix('v1')->group(function () {
     Route::post('/contact', [ContactController::class, 'store'])->middleware('throttle:5,1');
     Route::post('/volunteer-applications', [VolunteerApplicationController::class, 'store'])->middleware('throttle:5,1');
 
+    Route::get('/kids/program', [KidsProgramController::class, 'show']);
     Route::get('/registration-forms/{slug}', [RegistrationFormController::class, 'show']);
     Route::post('/registration-forms/{slug}/submit', [RegistrationFormController::class, 'submit'])->middleware('throttle:5,1');
 
@@ -136,6 +140,13 @@ Route::prefix('v1')->group(function () {
             Route::get('/live-sessions', [LiveSessionController::class, 'index']);
             Route::get('/referral', [ReferralController::class, 'index']);
             Route::put('/profile', [MemberProfileController::class, 'update']);
+
+            // Kids Meditation Circle: the parent's own household, consents and photo choices.
+            Route::get('/kids', [MemberKidsController::class, 'show']);
+            Route::post('/kids', [MemberKidsController::class, 'store'])->middleware('throttle:10,1');
+            Route::put('/kids/{kid}/media', [MemberKidsController::class, 'media']);
+            Route::post('/kids/{kid}/withdraw', [MemberKidsController::class, 'withdrawKid']);
+            Route::get('/kids/consents/{consent}', [MemberKidsController::class, 'consent']);
             Route::put('/password', [MemberProfileController::class, 'updatePassword']);
 
             // Their own support questions (tickets): status, replies, rating.
@@ -316,6 +327,17 @@ Route::prefix('v1')->group(function () {
         Route::middleware('permission:roles.create')->post('/roles', [RoleController::class, 'store']);
         Route::middleware('permission:roles.edit')->put('/roles/{role}', [RoleController::class, 'update']);
         Route::middleware('permission:roles.delete')->delete('/roles/{role}', [RoleController::class, 'destroy']);
+
+        // ---- Kids Meditation Circle (children's data: members.view to see, members.edit to tick attendance) ----
+        Route::middleware('permission:members.view')->group(function () {
+            Route::get('/kids/analytics', [KidsAdminController::class, 'analytics']);
+            Route::get('/kids/export', [KidsAdminController::class, 'export']);
+            Route::get('/kids/roster', [KidsAdminController::class, 'roster']);
+            Route::get('/kids/consents/{consent}', [KidsAdminController::class, 'consent']);
+            Route::get('/kids/families/{registration}', [KidsAdminController::class, 'show']);
+            Route::get('/kids', [KidsAdminController::class, 'index']);
+        });
+        Route::middleware('permission:members.edit')->post('/kids/attendance', [KidsAdminController::class, 'attendance']);
 
         // ---- Members ----
         // ---- Membership drives (bulk sign-up by phone) ----

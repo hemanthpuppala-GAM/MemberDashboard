@@ -1,4 +1,5 @@
 import { Routes, Route, Navigate } from "react-router-dom";
+import FamilyPage, { SignedConsentPage } from "./pages/FamilyPage";
 import UserLayout from "./UserLayout";
 import OverviewPage from "./pages/OverviewPage";
 import SitScribePage from "./pages/SitScribePage";
@@ -19,6 +20,8 @@ export default function UserApp() {
         <Route path="share" element={<ShareLightPage />} />
         <Route path="ask" element={<AskQuestionPage />} />
         <Route path="circles" element={<Navigate to="/dashboard/ask" replace />} />
+        <Route path="family" element={<FamilyPage />} />
+        <Route path="family/consent/:id" element={<SignedConsentPage />} />
         <Route path="profile" element={<ProfilePage />} />
       </Route>
     </Routes>

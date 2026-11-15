@@ -1,0 +1,240 @@
+/* Kids Meditation Circle — site green + gold (scoped under .gaw-site by SitePage). */
+.gaw-site .kids-h2 {
+  margin: 0 0 16px;
+  font-size: clamp(28px, 2.8vw, 40px);
+  font-weight: 500;
+  line-height: 1.1;
+  color: #12201a;
+}
+
+.gaw-site .kids-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.gaw-site .kids-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px 28px;
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: #2e3a33;
+}
+.gaw-site .kids-steps li {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.gaw-site .kids-num {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #c9a24a;
+  color: #14241c;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.gaw-site .kids-table {
+  display: flex;
+  flex-direction: column;
+}
+.gaw-site .kids-tr {
+  display: grid;
+  grid-template-columns: 1.6fr repeat(4, 1fr);
+  gap: 8px;
+  padding: 13px 18px;
+  font-size: 14px;
+  color: #2e3a33;
+  border-top: 1px solid rgba(138, 111, 52, 0.16);
+}
+.gaw-site .kids-tr small {
+  color: #5a5546;
+  font-size: 12px;
+}
+.gaw-site .kids-th {
+  background: #14241c;
+  color: #e8cf83;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  border-top: 0;
+}
+
+.gaw-site .kids-safe {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 26px;
+  font-size: 14.5px;
+}
+.gaw-site .kids-safe li {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+}
+.gaw-site .kids-safe li::before {
+  content: "✓";
+  color: #e8cf83;
+  font-weight: 700;
+}
+
+.gaw-site .kids-pill-line {
+  border: 1px solid rgba(138, 111, 52, 0.55) !important;
+  background: transparent !important;
+  color: var(--ink) !important;
+  transition: background 0.2s;
+}
+.gaw-site .kids-pill-line:hover {
+  background: rgba(201, 162, 74, 0.12) !important;
+}
+
+/* register form */
+.gaw-site .kids-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px 16px;
+}
+.gaw-site .kids-form-grid .full {
+  grid-column: 1 / -1;
+}
+.gaw-site .kids-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #3a3128;
+}
+.gaw-site .kids-input {
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 15px;
+  border-radius: 14px;
+  border: 1px solid rgba(138, 111, 52, 0.38);
+  background: #fffdf8;
+  color: #12201a;
+  font-size: 15px;
+  font-family: inherit;
+}
+.gaw-site .kids-input:focus {
+  outline: none;
+  border-color: #a8853a;
+  box-shadow: 0 0 0 3px rgba(201, 162, 74, 0.25);
+}
+.gaw-site .kids-input.bad {
+  border-color: #b04646;
+}
+.gaw-site .kids-err {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: #9b2c2c;
+}
+.gaw-site .kids-hint {
+  font-size: 12px;
+  font-weight: 400;
+  color: #5a5546;
+}
+.gaw-site .kids-choice {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.gaw-site .kids-choice label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(138, 111, 52, 0.32);
+  background: #fffdf8;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #2e3a33;
+  cursor: pointer;
+}
+.gaw-site .kids-choice label.on {
+  border-color: #a8853a;
+  background: #fbf3dc;
+  color: #14241c;
+  font-weight: 700;
+}
+.gaw-site .kids-choice input {
+  accent-color: #a8853a;
+}
+.gaw-site .kids-stepper {
+  display: flex;
+  gap: 8px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.gaw-site .kids-stepper li {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #9a927f;
+}
+.gaw-site .kids-stepper li::before {
+  content: "";
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(138, 111, 52, 0.2);
+}
+.gaw-site .kids-stepper li.on {
+  color: #7a5e22;
+}
+.gaw-site .kids-stepper li.on::before {
+  background: #c9a24a;
+}
+
+@media (max-width: 760px) {
+  .gaw-site .kids-grid-3,
+  .gaw-site .kids-steps,
+  .gaw-site .kids-safe,
+  .gaw-site .kids-form-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .gaw-site .kids-tr {
+    grid-template-columns: 1fr 1fr;
+  }
+  .gaw-site .kids-tr > :first-child {
+    grid-column: 1 / -1;
+  }
+  .gaw-site .kids-th > :first-child {
+    display: none;
+  }
+  .gaw-site .kids-tr [data-zone]::before {
+    content: attr(data-zone) " ";
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    color: #7a5e22;
+  }
+  .gaw-site .kids-th {
+    display: none;
+  }
+}
+
+@media print {
+  .gaw-site .no-print {
+    display: none !important;
+  }
+}

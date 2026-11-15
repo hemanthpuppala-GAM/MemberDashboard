@@ -31,6 +31,7 @@ import TestimonialsPage from "./pages/cms/TestimonialsPage";
 import SiteContentEditorPage from "./pages/site/SiteContentEditorPage";
 
 import QueryInboxPage from "./pages/people/QueryInboxPage";
+import KidsCirclePage from "./pages/kids/KidsCirclePage";
 import MembersListPage from "./pages/people/MembersListPage";
 import MemberProfilePage from "./pages/people/MemberProfilePage";
 import MemberJourneyPage from "./pages/people/MemberJourneyPage";
@@ -93,6 +94,7 @@ export default function AdminApp() {
                 <Route path="content/:page" element={<LegacyCopyRedirect />} />
 
                 <Route path="queries" element={guarded("members.view", <QueryInboxPage />)} />
+                <Route path="kids" element={guarded("members.view", <KidsCirclePage />)} />
                 <Route path="members" element={guarded("members.view", <MembersListPage />)} />
                 <Route path="members/:id" element={guarded("members.view", <MemberProfilePage />)} />
                 <Route path="members/:id/journey" element={guarded("members.view", <MemberJourneyPage />)} />
