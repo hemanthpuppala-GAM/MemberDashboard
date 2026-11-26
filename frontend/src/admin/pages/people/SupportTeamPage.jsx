@@ -13,6 +13,7 @@ import Badge from "../../ui/Badge";
 import Avatar from "../../ui/Avatar";
 import { api } from "../../../lib/api";
 import { usePermissions } from "../../usePermissions";
+import { useAuth } from "../../useAuth";
 
 const EMPTY = { kind: "core", name: "", phone: "", email: "", pin: "", is_active: true };
 const KIND_LABEL = { core: "Core support", volunteer: "Volunteer", staff: "Staff (admin login)" };
@@ -31,6 +32,10 @@ function formatLogin(value) {
 export default function SupportTeamPage() {
   const { can } = usePermissions();
   const canEdit = can("members.edit");
+  // Only a super admin may choose the grievance chief or touch the chief's sign-in (the chief reads every grievance).
+  const { user } = useAuth();
+  const isSuper = !!user?.roles?.includes("super_admin") || user?.role === "super_admin";
+  const chiefLock = "Only a super admin can change the grievance chief";
   const noEdit = "You don't have permission to change the support team";
 
   const [agents, setAgents] = useState([]);
@@ -179,8 +184,8 @@ export default function SupportTeamPage() {
         cell: ({ row }) => (
           <Toggle
             checked={!!row.original.is_grievance_chief}
-            disabled={!canEdit || !row.original.is_active}
-            label={row.original.is_grievance_chief ? "Chief" : "—"}
+            disabled={!isSuper || !row.original.is_active}
+            label={row.original.is_grievance_chief ? "Chief" : isSuper ? "—" : "Super admin only"}
             onChange={(v) => setChief(row.original, v)}
           />
         ),
@@ -207,17 +212,18 @@ export default function SupportTeamPage() {
         cell: ({ row }) => {
           // Staff agents are created automatically from an admin user; only on/off applies to them.
           const staff = row.original.kind === "staff";
+          const chiefLocked = !!row.original.is_grievance_chief && !isSuper;
           const staffNote = "Admin staff sign in with their admin login — use the Active switch to turn them off";
           return (
             <div className="flex justify-end gap-1">
-              <IconButton icon={Pencil} label={!canEdit ? noEdit : staff ? staffNote : "Edit"} disabled={!canEdit || staff} onClick={() => openEdit(row.original)} />
-              <IconButton icon={Trash2} label={!canEdit ? noEdit : staff ? staffNote : "Remove"} variant="danger" disabled={!canEdit || staff} onClick={() => setToDelete(row.original)} />
+              <IconButton icon={Pencil} label={!canEdit ? noEdit : staff ? staffNote : chiefLocked ? chiefLock : "Edit"} disabled={!canEdit || staff || chiefLocked} onClick={() => openEdit(row.original)} />
+              <IconButton icon={Trash2} label={!canEdit ? noEdit : staff ? staffNote : chiefLocked ? chiefLock : "Remove"} variant="danger" disabled={!canEdit || staff || chiefLocked} onClick={() => setToDelete(row.original)} />
             </div>
           );
         },
       },
     ],
-    [canEdit],
+    [canEdit, isSuper],
   );
 
   return (

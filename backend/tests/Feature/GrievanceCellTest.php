@@ -175,4 +175,37 @@ class GrievanceCellTest extends TestCase
         $this->postJson('/api/v1/grievances', ['about' => 'Something else', 'message' => 'A long enough message here.', 'website' => 'spam'])->assertUnprocessable();
         $this->postJson('/api/v1/grievances', ['about' => 'Not a choice', 'message' => 'A long enough message here.'])->assertUnprocessable();
     }
+
+    public function test_only_a_super_admin_can_choose_the_chief_or_touch_the_chiefs_sign_in(): void
+    {
+        // An admin who may edit the support team, but is not a super admin.
+        $perm = \App\Models\Auth\Permission::create(['name' => 'members.edit', 'group' => 'members', 'description' => 'Edit members']);
+        $view = \App\Models\Auth\Permission::create(['name' => 'members.view', 'group' => 'members', 'description' => 'View members']);
+        $role = Role::create(['name' => 'admin', 'display_name' => 'Admin']);
+        $role->permissions()->attach([$perm->id, $view->id]);
+        $admin = User::create(['name' => 'Ordinary Admin', 'email' => 'ordinary@example.com', 'password' => 'secret-pass']);
+        $admin->roles()->attach($role);
+        Sanctum::actingAs($admin, [], 'sanctum');
+
+        $this->putJson("/api/v1/admin/support-agents/{$this->team->id}", ['is_grievance_chief' => true])->assertForbidden();
+        $this->putJson("/api/v1/admin/support-agents/{$this->chief->id}", ['is_grievance_chief' => false])->assertForbidden();
+        // The back door: reset the chief's PIN or phone and sign in as the chief.
+        $this->putJson("/api/v1/admin/support-agents/{$this->chief->id}", ['pin' => '111111'])->assertForbidden();
+        $this->putJson("/api/v1/admin/support-agents/{$this->chief->id}", ['phone' => '9111111111'])->assertForbidden();
+        $this->putJson("/api/v1/admin/support-agents/{$this->chief->id}", ['email' => 'me@example.com'])->assertForbidden();
+        $this->deleteJson("/api/v1/admin/support-agents/{$this->chief->id}")->assertForbidden();
+        // Ordinary edits to other people still work.
+        $this->putJson("/api/v1/admin/support-agents/{$this->team->id}", ['name' => 'Lakshmi R'])->assertOk();
+        $this->assertTrue($this->chief->fresh()->is_grievance_chief);
+        $this->assertTrue($this->chief->fresh()->checkPin('246810'));
+
+        // A super admin can, and the chief is told.
+        $superRole = Role::create(['name' => Role::SUPER_ADMIN, 'display_name' => 'Super admin']);
+        $super = User::create(['name' => 'Super', 'email' => 'super@example.com', 'password' => 'secret-pass']);
+        $super->roles()->attach($superRole);
+        $this->app['auth']->forgetGuards();
+        Sanctum::actingAs($super, [], 'sanctum');
+        $this->putJson("/api/v1/admin/support-agents/{$this->chief->id}", ['pin' => '135790'])->assertOk();
+        $this->assertDatabaseHas('activity_logs', ['action' => 'changed grievance chief sign-in', 'target_id' => $this->chief->id]);
+    }
 }
