@@ -22,7 +22,7 @@ class GrievanceChiefChange
         $by = auth('sanctum')->user();
         try {
             ActivityLog::create([
-                'user_id' => $by instanceof \App\Models\Auth\User ? $by->id : null,
+                'user_id' => $by instanceof User ? $by->id : null,
                 'action' => 'changed grievance chief sign-in',
                 'target_type' => 'SupportAgent',
                 'target_id' => $agent->id,
