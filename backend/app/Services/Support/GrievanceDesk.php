@@ -116,7 +116,7 @@ class GrievanceDesk
         return ['nudged' => true, 'message' => 'The chief has been reminded by email.'];
     }
 
-    /** Email the chief. No names or message in the email: they open the desk to read it. */
+    /** Email the chief a notification (new grievance or nudge). Never the sender or the message: they read it on the desk. */
     public static function alertChief(Ticket $ticket, string $kind, ?string $by = null): void
     {
         $chief = SupportAgent::grievanceChief();
@@ -132,6 +132,27 @@ class GrievanceDesk
         } catch (\Throwable $e) {
             Log::warning("Grievance {$ticket->ref} alert email failed: ".$e->getMessage());
         }
+    }
+
+    /** Daily: remind the chief of every open grievance. Returns how many were listed (0 = nothing sent). */
+    public static function remindChief(): int
+    {
+        $chief = SupportAgent::grievanceChief();
+        $email = $chief?->alertEmail();
+        $open = Ticket::where('confidential', true)->whereIn('status', Ticket::OPEN_STATUSES)->oldest()->get();
+        if (! $email || $open->isEmpty()) {
+            return 0;
+        }
+        try {
+            SmtpSettings::apply();
+            Mail::to($email)->send(new \App\Mail\GrievanceDigestMail($open, $chief->name));
+        } catch (\Throwable $e) {
+            Log::warning('Grievance reminder email failed: '.$e->getMessage());
+
+            return 0;
+        }
+
+        return $open->count();
     }
 
     /** The chief's reply goes to the sender, if they left an email. Reply-To is the chief, so they can write back. */

@@ -3,7 +3,9 @@
 namespace Tests\Feature;
 
 use App\Mail\GrievanceAlertMail;
+use App\Mail\GrievanceDigestMail;
 use App\Mail\GrievanceReplyMail;
+use App\Models\Auth\Permission;
 use App\Models\Auth\Role;
 use App\Models\Auth\User;
 use App\Models\People\Member;
@@ -80,12 +82,14 @@ class GrievanceCellTest extends TestCase
         }
         $this->assertSame('Meera Iyer', Grievance::where('ticket_id', $id)->first()->name);
 
-        // The chief is told, without the sender or the message in the email.
+        // The chief gets a notification only: no sender, contact or message in the email.
         Mail::assertSent(GrievanceAlertMail::class, function ($m) {
             $html = $m->render();
 
-            return $m->hasTo('chief@example.com') && ! str_contains($html, 'Meera') && ! str_contains($html, 'rudely');
+            return $m->hasTo('chief@example.com') && str_contains($html, '/support/ticket/')
+                && ! str_contains($html, 'Meera') && ! str_contains($html, 'rudely') && ! str_contains($html, '9876543210');
         });
+        Mail::assertNotSent(GrievanceAlertMail::class, fn ($m) => $m->hasTo('lakshmi@example.com'));
     }
 
     public function test_the_team_sees_only_a_masked_grievance_and_can_nudge_the_chief(): void
@@ -179,8 +183,8 @@ class GrievanceCellTest extends TestCase
     public function test_only_a_super_admin_can_choose_the_chief_or_touch_the_chiefs_sign_in(): void
     {
         // An admin who may edit the support team, but is not a super admin.
-        $perm = \App\Models\Auth\Permission::create(['name' => 'members.edit', 'group' => 'members', 'description' => 'Edit members']);
-        $view = \App\Models\Auth\Permission::create(['name' => 'members.view', 'group' => 'members', 'description' => 'View members']);
+        $perm = Permission::create(['name' => 'members.edit', 'group' => 'members', 'description' => 'Edit members']);
+        $view = Permission::create(['name' => 'members.view', 'group' => 'members', 'description' => 'View members']);
         $role = Role::create(['name' => 'admin', 'display_name' => 'Admin']);
         $role->permissions()->attach([$perm->id, $view->id]);
         $admin = User::create(['name' => 'Ordinary Admin', 'email' => 'ordinary@example.com', 'password' => 'secret-pass']);
@@ -207,5 +211,26 @@ class GrievanceCellTest extends TestCase
         Sanctum::actingAs($super, [], 'sanctum');
         $this->putJson("/api/v1/admin/support-agents/{$this->chief->id}", ['pin' => '135790'])->assertOk();
         $this->assertDatabaseHas('activity_logs', ['action' => 'changed grievance chief sign-in', 'target_id' => $this->chief->id]);
+    }
+
+    public function test_daily_reminder_lists_open_grievances_only_when_there_are_some(): void
+    {
+        $this->artisan('grievances:remind')->expectsOutputToContain('nothing sent')->assertSuccessful();
+        Mail::assertNotSent(GrievanceDigestMail::class);
+
+        $id = $this->file();
+        $this->file(['name' => null, 'email' => null, 'phone' => null, 'message' => 'Sessions keep starting late without notice.']);
+        $this->artisan('grievances:remind')->expectsOutputToContain('2 open grievance')->assertSuccessful();
+        Mail::assertSent(GrievanceDigestMail::class, function ($m) {
+            $html = $m->render();
+
+            return $m->hasTo('chief@example.com') && str_contains($html, 'T-') && ! str_contains($html, 'Meera') && ! str_contains($html, 'late without notice');
+        });
+
+        // Resolved ones drop off the list.
+        Ticket::query()->update(['status' => 'resolved']);
+        Mail::fake();
+        $this->artisan('grievances:remind')->expectsOutputToContain('nothing sent');
+        Mail::assertNotSent(GrievanceDigestMail::class);
     }
 }

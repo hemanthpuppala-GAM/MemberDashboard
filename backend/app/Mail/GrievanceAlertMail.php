@@ -10,7 +10,10 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-/** To the grievance chief: a new grievance, or the team's nudge. Never carries the sender or the message. */
+/**
+ * To the grievance chief only: a new grievance, or the team's nudge. A notification only — never the sender, the
+ * contact details or the message (team decision): the chief opens the desk to read them.
+ */
 class GrievanceAlertMail extends Mailable
 {
     use Queueable, SerializesModels;
@@ -26,6 +29,7 @@ class GrievanceAlertMail extends Mailable
 
     public function content(): Content
     {
+        $url = GoLive::frontendUrl().'/support/ticket/'.$this->ticket->id;
         $days = max(0, (int) $this->ticket->created_at?->diffInDays(now()));
         $line = $this->kind === 'nudge'
             ? "{$this->by} from the support team asks you to look at grievance {$this->ticket->ref}. It has been open for {$days} ".($days === 1 ? 'day' : 'days').'.'
@@ -36,7 +40,7 @@ class GrievanceAlertMail extends Mailable
             text: 'emails.ask-received-text',
             with: [
                 'greeting' => "Namaste {$this->chiefName},",
-                'bodyLine' => $line.' Open the support desk to read and reply: '.GoLive::frontendUrl().'/support/ticket/'.$this->ticket->id,
+                'bodyLine' => $line."\n\nOpen the support desk to read and reply: {$url}",
                 'signoff' => 'Golden Age Wisdom grievance cell',
             ],
         );

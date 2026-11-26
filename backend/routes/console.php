@@ -22,6 +22,14 @@ Schedule::command('queue:work --stop-when-empty --max-time=50')->everyMinute()->
 // Go live at the time picked in Admin → Go live (checked every minute; also the scheduler heartbeat it shows).
 Schedule::command('site:go-live --due')->everyMinute()->withoutOverlapping();
 
+// Grievance cell: each morning, remind the grievance chief of grievances still open (nothing on days with none).
+Schedule::command('grievances:remind')->dailyAt('08:40')->timezone('Asia/Kolkata');
+
+Artisan::command('grievances:remind', function () {
+    $n = \App\Services\Support\GrievanceDesk::remindChief();
+    $this->info($n ? "Reminded the grievance chief of {$n} open grievance(s)." : 'No open grievances (or no chief email): nothing sent.');
+})->purpose('Email the grievance chief a list of open grievances (runs daily)');
+
 // The Meditation page's "Short clips" (and their topic playlists): read the YouTube channel once a day.
 Schedule::command('youtube:refresh')->dailyAt('06:10')->timezone('Asia/Kolkata');
 
