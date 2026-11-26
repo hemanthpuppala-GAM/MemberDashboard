@@ -11,6 +11,8 @@ const SCOPES = [
   { value: "open", label: "All open", count: (s) => s.open + s.in_progress + s.waiting },
   { value: "resolved", label: "Resolved" },
   { value: "all", label: "All" },
+  // Grievances never appear in the tabs above: only here. The chief reads them; everyone else sees them masked.
+  { value: "grievances", label: "🔒 Grievances", count: (s) => s.grievances_open, dark: true },
 ];
 
 const EMPTY_COPY = {
@@ -19,6 +21,7 @@ const EMPTY_COPY = {
   open: ["All caught up", "There are no open questions right now."],
   resolved: ["No resolved tickets yet", "Tickets you mark resolved will show here."],
   all: ["No tickets yet", "Questions from the Ask page, member dashboard, calls and WhatsApp will show here."],
+  grievances: ["No grievances", "Grievances sent from the website's Grievance cell show here. Only the grievance chief can read them."],
 };
 
 /** Scope tabs + search + source filter. */
@@ -39,8 +42,10 @@ export function TicketFilters({ scope, onScope, search, onSearch, source, onSour
               className={`inline-flex min-h-[44px] shrink-0 cursor-pointer items-center gap-2 whitespace-nowrap rounded-full border px-4 text-[14px] font-semibold transition ${
                 active
                   ? "border-[#14241C] bg-[#14241C] text-[#F6F1E6]"
-                  : "border-[rgba(138,111,52,0.28)] bg-[#FFFDF8] text-[#1B3328] hover:border-[#C9A24A]"
-              }`}
+                  : s.dark
+                    ? "border-[#A8853A] bg-[#FBF3DC] text-[#14241C] hover:border-[#14241C]"
+                    : "border-[rgba(138,111,52,0.28)] bg-[#FFFDF8] text-[#1B3328] hover:border-[#C9A24A]"
+              } ${s.dark ? "sm:ml-auto" : ""}`}
             >
               {s.label}
               {n !== null && n !== undefined && (
@@ -68,7 +73,7 @@ export function TicketFilters({ scope, onScope, search, onSearch, source, onSour
           <span className="sr-only">Where it came from</span>
           <select className={`${inputClass} cursor-pointer`} value={source} onChange={(e) => onSource(e.target.value)}>
             <option value="">All sources</option>
-            {Object.entries(SOURCE_LABELS).map(([v, l]) => (
+            {Object.entries(SOURCE_LABELS).filter(([v]) => v !== "grievance").map(([v, l]) => (
               <option key={v} value={v}>
                 {l}
               </option>
@@ -181,7 +186,7 @@ export function TicketList({ list, scope, filtered, selectedId, filter, canBulk,
           {list.total} ticket{list.total === 1 ? "" : "s"}
           {done && <span className="ml-2 font-semibold text-[#2F6B45]">{done}</span>}
         </p>
-        {canBulk && scope !== "resolved" && (
+        {canBulk && scope !== "resolved" && scope !== "grievances" && (
           <Button
             variant="ghost"
             onClick={() => (selecting ? stopSelecting() : (setSelecting(true), setDone("")))}
@@ -329,7 +334,10 @@ function RowBody({ ticket: t }) {
             {timeAgo(t.created_at)}
           </span>
         </div>
-        <p className="mt-1 line-clamp-2 text-[15px] font-semibold leading-snug text-[#14241C]">{t.subject}</p>
+        <p className="mt-1 line-clamp-2 text-[15px] font-semibold leading-snug text-[#14241C]">
+          {t.confidential && <span className="mr-1.5 rounded-full bg-[#14241C] px-2 py-0.5 align-middle text-[11px] font-bold uppercase tracking-wide text-[#E8CF83]">🔒 Grievance</span>}
+          {t.subject}
+        </p>
         <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[13px] text-[#2E3A33]">
           <span className="min-w-0 truncate">{t.requester?.name || t.requester?.phone || t.requester?.email || "Unknown person"}</span>
           <span className="text-[#5A5546]">→ {t.assignee?.name ?? <em className="not-italic text-[#7A5E22]">Unassigned</em>}</span>

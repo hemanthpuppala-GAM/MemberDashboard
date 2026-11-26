@@ -23,9 +23,13 @@ export default function KpiTiles({ stats }) {
       sub: stats.oldest_open_at ? "oldest open ticket" : "nothing open",
     },
   ];
+  // Grievances: the team sees how many wait with the chief (never what they say).
+  if (stats.grievances_open) {
+    tiles.push({ label: "🔒 Grievances open", value: stats.grievances_open, tone: "red", sub: `with ${stats.grievance_chief || "no chief set"} · oldest ${age(stats.oldest_grievance_at)}` });
+  }
 
   return (
-    <dl className="grid grid-cols-3 gap-2 sm:gap-3 lg:grid-cols-9">
+    <dl className={`grid grid-cols-3 gap-2 sm:gap-3 ${tiles.length > 9 ? "lg:grid-cols-10" : "lg:grid-cols-9"}`}>
       {tiles.map((t) => (
         <Tile key={t.label} {...t} />
       ))}

@@ -50,7 +50,8 @@ export default function TicketControls({ ticket, me, agents, busy, onUpdate }) {
           <select
             className={`${inputClass} cursor-pointer`}
             value={ticket.assignee?.id ?? ""}
-            disabled={!!busy}
+            disabled={!!busy || ticket.confidential}
+            title={ticket.confidential ? "A grievance stays with the grievance chief" : undefined}
             onChange={(e) => onUpdate({ assigned_agent_id: e.target.value ? Number(e.target.value) : null }, "assign")}
           >
             <option value="">Nobody yet (unassigned)</option>

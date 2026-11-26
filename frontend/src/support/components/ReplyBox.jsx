@@ -8,7 +8,7 @@ const MODES = [
 ];
 
 /** Write a public reply (emailed to the member) or an internal note for the team. */
-export default function ReplyBox({ onSend, canEmail }) {
+export default function ReplyBox({ onSend, canEmail, grievance = false }) {
   const [mode, setMode] = useState("reply");
   const [body, setBody] = useState("");
   const [busy, setBusy] = useState(false);
@@ -38,9 +38,15 @@ export default function ReplyBox({ onSend, canEmail }) {
       <Segmented label="Message type" value={mode} options={MODES} onChange={setMode} />
       <p className="mt-2 text-[12.5px] leading-relaxed text-[#5A5546]">
         {note
-          ? "Only the support team sees internal notes."
-          : canEmail
-            ? "The member gets this by email and sees it in “My questions”."
+          ? grievance
+            ? "A private note: only you, as grievance chief, can see it."
+            : "Only the support team sees internal notes."
+          : grievance && !canEmail
+            ? "Sent anonymously or without an email, so a reply can't reach them. Use an internal note to keep your own record."
+            : canEmail
+            ? grievance
+              ? "Emailed only to the person who sent the grievance. They can reply to you directly. The team never sees it."
+              : "The member gets this by email and sees it in “My questions”."
             : "This person gave no email — they'll see it only if they sign in. Call or WhatsApp them too."}
       </p>
       <label className="mt-2 block">

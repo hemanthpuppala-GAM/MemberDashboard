@@ -11,13 +11,18 @@ use Illuminate\Support\Str;
 
 #[Fillable([
     'source', 'source_id', 'member_id', 'requester_name', 'requester_email', 'requester_phone',
-    'subject', 'body', 'category', 'lang', 'status', 'priority', 'assigned_agent_id', 'created_by_agent_id',
+    'subject', 'body', 'category', 'lang', 'status', 'priority', 'assigned_agent_id', 'created_by_agent_id', 'confidential',
 ])]
 class Ticket extends Model
 {
     public const STATUSES = ['open', 'in_progress', 'waiting', 'resolved', 'closed'];
     public const OPEN_STATUSES = ['open', 'in_progress', 'waiting'];
-    public const SOURCES = ['ask_web', 'member_portal', 'website', 'call', 'whatsapp', 'volunteer', 'volunteer_old', 'other'];
+    public const SOURCES = ['ask_web', 'member_portal', 'website', 'call', 'whatsapp', 'volunteer', 'volunteer_old', 'grievance', 'other'];
+
+    /** What everyone but the grievance chief sees on a grievance ticket. */
+    public const MASKED_SUBJECT = 'Grievance (confidential)';
+
+    public const MASKED_BODY = 'Only the grievance chief can read this grievance. Its sender, contact details and message are encrypted.';
     /** A volunteer sign-up older than this when it reaches the desk is tagged "Old volunteer sign-up". */
     public const RECENT_VOLUNTEER_DAYS = 14;
     public const PRIORITIES = ['normal', 'urgent'];
@@ -29,6 +34,8 @@ class Ticket extends Model
             'resolved_at' => 'datetime',
             'rated_at' => 'datetime',
             'rating' => 'integer',
+            'confidential' => 'boolean',
+            'nudged_at' => 'datetime',
         ];
     }
 
@@ -45,6 +52,11 @@ class Ticket extends Model
     public function creator()
     {
         return $this->belongsTo(SupportAgent::class, 'created_by_agent_id');
+    }
+
+    public function grievance()
+    {
+        return $this->hasOne(Grievance::class);
     }
 
     public function comments()
@@ -186,6 +198,8 @@ class Ticket extends Model
             'resolved_at' => $this->resolved_at,
             'rating' => $this->rating,
             'rating_comment' => $this->rating_comment,
+            'confidential' => (bool) $this->confidential,
+            'nudged_at' => $this->nudged_at,
         ];
 
         if (! $forMember) {

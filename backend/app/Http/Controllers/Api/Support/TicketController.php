@@ -9,6 +9,7 @@ use App\Models\People\Member;
 use App\Models\Support\SupportAgent;
 use App\Models\Support\Ticket;
 use App\Models\Support\TicketComment;
+use App\Services\Support\GrievanceDesk;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
@@ -25,7 +26,7 @@ class TicketController extends Controller
     {
         $agent = $this->agent($request);
         $ready = \App\Services\People\MemberNumbers::ready();
-        $q = Ticket::query()->with($ready ? ['assignee', 'member:id,member_num'] : ['assignee'])->withCount('comments');
+        $q = Ticket::query()->with($ready ? ['assignee', 'member:id,member_num', 'grievance'] : ['assignee', 'grievance'])->withCount('comments');
 
         $this->filter($q, $agent, $request->query());
 
@@ -35,7 +36,7 @@ class TicketController extends Controller
             ->paginate(min(100, (int) $request->query('per_page', 25)));
 
         return response()->json([
-            'data' => collect($page->items())->map(fn (Ticket $t) => $t->toApi())->all(),
+            'data' => collect($page->items())->map(fn (Ticket $t) => GrievanceDesk::present($t, $t->toApi(), $agent))->all(),
             'meta' => ['current_page' => $page->currentPage(), 'last_page' => $page->lastPage(), 'total' => $page->total()],
         ]);
     }
@@ -78,10 +79,13 @@ class TicketController extends Controller
         return response()->json($ticket->fresh(['assignee', 'creator'])->toApi(true), 201);
     }
 
-    public function show(Ticket $ticket)
+    public function show(Request $request, Ticket $ticket)
     {
         $ticket->load(['assignee', 'creator']);
         $data = $ticket->toApi(true);
+        if ($ticket->confidential) {
+            return response()->json(GrievanceDesk::present($ticket, $data, $this->agent($request)));
+        }
 
         // Earlier tickets from the same person — helps follow-up.
         $data['history'] = Ticket::where('id', '!=', $ticket->id)
@@ -114,6 +118,10 @@ class TicketController extends Controller
             'category' => ['sometimes', 'string', 'max:40'],
             'assigned_agent_id' => ['sometimes', 'nullable', 'integer', Rule::exists('support_agents', 'id')->where('is_active', true)],
         ]);
+        if ($ticket->confidential) {
+            abort_unless(GrievanceDesk::canRead($agent), 403, 'Only the grievance chief can change a grievance. Use "Nudge the chief".');
+            unset($data['assigned_agent_id']); // it stays with the chief
+        }
 
         $notes = [];
         $assignee = null;
@@ -139,14 +147,25 @@ class TicketController extends Controller
         foreach ($notes as $n) {
             $ticket->comments()->create(['author_type' => 'system', 'agent_id' => $agent->id, 'body' => $n, 'internal' => true]);
         }
-        if ($wasResolved) {
+        if ($wasResolved && ! $ticket->confidential) {
             $this->notifyRequester($ticket, 'resolved');
         }
         if ($assignee && $assignee->id !== $agent->id) {
             $this->notifyAssignee($ticket, $assignee, $agent);
         }
 
-        return response()->json($ticket->fresh(['assignee', 'creator'])->toApi(true));
+        $fresh = $ticket->fresh(['assignee', 'creator']);
+
+        return response()->json(GrievanceDesk::present($fresh, $fresh->toApi(true), $agent));
+    }
+
+    /** "Nudge the chief": anyone on the desk can push the grievance chief to act on a grievance. */
+    public function nudge(Request $request, Ticket $ticket)
+    {
+        abort_unless($ticket->confidential, 404);
+        abort_if(in_array($ticket->status, ['resolved', 'closed'], true), 422, 'This grievance is already resolved.');
+
+        return response()->json(GrievanceDesk::nudge($ticket, $this->agent($request)));
     }
 
     /**
@@ -217,7 +236,7 @@ class TicketController extends Controller
             'ids' => ['required_without:filter', 'array', 'max:500'],
             'ids.*' => ['integer'],
             'filter' => ['required_without:ids', 'array'],
-            'filter.scope' => ['nullable', Rule::in(['mine', 'unassigned', 'open', 'resolved', 'all'])],
+            'filter.scope' => ['nullable', Rule::in(['mine', 'unassigned', 'open', 'resolved', 'all'])], // never grievances
             'filter.source' => ['nullable', 'string', 'max:200'],
             'filter.q' => ['nullable', 'string', 'max:200'],
             ...$rules,
@@ -230,7 +249,8 @@ class TicketController extends Controller
             $this->filter($q, $agent, $data['filter']);
         }
 
-        return [$data, $q->whereIn('status', Ticket::OPEN_STATUSES)->orderBy('id')->limit(2000)->get()];
+        // Grievances never go through bulk actions: only the chief handles them, one by one.
+        return [$data, $q->where('confidential', false)->whereIn('status', Ticket::OPEN_STATUSES)->orderBy('id')->limit(2000)->get()];
     }
 
     public function comment(Request $request, Ticket $ticket)
@@ -241,6 +261,9 @@ class TicketController extends Controller
             'internal' => ['nullable', 'boolean'],
         ]);
         $internal = (bool) ($data['internal'] ?? false);
+        if ($ticket->confidential) {
+            abort_unless(GrievanceDesk::canRead($agent), 403, 'Only the grievance chief can reply to a grievance. Use "Nudge the chief".');
+        }
 
         $comment = $ticket->comments()->create([
             'author_type' => 'agent',
@@ -260,7 +283,9 @@ class TicketController extends Controller
         $ticket->save();
 
         if (! $internal) {
-            $this->notifyRequester($ticket, 'reply', $comment);
+            $ticket->confidential
+                ? GrievanceDesk::replyToSender($ticket, $comment, $agent)
+                : $this->notifyRequester($ticket, 'reply', $comment);
         }
 
         return response()->json($comment->load('agent')->toApi(), 201);
@@ -270,7 +295,11 @@ class TicketController extends Controller
     private function filter($q, SupportAgent $agent, array $f): void
     {
         $ready = \App\Services\People\MemberNumbers::ready();
-        match ($f['scope'] ?? 'open') {
+        // Grievances live only under their own "Grievances" tab, never mixed into the support queues.
+        $scope = $f['scope'] ?? 'open';
+        $q->where('confidential', $scope === 'grievances');
+        match ($scope) {
+            'grievances' => null,
             'mine' => $q->where('assigned_agent_id', $agent->id)->whereIn('status', Ticket::OPEN_STATUSES),
             'unassigned' => $q->whereNull('assigned_agent_id')->whereIn('status', Ticket::OPEN_STATUSES),
             'resolved' => $q->whereIn('status', ['resolved', 'closed']),

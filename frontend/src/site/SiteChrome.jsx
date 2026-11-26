@@ -13,7 +13,7 @@ import { useDailySitUrl } from "./useDailySit";
 import "./site.css";
 
 /** Hand-built routes a CMS page can't take over (the router sends those URLs elsewhere). */
-const RESERVED_SLUGS = new Set([...SITE_PAGES.map((p) => p.to.slice(1)), ...UTILITY_LINKS.map((l) => l.to.slice(1)), "contact", "join", "ask", "support", "dashboard", "admin", "register", "auth", "kids"]);
+const RESERVED_SLUGS = new Set([...SITE_PAGES.map((p) => p.to.slice(1)), ...UTILITY_LINKS.map((l) => l.to.slice(1)), "contact", "join", "ask", "support", "dashboard", "admin", "register", "auth", "kids", "grievance"]);
 
 /** Utility links = published CMS pages (Admin → CMS → Pages) followed by the fixed ones. */
 function useUtilityLinks() {
@@ -315,9 +315,43 @@ export function Breadcrumb({ current }) {
   );
 }
 
+/**
+ * "Grievance cell" band shown above the footer of every sub-page (not on /grievance itself): a complaint about a
+ * session, a person or anything that felt wrong goes straight to the grievance chief, in confidence.
+ */
+export function GrievanceBanner() {
+  const { pathname } = useLocation();
+  if (pathname.endsWith("/grievance")) return null;
+  return (
+    <section
+      aria-label="Grievance cell"
+      className="gaw-grievance-band"
+      style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "14px 22px", margin: `0 clamp(20px,5vw,72px) clamp(26px,4vh,40px)`, padding: "18px clamp(18px,2.4vw,28px)", borderRadius: 22, background: "linear-gradient(100deg,#FFFDF8 0%,#FBF3DC 100%)", border: "1px solid rgba(184,146,62,.45)", boxShadow: "0 14px 34px -18px rgba(60,42,16,.35)" }}
+    >
+      <span aria-hidden="true" style={{ flex: "none", width: 48, height: 48, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", background: "#14241C", boxShadow: "0 0 0 2px #C9A24A", fontSize: 20 }}>
+        🔒
+      </span>
+      <div style={{ flex: "1 1 320px", minWidth: 0, display: "flex", flexDirection: "column", gap: 4 }}>
+        <span style={{ fontSize: 10.5, fontWeight: 700, letterSpacing: ".22em", ...CAPS, color: "#7A5E22" }}>Grievance cell</span>
+        <span className="serif" style={{ fontSize: "clamp(20px,1.9vw,26px)", lineHeight: 1.15, color: "#14241C" }}>
+          A complaint or concern? Tell our grievance chief, in confidence.
+        </span>
+        <span style={{ fontSize: 13, lineHeight: 1.55, color: "#5A5546" }}>
+          About a session, a team member, safety or anything that felt wrong. Only the chief reads it, and you can stay anonymous.
+        </span>
+      </div>
+      <Link to="/grievance" className="gaw-pill-gold" style={{ flex: "none", display: "inline-flex", alignItems: "center", justifyContent: "center", minHeight: 46, padding: "0 24px", borderRadius: 999, fontSize: 11.5, fontWeight: 700, letterSpacing: ".12em", ...CAPS }}>
+        File a grievance →
+      </Link>
+    </section>
+  );
+}
+
 /** Dark footer band used by the sub-pages: title + sub on the left, Watch live / Join the daily sit on the right. */
 export function SiteFooter({ title, sub, children }) {
   return (
+    <>
+    <GrievanceBanner />
     <footer
       id="join"
       style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: "18px 32px", padding: `28px clamp(20px,5vw,72px)`, background: "linear-gradient(180deg,#1B3328 0%,#14241C 100%)", color: "#F6F1E6" }}
@@ -342,6 +376,7 @@ export function SiteFooter({ title, sub, children }) {
       </div>
       <FooterContact />
     </footer>
+    </>
   );
 }
 
