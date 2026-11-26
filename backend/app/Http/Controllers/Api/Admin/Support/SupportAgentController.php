@@ -40,8 +40,9 @@ class SupportAgentController extends Controller
         return response()->json(['id' => $agent->id]);
     }
 
-    public function destroy(SupportAgent $agent)
+    public function destroy(Request $request, SupportAgent $agent)
     {
+        abort_if($agent->is_grievance_chief && ! $this->isSuperAdmin($request), 403, 'Only a super admin can remove the grievance chief.');
         $agent->tokens()->delete();
         $agent->delete();
 
@@ -69,6 +70,20 @@ class SupportAgentController extends Controller
             'is_grievance_chief' => ['sometimes', 'boolean'],
         ]);
 
+        // The chief reads every grievance. Only a super admin may choose the chief, or change the chief's
+        // sign-in (phone, PIN, email, role): otherwise an admin could reset the chief's PIN and sign in as them.
+        $super = $this->isSuperAdmin($request);
+        if (array_key_exists('is_grievance_chief', $data) && (bool) $data['is_grievance_chief'] !== (bool) $agent->is_grievance_chief) {
+            abort_unless($super, 403, 'Only a super admin can choose the grievance chief.');
+        }
+        $signInChange = $agent->exists && $agent->is_grievance_chief && (
+            ! empty($data['pin'])
+            || (array_key_exists('phone', $data) && $data['phone'] !== $agent->phone)
+            || (array_key_exists('email', $data) && $data['email'] !== $agent->email)
+            || (isset($data['kind']) && $data['kind'] !== $agent->kind)
+        );
+        abort_if($signInChange && ! $super, 403, "Only a super admin can change the grievance chief's sign-in details.");
+
         $agent->fill(collect($data)->except('pin')->all());
         if (! empty($data['pin'])) {
             $agent->setPin($data['pin']);
@@ -79,6 +94,10 @@ class SupportAgentController extends Controller
         }
         $agent->save();
 
+        if ($signInChange) {
+            \App\Services\Support\GrievanceChiefChange::signInChanged($agent);
+        }
+
         // One grievance chief at a time: naming a new one removes the old one. Logged and both are emailed.
         if (array_key_exists('is_grievance_chief', $data) && $agent->wasChanged('is_grievance_chief')) {
             $previous = $data['is_grievance_chief']
@@ -87,5 +106,12 @@ class SupportAgentController extends Controller
             SupportAgent::whereIn('id', $previous->pluck('id'))->update(['is_grievance_chief' => false]);
             \App\Services\Support\GrievanceChiefChange::record($agent, (bool) $data['is_grievance_chief'], $previous);
         }
+    }
+
+    private function isSuperAdmin(Request $request): bool
+    {
+        $user = $request->user();
+
+        return $user instanceof \App\Models\Auth\User && $user->isSuperAdmin();
     }
 }
