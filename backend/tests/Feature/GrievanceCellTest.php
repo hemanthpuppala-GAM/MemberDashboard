@@ -92,7 +92,10 @@ class GrievanceCellTest extends TestCase
     {
         $id = $this->file();
 
-        $list = $this->as($this->team)->getJson('/api/v1/support/tickets?scope=open')->assertOk();
+        // Kept out of the normal support queues; only under the Grievances tab.
+        $this->as($this->team)->getJson('/api/v1/support/tickets?scope=open')->assertOk()->assertJsonCount(0, 'data');
+        $this->as($this->team)->getJson('/api/v1/support/tickets?scope=all')->assertOk()->assertJsonCount(0, 'data');
+        $list = $this->as($this->team)->getJson('/api/v1/support/tickets?scope=grievances')->assertOk();
         $this->assertStringNotContainsString('Meera', $list->getContent());
         $list->assertJsonPath('data.0.confidential', true)->assertJsonPath('data.0.requester.name', 'Anonymous');
 
@@ -111,7 +114,7 @@ class GrievanceCellTest extends TestCase
         $this->as($this->team)->postJson('/api/v1/support/tickets/bulk-close', ['ids' => [$id]])->assertOk()->assertJsonPath('closed', 0);
 
         $stats = $this->as($this->team)->getJson('/api/v1/support/dashboard')->assertOk();
-        $stats->assertJsonPath('stats.grievances_open', 1)->assertJsonPath('stats.grievance_chief', 'Chief Ravi');
+        $stats->assertJsonPath('stats.grievances_open', 1)->assertJsonPath('stats.grievance_chief', 'Chief Ravi')->assertJsonPath('stats.open', 0);
     }
 
     public function test_only_the_chief_reads_replies_and_resolves(): void

@@ -93,7 +93,7 @@ export default function TicketDetail({ id, me, agents, onClose, onChanged }) {
                 <section aria-label="Conversation" className="flex flex-col gap-3">
                   <h3 className="text-[22px] text-[#14241C]">Conversation</h3>
                   <Thread comments={ticket.comments} />
-                  <ReplyBox key={ticket.id} onSend={send} canEmail={!!ticket.requester?.email || !!ticket.requester?.member_id} />
+                  <ReplyBox key={ticket.id} onSend={send} canEmail={!!ticket.requester?.email || !!ticket.requester?.member_id} grievance={!!ticket.confidential} />
                 </section>
               </>
             )}

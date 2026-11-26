@@ -15,39 +15,39 @@ class SupportDashboardController extends Controller
         $me = $request->attributes->get('support_agent');
         $since = now()->subDays(30);
 
-        $byStatus = Ticket::selectRaw('status, count(*) as n')->groupBy('status')->pluck('n', 'status');
-        $openBySource = Ticket::whereIn('status', Ticket::OPEN_STATUSES)
+        $byStatus = Ticket::where('confidential', false)->selectRaw('status, count(*) as n')->groupBy('status')->pluck('n', 'status');
+        $openBySource = Ticket::where('confidential', false)->whereIn('status', Ticket::OPEN_STATUSES)
             ->selectRaw('source, count(*) as n')->groupBy('source')->pluck('n', 'source');
 
         // Timing maths in PHP keeps it identical on MySQL and SQLite.
-        $recent = Ticket::where('created_at', '>=', $since)->get(['id', 'created_at', 'first_response_at', 'resolved_at', 'assigned_agent_id', 'rating', 'status']);
+        $recent = Ticket::where('confidential', false)->where('created_at', '>=', $since)->get(['id', 'created_at', 'first_response_at', 'resolved_at', 'assigned_agent_id', 'rating', 'status']);
         $avgMinutes = fn ($rows, $from, $to) => ($c = $rows->filter(fn ($t) => $t->$to)->count())
             ? round($rows->filter(fn ($t) => $t->$to)->avg(fn ($t) => $t->$from->diffInMinutes($t->$to)))
             : null;
 
-        $rated = Ticket::whereNotNull('rating');
+        $rated = Ticket::where('confidential', false)->whereNotNull('rating');
         $stats = [
             'open' => (int) ($byStatus['open'] ?? 0),
             'in_progress' => (int) ($byStatus['in_progress'] ?? 0),
             'waiting' => (int) ($byStatus['waiting'] ?? 0),
             'resolved' => (int) ($byStatus['resolved'] ?? 0) + (int) ($byStatus['closed'] ?? 0),
-            'unassigned' => Ticket::whereNull('assigned_agent_id')->whereIn('status', Ticket::OPEN_STATUSES)->count(),
-            'urgent_open' => Ticket::where('priority', 'urgent')->whereIn('status', Ticket::OPEN_STATUSES)->count(),
-            'mine_open' => Ticket::where('assigned_agent_id', $me->id)->whereIn('status', Ticket::OPEN_STATUSES)->count(),
-            'new_today' => Ticket::where('created_at', '>=', now()->startOfDay())->count(),
-            'resolved_7d' => Ticket::where('resolved_at', '>=', now()->subDays(7))->count(),
+            'unassigned' => Ticket::where('confidential', false)->whereNull('assigned_agent_id')->whereIn('status', Ticket::OPEN_STATUSES)->count(),
+            'urgent_open' => Ticket::where('confidential', false)->where('priority', 'urgent')->whereIn('status', Ticket::OPEN_STATUSES)->count(),
+            'mine_open' => Ticket::where('confidential', false)->where('assigned_agent_id', $me->id)->whereIn('status', Ticket::OPEN_STATUSES)->count(),
+            'new_today' => Ticket::where('confidential', false)->where('created_at', '>=', now()->startOfDay())->count(),
+            'resolved_7d' => Ticket::where('confidential', false)->where('resolved_at', '>=', now()->subDays(7))->count(),
             'avg_first_response_minutes' => $avgMinutes($recent, 'created_at', 'first_response_at'),
             'avg_resolution_minutes' => $avgMinutes($recent, 'created_at', 'resolved_at'),
             'avg_rating' => ($n = (clone $rated)->count()) ? round((clone $rated)->avg('rating'), 2) : null,
             'ratings' => $n,
-            'oldest_open_at' => Ticket::whereIn('status', Ticket::OPEN_STATUSES)->min('created_at'),
+            'oldest_open_at' => Ticket::where('confidential', false)->whereIn('status', Ticket::OPEN_STATUSES)->min('created_at'),
             'grievances_open' => Ticket::where('confidential', true)->whereIn('status', Ticket::OPEN_STATUSES)->count(),
             'oldest_grievance_at' => Ticket::where('confidential', true)->whereIn('status', Ticket::OPEN_STATUSES)->min('created_at'),
             'grievance_chief' => \App\Models\Support\SupportAgent::grievanceChief()?->name,
         ];
 
         $team = SupportAgent::where('is_active', true)->orderBy('kind')->orderBy('name')->get()->map(function (SupportAgent $a) use ($recent) {
-            $mine = Ticket::where('assigned_agent_id', $a->id);
+            $mine = Ticket::where('confidential', false)->where('assigned_agent_id', $a->id);
             $resolved30 = $recent->where('assigned_agent_id', $a->id)->filter(fn ($t) => $t->resolved_at);
             $ratings = (clone $mine)->whereNotNull('rating');
 
@@ -63,7 +63,7 @@ class SupportDashboardController extends Controller
             ];
         });
 
-        $latestReviews = Ticket::whereNotNull('rating')->with('assignee')->latest('rated_at')->limit(6)->get()
+        $latestReviews = Ticket::where('confidential', false)->whereNotNull('rating')->with('assignee')->latest('rated_at')->limit(6)->get()
             ->map(fn (Ticket $t) => ['ref' => $t->ref, 'id' => $t->id, 'rating' => $t->rating, 'comment' => $t->rating_comment, 'agent' => $t->assignee?->name, 'rated_at' => $t->rated_at]);
 
         return response()->json([
@@ -82,8 +82,8 @@ class SupportDashboardController extends Controller
      */
     private function progress(SupportAgent $me, $since): array
     {
-        $created = Ticket::where('created_at', '>=', $since)->get(['created_at', 'source', 'category', 'assigned_agent_id', 'created_by_agent_id']);
-        $resolved = Ticket::where('resolved_at', '>=', $since)->get(['resolved_at', 'assigned_agent_id']);
+        $created = Ticket::where('confidential', false)->where('created_at', '>=', $since)->get(['created_at', 'source', 'category', 'assigned_agent_id', 'created_by_agent_id']);
+        $resolved = Ticket::where('confidential', false)->where('resolved_at', '>=', $since)->get(['resolved_at', 'assigned_agent_id']);
 
         $days = [];
         for ($d = now()->subDays(29)->startOfDay(); $d <= now(); $d = $d->copy()->addDay()) {
@@ -110,7 +110,7 @@ class SupportDashboardController extends Controller
             'mine' => [
                 'logged_30d' => $created->where('created_by_agent_id', $me->id)->count(),
                 'resolved_30d' => $resolved->where('assigned_agent_id', $me->id)->count(),
-                'open' => Ticket::where('assigned_agent_id', $me->id)->whereIn('status', Ticket::OPEN_STATUSES)->count(),
+                'open' => Ticket::where('confidential', false)->where('assigned_agent_id', $me->id)->whereIn('status', Ticket::OPEN_STATUSES)->count(),
             ],
         ];
     }

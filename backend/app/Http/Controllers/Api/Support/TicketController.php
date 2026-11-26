@@ -236,7 +236,7 @@ class TicketController extends Controller
             'ids' => ['required_without:filter', 'array', 'max:500'],
             'ids.*' => ['integer'],
             'filter' => ['required_without:ids', 'array'],
-            'filter.scope' => ['nullable', Rule::in(['mine', 'unassigned', 'open', 'resolved', 'all'])],
+            'filter.scope' => ['nullable', Rule::in(['mine', 'unassigned', 'open', 'resolved', 'all'])], // never grievances
             'filter.source' => ['nullable', 'string', 'max:200'],
             'filter.q' => ['nullable', 'string', 'max:200'],
             ...$rules,
@@ -295,7 +295,11 @@ class TicketController extends Controller
     private function filter($q, SupportAgent $agent, array $f): void
     {
         $ready = \App\Services\People\MemberNumbers::ready();
-        match ($f['scope'] ?? 'open') {
+        // Grievances live only under their own "Grievances" tab, never mixed into the support queues.
+        $scope = $f['scope'] ?? 'open';
+        $q->where('confidential', $scope === 'grievances');
+        match ($scope) {
+            'grievances' => null,
             'mine' => $q->where('assigned_agent_id', $agent->id)->whereIn('status', Ticket::OPEN_STATUSES),
             'unassigned' => $q->whereNull('assigned_agent_id')->whereIn('status', Ticket::OPEN_STATUSES),
             'resolved' => $q->whereIn('status', ['resolved', 'closed']),
