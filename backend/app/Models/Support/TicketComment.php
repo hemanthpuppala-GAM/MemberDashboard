@@ -6,12 +6,35 @@ use App\Models\People\Member;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 
-#[Fillable(['ticket_id', 'author_type', 'agent_id', 'member_id', 'body', 'internal'])]
+#[Fillable(['ticket_id', 'author_type', 'agent_id', 'member_id', 'body', 'internal', 'sealed'])]
 class TicketComment extends Model
 {
     protected function casts(): array
     {
-        return ['internal' => 'boolean'];
+        return ['internal' => 'boolean', 'sealed' => 'boolean'];
+    }
+
+    /** Replies and notes on a grievance are stored encrypted (`sealed`); system notes ("nudged") stay readable. */
+    protected static function booted(): void
+    {
+        static::creating(function (TicketComment $c) {
+            if ($c->author_type !== 'system' && Ticket::whereKey($c->ticket_id)->value('confidential')) {
+                $c->sealed = true;
+                $c->attributes['body'] = \Illuminate\Support\Facades\Crypt::encryptString((string) $c->attributes['body']);
+            }
+        });
+    }
+
+    public function getBodyAttribute($value): string
+    {
+        if (! $this->sealed) {
+            return (string) $value;
+        }
+        try {
+            return \Illuminate\Support\Facades\Crypt::decryptString((string) $value);
+        } catch (\Throwable) {
+            return '[unreadable]';
+        }
     }
 
     public function agent()

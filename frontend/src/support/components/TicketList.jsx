@@ -329,7 +329,10 @@ function RowBody({ ticket: t }) {
             {timeAgo(t.created_at)}
           </span>
         </div>
-        <p className="mt-1 line-clamp-2 text-[15px] font-semibold leading-snug text-[#14241C]">{t.subject}</p>
+        <p className="mt-1 line-clamp-2 text-[15px] font-semibold leading-snug text-[#14241C]">
+          {t.confidential && <span className="mr-1.5 rounded-full bg-[#14241C] px-2 py-0.5 align-middle text-[11px] font-bold uppercase tracking-wide text-[#E8CF83]">🔒 Grievance</span>}
+          {t.subject}
+        </p>
         <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[13px] text-[#2E3A33]">
           <span className="min-w-0 truncate">{t.requester?.name || t.requester?.phone || t.requester?.email || "Unknown person"}</span>
           <span className="text-[#5A5546]">→ {t.assignee?.name ?? <em className="not-italic text-[#7A5E22]">Unassigned</em>}</span>

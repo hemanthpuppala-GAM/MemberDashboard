@@ -7,7 +7,7 @@ import RequesterCard from "./RequesterCard";
 import ReplyBox from "./ReplyBox";
 import Thread from "./Thread";
 import TicketControls from "./TicketControls";
-import { ErrorNote, Loading, StatusPill, UrgentBadge, cardClass } from "./ui";
+import { Button, ErrorNote, Loading, StatusPill, UrgentBadge, cardClass } from "./ui";
 
 /** One ticket: what they asked, who they are, controls, the thread and the reply box. */
 export default function TicketDetail({ id, me, agents, onClose, onChanged }) {
@@ -78,17 +78,67 @@ export default function TicketDetail({ id, me, agents, onClose, onChanged }) {
             </section>
 
             {actionError && <ErrorNote>{actionError}</ErrorNote>}
-            <TicketControls ticket={ticket} me={me} agents={agents} busy={busy} onUpdate={update} />
-            <RequesterCard requester={ticket.requester} history={ticket.history} />
+            {ticket.confidential && !ticket.can_read ? (
+              <MaskedGrievance ticket={ticket} onNudged={async () => { await reload(); onChanged(); }} />
+            ) : (
+              <>
+                {ticket.confidential && (
+                  <p className="rounded-2xl bg-[#14241C] px-4 py-3 text-[14px] leading-relaxed text-[#F3EAD3]">
+                    🔒 <strong className="text-[#E8CF83]">Confidential grievance.</strong> Only you, as grievance chief, can see who sent it and what it says. The rest of the team sees “Anonymous”. Your replies are emailed to the sender, and they can write back to you directly.
+                  </p>
+                )}
+                <TicketControls ticket={ticket} me={me} agents={agents} busy={busy} onUpdate={update} />
+                <RequesterCard requester={ticket.requester} history={ticket.history} />
 
-            <section aria-label="Conversation" className="flex flex-col gap-3">
-              <h3 className="text-[22px] text-[#14241C]">Conversation</h3>
-              <Thread comments={ticket.comments} />
-              <ReplyBox key={ticket.id} onSend={send} canEmail={!!ticket.requester?.email || !!ticket.requester?.member_id} />
-            </section>
+                <section aria-label="Conversation" className="flex flex-col gap-3">
+                  <h3 className="text-[22px] text-[#14241C]">Conversation</h3>
+                  <Thread comments={ticket.comments} />
+                  <ReplyBox key={ticket.id} onSend={send} canEmail={!!ticket.requester?.email || !!ticket.requester?.member_id} />
+                </section>
+              </>
+            )}
           </>
         )}
       </div>
     </div>
+  );
+}
+
+/** What the support team sees on a grievance: that it exists, its age and status, and a way to push the chief. */
+function MaskedGrievance({ ticket, onNudged }) {
+  const [state, setState] = useState({ busy: false, note: "" });
+  const done = ["resolved", "closed"].includes(ticket.status);
+  const nudge = async () => {
+    setState({ busy: true, note: "" });
+    try {
+      const res = await supportApi.nudgeChief(ticket.id);
+      setState({ busy: false, note: res.message });
+      await onNudged();
+    } catch (err) {
+      setState({ busy: false, note: err.message });
+    }
+  };
+  return (
+    <section className={`${cardClass} flex flex-col gap-3 p-4`}>
+      <p className="text-[15px] leading-relaxed text-[#2E3A33]">
+        🔒 This is a <strong>confidential grievance</strong>. Who sent it and what it says are encrypted. Only the grievance chief{ticket.assignee ? ` (${ticket.assignee.name})` : ""} can read and resolve it.
+      </p>
+      <p className="text-[13.5px] text-[#5A5546]">
+        Your part: make sure it doesn&apos;t wait. {ticket.nudged_at ? `Last nudged ${timeAgo(ticket.nudged_at)}.` : "The chief hasn't been nudged yet."}
+      </p>
+      {!done && (
+        <Button variant="primary" onClick={nudge} disabled={state.busy} className="self-start">
+          {state.busy ? "Sending…" : "Nudge the chief"}
+        </Button>
+      )}
+      {state.note && <p className="text-[13.5px] font-semibold text-[#7A5E22]">{state.note}</p>}
+      {ticket.comments?.length > 0 && (
+        <ul className="mt-1 flex flex-col gap-1 text-[12.5px] text-[#5A5546]">
+          {ticket.comments.map((c) => (
+            <li key={c.id}>{formatDateTime(c.created_at)} · {c.body}</li>
+          ))}
+        </ul>
+      )}
+    </section>
   );
 }

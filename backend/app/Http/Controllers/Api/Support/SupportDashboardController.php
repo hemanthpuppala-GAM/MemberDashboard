@@ -41,6 +41,9 @@ class SupportDashboardController extends Controller
             'avg_rating' => ($n = (clone $rated)->count()) ? round((clone $rated)->avg('rating'), 2) : null,
             'ratings' => $n,
             'oldest_open_at' => Ticket::whereIn('status', Ticket::OPEN_STATUSES)->min('created_at'),
+            'grievances_open' => Ticket::where('confidential', true)->whereIn('status', Ticket::OPEN_STATUSES)->count(),
+            'oldest_grievance_at' => Ticket::where('confidential', true)->whereIn('status', Ticket::OPEN_STATUSES)->min('created_at'),
+            'grievance_chief' => \App\Models\Support\SupportAgent::grievanceChief()?->name,
         ];
 
         $team = SupportAgent::where('is_active', true)->orderBy('kind')->orderBy('name')->get()->map(function (SupportAgent $a) use ($recent) {

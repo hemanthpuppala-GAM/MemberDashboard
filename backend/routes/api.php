@@ -54,6 +54,7 @@ use App\Http\Controllers\Api\Public\Languages\LanguageController;
 use App\Http\Controllers\Api\Public\Languages\UiStringController;
 use App\Http\Controllers\Api\Admin\Kids\KidsAdminController;
 use App\Http\Controllers\Api\Public\Kids\KidsProgramController;
+use App\Http\Controllers\Api\Public\Support\GrievanceController;
 use App\Http\Controllers\Api\Public\Member\JournalController;
 use App\Http\Controllers\Api\Public\Member\KidsController as MemberKidsController;
 use App\Http\Controllers\Api\Public\Member\LiveSessionController;
@@ -106,6 +107,9 @@ Route::prefix('v1')->group(function () {
     Route::post('/volunteer-applications', [VolunteerApplicationController::class, 'store'])->middleware('throttle:5,1');
 
     Route::get('/kids/program', [KidsProgramController::class, 'show']);
+    // Grievance cell: only the grievance chief can read what is sent here.
+    Route::get('/grievances/options', [GrievanceController::class, 'options']);
+    Route::post('/grievances', [GrievanceController::class, 'store'])->middleware('throttle:5,1');
     Route::get('/registration-forms/{slug}', [RegistrationFormController::class, 'show']);
     Route::post('/registration-forms/{slug}/submit', [RegistrationFormController::class, 'submit'])->middleware('throttle:5,1');
 
@@ -172,6 +176,7 @@ Route::prefix('v1')->group(function () {
         Route::get('/tickets/{ticket}', [SupportTicketController::class, 'show']);
         Route::patch('/tickets/{ticket}', [SupportTicketController::class, 'update']);
         Route::post('/tickets/{ticket}/comments', [SupportTicketController::class, 'comment']);
+        Route::post('/tickets/{ticket}/nudge', [SupportTicketController::class, 'nudge'])->middleware('throttle:10,1');
 
         // Event registration: sign people up as members by name + phone at a satsang or camp.
         Route::get('/events', [SupportEventRegistrationController::class, 'index']);

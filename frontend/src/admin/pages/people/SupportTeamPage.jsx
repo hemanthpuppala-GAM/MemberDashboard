@@ -110,6 +110,21 @@ export default function SupportTeamPage() {
     }
   };
 
+  /** One chief at a time: the server clears the old one, logs it and emails both. Everything a chief reads is confidential. */
+  const setChief = async (agent, on) => {
+    const msg = on
+      ? `Make ${agent.name} the grievance chief?\n\nThey will be the ONLY person who can read grievances (sender, contact details and message). Any current chief loses access. Both are emailed and the change is logged.`
+      : `Remove ${agent.name} as grievance chief? Nobody will be able to read new grievances until you name another chief.`;
+    if (!window.confirm(msg)) return;
+    try {
+      await api.updateSupportAgent(agent.id, { phone: agent.phone ?? null, email: agent.email ?? null, is_grievance_chief: on });
+      setAgents((rows) => rows.map((r) => ({ ...r, is_grievance_chief: on ? r.id === agent.id : r.id === agent.id ? false : r.is_grievance_chief })));
+      toast.success(on ? `${agent.name} is now the grievance chief` : `${agent.name} is no longer grievance chief`);
+    } catch (err) {
+      toast.error(errorText(err, "Could not update"));
+    }
+  };
+
   const handleDelete = async () => {
     try {
       await api.deleteSupportAgent(toDelete.id);
@@ -155,6 +170,18 @@ export default function SupportTeamPage() {
             disabled={!canEdit}
             label={row.original.is_active ? "Active" : "Off"}
             onChange={(v) => (v ? setActive(row.original, true) : setToDeactivate(row.original))}
+          />
+        ),
+      },
+      {
+        accessorKey: "is_grievance_chief",
+        header: "Grievance chief",
+        cell: ({ row }) => (
+          <Toggle
+            checked={!!row.original.is_grievance_chief}
+            disabled={!canEdit || !row.original.is_active}
+            label={row.original.is_grievance_chief ? "Chief" : "—"}
+            onChange={(v) => setChief(row.original, v)}
           />
         ),
       },

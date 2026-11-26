@@ -17,6 +17,7 @@ export const SOURCE_LABELS = {
   whatsapp: "WhatsApp",
   volunteer: "Volunteer sign-up",
   volunteer_old: "Old volunteer sign-up",
+  grievance: "Grievance cell",
   other: "Other",
 };
 

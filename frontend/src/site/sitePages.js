@@ -13,6 +13,7 @@ export const UTILITY_LINKS = [
   { label: "Member support", to: "/ask" },
   { label: "Volunteer", to: "/volunteer" },
   { label: "Privacy", to: "/privacy" },
+  { label: "Grievance", to: "/grievance" },
   { label: "Donate", to: "/donate" },
 ];
 

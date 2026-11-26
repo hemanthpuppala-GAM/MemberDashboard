@@ -211,3 +211,12 @@ Format: date · item · status (🟡 designed / ✅ implemented @sha / ⬅ code 
 
 ## 2026-11-15 — Kids Meditation Circle (USA): registration, parent consent, analytics
 - ⬅ code change: New **Kids Meditation Circle** feature, built from the team's kids consent PDF and in-person waiver PDF. Spec: `design_handoff_kids_circle/README.md`. It adds the `/kids` program page, `/kids/register` (parent's Google sign-in, then 3 steps: Children · Parent · Consent with e-signature), the member dashboard **My family** tab with a printable signed copy, and Admin → People → **Kids Circle** (Overview analytics, Children list + CSV, Session roster with attendance). It uses the site green + gold, not the PDF's purple. Zoom details are no longer public; they go only to registered parents. Consent text is versioned and Texas-ready, with the governing state configurable for other states.
+
+## 2026-11-26 — Grievance cell
+- ⬅ code change: New **/grievance** page (link "Grievance" in the top utility row). It has a "What is it about?" choice, the grievance, and optional name, email and phone. Its promise reads: "Only the grievance chief can read your name, contact details and message. They are stored encrypted. The support team only sees that a grievance arrived, shown as 'Anonymous'." Without contact details, the form warns: "the chief can read your grievance but can't reply to you."
+- ⬅ code change: **Support desk**. A grievance arrives as a ticket with a dark **🔒 GRIEVANCE** badge, titled "Grievance (confidential)" and from "Anonymous", assigned to the chief.
+  - **Rest of the team:** sees only the masked card ("Only the grievance chief can read and resolve it"), with a gold **Nudge the chief** button (it emails the chief, once per 12 hours, and logs "X nudged the grievance chief").
+  - **Desk tiles:** a red **🔒 Grievances open** tile ("with <chief> · oldest N").
+  - **The chief:** sees the real subject, the "[about]" line, the message, the name and contact details, and a dark banner "Confidential grievance…". The chief's replies are emailed to the sender, and the sender can reply to the chief directly.
+  - **Locked:** grievances are left out of bulk actions, and their "Who is handling it" field is locked.
+- ⬅ code change: **Admin → People → Support team** gets a **Grievance chief** switch. Only one chief at a time, it asks to confirm, emails the new and the old chief, and is written to the activity log.

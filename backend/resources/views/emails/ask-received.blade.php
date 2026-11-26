@@ -17,7 +17,7 @@
                     <tr>
                         <td style="padding:32px;">
                             <p style="margin:0 0 16px;font-size:17px;line-height:1.6;color:#14241C;">{{ $greeting }}</p>
-                            <p style="margin:0 0 24px;font-size:16px;line-height:1.65;color:#2E3A33;">{{ $bodyLine }}</p>
+                            <p style="margin:0 0 24px;font-size:16px;line-height:1.65;color:#2E3A33;">{!! nl2br(e($bodyLine)) !!}</p>
                             <p style="margin:0;font-size:14px;line-height:1.6;color:#5A5546;">{{ $signoff }}</p>
                         </td>
                     </tr>

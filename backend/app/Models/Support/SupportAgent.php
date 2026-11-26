@@ -8,7 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\HasApiTokens;
 
-#[Fillable(['kind', 'name', 'phone', 'email', 'user_id', 'is_active'])]
+#[Fillable(['kind', 'name', 'phone', 'email', 'user_id', 'is_active', 'is_grievance_chief'])]
 #[Hidden(['pin_hash'])]
 class SupportAgent extends Authenticatable
 {
@@ -41,7 +41,7 @@ class SupportAgent extends Authenticatable
 
     protected function casts(): array
     {
-        return ['is_active' => 'boolean', 'last_login_at' => 'datetime'];
+        return ['is_active' => 'boolean', 'last_login_at' => 'datetime', 'is_grievance_chief' => 'boolean'];
     }
 
     /** Digits only; a bare 10-digit Indian number gets the 91 prefix. */
@@ -68,6 +68,12 @@ class SupportAgent extends Authenticatable
 
     public function toPublic(): array
     {
-        return ['id' => $this->id, 'name' => $this->name, 'kind' => $this->kind];
+        return ['id' => $this->id, 'name' => $this->name, 'kind' => $this->kind, 'is_grievance_chief' => (bool) $this->is_grievance_chief];
+    }
+
+    /** The one agent who can read grievances (Admin → Support team → Grievance chief). */
+    public static function grievanceChief(): ?self
+    {
+        return static::where('is_grievance_chief', true)->where('is_active', true)->first();
     }
 }

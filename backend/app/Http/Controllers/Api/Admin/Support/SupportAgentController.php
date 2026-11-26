@@ -19,6 +19,7 @@ class SupportAgentController extends Controller
             'phone' => $a->phone,
             'email' => $a->email,
             'is_active' => $a->is_active,
+            'is_grievance_chief' => (bool) $a->is_grievance_chief,
             'has_pin' => $a->pin_hash !== null,
             'last_login_at' => $a->last_login_at,
         ]));
@@ -65,6 +66,7 @@ class SupportAgentController extends Controller
             'email' => [$kind === 'volunteer' && $creating ? 'required' : 'nullable', 'email', 'max:190', Rule::unique('support_agents', 'email')->ignore($agent->id)],
             'pin' => [$kind === 'core' && $creating ? 'required' : 'nullable', 'digits_between:4,8'],
             'is_active' => ['sometimes', 'boolean'],
+            'is_grievance_chief' => ['sometimes', 'boolean'],
         ]);
 
         $agent->fill(collect($data)->except('pin')->all());
@@ -76,5 +78,14 @@ class SupportAgentController extends Controller
             $agent->tokens()->delete();
         }
         $agent->save();
+
+        // One grievance chief at a time: naming a new one removes the old one. Logged and both are emailed.
+        if (array_key_exists('is_grievance_chief', $data) && $agent->wasChanged('is_grievance_chief')) {
+            $previous = $data['is_grievance_chief']
+                ? SupportAgent::where('is_grievance_chief', true)->whereKeyNot($agent->id)->get()
+                : collect();
+            SupportAgent::whereIn('id', $previous->pluck('id'))->update(['is_grievance_chief' => false]);
+            \App\Services\Support\GrievanceChiefChange::record($agent, (bool) $data['is_grievance_chief'], $previous);
+        }
     }
 }

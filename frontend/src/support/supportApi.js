@@ -181,6 +181,8 @@ export const supportApi = {
   registerAtEvent: (id, payload) => supportFetch(`/support/events/${id}/register`, { method: "POST", body: payload }),
   checkRegistrations: (payload) => supportFetch("/support/events/check", { method: "POST", body: payload }),
   readListFile: (file) => supportUpload("/support/events/read-file", file),
+  /** Grievances: the team reminds the grievance chief → { nudged, message } */
+  nudgeChief: (id) => supportFetch(`/support/tickets/${id}/nudge`, { method: "POST" }),
   addComment: (id, body, internal) =>
     supportFetch(`/support/tickets/${id}/comments`, { method: "POST", body: { body, internal } }),
 };

@@ -13,7 +13,7 @@ import { useDailySitUrl } from "./useDailySit";
 import "./site.css";
 
 /** Hand-built routes a CMS page can't take over (the router sends those URLs elsewhere). */
-const RESERVED_SLUGS = new Set([...SITE_PAGES.map((p) => p.to.slice(1)), ...UTILITY_LINKS.map((l) => l.to.slice(1)), "contact", "join", "ask", "support", "dashboard", "admin", "register", "auth", "kids"]);
+const RESERVED_SLUGS = new Set([...SITE_PAGES.map((p) => p.to.slice(1)), ...UTILITY_LINKS.map((l) => l.to.slice(1)), "contact", "join", "ask", "support", "dashboard", "admin", "register", "auth", "kids", "grievance"]);
 
 /** Utility links = published CMS pages (Admin → CMS → Pages) followed by the fixed ones. */
 function useUtilityLinks() {
