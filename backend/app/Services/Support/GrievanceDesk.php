@@ -57,7 +57,7 @@ class GrievanceDesk
             return $ticket;
         });
 
-        self::alertChief($ticket->load('grievance'), 'new');
+        self::alertChief($ticket, 'new');
 
         return $ticket;
     }
@@ -116,7 +116,7 @@ class GrievanceDesk
         return ['nudged' => true, 'message' => 'The chief has been reminded by email.'];
     }
 
-    /** Email the chief: the full grievance (so they don't need the desk to read it), or the team's nudge. */
+    /** Email the chief a notification (new grievance or nudge). Never the sender or the message: they read it on the desk. */
     public static function alertChief(Ticket $ticket, string $kind, ?string $by = null): void
     {
         $chief = SupportAgent::grievanceChief();
@@ -139,7 +139,7 @@ class GrievanceDesk
     {
         $chief = SupportAgent::grievanceChief();
         $email = $chief?->alertEmail();
-        $open = Ticket::with('grievance')->where('confidential', true)->whereIn('status', Ticket::OPEN_STATUSES)->oldest()->get();
+        $open = Ticket::where('confidential', true)->whereIn('status', Ticket::OPEN_STATUSES)->oldest()->get();
         if (! $email || $open->isEmpty()) {
             return 0;
         }

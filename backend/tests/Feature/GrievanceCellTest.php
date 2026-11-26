@@ -82,12 +82,12 @@ class GrievanceCellTest extends TestCase
         }
         $this->assertSame('Meera Iyer', Grievance::where('ticket_id', $id)->first()->name);
 
-        // The chief gets the full grievance by email (only the chief), and can reply straight to the sender.
+        // The chief gets a notification only: no sender, contact or message in the email.
         Mail::assertSent(GrievanceAlertMail::class, function ($m) {
             $html = $m->render();
 
-            return $m->hasTo('chief@example.com') && str_contains($html, 'Meera Iyer') && str_contains($html, 'rudely')
-                && str_contains($html, '9876543210') && $m->hasReplyTo('meera@example.com');
+            return $m->hasTo('chief@example.com') && str_contains($html, '/support/ticket/')
+                && ! str_contains($html, 'Meera') && ! str_contains($html, 'rudely') && ! str_contains($html, '9876543210');
         });
         Mail::assertNotSent(GrievanceAlertMail::class, fn ($m) => $m->hasTo('lakshmi@example.com'));
     }
@@ -224,7 +224,7 @@ class GrievanceCellTest extends TestCase
         Mail::assertSent(GrievanceDigestMail::class, function ($m) {
             $html = $m->render();
 
-            return $m->hasTo('chief@example.com') && str_contains($html, 'Meera Iyer') && str_contains($html, 'Anonymous');
+            return $m->hasTo('chief@example.com') && str_contains($html, 'T-') && ! str_contains($html, 'Meera') && ! str_contains($html, 'late without notice');
         });
 
         // Resolved ones drop off the list.
