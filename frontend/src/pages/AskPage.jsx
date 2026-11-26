@@ -288,6 +288,18 @@ export default function AskPage() {
         </div>
         </div>
 
+        <Link
+          to="/grievance"
+          className="flex items-center gap-3 rounded-[20px] border border-[rgba(184,146,62,0.45)] bg-[linear-gradient(100deg,#FFFDF8,#FBF3DC)] p-4 no-underline"
+        >
+          <span aria-hidden className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#14241C] text-[17px] shadow-[0_0_0_2px_#C9A24A]">🔒</span>
+          <span className="flex min-w-0 flex-1 flex-col">
+            <span className="text-[15px] font-bold text-[#14241C]">Not a question, but a complaint?</span>
+            <span className="text-[13px] text-[#5A5546]">Grievance cell: only our grievance chief reads it. You can stay anonymous.</span>
+          </span>
+          <span className="shrink-0 text-[14px] font-semibold text-[#7A5E22]">Open →</span>
+        </Link>
+
         <div className="flex flex-wrap items-center gap-4 rounded-[20px] border border-[rgba(201,162,74,0.3)] bg-[#FFFDF8] p-[18px]">
           <a
             href={pageUrl}
